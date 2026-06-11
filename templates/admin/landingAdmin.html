@@ -1,14 +1,13 @@
 {% extends 'admin/base/base.html' %}
 {% load static %}
 
-{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block title %}OperPan | Dashboard{% endblock %}
 {% block section_title %}Panel de Administración{% endblock %}
 {% block section_subtitle %}Bienvenido al panel de control de Estación Paisa{% endblock %}
 {% block active_inicio %}active{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin/dashboard.css' %}">
-<link rel="stylesheet" href="{% static 'css/admin/cuentas.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -80,7 +79,7 @@
           </a>
         </div>
         <div class="col-md-3 col-sm-6">
-          <a href="./sub-pages-admin/1-cuentas.html" class="module-card">
+          <a href="{% url 'gestion_cuentas' %}" class="module-card">
             <div class="module-icon"><i class="bi bi-people"></i></div>
             <h5>Gestión de personal</h5>
             <p class="small text-muted">Control de contratos y usuarios</p>

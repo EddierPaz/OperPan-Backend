@@ -39,19 +39,16 @@
                         <a href="{% url 'admin_panel' %}"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a>
                     </li>
                     <li class="{% block active_horarios %}{% endblock %}">
-                        <a href="/"><i class="bi bi-calendar3-week"></i> Horarios</a>
+                        <a href="/"><i class="bi bi-clock-history"></i> Asistencia</a>
                     </li>
                     <li class="{% block active_cuentas %}{% endblock %}">
-                        <a href="{% url 'gestion_cuentas' %}"><i class="bi bi-people"></i> Cuentas</a>
+                        <a href="{% url 'gestion_cuentas' %}"><i class="bi bi-envelope-paper"></i> Cuentas</a>
                     </li>
                     <li class="{% block active_tareas %}{% endblock %}">
-                        <a href="/"><i class="bi bi-list-task"></i> Tareas Operativas</a>
+                        <a href="/"><i class="bi bi-list-check"></i> Tareas Operativas</a>
                     </li>
                     <li class="{% block active_novedades %}{% endblock %}">
-                        <a href="/"><i class="bi bi-megaphone"></i> Novedades</a>
-                    </li>
-                    <li class="{% block active_reportes %}{% endblock %}">
-                        <a href="/"><i class="bi bi-bar-chart"></i> Reportes</a>
+                        <a href="/"><i class="bi bi-person-badge"></i> Información personal</a>
                     </li>
                 </ul>
             </nav>
@@ -76,7 +73,7 @@
                 <div class="user-info d-flex align-items-center gap-3">
                     <div class="user-badge px-3 py-1  text-white rounded-pill">
                         <i class="bi bi-shield-fill-check text-success me-1"></i>
-                        <span>Administrador</span>
+                        <span>{{ perfilEmpleado.primer_nombre }}</span>
                     </div>
                     <a href="{% url 'cerrar_sesion' %}" class="btn-logout"><i class="bi bi-box-arrow-right"></i>
                         Salir</a>

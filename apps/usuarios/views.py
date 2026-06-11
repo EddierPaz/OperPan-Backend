@@ -218,3 +218,6 @@ def eliminar_usuario(request, user_id):
 
 def base (request):
     return render(request, "admin/base/base.html")
+
+def baseEmpleado (request):
+    return render(request, "empleado/base/base.html")
