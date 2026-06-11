@@ -1,0 +1,230 @@
+/* ==========================================
+   LAYOUT BASE
+   ========================================== */
+.main-content {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dashboard-container {
+    padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+/* ==========================================
+   KPIs
+   ========================================== */
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EDF2F7;
+    transition: 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 0.25rem;
+}
+
+/* ==========================================
+   FORMULARIO
+   ========================================== */
+.form-section {
+    background: white;
+    border-radius: 28px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border: 1px solid #EDF2F7;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: 16px;
+    border: 1.5px solid #E2E8F0;
+    padding: 0.7rem 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #A40706;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
+}
+
+.btn-primary-corporate {
+    background: #A40706;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 0.2s;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0504;
+    transform: translateY(-2px);
+}
+
+.btn-outline-corporate {
+    border: 1.5px solid #A40706;
+    background: transparent;
+    color: #A40706;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ==========================================
+   TABLA
+   ========================================== */
+.table-responsive {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.table-custom {
+    width: 100% !important;
+    margin-bottom: 0;
+}
+
+.table-custom thead th {
+    background-color: #F8F9FC !important;
+    color: #64748b !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 1rem;
+}
+
+.table-custom tbody td {
+    padding: 0.9rem 1rem;
+    vertical-align: middle;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+.badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+}
+
+.badge-active {
+    background: #E0F2E9;
+    color: #1E7B48;
+}
+
+.badge-inactive {
+    background: #FEF2F0;
+    color: #B91C1C;
+}
+
+.badge-rol-empleado {
+    background: #E0F2FE;
+    color: #0369A1;
+}
+
+.badge-rol-gerente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-rol-admin {
+    background: #EDE9FE;
+    color: #5B21B6;
+}
+
+/* ==========================================
+   BOTONES DE ACCIÓN
+   ========================================== */
+.action-btn {
+    background: transparent;
+    border: none;
+    color: #5F6C7A;
+    transition: 0.2s;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+.action-btn:hover {
+    color: #A40706;
+    background: #FEF2F0;
+}
+
+/* ==========================================
+   MODAL
+   ========================================== */
+.modal-content {
+    border-radius: 24px;
+    border: none !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-footer {
+    border-top: 1px solid #e2e8f0;
+}
+
+/* ==========================================
+   TOAST
+   ========================================== */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1100;
+    display: none;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+footer {
+    text-align: center;
+    padding: 1rem;
+    color: #5F6C7A;
+    font-size: 0.75rem;
+    margin-top: 2rem;
+}

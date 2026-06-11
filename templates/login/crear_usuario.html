@@ -1,0 +1,367 @@
+{% extends 'admin/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block section_title %}Gestión de Cuentas{% endblock %}
+{% block section_subtitle %}Visualiza y edita los usuarios del sistema{% endblock %}
+{% block active_cuentas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    {% if messages %}
+    {% for message in messages %}
+    <div
+        class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Usuarios registrados</span>
+                    <h3 class="mt-1">{{ total_usuarios }}</h3>
+                </div>
+                <i class="bi bi-people-fill fs-2" style="color:#17bd62;"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Administradores</span>
+                    <h3 class="mt-1">{{ total_admins }}</h3>
+                </div>
+                <i class="bi bi-shield-fill-check fs-2" style="color:#17bd62;"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Empleados</span>
+                    <h3 class="mt-1">{{ total_empleados }}</h3>
+                </div>
+                <i class="bi bi-person-fill fs-2" style="color:#17bd62;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENCABEZADO + BOTÓN -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h3><i class="bi bi-table me-2"></i> Listado de cuentas</h3>
+        <button class="btn-primary-corporate" id="btnCrearCuenta">
+            <i class="bi bi-person-plus-fill me-1"></i> Crear cuenta
+        </button>
+    </div>
+
+    <!-- FORMULARIO CREAR / EDITAR -->
+    <div class="form-section" id="formularioCuenta" style="display:none;"
+        data-open="{% if messages %}true{% else %}false{% endif %}">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 id="formTitulo"><i class="bi bi-person-plus-fill me-2"></i> Crear Usuario</h3>
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-3" id="btnCerrarFormulario">
+                <i class="bi bi-x-lg me-1"></i> Cerrar
+            </button>
+        </div>
+
+        <form method="POST" id="formCuenta" action="{% url 'gestion_cuentas' %}">
+            {% csrf_token %}
+
+            <!-- DATOS PERSONALES -->
+            <h5 class="mb-3 text-danger">
+                <i class="bi bi-person-vcard me-1"></i> Datos Personales
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Primer Nombre *</label>
+                    <input type="text" class="form-control" name="primer_nombre" id="f_primer_nombre" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Segundo Nombre</label>
+                    <input type="text" class="form-control" name="segundo_nombre" id="f_segundo_nombre">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Primer Apellido *</label>
+                    <input type="text" class="form-control" name="primer_apellido" id="f_primer_apellido" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Segundo Apellido *</label>
+                    <input type="text" class="form-control" name="segundo_apellido" id="f_segundo_apellido" required>
+                </div>
+
+                <!-- NO EDITABLES -->
+                <div class="col-md-3">
+                    <label class="form-label">Tipo Documento *</label>
+                    <select class="form-select" name="tipo_documento" id="f_tipo_documento" required>
+                        <option value="">Seleccione</option>
+                        <option value="CC">Cédula de Ciudadanía</option>
+                        <option value="CE">Cédula de Extranjería</option>
+                        <option value="TI">Tarjeta de Identidad</option>
+                        <option value="PA">Pasaporte</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Número Documento *</label>
+                    <input type="text" class="form-control" name="numero_documento" id="f_numero_documento" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Nacimiento *</label>
+                    <input type="date" class="form-control" name="fecha_nacimiento" id="f_fecha_nacimiento" required>
+                </div>
+
+                <!-- EDITABLES -->
+                <div class="col-md-3">
+                    <label class="form-label">Género *</label>
+                    <select class="form-select" name="genero" id="f_genero" required>
+                        <option value="">Seleccione</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="O">Otro</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Estado Civil *</label>
+                    <select class="form-select" name="estado_civil" id="f_estado_civil" required>
+                        <option value="">Seleccione</option>
+                        <option value="soltero">Soltero</option>
+                        <option value="casado">Casado</option>
+                        <option value="union_libre">Unión Libre</option>
+                        <option value="divorciado">Divorciado</option>
+                        <option value="viudo">Viudo</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tipo de Sangre *</label>
+                    <select class="form-select" name="tipo_sangre" id="f_tipo_sangre" required>
+                        <option value="">Seleccione</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- CONTACTO -->
+            <h5 class="mb-3 text-danger">
+                <i class="bi bi-telephone me-1"></i> Información de Contacto
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Teléfono *</label>
+                    <input type="tel" class="form-control" name="telefono" id="f_telefono" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Correo *</label>
+                    <input type="email" class="form-control" name="correo" id="f_correo" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Ciudad *</label>
+                    <input type="text" class="form-control" name="ciudad" id="f_ciudad" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Dirección *</label>
+                    <input type="text" class="form-control" name="direccion" id="f_direccion" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Contacto Emergencia *</label>
+                    <input type="text" class="form-control" name="contacto_emergencia" id="f_contacto_emergencia"
+                        required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Teléfono Emergencia *</label>
+                    <input type="tel" class="form-control" name="telefono_emergencia" id="f_telefono_emergencia"
+                        required>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- DATOS LABORALES -->
+            <h5 class="mb-3 text-danger">
+                <i class="bi bi-briefcase me-1"></i> Datos Laborales
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Cargo *</label>
+                    <select class="form-select" name="cargo" id="f_cargo" required>
+                        <option value="">Seleccione</option>
+                        <option value="mesero">Mesero</option>
+                        <option value="cajero">Cajero</option>
+                        <option value="pastelero">Pastelero</option>
+                        <option value="panadero">Panadero</option>
+                        <option value="cocina">Cocina</option>
+                        <option value="buñuelero">Buñuelero</option>
+                        <option value="greca">Greca</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha Ingreso *</label>
+                    <input type="date" class="form-control" name="fecha_ingreso" id="f_fecha_ingreso" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">EPS *</label>
+                    <input type="text" class="form-control" name="eps" id="f_eps" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">ARL *</label>
+                    <input type="text" class="form-control" name="arl" id="f_arl" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fondo Pensión *</label>
+                    <input type="text" class="form-control" name="fondo_pension" id="f_fondo_pension" required>
+                </div>
+                <!-- Solo visible en modo edición -->
+                <div class="col-md-3" id="campoEstado" style="display:none;">
+                    <label class="form-label">Estado *</label>
+                    <select class="form-select" name="estado" id="f_estado">
+                        <option value="activo">Activo</option>
+                        <option value="suspendido">Suspendido</option>
+                        <option value="retirado">Retirado</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- ACCESO AL SISTEMA -->
+            <h5 class="mb-3 text-danger">
+                <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-4" id="campoUsername">
+                    <label class="form-label">Usuario *</label>
+                    <input type="text" class="form-control" name="username" id="f_username" required>
+                </div>
+                <div class="col-md-4" id="campoPassword">
+                    <label class="form-label">Contraseña *</label>
+                    <input type="password" class="form-control" name="password" id="f_password" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Rol *</label>
+                    <select class="form-select" name="rol" id="f_rol" required>
+                        <option value="">Seleccione</option>
+                        <option value="admin">Administrador</option>
+                        <option value="empleado">Empleado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-3">
+                <button type="submit" class="btn-primary-corporate" id="btnGuardar">
+                    <i class="bi bi-save me-1"></i> Guardar Usuario
+                </button>
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="btnLimpiar">
+                    Limpiar
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-responsive mb-4">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Documento</th>
+                    <th>Usuario</th>
+                    <th>Nombre Completo</th>
+                    <th>Cargo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr data-id="{{ usuario.user.id }}" data-primer-nombre="{{ usuario.primer_nombre }}"
+                    data-segundo-nombre="{{ usuario.segundo_nombre }}"
+                    data-primer-apellido="{{ usuario.primer_apellido }}"
+                    data-segundo-apellido="{{ usuario.segundo_apellido }}"
+                    data-tipo-documento="{{ usuario.tipo_documento }}"
+                    data-numero-documento="{{ usuario.numero_documento }}"
+                    data-fecha-nacimiento="{{ usuario.fecha_nacimiento }}" data-genero="{{ usuario.genero }}"
+                    data-estado-civil="{{ usuario.estado_civil }}" data-tipo-sangre="{{ usuario.tipo_sangre }}"
+                    data-telefono="{{ usuario.telefono }}" data-correo="{{ usuario.correo }}"
+                    data-ciudad="{{ usuario.ciudad }}" data-direccion="{{ usuario.direccion|default:'' }}"
+                    data-contacto-emergencia="{{ usuario.contacto_emergencia|default:'' }}"
+                    data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}"
+                    data-cargo="{{ usuario.cargo }}" data-fecha-ingreso="{{ usuario.fecha_ingreso|default:'' }}"
+                    data-eps="{{ usuario.eps|default:'' }}" data-arl="{{ usuario.arl|default:'' }}"
+                    data-fondo-pension="{{ usuario.fondo_pension|default:'' }}" data-estado="{{ usuario.estado }}"
+                    data-username="{{ usuario.user.username }}" data-rol="{{ usuario.user.rol }}">
+                    <td>
+                        {{ usuario.numero_documento }}
+                    </td>
+                    <td>{{ usuario.user.username }}</td>
+                    <td>{{ usuario.nombre_completo }}</td>
+                    <td>{{ usuario.get_cargo_display }}</td>
+                    <td>
+                        {% if usuario.user.rol == 'admin' %}
+                        <span class="badge badge-rol-admin">Administrador</span>
+                        {% else %}
+                        <span class="badge badge-rol-empleado">Empleado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if usuario.estado == 'activo' %}
+                        <span class="badge badge-active">Activo</span>
+                        {% elif usuario.estado == 'suspendido' %}
+                        <span class="badge badge-inactive">Suspendido</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Retirado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button type="button" class="action-btn" title="Editar" onclick="editarUsuario(this)">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <form method="POST" action="{% url 'eliminar_usuario' usuario.user.id %}"
+                            style="display:inline;"
+                            onsubmit="return confirm('¿Eliminar permanentemente a {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}?')">
+                            {% csrf_token %}
+                            <button type="submit" class="action-btn" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox me-2"></i> No hay usuarios registrados
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <i class="bi bi-shield-check"></i> Trazabilidad completa — Cada acción queda registrada en auditoría
+    </footer>
+
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/admin/cuentas.js' %}"></script>
+<script>
+    const urlCrear = "{% url 'gestion_cuentas' %}";
+</script>
+{% endblock %}

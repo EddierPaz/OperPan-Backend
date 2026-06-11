@@ -1,0 +1,303 @@
+/* ==============================================
+       GLOBALES Y RESET (OperPan - Estación Paisa)
+    ============================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif !important;
+  background: #F4F7FC;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 700;
+  color: #000000;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+p,
+span,
+a,
+li,
+button {
+  font-size: 1rem;
+}
+
+/* Layout principal (sidebar + contenido) */
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR NEGRA CORPORATIVA */
+.sidebar {
+  width: 280px;
+  background-color: #000000;
+  color: #FFFFFF;
+  transition: all 0.3s;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  /* Habilitar el scroll pero ocultar la barra */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  /* Oculta la barra en Firefox */
+  -ms-overflow-style: none;
+  /* Oculta la barra en Internet Explorer/Edge */
+}
+
+/* SIDEBAR NEGRA CORPORATIVA */
+.sidebar {
+  width: 280px;
+  background-color: #000000;
+  color: #FFFFFF;
+  transition: all 0.3s;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  /* Habilitar el scroll pero ocultar la barra */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  /* Oculta la barra en Firefox */
+  -ms-overflow-style: none;
+  /* Oculta la barra en Internet Explorer/Edge */
+}
+
+/* Oculta la barra en Chrome, Safari y navegadores basados en Chromium (como Brave o Edge) */
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-header {
+  padding: 1.8rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 145px;
+  height: 135px;
+  /* border-radius: 12px; */
+  overflow: hidden;
+
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-text h4 {
+  color: white;
+  margin-bottom: 0;
+  font-size: 1.3rem;
+}
+
+.logo-text span {
+  font-size: 0.7rem;
+  color: #ccc;
+}
+
+.nav-menu {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.nav-menu ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.nav-menu li {
+  margin-bottom: 0.5rem;
+}
+
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0.8rem 1.8rem;
+  color: #E0E0E0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.nav-menu a i {
+  font-size: 1.3rem;
+  width: 28px;
+}
+
+.nav-menu a:hover {
+  background: rgba(164, 7, 6, 0.15);
+  color: white;
+  border-left-color: #A40706;
+}
+
+.nav-menu .active a {
+  background: rgba(164, 7, 6, 0.2);
+  color: white;
+  border-left-color: #A40706;
+  font-weight: 600;
+}
+
+.soporte {
+  color: #ffffff80;
+  text-decoration: none;
+}
+
+.soporte:hover {
+  transition: 1s;
+  text-decoration: none;
+  color: #A40706;
+}
+
+/* CONTENIDO PRINCIPAL */
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  transition: all 0.3s;
+}
+
+/* TOPBAR NEGRO */
+.topbar {
+  background: #000000;
+  padding: 0.8rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #2C2C2C;
+}
+
+.company-info h2 {
+  color: white;
+  font-size: 1.3rem;
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.company-info p {
+  color: #BBBBBB;
+  font-size: 0.75rem;
+  margin-bottom: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.4rem 1rem;
+  border-radius: 60px;
+}
+
+
+.user-badge i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.user-badge span {
+  color: white;
+  font-weight: 500;
+}
+
+.btn-logout {
+  background: #A40706;
+  border: 1px solid #A40706;
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  transition: 0.2s;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-logout:hover {
+  background: white;
+  color: #A40706;
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .sidebar {
+    margin-left: -280px;
+  }
+
+  .sidebar.active {
+    margin-left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .menu-toggle {
+    display: block;
+    background: black;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 993px) {
+  .menu-toggle {
+    display: none;
+  }
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  color: #5F6C7A;
+  font-size: 0.75rem;
+  margin-top: 2rem;
+}

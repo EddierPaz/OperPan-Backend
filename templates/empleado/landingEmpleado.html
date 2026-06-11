@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>OperPan | Panel Empleado</title>
+    <!-- Bootstrap 5 + Icons + Google Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ==============================================
+           GLOBALES Y RESET (OperPan - Estación Paisa)
+        ============================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F4F7FC;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-weight: 700;
+            color: #000000;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        p,
+        span,
+        a,
+        li,
+        input,
+        button,
+        label {
+            font-size: 1rem;
+        }
+
+        /* Layout principal (sidebar + contenido) */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR NEGRA CORPORATIVA */
+        .sidebar {
+            width: 280px;
+            background-color: #000000;
+            color: #FFFFFF;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.8rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 75px;
+            height: 65px;
+            /* border-radius: 12px; */
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-text h4 {
+            color: white;
+            margin-bottom: 0;
+            font-size: 1.3rem;
+        }
+
+        .logo-text span {
+            font-size: 0.7rem;
+            color: #ccc;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0.8rem 1.8rem;
+            color: #E0E0E0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-menu a i {
+            font-size: 1.3rem;
+            width: 28px;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(164, 7, 6, 0.15);
+            color: white;
+            border-left-color: #A40706;
+        }
+
+        .nav-menu .active a {
+            background: rgba(164, 7, 6, 0.2);
+            color: white;
+            border-left-color: #A40706;
+            font-weight: 600;
+        }
+
+        .soporte {
+            color: #ffffff80;
+            text-decoration: none;
+        }
+
+        .soporte:hover {
+            transition: 1s;
+            text-decoration: none;
+            color: #A40706;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: all 0.3s;
+        }
+
+        /* TOPBAR NEGRO */
+        .topbar {
+            background: #000000;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .company-info h2 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+
+        .company-info p {
+            color: #BBBBBB;
+            font-size: 0.75rem;
+            margin-bottom: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+
+        .user-badge a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+        }
+
+        .user-badge:hover span {
+            transition: 1s;
+            color: #A40706;
+        }
+
+        .user-badge:hover i {
+            transition: 1s;
+            color: #A40706;
+        }
+
+
+        .user-badge i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .user-badge span {
+            color: white;
+            font-weight: 500;
+        }
+
+        .btn-logout {
+            background: #A40706;
+            border: 1px solid #A40706;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            transition: 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #A40706;
+        }
+
+        /* DASHBOARD - Cards de bienvenida y resumen */
+        .dashboard-container {
+            padding: 2rem;
+        }
+
+        /* Tarjeta de empleado destacada */
+        .employee-highlight {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            border: 1px solid #F0F2F5;
+        }
+
+        .employee-avatar-large {
+            width: 80px;
+            height: 80px;
+            background: #F0F2F5;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 2rem;
+            color: #A40706;
+        }
+
+        .badge-role {
+            background: #A40706;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+        }
+
+
+        /* Cards de estadísticas resumidas */
+        .stat-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid #EDF2F7;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1E293B;
+        }
+
+        /* Notificaciones */
+        .notification-item {
+            background: white;
+            border-radius: 16px;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #A40706;
+        }
+
+        /* Toast */
+        .toast-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                margin-left: -280px;
+            }
+
+            .sidebar.active {
+                margin-left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+                background: black;
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                margin-right: 1rem;
+                border-radius: 12px;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .menu-toggle {
+                display: none;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: #5F6C7A;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .welcome-message {
+            background: #A40706;
+            border-radius: 24px;
+            padding: 1.5rem;
+            color: #A40706;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-message h2,
+        .welcome-message p {
+            color: white;
+        }
+
+        .btn-outline-light-custom {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: transparent;
+            color: #A40706;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- SIDEBAR NEGRA CORPORATIVA -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-area">
+                    <div class="logo-icon">
+                        <img src="../../Assets/img/img-login/LOGO EMPRESA.png" alt="Empresa">
+                    </div>
+                    <div class="logo-text">
+                        <h4>Estación Paisa</h4>
+                        <span>OperPan</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active"><a href="./landingEmpleado.html"><i class="bi bi-speedometer2"></i> Inicio</a>
+                    </li>
+                    <li><a href="./sub-pages-empleado/1-asistencia.html"><i class="bi bi-clock-history"></i>
+                            Asistencia</a></li>
+                    <li><a href="./sub-pages-empleado/2-solicitudes.html"><i class="bi bi-envelope-paper"></i>
+                            Solicitudes</a></li>
+                    <li><a href="./sub-pages-empleado/3-tareas.html"><i class="bi bi-list-check"></i> Tareas
+                            Operativas</a></li>
+                    <li><a href="./sub-pages-empleado/4-personal.html"><i class="bi bi-person-badge"></i> Información
+                            personal</a></li>
+                </ul>
+            </nav>
+            <div class="p-3 border-top border-secondary">
+                <a class="soporte"
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=eddierpaz9@gmail.com&su=Soporte%20OperPan">
+                    <small><i class="bi bi-question-circle me-2"></i>Ayuda / Soporte</small>
+                </a>
+            </div>
+            <div class="p-3 border-top border-secondary">
+                <small class="text-white-50"><i class="bi bi-shield-lock"></i> v2.0 · Administrador</small>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="main-content">
+            <header class="topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="menu-toggle btn btn-dark" id="menuToggle"><i class="bi bi-list"></i></button>
+                    <div class="company-info">
+                        <h2>Centro de control laboral</h2>
+                        <p>Panel del Empleado</p>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-badge">
+                        <a style="text-decoration: none;" href="./sub-pages-empleado/4-personal.html">
+                            <i class="bi bi-person-circle"></i>
+                            <span id="employeeNameHeader">EDDIER PAZ PARDO</span>
+                        </a>
+                    </div>
+                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout"><i class="bi bi-box-arrow-right"></i>
+                        Salir</a>
+                </div>
+            </header>
+
+            <main class="dashboard-container">
+                <!-- Mensaje de bienvenida destacado -->
+                <div class="welcome-message">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h2 class="mb-1">¡Bienvenido, Eddier!</h2>
+                            <p class="mb-0">Hoy es <strong id="fechaActual"></strong> · Tu turno comienza a las 6:00 AM
+                            </p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            <span class="badge-role" style="background:#3A3F47;"><i class="bi bi-qr-code"></i><span
+                                    class="fw-semibold" style="font-size: 13px;"> ID:</span> EMP-001</span>
+                            <span class="badge-role" style="background:#3A3F47;"><i class="bi bi-briefcase"></i><span
+                                    class="fw-semibold" style="font-size: 13px;"> Cargo:</span> Panadero
+                                Principal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas y novedades -->
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="bg-white rounded-4 p-3 h-100 border">
+                            <h5 class="mb-3"><i class="bi bi-bar-chart-steps me-2" style="color:#A40706;"></i> Resumen
+                                del mes</h5>
+                            <div class="row g-3 text-center">
+                                <div class="col-4">
+                                    <div class="stat-summary">
+                                        <div class="stat-number" id="diasTrabajados">12</div>
+                                        <small class="text-muted">Días trabajados</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-summary">
+                                        <div class="stat-number" id="horasExtra">3.5</div>
+                                        <small class="text-muted">Horas extra</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-summary">
+                                        <div class="stat-number" id="puntualidad">92</div>
+                                        <small class="text-muted">% Puntualidad</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-2 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-flag-fill text-danger"></i> Tareas pendientes: <strong
+                                            id="tareasPendientes">3</strong></span>
+                                    <span><i class="bi bi-check-circle-fill text-success"></i> Completadas: <strong
+                                            id="tareasCompletadas">8</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="bg-white rounded-4 p-3 h-100 border">
+                            <h5 class="mb-3"><i class="bi bi-bell me-2" style="color:#A40706;"></i> Últimas novedades
+                            </h5>
+                            <div id="notificationsContainer">
+                                <div class="notification-item">
+                                    <small class="text-muted"><i class="bi bi-calendar-check"></i> Hoy</small>
+                                    <p class="mb-0">Tu solicitud de <strong>vacaciones</strong> está siendo evaluada.
+                                    </p>
+                                </div>
+                                <div class="notification-item">
+                                    <small class="text-muted"><i class="bi bi-clock"></i> Ayer</small>
+                                    <p class="mb-0">Tarea <strong>"Preparar masa de pan francés"</strong> fue
+                                        actualizada a "En progreso".</p>
+                                </div>
+                                <div class="notification-item">
+                                    <small class="text-muted"><i class="bi bi-file-text"></i> 02/04/2025</small>
+                                    <p class="mb-0">Certificado laboral disponible para descargar en "Información
+                                        personal".</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consejo del día / motivacional -->
+                <div class="mt-4 p-3 bg-white rounded-4 border text-center">
+                    <i class="bi bi-lightbulb fs-4 me-2" style="color:#A40706;"></i>
+                    <span>Consejo del día: Registra tu entrada y salida puntualmente para mantener tu historial de
+                        asistencia impecable.</span>
+                </div>
+
+                <footer>
+                    <i class="bi bi-shield-check"></i> Sistema de gestión de personal - Trazabilidad garantizada
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast para notificaciones -->
+    <div class="toast-message" id="liveToast" style="display: none;">
+        <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
+            <div class="d-flex gap-2 align-items-center">
+                <i class="bi bi-info-circle-fill text-danger fs-5"></i>
+                <span id="toastMsg">Mensaje</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // LANDING EMPLEADO - OPERPAN
+        // Panel de bienvenida con resumen y acceso rápido a módulos
+        // ============================================================
+
+        const empleadoActual = {
+            id: "EMP-2024-156",
+            nombre: "EDDIER PAZ PARDO",
+            email: "eddier.paz@estacionpaisa.com",
+            telefono: "+57 300 123 4567",
+            rol: "Panadero Principal",
+            turno: "Mañana (6am - 2pm)",
+            antiguedad: "2 años"
+        };
+
+        // Mostrar fecha actual
+        function mostrarFecha() {
+            const fecha = new Date();
+            const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById("fechaActual").innerText = fecha.toLocaleDateString('es-ES', opciones);
+        }
+
+        // Simular obtención de datos resumidos desde localStorage (conexión con otros módulos)
+        function cargarResumen() {
+            // Datos de asistencia (simulados desde módulo de asistencia)
+            const asistenciasStorage = localStorage.getItem("operpan_asistencia_empleado");
+            let diasTrabajados = 12;
+            let horasExtra = 3.5;
+            let puntualidad = 92;
+
+            if (asistenciasStorage) {
+                const registros = JSON.parse(asistenciasStorage);
+                // Calcular días trabajados (aquellos con entrada válida)
+                const trabajados = registros.filter(r => r.entrada && r.entrada !== "—").length;
+                if (trabajados > 0) diasTrabajados = trabajados;
+                // Calcular horas extra (sumar)
+                let extraSum = 0;
+                registros.forEach(r => {
+                    if (r.extra && r.extra !== "—") {
+                        const match = r.extra.match(/(\d+)h\s*(\d+)m/);
+                        if (match) extraSum += parseInt(match[1]) + parseInt(match[2]) / 60;
+                    }
+                });
+                if (extraSum > 0) horasExtra = extraSum.toFixed(1);
+            }
+
+            // Tareas desde módulo de tareas
+            const tareasStorage = localStorage.getItem("operpan_tareas");
+            let pendientes = 0;
+            let completadas = 0;
+            if (tareasStorage) {
+                const tareas = JSON.parse(tareasStorage);
+                const misTareas = tareas.filter(t => t.empleadoId === empleadoActual.id);
+                pendientes = misTareas.filter(t => t.estado === "pendiente" || t.estado === "progreso").length;
+                completadas = misTareas.filter(t => t.estado === "finalizada").length;
+            } else {
+                pendientes = 3;
+                completadas = 8;
+            }
+
+            document.getElementById("diasTrabajados").innerText = diasTrabajados;
+            document.getElementById("horasExtra").innerText = horasExtra;
+            document.getElementById("puntualidad").innerText = puntualidad;
+            document.getElementById("tareasPendientes").innerText = pendientes;
+            document.getElementById("tareasCompletadas").innerText = completadas;
+        }
+
+        // Cargar notificaciones desde localStorage (solicitudes, certificados)
+        function cargarNotificaciones() {
+            const container = document.getElementById("notificationsContainer");
+            if (!container) return;
+
+            let notificaciones = [];
+
+            // Verificar solicitudes pendientes
+            const solicitudesStorage = localStorage.getItem("operpan_solicitudes");
+            if (solicitudesStorage) {
+                const solicitudes = JSON.parse(solicitudesStorage);
+                const misSolicitudes = solicitudes.filter(s => s.empleadoId === empleadoActual.id && s.estado === "pendiente");
+                if (misSolicitudes.length > 0) {
+                    notificaciones.push({
+                        fecha: "Reciente",
+                        icono: "envelope-paper",
+                        texto: `Tienes ${misSolicitudes.length} solicitud(es) pendiente(s) de revisión.`
+                    });
+                }
+                // Solicitudes aprobadas recientes
+                const aprobadas = solicitudes.filter(s => s.empleadoId === empleadoActual.id && s.estado === "aprobada");
+                if (aprobadas.length > 0) {
+                    notificaciones.push({
+                        fecha: "Última semana",
+                        icono: "check-circle",
+                        texto: `${aprobadas.length} solicitud(es) han sido aprobadas recientemente.`
+                    });
+                }
+            }
+
+            // Verificar certificados disponibles
+            const certificadosStorage = localStorage.getItem("operpan_solicitudes_certificados");
+            if (certificadosStorage) {
+                const solicitudesCert = JSON.parse(certificadosStorage);
+                const pendientesCert = solicitudesCert.filter(s => s.empleadoId === empleadoActual.id && s.estado === "aprobada");
+                if (pendientesCert.length > 0) {
+                    notificaciones.push({
+                        fecha: "Disponible",
+                        icono: "file-text",
+                        texto: `Tienes ${pendientesCert.length} certificado(s) listo(s) para descargar en "Información personal".`
+                    });
+                }
+            }
+
+            // Si no hay notificaciones, mostrar mensaje por defecto
+            if (notificaciones.length === 0) {
+                container.innerHTML = `<div class="text-muted text-center py-3">No hay novedades recientes</div>`;
+                return;
+            }
+
+            // Mostrar hasta 3 notificaciones
+            container.innerHTML = notificaciones.slice(0, 3).map(not => `
+            <div class="notification-item">
+                <small class="text-muted"><i class="bi bi-${not.icono}"></i> ${not.fecha}</small>
+                <p class="mb-0">${not.texto}</p>
+            </div>
+        `).join('');
+        }
+
+        function mostrarMensaje(mensaje, tipo = "success") {
+            const toast = document.getElementById("liveToast");
+            const msgSpan = document.getElementById("toastMsg");
+            msgSpan.innerText = mensaje;
+            toast.style.display = "block";
+            setTimeout(() => toast.style.display = "none", 3000);
+        }
+
+        // Cerrar sesión
+        document.getElementById("logoutBtn")?.addEventListener("click", () => {
+            mostrarMensaje("Cerrando sesión...", "info");
+            // Registrar cierre de sesión en trazabilidad
+            console.log(`[AUDITORÍA] Empleado ${empleadoActual.nombre} cerró sesión - ${new Date().toLocaleString()}`);
+            setTimeout(() => window.location.href = "../login.html", 800);
+        });
+
+        // Sidebar toggle
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.getElementById("sidebar");
+        if (menuToggle) {
+            menuToggle.addEventListener("click", () => sidebar.classList.toggle("active"));
+        }
+
+        // Inicializar
+        mostrarFecha();
+        cargarResumen();
+        cargarNotificaciones();
+
+        // Registrar acceso al landing (trazabilidad)
+        console.log(`[ACCESO] Empleado ${empleadoActual.nombre} ingresó al panel principal - ${new Date().toLocaleString()}`);
+
+        // Simular saludo de bienvenida
+        setTimeout(() => {
+            mostrarMensaje(`¡Bienvenido ${empleadoActual.nombre}! Revisa tus tareas pendientes.`, "success");
+        }, 500);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description"
+        content="Sistema de gestión de personal y recursos humanos para Panadería Estación Paisa - OperPan">
+    <title>OperPan | Iniciar Sesión</title>
+    <!-- Bootstrap 5 CSS + Icons + Poppins Font -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<body>
+
+    <main>
+        <div class="login-card">
+            <a href="{% url 'index' %}" type="button" class="volver">
+                <i class="bi bi-chevron-left"></i><span>Inicio</span>
+            </a>
+            <!-- Logo y cabecera institucional -->
+            <div class="logo-wrapper">
+                <img class="logo-operpan" src="{% static 'img/LOGO EMPRESA.png' %}" alt="Empresa">
+            </div>
+            <div class="brand-titles text-center mb-4">
+                <div class="system-badge d-inline-block">
+                    <i class="bi bi-person-badge"></i> OperPan
+                </div>
+            </div>
+
+            <div id="loginFormPane" class="form-pane">
+                <form method="post" id="loginForm">
+                    {% csrf_token %}
+
+                    <div class="form-group mb-3">
+                        <div class="input-icon">
+                            <i class="bi bi-person-circle"></i>
+                            <input type="text" name="username" class="form-control" placeholder="Usuario o Correo"
+                                required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <div class="input-icon">
+                            <i class="bi bi-lock-fill"></i>
+                            <input type="password" name="password" id="passwordInput" class="form-control"
+                                placeholder="Contraseña" required autocomplete="current-password">
+                            <i class="bi bi-eye-slash toggle-password" id="togglePassword"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </button>
+                </form>
+            </div>
+
+            {% if messages %}
+            <div id="globalMessage" class="message-area show mt-3"
+                style="display: block; background: #FEF2F0; color: #B91C1C; border-left: 4px solid #A40706;">
+                {% for message in messages %}
+                <i class="bi bi-exclamation-triangle-fill"></i> <span>{{ message }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="forgot-link">
+                <a href="#" id="forgotPasswordLink"><i class="bi bi-question-circle"></i> ¿Olvidaste tu contraseña o
+                    código?</a>
+            </div>
+            <div class="forgot-link">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=eddierpaz9@gmail.com&su=Soporte%20OperPan"
+                    target="_blank" class="text text-decoration-none d-block custom-sidebar-link">
+                    <small><i class="bi bi-question-circle me-2"></i>Ayuda / Soporte</small>
+                </a>
+            </div>
+            <div class="footer-note">
+                <i class="bi bi-shield-check"></i> Entorno seguro · Auditoría de accesos
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/login.js' %}"></script>
+
+</body>
+
+</html>

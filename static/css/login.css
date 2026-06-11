@@ -1,0 +1,327 @@
+/* ===================================================
+   1. RESET & GLOBALES (OperPan)
+   =================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #F5F7FC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+/* Tipografía jerarquía */
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 700;
+    color: #000000;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+p,
+span,
+a,
+li,
+input,
+button,
+label {
+    font-size: 1rem;
+}
+
+
+/* ===================================================
+   2. TARJETA PRINCIPAL (LOGIN CARD)
+   =================================================== */
+.volver {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    width: 100px;
+    height: 30px;
+    color: #a40706;
+    font-weight: bold;
+}
+
+.volver i {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.login-card {
+    background: #FFFFFF;
+    border-radius: 32px;
+    box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.15);
+    padding: 2rem 2rem 2.5rem;
+    width: 100%;
+    max-width: 520px;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+/* Logo y encabezado */
+.logo-wrapper {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.logo-operpan {
+    width: 200px;
+    height: auto;
+    margin-bottom: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.brand-titles {
+    text-align: center;
+    margin-top: 0;
+}
+
+.brand-titles h1 {
+    font-size: 1.4rem;
+    line-height: 1.2;
+    margin-bottom: 0;
+    letter-spacing: -0.3px;
+}
+
+.brand-titles h1:first-child {
+    font-weight: 500;
+    color: #A40706;
+}
+
+.brand-titles h1:last-child {
+    font-weight: 600;
+    color: #000000;
+    font-size: 1.6rem;
+}
+
+.system-badge {
+    background: #F0F2F5;
+    display: inline-block;
+    padding: 0.2rem 1rem;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #2C3E50;
+    margin-top: 0.5rem;
+    margin: 2px;
+}
+
+
+/* ===================================================
+   3. ESTRUCTURA BASE DE INPUTS CON ICONO
+   =================================================== */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Contenedor relativo de referencia */
+.input-icon {
+    position: relative !important;
+    display: block !important;
+    width: 100%;
+}
+
+/* Cajas de texto generales dentro de un .input-icon */
+.input-icon input.form-control {
+    width: 100% !important;
+    padding-top: 0.9rem !important;
+    padding-bottom: 0.9rem !important;
+    padding-left: 48px !important;
+    /* Espacio para el icono izquierdo */
+    padding-right: 1rem !important;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 20px !important;
+    font-size: 1rem !important;
+    font-family: 'Poppins', sans-serif !important;
+    background: #FFFFFF !important;
+    height: 50px !important;
+    transition: 0.2s !important;
+}
+
+/* Estilo base para TODOS los iconos dentro de .input-icon (por defecto flotan a la izquierda) */
+.input-icon i {
+    position: absolute !important;
+    left: 18px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #6c757d !important;
+    font-size: 1.2rem !important;
+    z-index: 10 !important;
+    pointer-events: none;
+    /* El candado y usuario no estorban el clic del input */
+}
+
+
+/* ===================================================
+   4. SOBREESCRITURAS Y AJUSTES DEL OJITO INTERACTIVO
+   =================================================== */
+
+/* Desplazamos el ojo al extremo derecho y rehabilitamos sus clics */
+.input-icon .toggle-password {
+    left: auto !important;
+    /* Anula el left: 18px del candado */
+    right: 18px !important;
+    /* Lo empuja a la derecha */
+    cursor: pointer !important;
+    /* Muestra el cursor de mano */
+    pointer-events: auto !important;
+    /* Permite que el archivo JS reciba los clics */
+}
+
+/* Espacio extra a la derecha solo para el input de contraseña */
+.input-icon input[type="password"] {
+    padding-right: 48px !important;
+    /* Evita que el texto largo se oculte bajo el ojo */
+}
+
+
+/* ===================================================
+   5. COMPORTAMIENTOS ADICIONALES Y FOCO
+   =================================================== */
+.form-control-custom:focus {
+    border-color: #A40706;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
+}
+
+/* Cajas de texto sin icono interno */
+.form-control-plain {
+    padding: 0.9rem 1rem;
+    border-radius: 20px;
+    border: 1.5px solid #E2E8F0;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-control-plain:focus {
+    border-color: #A40706;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
+}
+
+
+/* ===================================================
+   6. BOTONES, ENLACES Y COMPONENTES SECUNDARIOS
+   =================================================== */
+
+/* Botón principal */
+.btn-login {
+    background: #A40706;
+    color: white;
+    font-weight: 700;
+    padding: 0.9rem;
+    width: 100%;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 0.5rem;
+}
+
+.btn-login:hover {
+    background: #8a0504;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(164, 7, 6, 0.3);
+}
+
+.btn-login:active {
+    transform: translateY(1px);
+}
+
+/* Enlaces de recuperación / soporte */
+.forgot-link {
+    text-align: center;
+    margin-top: 1.2rem;
+}
+
+.forgot-link a {
+    color: #5F6C7A;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.forgot-link a:hover {
+    color: #A40706;
+    text-decoration: underline;
+}
+
+/* Mensajes de error / alertas Django */
+.message-area {
+    margin: 1rem 0 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.6rem 1rem;
+    border-radius: 18px;
+    background: #FEF2F0;
+    color: #B91C1C;
+    border-left: 4px solid #A40706;
+    display: none;
+}
+
+.message-area.show {
+    display: block;
+}
+
+.message-area i {
+    margin-right: 8px;
+}
+
+/* Footer sutil corporativo */
+.footer-note {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.7rem;
+    color: #8A99AA;
+    border-top: 1px solid #EDF2F7;
+    padding-top: 1.5rem;
+}
+
+.form-pane {
+    transition: 0.2s ease;
+}
+
+
+/* ===================================================
+   7. RESPONSIVE / MEDIA QUERIES (Al final del archivo)
+   =================================================== */
+@media (max-width: 576px) {
+    .login-card {
+        padding: 1.5rem;
+    }
+
+    .brand-titles h1 {
+        font-size: 1.4rem;
+    }
+
+    .tab-btn {
+        font-size: 0.75rem;
+    }
+}
