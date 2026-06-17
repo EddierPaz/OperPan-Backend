@@ -5,7 +5,7 @@ from django.contrib import messages
 from .forms import UserForm
 from .models import User, PerfilEmpleado
 
-@login_required
+#@login_required
 def gestion_cuentas(request):
 
     if request.method == 'POST':
@@ -115,7 +115,7 @@ def gestion_cuentas(request):
 
     return render(
         request,
-        'login/crear_usuario.html',
+        'admin/usuarios.html',
         context
     )
 
@@ -162,29 +162,38 @@ def editar_usuario(request, user_id):
         'perfil': perfil,
         'user': user,
     }
-    return render(request, 'login/crear_usuario.html', context)
+    return render(request, 'admin/usuarios.html', context)
 
 def iniciar_sesion(request):
     if request.method == "POST":
-        identificador = request.POST.get('username', '').strip()
-        contrasena = request.POST.get('password', '')
+        identificador = request.POST.get("username", "").strip()
+        contrasena = request.POST.get("password", "")
 
-        user = authenticate(request, username=identificador, password=contrasena)
+        user = authenticate(
+            request,
+            username=identificador,
+            password=contrasena
+        )
 
         if user is not None:
             if not user.is_active:
-                messages.error(request, "Esta cuenta se encuentra desactivada.")
+                messages.error(
+                    request,
+                    "Esta cuenta se encuentra desactivada."
+                )
                 return render(request, "login/login.html")
 
             login(request, user)
 
-            # Redirección basada en el Rol corporativo
-            if user.rol == 'admin':
-                return redirect('admin_panel')
+            if user.rol == "admin":
+                return redirect("admin_panel")
             else:
-                return redirect('empleado_panel')
-        else:
-            messages.error(request, "Usuario o contraseña incorrectos.")
+                return redirect("empleado_panel")
+
+        messages.error(
+            request,
+            "Usuario o contraseña incorrectos."
+        )
 
     return render(request, "login/login.html")
 
@@ -199,7 +208,13 @@ def inicio(request):
 
 @login_required
 def admin_panel(request):
-    return render(request, "admin/landingAdmin.html")
+    perfil = request.user.perfil
+
+    return render(
+        request,
+        "admin/landingAdmin.html",
+        {"perfil": perfil}
+    )
 
 @login_required
 def empleado_panel(request):
@@ -218,3 +233,9 @@ def eliminar_usuario(request, user_id):
 
 def base (request):
     return render(request, "admin/base/base.html")
+
+def baseEmpleado (request):
+    return render(request, "empleado/base/base.html")
+
+def editar_empleado (request):
+    return render(request, "empleado/cuentas.html")

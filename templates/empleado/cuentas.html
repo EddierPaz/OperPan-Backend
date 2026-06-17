@@ -1,0 +1,325 @@
+{% extends 'empleado/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block section_title %}Panel de Administración{% endblock %}
+{% block section_subtitle %}Bienvenido al panel de control de Estación Paisa{% endblock %}
+{% block active_perfil %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+
+    <!-- Informacion personal -->
+    <div class="employee-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">
+                <i class="bi bi-person-vcard"></i>
+                Información Personal
+            </h4>
+
+            <button id="btnEditar" class="btn"
+                style="border: 1px solid #A40706; background-color: #A40706; color: white;">
+                <i class="bi bi-pencil-square"></i>
+                Editar
+            </button>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Nombre -->
+            <div class="col-md-4">
+                <small class="text-muted">Nombre completo</small>
+                <div class="fw-semibold">Eddier Antonio Paz Pardo</div>
+            </div>
+
+            <!-- Tipo Documento -->
+            <div class="col-md-4">
+                <small class="text-muted">Tipo documento</small>
+                <div class="view-mode fw-semibold">Cédula de Ciudadanía</div>
+                <select class="form-select edit-mode d-none">
+                    <option selected>Cédula de Ciudadanía</option>
+                    <option>Cédula de Extranjería</option>
+                    <option>Pasaporte</option>
+                </select>
+            </div>
+
+            <!-- Documento -->
+            <div class="col-md-4">
+                <small class="text-muted">Documento</small>
+                <div class="fw-semibold">1007157091</div>
+            </div>
+
+            <!-- Fecha Nacimiento -->
+            <div class="col-md-4">
+                <small class="text-muted">Fecha nacimiento</small>
+                <div class="fw-semibold">2003-01-29</div>
+            </div>
+
+            <!-- Género -->
+            <div class="col-md-4">
+                <small class="text-muted">Género</small>
+                <div class="view-mode fw-semibold">Masculino</div>
+                <select class="form-select edit-mode d-none">
+                    <option selected>Masculino</option>
+                    <option>Femenino</option>
+                    <option>Otro</option>
+                </select>
+            </div>
+
+            <!-- Estado Civil -->
+            <div class="col-md-4">
+                <small class="text-muted">Estado civil</small>
+                <div class="view-mode fw-semibold">Soltero</div>
+                <select class="form-select edit-mode d-none">
+                    <option selected>Soltero</option>
+                    <option>Casado</option>
+                    <option>Unión libre</option>
+                    <option>Divorciado</option>
+                    <option>Viudo</option>
+                    <option>Separado</option>
+                </select>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="col-md-4">
+                <small class="text-muted">Teléfono</small>
+                <div class="view-mode fw-semibold">3023365691</div>
+                <input type="tel" class="form-control edit-mode d-none" value="3023365691">
+            </div>
+
+            <!-- Correo -->
+            <div class="col-md-4">
+                <small class="text-muted">Correo</small>
+                <div class="view-mode fw-semibold">eddierpaz9@gmail.com</div>
+                <input type="email" class="form-control edit-mode d-none" value="eddierpaz9@gmail.com">
+            </div>
+
+            <!-- Dirección -->
+            <div class="col-md-4">
+                <small class="text-muted">Dirección</small>
+                <div class="view-mode fw-semibold">Calle 6 # 6A-64</div>
+                <input type="text" class="form-control edit-mode d-none" value="Calle 6 # 6A-64">
+            </div>
+
+            <!-- Ciudad -->
+            <div class="col-md-4">
+                <small class="text-muted">Ciudad</small>
+                <div class="view-mode fw-semibold">Bogotá</div>
+                <input type="text" class="form-control edit-mode d-none" value="Bogotá">
+            </div>
+
+            <!-- Contacto Emergencia -->
+            <div class="col-md-4">
+                <small class="text-muted">Contacto de emergencia</small>
+                <div class="view-mode fw-semibold">Valentina Cárdenas</div>
+                <input type="text" class="form-control edit-mode d-none" value="Valentina Cárdenas">
+            </div>
+
+            <!-- Tel Emergencia -->
+            <div class="col-md-4">
+                <small class="text-muted">Teléfono emergencia</small>
+                <div class="view-mode fw-semibold">3216921539</div>
+                <input type="tel" class="form-control edit-mode d-none" value="3216921539">
+            </div>
+
+            <!-- Cargo -->
+            <div class="col-md-4">
+                <small class="text-muted">Cargo</small>
+                <div class="fw-semibold">Panadero Principal</div>
+            </div>
+
+            <!-- Fecha Ingreso -->
+            <div class="col-md-4">
+                <small class="text-muted">Fecha ingreso</small>
+                <div class="fw-semibold">2024-01-15</div>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-4">
+                <small class="text-muted">Estado</small>
+                <div class="fw-semibold">Activo</div>
+            </div>
+
+            <!-- EPS -->
+            <div class="col-md-4">
+                <small class="text-muted">EPS</small>
+                <div class="view-mode fw-semibold">Salud Total</div>
+                <input type="text" class="form-control edit-mode d-none" value="Salud Total">
+            </div>
+
+            <!-- Tipo Sangre -->
+            <div class="col-md-4">
+                <small class="text-muted">Tipo de sangre</small>
+                <div class="fw-semibold">O+</div>
+            </div>
+
+            <!-- Alergias -->
+            <div class="col-md-4">
+                <small class="text-muted">Alergias</small>
+                <div class="view-mode fw-semibold">Ninguna</div>
+                <textarea class="form-control edit-mode d-none">Ninguna</textarea>
+            </div>
+
+            <!-- Enfermedades -->
+            <div class="col-md-4">
+                <small class="text-muted">Enfermedades</small>
+                <div class="view-mode fw-semibold">Ninguna</div>
+                <textarea class="form-control edit-mode d-none">Ninguna</textarea>
+            </div>
+
+            <!-- Discapacidades -->
+            <div class="col-md-4">
+                <small class="text-muted">Discapacidades</small>
+                <div class="view-mode fw-semibold">Ninguna</div>
+                <textarea class="form-control edit-mode d-none">Ninguna</textarea>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Tabs modernos -->
+    <div class="custom-tabs">
+        <button class="tab-btn-custom active" data-tab="historial"><i class="bi bi-calendar2-week"></i>
+            Historial asistencia</button>
+        <button class="tab-btn-custom" data-tab="turnos"><i class="bi bi-clock-history"></i> Turnos
+            asignados</button>
+        <button class="tab-btn-custom" data-tab="desempeno"><i class="bi bi-graph-up"></i>
+            Desempeño</button>
+        <button class="tab-btn-custom" data-tab="documentos"><i class="bi bi-files"></i> Documentos</button>
+        <button class="tab-btn-custom" data-tab="certificaciones"><i class="bi bi-award"></i>
+            Certificaciones</button>
+    </div>
+
+    <!-- Panel: Historial asistencia -->
+    <div id="historial" class="tab-pane active">
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Mes</th>
+                        <th>Días trabajados</th>
+                        <th>Ausencias</th>
+                        <th>Horas extra</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="historialBody">
+                    <!-- dinámico -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Panel: Turnos asignados -->
+    <div id="turnos" class="tab-pane">
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Semana</th>
+                        <th>Días</th>
+                        <th>Horario</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="turnosBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Panel: Desempeño -->
+    <div id="desempeno" class="tab-pane">
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="text-muted">Puntualidad</p>
+                    <div class="metric-value" id="puntualidadVal">92%</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="text-muted">Tareas completadas</p>
+                    <div class="metric-value" id="tareasCompletadasVal">87%</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="metric-card">
+                    <p class="text-muted">Llamados de atención</p>
+                    <div class="metric-value text-danger" id="llamadosVal">1</div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-light border">
+            <i class="bi bi-graph-up me-2"></i> Evaluación general: <strong>Buen desempeño</strong> - Cumple
+            con objetivos operativos.
+        </div>
+    </div>
+
+    <!-- Panel: Documentos -->
+    <div id="documentos" class="tab-pane">
+        <div class="doc-card">
+            <div><i class="bi bi-file-pdf fs-4 me-2" style="color:#A40706;"></i> <strong>Contrato de
+                    trabajo</strong><br><small class="text-muted">Contrato indefinido - Panadero Principal
+                    (15/01/2025)</small></div>
+            <button class="btn-primary-corporate btn-sm descargarBtn" data-doc="contrato">Descargar</button>
+        </div>
+        <div class="doc-card">
+            <div><i class="bi bi-file-earmark-text fs-4 me-2" style="color:#A40706;"></i>
+                <strong>Certificado laboral</strong><br><small class="text-muted">Certificado de trabajo
+                    activo (01/03/2025)</small>
+            </div>
+            <button class="btn-primary-corporate btn-sm descargarBtn" data-doc="certificado_laboral">Descargar</button>
+        </div>
+        <div class="doc-card">
+            <div><i class="bi bi-file-spreadsheet fs-4 me-2" style="color:#A40706;"></i> <strong>Evaluación
+                    de desempeño</strong><br><small class="text-muted">Última evaluación: Marzo 2025</small>
+            </div>
+            <button class="btn-primary-corporate btn-sm descargarBtn" data-doc="evaluacion">Descargar</button>
+        </div>
+    </div>
+
+    <!-- Panel: Certificaciones (adicional RF-CR) -->
+    <div id="certificaciones" class="tab-pane">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Aquí encontrarás tus certificaciones emitidas por la empresa.
+        </div>
+        <div id="certificacionesLista">
+            <div class="doc-card">
+                <div><i class="bi bi-award fs-4 me-2"></i> <strong>Certificación de manipulación de
+                        alimentos</strong><br><small>Emitida: 10/02/2025 - Válida hasta 10/02/2027</small>
+                </div>
+                <button class="btn-outline-corporate btn-sm">Ver certificado</button>
+            </div>
+            <div class="doc-card">
+                <div><i class="bi bi-award fs-4 me-2"></i> <strong>Curso de panadería
+                        artesanal</strong><br><small>Emitida: 15/03/2025 - 40 horas</small></div>
+                <button class="btn-outline-corporate btn-sm">Ver certificado</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <i class="bi bi-shield-check"></i> Trazabilidad garantizada - Información actualizada en tiempo real
+    </footer>
+</main>
+
+<!-- Toast -->
+<div class="toast-message" id="liveToast" style="display: none;">
+    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
+        <div class="d-flex gap-2 align-items-center">
+            <i class="bi bi-info-circle-fill text-danger fs-5"></i>
+            <span id="toastMsg">Mensaje</span>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/empleado/cuentas.js' %}"></script>
+{% endblock %}
