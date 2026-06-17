@@ -144,6 +144,12 @@ class PerfilEmpleado(models.Model):
         blank=True,
         null=True
     )
+    
+    parentesco_emergencia = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
 
     telefono_emergencia = models.CharField(
         max_length=20,

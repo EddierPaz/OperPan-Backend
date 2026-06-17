@@ -10,10 +10,6 @@ urlpatterns = [
     path('usuarios/',views.gestion_cuentas,name='gestion_cuentas'),
     path('eliminar_usuario/<int:user_id>/', views.eliminar_usuario, name='eliminar_usuario'),
     path('editar_usuario/<int:user_id>/', views.editar_usuario, name='editar_usuario'),
-    path('base/', views.base, name='base'),
-    path('base_empleado/', views.baseEmpleado, name='base_empleado'),
-<<<<<<< HEAD
     path('editar_empleado/', views.editar_empleado, name='editar_empleado'),
-=======
->>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
+    path('actualizar_perfil/',views.actualizar_perfil_empleado, name='actualizar_perfil_empleado'),
 ]

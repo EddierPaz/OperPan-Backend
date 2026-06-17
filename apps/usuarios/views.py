@@ -2,8 +2,9 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserForm
+from .forms import User
 from .models import User, PerfilEmpleado
+from .decorators import admin_required
 
 #@login_required
 def gestion_cuentas(request):
@@ -70,7 +71,9 @@ def gestion_cuentas(request):
             contacto_emergencia=request.POST.get(
                 'contacto_emergencia'
             ),
-
+            parentesco_emergencia=request.POST.get(
+                'parentesco_emergencia'
+            ),
             telefono_emergencia=request.POST.get(
                 'telefono_emergencia'
             ),
@@ -142,6 +145,7 @@ def editar_usuario(request, user_id):
         perfil.ciudad = request.POST.get('ciudad', perfil.ciudad)
         perfil.direccion = request.POST.get('direccion', perfil.direccion)
         perfil.contacto_emergencia = request.POST.get('contacto_emergencia', perfil.contacto_emergencia)
+        perfil.parentesco_emergencia = request.POST.get('parentesco_emergencia', perfil.parentesco_emergencia)
         perfil.telefono_emergencia = request.POST.get('telefono_emergencia', perfil.telefono_emergencia)
         perfil.cargo = request.POST.get('cargo', perfil.cargo)
         perfil.fecha_ingreso = request.POST.get('fecha_ingreso') or perfil.fecha_ingreso
@@ -207,6 +211,7 @@ def inicio(request):
     return render(request, "index.html")
 
 @login_required
+@admin_required
 def admin_panel(request):
     perfil = request.user.perfil
 
@@ -231,15 +236,49 @@ def eliminar_usuario(request, user_id):
             messages.error(request, "Usuario no encontrado.")
     return redirect('gestion_cuentas')
 
-def base (request):
-    return render(request, "admin/base/base.html")
+@login_required
+def editar_empleado(request):
 
-def baseEmpleado (request):
-<<<<<<< HEAD
-    return render(request, "empleado/base/base.html")
+    perfil = request.user.perfil
 
-def editar_empleado (request):
-    return render(request, "empleado/cuentas.html")
-=======
-    return render(request, "empleado/base/base.html")
->>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
+    return render(
+        request,
+        "empleado/cuentas.html",
+        {
+            "perfil": perfil
+        }
+    )
+    
+@login_required
+def actualizar_perfil_empleado(request):
+
+    if request.method == "POST":
+
+        perfil = request.user.perfil
+
+        perfil.genero = request.POST.get("genero")
+        perfil.estado_civil = request.POST.get("estado_civil")
+        perfil.telefono = request.POST.get("telefono")
+        perfil.correo = request.POST.get("correo")
+        perfil.direccion = request.POST.get("direccion")
+        perfil.ciudad = request.POST.get("ciudad")
+        perfil.contacto_emergencia = request.POST.get("contacto_emergencia")
+        perfil.parentesco_emergencia = request.POST.get("parentesco_emergencia")
+        perfil.telefono_emergencia = request.POST.get("telefono_emergencia")
+
+        perfil.save()
+
+        password = request.POST.get("password")
+
+        if password:
+            request.user.set_password(password)
+            request.user.save()
+
+        messages.success(
+            request,
+            "Perfil actualizado correctamente."
+        )
+
+        return redirect("editar_empleado")
+
+    return redirect("editar_empleado")

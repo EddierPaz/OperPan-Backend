@@ -174,17 +174,21 @@
                     <label class="form-label">Ciudad *</label>
                     <input type="text" class="form-control" name="ciudad" id="f_ciudad" required>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Dirección *</label>
                     <input type="text" class="form-control" name="direccion" id="f_direccion" required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Contacto Emergencia *</label>
+                <div class="col-md-4">
+                    <label class="form-label">Nombre del contacto de emergencia</label>
                     <input type="text" class="form-control" name="contacto_emergencia" id="f_contacto_emergencia"
                         required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Teléfono Emergencia *</label>
+                <div class="col-md-4">
+                    <label class="form-label">Parentesco *</label>
+                    <input type="text" class="form-control" name="parentesco_emergencia" id="f_parentesco_emergencia" required>       
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Teléfono del contacto de emergencia </label>
                     <input type="tel" class="form-control" name="telefono_emergencia" id="f_telefono_emergencia"
                         required>
                 </div>
@@ -301,6 +305,7 @@
                     data-telefono="{{ usuario.telefono }}" data-correo="{{ usuario.correo }}"
                     data-ciudad="{{ usuario.ciudad }}" data-direccion="{{ usuario.direccion|default:'' }}"
                     data-contacto-emergencia="{{ usuario.contacto_emergencia|default:'' }}"
+                    data-parentesco-emergencia="{{ usuario.parentesco_emergencia|default:'' }}"
                     data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}"
                     data-cargo="{{ usuario.cargo }}" data-fecha-ingreso="{{ usuario.fecha_ingreso|default:'' }}"
                     data-eps="{{ usuario.eps|default:'' }}" data-arl="{{ usuario.arl|default:'' }}"

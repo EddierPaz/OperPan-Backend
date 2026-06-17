@@ -1,30 +1,17 @@
 {% extends 'empleado/base/base.html' %}
 {% load static %}
 
-<<<<<<< HEAD
 {% block title %}OperPan | Listado de Cuentas{% endblock %}
-=======
-{% block title %}OperPan | Dashboard{% endblock %}
->>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
 {% block section_title %}Panel de Administración{% endblock %}
 {% block section_subtitle %}Bienvenido al panel de control de Estación Paisa{% endblock %}
 {% block active_inicio %}active{% endblock %}
 
 {% block extra_css %}
-<<<<<<< HEAD
 <link rel="stylesheet" href="{% static 'css/empleado/dashboard.css' %}">
-=======
-<link rel="stylesheet" href="{% static 'css/empleado/base.css' %}">
->>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
 {% endblock %}
 
 {% block content %}
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
 <main class="dashboard-container">
     <!-- Mensaje de bienvenida destacado -->
     <div class="welcome-message">
@@ -78,7 +65,6 @@
                                 id="tareasCompletadas">8</strong></span>
                     </div>
                 </div>
-<<<<<<< HEAD
             </div>
         </div>
         <div class="col-lg-6">
@@ -132,219 +118,4 @@
 
 <script src="{% static 'js/script.js' %}"></script>
 <script src="{% static 'js/empleado/dashboard.js' %}"></script>
-=======
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="bg-white rounded-4 p-3 h-100 border">
-                <h5 class="mb-3"><i class="bi bi-bell me-2" style="color:#A40706;"></i> Últimas novedades
-                </h5>
-                <div id="notificationsContainer">
-                    <div class="notification-item">
-                        <small class="text-muted"><i class="bi bi-calendar-check"></i> Hoy</small>
-                        <p class="mb-0">Tu solicitud de <strong>vacaciones</strong> está siendo evaluada.
-                        </p>
-                    </div>
-                    <div class="notification-item">
-                        <small class="text-muted"><i class="bi bi-clock"></i> Ayer</small>
-                        <p class="mb-0">Tarea <strong>"Preparar masa de pan francés"</strong> fue
-                            actualizada a "En progreso".</p>
-                    </div>
-                    <div class="notification-item">
-                        <small class="text-muted"><i class="bi bi-file-text"></i> 02/04/2025</small>
-                        <p class="mb-0">Certificado laboral disponible para descargar en "Información
-                            personal".</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Consejo del día / motivacional -->
-    <div class="mt-4 p-3 bg-white rounded-4 border text-center">
-        <i class="bi bi-lightbulb fs-4 me-2" style="color:#A40706;"></i>
-        <span>Consejo del día: Registra tu entrada y salida puntualmente para mantener tu historial de
-            asistencia impecable.</span>
-    </div>
-
-    <footer>
-        <i class="bi bi-shield-check"></i> Sistema de gestión de personal - Trazabilidad garantizada
-    </footer>
-</main>
-
-<!-- Toast para notificaciones -->
-<div class="toast-message" id="liveToast" style="display: none;">
-    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
-        <div class="d-flex gap-2 align-items-center">
-            <i class="bi bi-info-circle-fill text-danger fs-5"></i>
-            <span id="toastMsg">Mensaje</span>
-        </div>
-    </div>
-</div>
-{% endblock %}
-{% block extra_js %}
-<script>
-    // ============================================================
-    // LANDING EMPLEADO - OPERPAN
-    // Panel de bienvenida con resumen y acceso rápido a módulos
-    // ============================================================
-
-    const empleadoActual = {
-        id: "EMP-2024-156",
-        nombre: "EDDIER PAZ PARDO",
-        email: "eddier.paz@estacionpaisa.com",
-        telefono: "+57 300 123 4567",
-        rol: "Panadero Principal",
-        turno: "Mañana (6am - 2pm)",
-        antiguedad: "2 años"
-    };
-
-    // Mostrar fecha actual
-    function mostrarFecha() {
-        const fecha = new Date();
-        const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById("fechaActual").innerText = fecha.toLocaleDateString('es-ES', opciones);
-    }
-
-    // Simular obtención de datos resumidos desde localStorage (conexión con otros módulos)
-    function cargarResumen() {
-        // Datos de asistencia (simulados desde módulo de asistencia)
-        const asistenciasStorage = localStorage.getItem("operpan_asistencia_empleado");
-        let diasTrabajados = 12;
-        let horasExtra = 3.5;
-        let puntualidad = 92;
-
-        if (asistenciasStorage) {
-            const registros = JSON.parse(asistenciasStorage);
-            // Calcular días trabajados (aquellos con entrada válida)
-            const trabajados = registros.filter(r => r.entrada && r.entrada !== "—").length;
-            if (trabajados > 0) diasTrabajados = trabajados;
-            // Calcular horas extra (sumar)
-            let extraSum = 0;
-            registros.forEach(r => {
-                if (r.extra && r.extra !== "—") {
-                    const match = r.extra.match(/(\d+)h\s*(\d+)m/);
-                    if (match) extraSum += parseInt(match[1]) + parseInt(match[2]) / 60;
-                }
-            });
-            if (extraSum > 0) horasExtra = extraSum.toFixed(1);
-        }
-
-        // Tareas desde módulo de tareas
-        const tareasStorage = localStorage.getItem("operpan_tareas");
-        let pendientes = 0;
-        let completadas = 0;
-        if (tareasStorage) {
-            const tareas = JSON.parse(tareasStorage);
-            const misTareas = tareas.filter(t => t.empleadoId === empleadoActual.id);
-            pendientes = misTareas.filter(t => t.estado === "pendiente" || t.estado === "progreso").length;
-            completadas = misTareas.filter(t => t.estado === "finalizada").length;
-        } else {
-            pendientes = 3;
-            completadas = 8;
-        }
-
-        document.getElementById("diasTrabajados").innerText = diasTrabajados;
-        document.getElementById("horasExtra").innerText = horasExtra;
-        document.getElementById("puntualidad").innerText = puntualidad;
-        document.getElementById("tareasPendientes").innerText = pendientes;
-        document.getElementById("tareasCompletadas").innerText = completadas;
-    }
-
-    // Cargar notificaciones desde localStorage (solicitudes, certificados)
-    function cargarNotificaciones() {
-        const container = document.getElementById("notificationsContainer");
-        if (!container) return;
-
-        let notificaciones = [];
-
-        // Verificar solicitudes pendientes
-        const solicitudesStorage = localStorage.getItem("operpan_solicitudes");
-        if (solicitudesStorage) {
-            const solicitudes = JSON.parse(solicitudesStorage);
-            const misSolicitudes = solicitudes.filter(s => s.empleadoId === empleadoActual.id && s.estado === "pendiente");
-            if (misSolicitudes.length > 0) {
-                notificaciones.push({
-                    fecha: "Reciente",
-                    icono: "envelope-paper",
-                    texto: `Tienes ${misSolicitudes.length} solicitud(es) pendiente(s) de revisión.`
-                });
-            }
-            // Solicitudes aprobadas recientes
-            const aprobadas = solicitudes.filter(s => s.empleadoId === empleadoActual.id && s.estado === "aprobada");
-            if (aprobadas.length > 0) {
-                notificaciones.push({
-                    fecha: "Última semana",
-                    icono: "check-circle",
-                    texto: `${aprobadas.length} solicitud(es) han sido aprobadas recientemente.`
-                });
-            }
-        }
-
-        // Verificar certificados disponibles
-        const certificadosStorage = localStorage.getItem("operpan_solicitudes_certificados");
-        if (certificadosStorage) {
-            const solicitudesCert = JSON.parse(certificadosStorage);
-            const pendientesCert = solicitudesCert.filter(s => s.empleadoId === empleadoActual.id && s.estado === "aprobada");
-            if (pendientesCert.length > 0) {
-                notificaciones.push({
-                    fecha: "Disponible",
-                    icono: "file-text",
-                    texto: `Tienes ${pendientesCert.length} certificado(s) listo(s) para descargar en "Información personal".`
-                });
-            }
-        }
-
-        // Si no hay notificaciones, mostrar mensaje por defecto
-        if (notificaciones.length === 0) {
-            container.innerHTML = `<div class="text-muted text-center py-3">No hay novedades recientes</div>`;
-            return;
-        }
-
-        // Mostrar hasta 3 notificaciones
-        container.innerHTML = notificaciones.slice(0, 3).map(not => `
-            <div class="notification-item">
-                <small class="text-muted"><i class="bi bi-${not.icono}"></i> ${not.fecha}</small>
-                <p class="mb-0">${not.texto}</p>
-            </div>
-        `).join('');
-    }
-
-    function mostrarMensaje(mensaje, tipo = "success") {
-        const toast = document.getElementById("liveToast");
-        const msgSpan = document.getElementById("toastMsg");
-        msgSpan.innerText = mensaje;
-        toast.style.display = "block";
-        setTimeout(() => toast.style.display = "none", 3000);
-    }
-
-    // Cerrar sesión
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
-        mostrarMensaje("Cerrando sesión...", "info");
-        // Registrar cierre de sesión en trazabilidad
-        console.log(`[AUDITORÍA] Empleado ${empleadoActual.nombre} cerró sesión - ${new Date().toLocaleString()}`);
-        setTimeout(() => window.location.href = "../login.html", 800);
-    });
-
-    // Sidebar toggle
-    const menuToggle = document.getElementById("menuToggle");
-    const sidebar = document.getElementById("sidebar");
-    if (menuToggle) {
-        menuToggle.addEventListener("click", () => sidebar.classList.toggle("active"));
-    }
-
-    // Inicializar
-    mostrarFecha();
-    cargarResumen();
-    cargarNotificaciones();
-
-    // Registrar acceso al landing (trazabilidad)
-    console.log(`[ACCESO] Empleado ${empleadoActual.nombre} ingresó al panel principal - ${new Date().toLocaleString()}`);
-
-    // Simular saludo de bienvenida
-    setTimeout(() => {
-        mostrarMensaje(`¡Bienvenido ${empleadoActual.nombre}! Revisa tus tareas pendientes.`, "success");
-    }, 500);
-</script>
->>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
 {% endblock %}

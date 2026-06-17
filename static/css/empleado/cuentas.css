@@ -1,196 +1,13 @@
 /* ==============================================
-           GLOBALES Y RESET (OperPan - Estación Paisa)
-        ============================================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+   PERFIL EMPLEADO - OperPan · Estación Paisa
+   static/css/empleado/cuentas.css
+============================================== */
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #F4F7FC;
-    overflow-x: hidden;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5 {
-    font-weight: 700;
-    color: #000000;
-}
-
-h1 {
-    font-size: 2.5rem;
-}
-
-h2 {
-    font-size: 2rem;
-}
-
-h3 {
-    font-size: 1.5rem;
-}
-
-p,
-span,
-a,
-li,
-input,
-button,
-label {
-    font-size: 1rem;
-}
-
-/* Layout principal (sidebar + contenido) */
-.wrapper {
-    display: flex;
-    min-height: 100vh;
-}
-
-.nav-menu {
-    flex: 1;
-    padding: 2rem 0;
-}
-
-.nav-menu ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-.nav-menu li {
-    margin-bottom: 0.5rem;
-}
-
-.nav-menu a {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 0.8rem 1.8rem;
-    color: #E0E0E0;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s;
-    border-left: 3px solid transparent;
-}
-
-.nav-menu a i {
-    font-size: 1.3rem;
-    width: 28px;
-}
-
-.nav-menu a:hover {
-    background: rgba(164, 7, 6, 0.15);
-    color: white;
-    border-left-color: #A40706;
-}
-
-.nav-menu .active a {
-    background: rgba(164, 7, 6, 0.2);
-    color: white;
-    border-left-color: #A40706;
-    font-weight: 600;
-}
-
-.soporte {
-    color: #ffffff80;
-    text-decoration: none;
-}
-
-.soporte:hover {
-    transition: 1s;
-    text-decoration: none;
-    color: #A40706;
-}
-
-/* CONTENIDO PRINCIPAL */
-.main-content {
-    flex: 1;
-    margin-left: 280px;
-    transition: all 0.3s;
-}
-
-/* TOPBAR NEGRO */
-.topbar {
-    background: #000000;
-    padding: 0.8rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.company-info h2 {
-    color: white;
-    font-size: 1.3rem;
-    margin-bottom: 0;
-    font-weight: 600;
-}
-
-.company-info p {
-    color: #BBBBBB;
-    font-size: 0.75rem;
-    margin-bottom: 0;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-
-.user-badge a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0.4rem 1rem;
-    border-radius: 60px;
-}
-
-.user-badge:hover span {
-    transition: 1s;
-    color: #A40706;
-}
-
-.user-badge:hover i {
-    transition: 1s;
-    color: #A40706;
-}
-
-
-.user-badge i {
-    font-size: 1.5rem;
-    color: white;
-}
-
-.user-badge span {
-    color: white;
-    font-weight: 500;
-}
-
-.btn-logout {
-    background: #A40706;
-    border: 1px solid #A40706;
-    color: white;
-    padding: 0.4rem 1rem;
-    border-radius: 30px;
-    transition: 0.2s;
-}
-
-.btn-logout:hover {
-    background: white;
-    color: #A40706;
-}
-
-/* DASHBOARD */
 .dashboard-container {
     padding: 2rem;
 }
 
-/* Tarjeta de empleado mejorada */
+/* ── Tarjeta principal ── */
 .employee-card {
     background: white;
     border-radius: 28px;
@@ -200,6 +17,23 @@ label {
     border: 1px solid #F0F2F5;
 }
 
+/* ── Fix: cabecera de la tarjeta en móvil ── */
+.employee-card .d-flex.justify-content-between {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.employee-card h4 {
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-word;
+}
+
+.employee-card #btnEditar {
+    flex-shrink: 0;
+}
+
+/* ── Avatar ── */
 .employee-avatar-large {
     width: 80px;
     height: 80px;
@@ -213,6 +47,7 @@ label {
     color: #A40706;
 }
 
+/* ── Badge de rol ── */
 .badge-role {
     background: #A40706;
     color: white;
@@ -221,7 +56,7 @@ label {
     font-size: 0.8rem;
 }
 
-/* Tabs modernos */
+/* ── Tabs ── */
 .custom-tabs {
     display: flex;
     gap: 0.5rem;
@@ -239,6 +74,7 @@ label {
     border-radius: 40px;
     transition: 0.2s;
     color: #475569;
+    cursor: pointer;
 }
 
 .tab-btn-custom i {
@@ -260,18 +96,11 @@ label {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Cards de desempeño */
+/* ── Métricas de desempeño ── */
 .metric-card {
     background: white;
     border-radius: 20px;
@@ -286,7 +115,7 @@ label {
     font-weight: 800;
 }
 
-/* Tablas */
+/* ── Tabla ── */
 .table-custom {
     background: white;
     border-radius: 20px;
@@ -297,27 +126,28 @@ label {
     background: #F8F9FC;
 }
 
-.badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
-}
-
 .badge-success {
     background: #E0F2E9;
     color: #1E7B48;
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
 }
 
 .badge-warning {
     background: #FFF3E0;
     color: #C77A00;
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
 }
 
 .badge-info {
     background: #E6F0FA;
     color: #1A5D9C;
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
 }
 
-/* Documentos */
+/* ── Documentos ── */
 .doc-card {
     background: white;
     border-radius: 20px;
@@ -327,17 +157,25 @@ label {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    gap: 0.75rem;
     border: 1px solid #EDF2F7;
 }
 
-/* Botones */
+/* ── Botones corporativos ── */
 .btn-primary-corporate {
     background: #A40706;
+    color: white;
     border: none;
     padding: 0.5rem 1.2rem;
     border-radius: 40px;
     font-weight: 500;
     transition: 0.2s;
+    cursor: pointer;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0605;
+    color: white;
 }
 
 .btn-outline-corporate {
@@ -346,51 +184,11 @@ label {
     color: #A40706;
     padding: 0.5rem 1.2rem;
     border-radius: 40px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-/* Toast */
-.toast-message {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1100;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-    .sidebar {
-        margin-left: -280px;
-    }
-
-    .sidebar.active {
-        margin-left: 0;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    .menu-toggle {
-        display: block;
-        background: black;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        margin-right: 1rem;
-        border-radius: 12px;
-    }
-}
-
-@media (min-width: 993px) {
-    .menu-toggle {
-        display: none;
-    }
-}
-
-footer {
-    text-align: center;
-    padding: 1rem;
-    color: #5F6C7A;
-    font-size: 0.75rem;
-    margin-top: 1rem;
+.btn-outline-corporate:hover {
+    background: #A40706;
+    color: white;
 }

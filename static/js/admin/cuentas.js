@@ -62,6 +62,7 @@ function editarUsuario(btn) {
     document.getElementById('f_ciudad').value = d.ciudad;
     document.getElementById('f_direccion').value = d.direccion;
     document.getElementById('f_contacto_emergencia').value = d.contactoEmergencia;
+    document.getElementById('f_parentesco_emergencia').value = d.parentescoEmergencia;
     document.getElementById('f_telefono_emergencia').value = d.telefonoEmergencia;
     document.getElementById('f_cargo').value = d.cargo;
     document.getElementById('f_fecha_ingreso').value = d.fechaIngreso;

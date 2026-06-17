@@ -1,12 +1,9 @@
-/* ==========================================
-   LAYOUT BASE
-   ========================================== */
-.main-content {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-}
+/* ==============================================
+   GESTIÓN DE CUENTAS - OperPan · Estación Paisa
+   static/css/admin/cuentas.css
+============================================== */
 
+/* ── Layout ── */
 .dashboard-container {
     padding: 2rem;
     width: 100%;
@@ -18,9 +15,7 @@
     margin-left: 0 !important;
 }
 
-/* ==========================================
-   KPIs
-   ========================================== */
+/* ── KPIs ── */
 .stat-card {
     background: white;
     border-radius: 20px;
@@ -44,9 +39,7 @@
     margin-top: 0.25rem;
 }
 
-/* ==========================================
-   FORMULARIO
-   ========================================== */
+/* ── Formulario ── */
 .form-section {
     background: white;
     border-radius: 28px;
@@ -76,6 +69,7 @@
     box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
 }
 
+/* ── Botones ── */
 .btn-primary-corporate {
     background: #A40706;
     border: none;
@@ -102,15 +96,13 @@
     cursor: pointer;
 }
 
-/* ==========================================
-   TABLA
-   ========================================== */
+/* ── Tabla ── */
 .table-responsive {
     background: #ffffff;
     border-radius: 20px;
     border: 1px solid #e2e8f0;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 .table-custom {
@@ -127,20 +119,20 @@
     letter-spacing: 0.5px;
     border-bottom: 2px solid #e2e8f0;
     padding: 1rem;
+    white-space: nowrap;
 }
 
 .table-custom tbody td {
     padding: 0.9rem 1rem;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 .table-custom tbody tr:hover {
     background-color: #f8fafc !important;
 }
 
-/* ==========================================
-   BADGES
-   ========================================== */
+/* ── Badges ── */
 .badge {
     padding: 0.4rem 0.8rem;
     border-radius: 40px;
@@ -172,9 +164,7 @@
     color: #5B21B6;
 }
 
-/* ==========================================
-   BOTONES DE ACCIÓN
-   ========================================== */
+/* ── Botones de acción ── */
 .action-btn {
     background: transparent;
     border: none;
@@ -190,9 +180,7 @@
     background: #FEF2F0;
 }
 
-/* ==========================================
-   MODAL
-   ========================================== */
+/* ── Modal ── */
 .modal-content {
     border-radius: 24px;
     border: none !important;
@@ -207,9 +195,7 @@
     border-top: 1px solid #e2e8f0;
 }
 
-/* ==========================================
-   TOAST
-   ========================================== */
+/* ── Toast ── */
 .toast-message {
     position: fixed;
     bottom: 20px;
@@ -218,13 +204,26 @@
     display: none;
 }
 
-/* ==========================================
-   FOOTER
-   ========================================== */
+/* ── Footer ── */
 footer {
     text-align: center;
     padding: 1rem;
     color: #5F6C7A;
     font-size: 0.75rem;
     margin-top: 2rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    /* Ocultar Cargo y Rol en móvil */
+    .table-custom thead th:nth-child(4),
+    .table-custom thead th:nth-child(5),
+    .table-custom tbody td:nth-child(4),
+    .table-custom tbody td:nth-child(5) {
+        display: none;
+    }
 }
