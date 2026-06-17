@@ -12,5 +12,8 @@ urlpatterns = [
     path('editar_usuario/<int:user_id>/', views.editar_usuario, name='editar_usuario'),
     path('base/', views.base, name='base'),
     path('base_empleado/', views.baseEmpleado, name='base_empleado'),
+<<<<<<< HEAD
     path('editar_empleado/', views.editar_empleado, name='editar_empleado'),
+=======
+>>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
 ]

@@ -235,7 +235,11 @@ def base (request):
     return render(request, "admin/base/base.html")
 
 def baseEmpleado (request):
+<<<<<<< HEAD
     return render(request, "empleado/base/base.html")
 
 def editar_empleado (request):
     return render(request, "empleado/cuentas.html")
+=======
+    return render(request, "empleado/base/base.html")
+>>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa

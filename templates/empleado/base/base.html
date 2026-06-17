@@ -19,6 +19,12 @@
 
     <!-- 4. Tu CSS ÚLTIMO (así gana sobre Bootstrap) -->
     <link rel="stylesheet" href="{% static 'css/empleado/style.css' %}">
+<<<<<<< HEAD
+=======
+
+    <!-- 5. Icono de la aplicación -->
+    <link rel="icon" type="image/png" href="{% static 'img/LOGO OPERPAN.png' %}" />
+>>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -38,8 +44,13 @@
                     <li class="{% block active_horarios %}{% endblock %}">
                         <a href="/"><i class="bi bi-clock-history"></i> Asistencia</a>
                     </li>
+<<<<<<< HEAD
                     <li class="{% block active_solicitudes %}{% endblock %}">
                         <a href="{% url 'gestion_cuentas' %}"><i class="bi bi-envelope-paper"></i> Solicitudes</a>
+=======
+                    <li class="{% block active_cuentas %}{% endblock %}">
+                        <a href="{% url 'gestion_cuentas' %}"><i class="bi bi-envelope-paper"></i> Cuentas</a>
+>>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
                     </li>
                     <li class="{% block active_tareas %}{% endblock %}">
                         <a href="/"><i class="bi bi-list-check"></i> Tareas Operativas</a>
@@ -70,7 +81,11 @@
                 <div class="user-info d-flex align-items-center gap-3">
                     <div class="user-badge px-3 py-1  text-white rounded-pill">
                         <i class="bi bi-shield-fill-check text-success me-1"></i>
+<<<<<<< HEAD
                         <span>Administrador</span>
+=======
+                        <span>{{ perfilEmpleado.primer_nombre }}</span>
+>>>>>>> ef39e389bcc4de2ae3f96ca96660cc1236bc9bfa
                     </div>
                     <a href="{% url 'cerrar_sesion' %}" class="btn-logout"><i class="bi bi-box-arrow-right"></i>
                         Salir</a>
