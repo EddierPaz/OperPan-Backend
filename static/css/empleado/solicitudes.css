@@ -1,6 +1,9 @@
 /* ==============================================
     ESTILOS DEL MÓDULO DE SOLICITUDES (EMPLEADO)
 ============================================== */
+.dashboard-container {
+    padding: 2rem;
+}
 
 .request-card {
     background: white;
@@ -30,6 +33,18 @@
     border-bottom: 1px solid #EDF2F7;
     padding: 1.2rem 1.5rem;
     font-weight: 700;
+}
+
+.btn-outline-action {
+    border-color: #A40706;
+    color: #A40706;
+    border-radius: 40px;
+}
+
+.btn-outline-action:hover {
+    background-color: #A40706; 
+    color: aliceblue;
+    border-radius: 40px;
 }
 
 .btn-outline-corporate {

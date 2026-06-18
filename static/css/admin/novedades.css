@@ -2,6 +2,9 @@
     ESTILOS EXCLUSIVOS DEL MÓDULO DE NOVEDADES
     (Complementa a style.css - no duplica estilos base)
 ============================================== */
+.dashboard-container {
+    padding: 2rem;
+}
 
 /* Tarjetas y componentes específicos */
 .card-modern {
