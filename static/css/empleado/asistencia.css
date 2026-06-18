@@ -1,0 +1,217 @@
+/* CONTENIDO PRINCIPAL */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    transition: all 0.3s;
+}
+
+/* TOPBAR NEGRO */
+.topbar {
+    background: #000000;
+    padding: 0.8rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.company-info h2 {
+    color: white;
+    font-size: 1.3rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.company-info p {
+    color: #BBBBBB;
+    font-size: 0.75rem;
+    margin-bottom: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-badge a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.4rem 1rem;
+    border-radius: 60px;
+}
+
+.user-badge:hover span {
+    transition: 1s;
+    color: #A40706;
+}
+
+.user-badge:hover i {
+    transition: 1s;
+    color: #A40706;
+}
+
+.user-badge i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.user-badge span {
+    color: white;
+    font-weight: 500;
+}
+
+.btn-logout {
+    background: #A40706;
+    border: 1px solid #A40706;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    transition: 0.2s;
+}
+
+.btn-logout:hover {
+    background: white;
+    color: #A40706;
+}
+
+/* CONTENIDO DINÁMICO */
+.dashboard-container {
+    padding: 2rem;
+}
+
+/* Cards de resumen */
+.stats-row {
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EDF2F7;
+    transition: 0.2s;
+}
+
+.stat-card i {
+    font-size: 2rem;
+    color: #A40706;
+}
+
+/* Tarjeta de empleado */
+.employee-card {
+    background: white;
+    border-radius: 24px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.employee-avatar {
+    width: 70px;
+    height: 70px;
+    background: #F0F2F5;
+    border-radius: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #A40706;
+}
+
+.badge-role {
+    background: #A40706;
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.btn-primary-corporate {
+    background: #A40706;
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0504;
+    transform: translateY(-2px);
+}
+
+.btn-outline-corporate {
+    border: 1.5px solid #A40706;
+    background: transparent;
+    color: #A40706;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+}
+
+.btn-outline-corporate:hover {
+    background: #A40706;
+    color: white;
+}
+
+/* Tabla moderna */
+.table-custom {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.table-custom thead {
+    background: #F8F9FC;
+    color: #1E293B;
+}
+
+.table-custom th {
+    font-weight: 600;
+    border-bottom: 1px solid #E9ECF3;
+    padding: 1rem;
+}
+
+.table-custom td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background: #E0F2E9;
+    color: #1E7B48;
+}
+
+.badge-warning {
+    background: #FFF3E0;
+    color: #C77A00;
+}
+
+.badge-danger {
+    background: #FEF2F0;
+    color: #B91C1C;
+}
+
+.badge-info {
+    background: #E6F0FA;
+    color: #1A5D9C;
+}

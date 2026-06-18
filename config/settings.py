@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.usuarios',
     'apps.novedades', 
+    'apps.asistencia', 
 ]
 
 MIDDLEWARE = [
@@ -76,8 +77,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'operpan',      # Nombre de la BD
+        'USER': 'root',
+        'PASSWORD': '',         # XAMPP por defecto
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 

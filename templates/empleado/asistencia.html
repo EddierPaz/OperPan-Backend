@@ -1,0 +1,122 @@
+{% extends 'empleado/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block section_title %}Panel de Administración{% endblock %}
+{% block section_subtitle %}Bienvenido al panel de control de Estación Paisa{% endblock %}
+{% block active_asistencia %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/asistencia.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+
+    <!-- Información del empleado -->
+    <div class="welcome-message">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h2 class="mb-1">¡Bienvenido, Eddier!</h2>
+                <p class="mb-0">Hoy es <strong id="fechaActual"></strong> · Tu turno comienza a las 6:00 AM
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="badge-role" style="background:#3A3F47;"><i class="bi bi-qr-code"></i><span
+                        class="fw-semibold" style="font-size: 13px;"> ID:</span> EMP-001</span>
+                <span class="badge-role" style="background:#3A3F47;"><i class="bi bi-briefcase"></i><span
+                        class="fw-semibold" style="font-size: 13px;"> Cargo:</span> Panadero
+                    Principal</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjetas resumen -->
+    <div class="row stats-row g-3">
+        <h3 class="mb-0"><i class="bi bi-bar-chart"></i> Estadisticas del mes</h3>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Horas trabajadas</span>
+                    <h3 class="mt-1" id="totalHorasMes">124h 30m</h3>
+                </div>
+                <i class="bi bi-calendar-check"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Retardos</span>
+                    <h3 class="mt-1" id="totalRetardos">2</h3>
+                </div>
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Asistencias completas</span>
+                    <h3 class="mt-1" id="asistenciasCompletas">15</h3>
+                </div>
+                <i class="bi bi-check-circle-fill" style="color:#1E7B48;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de acción rápidos -->
+    <!-- <div class="action-buttons">
+                    <button id="btnEntrada" class="btn btn-primary-corporate"><i class="bi bi-door-open"></i> Registrar
+                        entrada</button>
+                    <button id="btnSalida" class="btn btn-outline-corporate"><i class="bi bi-door-closed"></i> Registrar
+                        salida</button>
+                    <button id="exportPDFbtn" class="btn btn-outline-secondary"><i class="bi bi-file-pdf"></i> Exportar
+                        PDF</button>
+                </div>  -->
+
+    <!-- Tabla de asistencia histórica -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <h3 class="mb-0"><i class="bi bi-table"></i> Historial reciente</h3>
+        <div class="filter-bar">
+            <button class="btn btn-sm btn-link text-dark" id="filterSemana">Esta semana</button>
+            <button class="btn btn-sm btn-link text-dark" id="filterMes">Este mes</button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-custom" id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Entrada</th>
+                    <th>Salida</th>
+                    <th>Horas trabajadas</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceBody">
+                <!-- Los datos se cargan desde JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center mt-3">
+        <button class="btn btn-sm btn-secondary" id="verMasBtn"><i class="bi bi-calendar-week"></i> Ver mes
+            completo</button>
+    </div>
+    <footer>
+        <i class="bi bi-shield-check"></i> Sistema de gestión de asistencia - Trazabilidad garantizada
+    </footer>
+</main>
+
+<!-- Toast para notificaciones -->
+<div class="toast-message" id="liveToast" style="display: none;">
+    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
+        <div class="d-flex gap-2 align-items-center">
+            <i class="bi bi-info-circle-fill text-danger fs-5"></i>
+            <span id="toastMsg">Mensaje</span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+
+{% endblock %}

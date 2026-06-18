@@ -214,4 +214,4 @@ class PerfilEmpleado(models.Model):
         ).strip()
 
     def __str__(self):
-        return  f'{self.nombre_completo()} {self.cargo}'
+        return  f'{self.nombre_completo()} {self.cargo} '

@@ -43,7 +43,7 @@
                         <a href="{% url 'admin_panel' %}"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a>
                     </li>
                     <li class="{% block active_horarios %}{% endblock %}">
-                        <a href="/"><i class="bi bi-calendar3-week"></i> Horarios</a>
+                        <a href="{% url 'asistencia:asistencias_admin' %}"><i class="bi bi-calendar3-week"></i> Horarios</a>
                     </li>
                     <li class="{% block active_cuentas %}{% endblock %}">
                         <a href="{% url 'gestion_cuentas' %}"><i class="bi bi-people"></i> Cuentas</a>
