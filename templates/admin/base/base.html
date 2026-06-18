@@ -52,7 +52,7 @@
                         <a href="/"><i class="bi bi-list-task"></i> Tareas Operativas</a>
                     </li>
                     <li class="{% block active_novedades %}{% endblock %}">
-                        <a href="/"><i class="bi bi-megaphone"></i> Novedades</a>
+                        <a href="{% url 'novedades:novedades_admin' %}"><i class="bi bi-megaphone"></i> Novedades</a>
                     </li>
                     <li class="{% block active_reportes %}{% endblock %}">
                         <a href="/"><i class="bi bi-bar-chart"></i> Reportes</a>

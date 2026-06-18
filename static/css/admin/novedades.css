@@ -1,0 +1,190 @@
+/* ==============================================
+    ESTILOS EXCLUSIVOS DEL MÓDULO DE NOVEDADES
+    (Complementa a style.css - no duplica estilos base)
+============================================== */
+
+/* Tarjetas y componentes específicos */
+.card-modern {
+    background: white;
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid #EDF2F7;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+}
+
+/* KPIs */
+.kpi-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border-left: 3px solid #A40706;
+}
+.kpi-card h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #A40706;
+    margin-bottom: 0;
+}
+.kpi-card .text-muted {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Badges de estados */
+.badge-pending { background: #FFF3E0; color: #C77A00; }
+.badge-approved { background: #E0F2E9; color: #1E7B48; }
+.badge-rejected { background: #FEF2F0; color: #B91C1C; }
+
+/* Tarjetas de solicitudes */
+.admin-request-card, .incapacidad-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border: 1px solid #EDF2F7;
+    transition: 0.2s;
+}
+
+/* Tablas personalizadas */
+.table-custom {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 100%;
+}
+.table-custom thead {
+    background: #F8F9FC;
+}
+
+/* Pestañas de novedades */
+.novedades-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #E9ECF3;
+    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+.novedades-tab {
+    background: transparent;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    border-radius: 40px;
+    transition: 0.2s;
+    color: #475569;
+}
+.novedades-tab i {
+    margin-right: 8px;
+}
+.novedades-tab.active {
+    background: #A40706;
+    color: white;
+}
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.2s ease;
+}
+.tab-pane.active {
+    display: block;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos de botones corporativos (complemento a style.css) */
+.btn-primary-corporate, .btn-primary {
+    background: #A40706 !important;
+    border-color: #A40706 !important;
+}
+.btn-primary-corporate:hover, .btn-primary:hover {
+    background: #8a0504 !important;
+    border-color: #8a0504 !important;
+}
+.btn-outline-corporate {
+    transition: all 0.2s ease;
+}
+.btn-outline-corporate:hover {
+    background: #A40706;
+    color: white;
+    border-color: #A40706;
+}
+
+/* Responsive: conversión de tablas a cards en móvil */
+.table-responsive-stack {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 767.98px) {
+    .table-custom thead {
+        display: none;
+    }
+    .table-custom tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #EDF2F7;
+        border-radius: 16px;
+        padding: 0.75rem;
+        background: white;
+    }
+    .table-custom tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .table-custom tbody td:last-child {
+        border-bottom: none;
+    }
+    .table-custom tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        width: 40%;
+        color: #1E293B;
+    }
+    .admin-request-card, .incapacidad-card {
+        padding: 1rem;
+    }
+    .novedades-tab {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    .kpi-card h3 {
+        font-size: 1.5rem;
+    }
+    .dashboard-container {
+        padding: 1rem;
+    }
+}
+@media (max-width: 576px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .user-info {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+@media (max-width: 992px) {
+    .sidebar { margin-left: -280px; }
+    .sidebar.active { margin-left: 0; }
+    .main-content { margin-left: 0; }
+    .menu-toggle { display: block; background: black; color: white; border: none; padding: 0.5rem 1rem; margin-right: 1rem; border-radius: 12px; }
+}
+@media (min-width: 993px) {
+    .menu-toggle { display: none; }
+}
