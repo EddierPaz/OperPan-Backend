@@ -5,6 +5,7 @@ app_name = 'novedades'
 
 urlpatterns = [
     path('', views.novedades_admin, name='novedades_admin'),
+    path('solicitudes/', views.solicitudes_empleado, name='solicitudes_empleado'),
     # PERMISOS
     path('permisos/pendientes/', views.permisos_pendientes, name='permisos_pendientes'),
     path('permisos/historial/', views.permisos_historial, name='permisos_historial'),

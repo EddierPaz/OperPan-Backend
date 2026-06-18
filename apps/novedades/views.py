@@ -10,6 +10,15 @@ from .forms import RechazoForm, CertificadoFiltroForm
 from .decorators import admin_required  # decorador para API (devuelve JSON)
 from apps.usuarios.decorators import admin_required as admin_required_html  # decorador para HTML (redirige)
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from apps.usuarios.decorators import empleado_required
+
+@login_required
+@empleado_required
+def solicitudes_empleado(request):
+    return render(request, 'empleado/solicitudes.html')
+
 
 # ---------- VISTA PRINCIPAL (HTML) ----------
 @login_required

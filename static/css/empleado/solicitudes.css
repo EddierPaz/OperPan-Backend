@@ -1,0 +1,76 @@
+/* ==============================================
+    ESTILOS DEL MÓDULO DE SOLICITUDES (EMPLEADO)
+============================================== */
+
+.request-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: 0.2s;
+    border: 1px solid #F0F2F5;
+}
+.request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+}
+
+.file-info {
+    font-size: 0.8rem;
+    color: #2C3E50;
+}
+
+.dynamic-form {
+    transition: all 0.2s ease;
+}
+
+.card-modern .card-header {
+    background: transparent;
+    border-bottom: 1px solid #EDF2F7;
+    padding: 1.2rem 1.5rem;
+    font-weight: 700;
+}
+
+.btn-outline-corporate {
+    border: 1.5px solid #1E1E1E;
+    background: transparent;
+    color: #1E1E1E;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.btn-outline-corporate:hover {
+    border-color: #A40706;
+    color: #A40706;
+}
+
+/* Estilos para badges */
+.badge-pending {
+    background: #FFF3E0;
+    color: #C77A00;
+}
+.badge-approved {
+    background: #E0F2E9;
+    color: #1E7B48;
+}
+.badge-rejected {
+    background: #FEF2F0;
+    color: #B91C1C;
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .request-card {
+        padding: 0.75rem;
+    }
+    .btn-group {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    .btn-group .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
