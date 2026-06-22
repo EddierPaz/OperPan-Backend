@@ -34,6 +34,8 @@ Plantilla base para proyectos Django.
 
 ## Ejecutar migraciones
 
+> Crear base de datos Operpan
+
 ```bash
     python manage.py makemigrations
     python manage.py migrate
