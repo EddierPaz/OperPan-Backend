@@ -13,23 +13,6 @@
 {% block content %}
 <main class="dashboard-container">
 
-    <!-- Información del empleado -->
-    <div class="welcome-message">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <div>
-                <h2 class="mb-1">¡Bienvenido, Eddier!</h2>
-                <p class="mb-0">Hoy es <strong id="fechaActual"></strong> · Tu turno comienza a las 6:00 AM
-                </p>
-            </div>
-            <div class="d-flex flex-wrap gap-2 mb-2">
-                <span class="badge-role" style="background:#3A3F47;"><i class="bi bi-qr-code"></i><span
-                        class="fw-semibold" style="font-size: 13px;"> ID:</span> EMP-001</span>
-                <span class="badge-role" style="background:#3A3F47;"><i class="bi bi-briefcase"></i><span
-                        class="fw-semibold" style="font-size: 13px;"> Cargo:</span> Panadero
-                    Principal</span>
-            </div>
-        </div>
-    </div>
 
     <!-- Tarjetas resumen -->
     <div class="row stats-row g-3">
@@ -37,10 +20,19 @@
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-muted">Horas trabajadas</span>
+                    <span class="text-muted">Dias con Asistencia</span>
+                    <h3 class="mt-1" id="asistenciasCompletas">15</h3>
+                </div>
+                <i class="bi bi-check-circle-fill" style="color:#1E7B48;"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Dias sin Asistencia</span>
                     <h3 class="mt-1" id="totalHorasMes">124h 30m</h3>
                 </div>
-                <i class="bi bi-calendar-check"></i>
+                <i class="bi bi-x-circle-fill" style="color:#A40706;"></i>
             </div>
         </div>
         <div class="col-md-4">
@@ -50,15 +42,6 @@
                     <h3 class="mt-1" id="totalRetardos">2</h3>
                 </div>
                 <i class="bi bi-exclamation-triangle"></i>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="text-muted">Asistencias completas</span>
-                    <h3 class="mt-1" id="asistenciasCompletas">15</h3>
-                </div>
-                <i class="bi bi-check-circle-fill" style="color:#1E7B48;"></i>
             </div>
         </div>
     </div>

@@ -12,7 +12,7 @@ def admin_required(view_func):
                 "No tienes permisos para acceder a esta sección."
             )
 
-            return redirect("empleado_panel")
+            return redirect("login")
 
         return view_func(request, *args, **kwargs)
 
@@ -29,7 +29,7 @@ def empleado_required(view_func):
                 "No tienes permisos para acceder a esta sección."
             )
 
-            return redirect("admin_panel")
+            return redirect("login")
 
         return view_func(request, *args, **kwargs)
 

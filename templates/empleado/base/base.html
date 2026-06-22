@@ -30,7 +30,7 @@
             <nav class="nav-menu">
                 <ul>
                     <li class="{% block active_inicio %}{% endblock %}">
-                        <a href="{% url 'empleado_panel' %}">
+                        <a href="{% url 'employee_dashboard' %}">
                             <i class="bi bi-grid-3x3-gap-fill"></i>
                             Inicio
                         </a>
@@ -54,7 +54,7 @@
                         </a>
                     </li>
                     <li class="{% block active_perfil %}{% endblock %}">
-                        <a href="{% url 'editar_empleado' %}">
+                        <a href="{% url 'employee_profile' %}">
                             <i class="bi bi-person-badge"></i>
                             Información personal
                         </a>
@@ -93,7 +93,7 @@
                 </div>
 
                 <div class="user-info">
-                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">
+                    <a href="{% url 'logout' %}" class="btn-logout">
                         <i class="bi bi-box-arrow-right"></i> Salir
                     </a>
                 </div>

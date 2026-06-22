@@ -16,7 +16,7 @@
     <!-- Informacion personal -->
     <div class="employee-card">
 
-        <form method="POST" action="{% url 'actualizar_perfil_empleado' %}">
+        <form method="POST" action="{% url 'employee_profile_update' %}">
             {% csrf_token %}
 
             <div class="d-flex justify-content-between align-items-center mb-4">

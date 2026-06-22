@@ -73,7 +73,7 @@
             </button>
         </div>
 
-        <form method="POST" id="formCuenta" action="{% url 'gestion_cuentas' %}">
+        <form method="POST" id="formCuenta" action="{% url 'user_list' %}">
             {% csrf_token %}
 
             <!-- DATOS PERSONALES -->
@@ -334,10 +334,14 @@
                         {% endif %}
                     </td>
                     <td>
+                        <button type="button" class="action-btn" title="Ver" onclick="verUsuario(this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+
                         <button type="button" class="action-btn" title="Editar" onclick="editarUsuario(this)">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-                        <form method="POST" action="{% url 'eliminar_usuario' usuario.user.id %}"
+                        <form method="POST" action="{% url 'user_delete' usuario.user.id %}"
                             style="display:inline;"
                             onsubmit="return confirm('¿Eliminar permanentemente a {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}?')">
                             {% csrf_token %}
@@ -367,6 +371,6 @@
 {% block extra_js %}
 <script src="{% static 'js/admin/cuentas.js' %}"></script>
 <script>
-    const urlCrear = "{% url 'gestion_cuentas' %}";
+    const urlCrear = "{% url 'user_list' %}";
 </script>
 {% endblock %}

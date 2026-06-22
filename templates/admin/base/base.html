@@ -40,13 +40,13 @@
             <nav class="nav-menu">
                 <ul>
                     <li class="{% block active_inicio %}{% endblock %}">
-                        <a href="{% url 'admin_panel' %}"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a>
+                        <a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a>
                     </li>
                     <li class="{% block active_horarios %}{% endblock %}">
                         <a href="{% url 'asistencia:asistencias_admin' %}"><i class="bi bi-calendar3-week"></i> Horarios</a>
                     </li>
                     <li class="{% block active_cuentas %}{% endblock %}">
-                        <a href="{% url 'gestion_cuentas' %}"><i class="bi bi-people"></i> Cuentas</a>
+                        <a href="{% url 'user_list' %}"><i class="bi bi-people"></i> Cuentas</a>
                     </li>
                     <li class="{% block active_tareas %}{% endblock %}">
                         <a href="/"><i class="bi bi-list-task"></i> Tareas Operativas</a>
@@ -91,7 +91,7 @@
 
                 <div class="user-info">
 
-                    <a href="{% url 'cerrar_sesion' %}" class="btn-logout">
+                    <a href="{% url 'logout' %}" class="btn-logout">
                         <i class="bi bi-box-arrow-right"></i> Salir
                     </a>
                 </div>
