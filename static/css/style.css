@@ -1,297 +1,987 @@
-/* ==============================================
-       GLOBALES Y RESET (OperPan - Estación Paisa)
-    ============================================== */
+/* ==========================================================================
+   1. VARIABLES GLOBALES Y RESET
+   ========================================================================== */
+:root {
+  --rojo: #A40706 !important;
+  --rojo-hover: #8a0605 !important;
+  --rojo-light: rgba(185, 11, 11, 0.08) !important;
+  --negro: #000000 !important;
+  --blanco: #FFFFFF !important;
+  --gris-fondo: #F5F5F5 !important;
+  --gris-borde: #EAEAEA !important;
+  --gris-oscuro: #2B2B2B !important;
+  --gris-medio: #6B7280 !important;
+  --gris-claro: #D1D5DB !important;
+  --sombra: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  --sombra-hover: 0 8px 36px rgba(164, 7, 6, 0.12) !important;
+  --radio: 10px !important;
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background: #F4F7FC;
+  font-family: 'Poppins', sans-serif !important;
+  background: #FFFFFF !important;
+  /* Forzar fondo blanco original */
+  color: #2B2B2B !important;
   overflow-x: hidden;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-weight: 700;
+/* ==========================================================================
+   2. NAVBAR (Corrección de sobreescritura de Bootstrap)
+   ========================================================================== */
+/* Forzar que el navbar inicie blanco */
+html body #navbar.navbar {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000 !important;
+  background-color: #FFFFFF !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07) !important;
+  transition: background-color 0.3s ease-in-out !important;
+}
+
+/* Estado cuando se hace Scroll (clase añadida por JS) */
+html body #navbar.navbar.scrolled {
+  background-color: #000000 !important;
+}
+
+html body #navbar.navbar.scrolled .nav-link,
+html body #navbar.navbar.scrolled .navbar-brand .brand-text .name,
+html body #navbar.navbar.scrolled .navbar-brand .brand-text .sub {
+  color: #f0f0f0 !important;
+}
+
+html body #navbar.navbar.scrolled .nav-link:hover {
+  color: #A40706 !important;
+}
+
+/* 
+Para hacer que la hamburguesa en Scroll
+  En el momento de la transición de Background de Blanco a Negro
+  Este icono se ponga de color blanco:
+Asegurar color base del icono del toggler (negro sobre fondo claro) */
+.navbar-toggler i {
   color: #000000;
+  transition: color 0.3s ease;
 }
 
-h1 {
-  font-size: 2.5rem;
+/* Cuando el navbar está scrolled (fondo oscuro), el icono debe ser blanco */
+#navbar.navbar.scrolled .navbar-toggler i {
+  color: #ffffff;
 }
 
-h2 {
-  font-size: 2rem;
+.navbar-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  text-decoration: none !important;
 }
 
-h3 {
-  font-size: 1.5rem;
-}
-
-p,
-span,
-a,
-li,
-button {
-  font-size: 1rem;
-}
-
-/* Layout principal (sidebar + contenido) */
-.wrapper {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* SIDEBAR NEGRA CORPORATIVA */
-.sidebar {
-  width: 280px;
-  background-color: #000000;
-  color: #FFFFFF;
-  transition: all 0.3s;
-  position: fixed;
-  height: 100vh;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-
-  /* Habilitar el scroll pero ocultar la barra */
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none;
-  /* Oculta la barra en Firefox */
-  -ms-overflow-style: none;
-  /* Oculta la barra en Internet Explorer/Edge */
-}
-
-/* SIDEBAR NEGRA CORPORATIVA */
-.sidebar {
-width: 280px;
-background-color: #000000;
-color: #FFFFFF;
-transition: all 0.3s;
-position: fixed;
-height: 100vh;
-z-index: 1000;
-display: flex;
-flex-direction: column;
-
-/* Habilitar el scroll pero ocultar la barra */
-overflow-y: auto;
-overflow-x: hidden;
-scrollbar-width: none;
-/* Oculta la barra en Firefox */
--ms-overflow-style: none;
-/* Oculta la barra en Internet Explorer/Edge */
-}
-
-/* Oculta la barra en Chrome, Safari y navegadores basados en Chromium (como Brave o Edge) */
-.sidebar::-webkit-scrollbar {
-display: none;
-}
-
-.sidebar-header {
-padding: 1.8rem 1.5rem;
-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.logo-area {
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 12px;
+.brand-icon {
+  width: 40px !important;
+  height: 40px !important;
+  background-color: #A40706 !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #FFFFFF !important;
+  font-size: 1.2rem !important;
 }
 
 .logo-icon {
-width: 145px;
-height: 135px;
-/* border-radius: 12px; */
-overflow: hidden;
-
+  width: 75px;
+  height: 65px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .logo-icon img {
-width: 100%;
-height: 100%;
-object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.logo-text h4 {
-color: white;
-margin-bottom: 0;
-font-size: 1.3rem;
+.brand-text {
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.1 !important;
 }
 
-.logo-text span {
-font-size: 0.7rem;
-color: #ccc;
+.brand-text .name {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  letter-spacing: -0.3px !important;
 }
 
-.nav-menu {
-  flex: 1;
-  padding: 2rem 0;
+.brand-text .sub {
+  font-size: 0.62rem !important;
+  color: #6B7280 !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
 }
 
-.nav-menu ul {
-  list-style: none;
-  padding-left: 0;
+/* Enlaces de navegación */
+html body .navbar .nav-link {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #2B2B2B !important;
+  padding: 0.5rem 0.85rem !important;
+  transition: color 0.2s !important;
 }
 
-.nav-menu li {
-  margin-bottom: 0.5rem;
+html body .navbar .nav-link:hover {
+  color: #A40706 !important;
 }
 
-.nav-menu a {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 0.8rem 1.8rem;
-  color: #E0E0E0;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s;
-  border-left: 3px solid transparent;
-}
-
-.nav-menu a i {
-  font-size: 1.3rem;
-  width: 28px;
-}
-
-.nav-menu a:hover {
-  background: rgba(164, 7, 6, 0.15);
-  color: white;
-  border-left-color: #A40706;
-}
-
-.nav-menu .active a {
-  background: rgba(164, 7, 6, 0.2);
-  color: white;
-  border-left-color: #A40706;
-  font-weight: 600;
-}
-
-.soporte {
-  color: #ffffff80;
+/* Botón Iniciar Sesión del Navbar */
+html body .navbar .btn-nav-login {
+  background-color: #A40706 !important;
+  color: #FFFFFF !important;
+  border-radius: 7px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  padding: 0.45rem 1.2rem !important;
+  transition: all 1s, transform 0.15s !important;
+  border: 1px solid #A40706 !important;
   text-decoration: none;
 }
 
-.soporte:hover {
-  transition: 1s;
-  text-decoration: none;
-  color: #A40706;
+/* Botón Iniciar Sesión del Navbar - Al pasar el cursor */
+html body .navbar .btn-nav-login:hover {
+  background-color: #FFFFFF !important;
+  color: #A40706 !important;
+  border: 1px solid #A40706 !important;
 }
 
-/* CONTENIDO PRINCIPAL */
-.main-content {
-  flex: 1;
-  margin-left: 280px;
-  transition: all 0.3s;
+/* Asegurar que en navbar scrolled el hover sea consistente
+
+OJO: esto podria cambiar, podemos pensar en otros oclores si queremos.
+
+*/
+#navbar.navbar.scrolled .btn-nav-login:hover {
+  background-color: #FFFFFF !important;
+  color: #A40706 !important;
+  border: 1px solid #A40706 !important;
 }
 
-/* TOPBAR NEGRO */
-.topbar {
-  background: #000000;
-  padding: 0.8rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  border-bottom: 1px solid #2C2C2C;
+/* Enlace footer */
+.nav-link_footer {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #9ca3af !important;
+  padding: 0.5rem 0.85rem !important;
+  transition: color 0.2s !important;
+  text-decoration: none !important;
 }
 
-.company-info h2 {
-  color: white;
-  font-size: 1.3rem;
-  margin-bottom: 0;
-  font-weight: 600;
+.nav-link_footer:hover {
+  color: #A40706 !important;
 }
 
-.company-info p {
-  color: #BBBBBB;
-  font-size: 0.75rem;
-  margin-bottom: 0;
+/* ==========================================================================
+   3. HERO (Ajuste de margen para que no se esconda el título)
+   ========================================================================== */
+#inicio {
+  min-height: 100vh !important;
+  padding-top: 160px !important;
+  /* Aumentado para empujar el título hacia abajo del Navbar */
+  padding-bottom: 80px !important;
+  background-color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.hero-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  background-color: rgba(164, 7, 6, 0.08) !important;
+  color: #A40706 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  padding: 5px 14px !important;
+  border-radius: 50px !important;
+  margin-bottom: 1.4rem !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
 }
 
-.user-badge {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0.4rem 1rem;
-  border-radius: 60px;
+.hero-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(2.4rem, 5vw, 3.6rem) !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  line-height: 1.15 !important;
+  margin-bottom: 1rem !important;
 }
 
-
-.user-badge i {
-  font-size: 1.5rem;
-  color: white;
+.hero-title span {
+  color: #A40706 !important;
 }
 
-.user-badge span {
-  color: white;
-  font-weight: 500;
+.hero-subtitle {
+  font-size: 1.05rem !important;
+  color: #6B7280 !important;
+  font-weight: 400 !important;
+  line-height: 1.7 !important;
+  margin-bottom: 1.6rem !important;
+  max-width: 520px !important;
 }
 
-.btn-logout {
-  background: #A40706;
-  border: 1px solid #A40706;
-  color: white;
-  padding: 0.4rem 1rem;
-  border-radius: 30px;
-  transition: 0.2s;
+.hero-desc {
+  font-size: 0.92rem !important;
+  color: #2B2B2B !important;
+  line-height: 1.8 !important;
+  margin-bottom: 2rem !important;
+  max-width: 500px !important;
 }
 
-.btn-logout:hover {
-  background: white;
-  color: #A40706;
+.hero-desc li {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  margin-bottom: 6px !important;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .sidebar {
-    margin-left: -280px;
-  }
-
-  .sidebar.active {
-    margin-left: 0;
-  }
-
-  .main-content {
-    margin-left: 0;
-  }
-
-  .menu-toggle {
-    display: block;
-    background: black;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    margin-right: 1rem;
-    border-radius: 12px;
-  }
+.hero-desc li i {
+  color: #A40706 !important;
+  font-size: 0.9rem !important;
+  margin-top: 3px !important;
+  flex-shrink: 0 !important;
 }
 
-@media (min-width: 993px) {
-  .menu-toggle {
-    display: none;
-  }
+.btn-primary-red {
+  background-color: #A40706 !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.8rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s !important;
 }
 
+.btn-primary-red:hover {
+  background-color: #8a0605 !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(164, 7, 6, 0.25) !important;
+}
+
+.btn-outline-dark-custom {
+  background: transparent !important;
+  color: #2B2B2B !important;
+  border: 1.5px solid #D1D5DB !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.8rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: border-color 0.2s, color 0.2s, transform 0.15s !important;
+}
+
+.btn-outline-dark-custom:hover {
+  border-color: #A40706 !important;
+  color: #A40706 !important;
+  transform: translateY(-2px) !important;
+}
+
+.hero-badges {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 2rem !important;
+}
+
+.hero-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background-color: #F5F5F5 !important;
+  border: 1px solid #EAEAEA !important;
+  color: #2B2B2B !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+  padding: 5px 12px !important;
+  border-radius: 6px !important;
+  transition: border-color 0.2s, color 0.2s !important;
+}
+
+.hero-badge i {
+  color: #A40706 !important;
+  font-size: 0.8rem !important;
+}
+
+.hero-badge:hover {
+  border-color: #A40706 !important;
+  color: #A40706 !important;
+}
+
+.hero-img-wrap {
+  position: relative !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.14) !important;
+}
+
+.hero-img-wrap img {
+  width: 100 !important;
+  width: 100% !important;
+  height: 500px !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.hero-img-overlay {
+  position: absolute !important;
+  bottom: 20px !important;
+  left: 20px !important;
+  background: white !important;
+  border-radius: 10px !important;
+  padding: 14px 18px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: 200px !important;
+}
+
+.hero-img-overlay .ov-icon {
+  width: 40px !important;
+  height: 40px !important;
+  background-color: rgba(164, 7, 6, 0.08) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #A40706 !important;
+  font-size: 1.1rem !important;
+  flex-shrink: 0 !important;
+}
+
+.hero-img-overlay .ov-text .label {
+  font-size: 0.7rem !important;
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.hero-img-overlay .ov-text .value {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+}
+
+.section-line {
+  width: 48px !important;
+  height: 3px !important;
+  background-color: #A40706 !important;
+  border-radius: 2px !important;
+  margin-bottom: 1rem !important;
+}
+
+/* ==========================================================================
+   4. SOBRE NOSOTROS (¿Qué es Estación Paisa?)
+   ========================================================================== */
+#sobre {
+  padding: 96px 0 !important;
+  background-color: #FFFFFF !important;
+}
+
+.section-label {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: #A40706 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1.2px !important;
+  margin-bottom: 0.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.section-label::before {
+  content: '' !important;
+  width: 20px !important;
+  height: 2px !important;
+  background-color: #A40706 !important;
+  border-radius: 2px !important;
+}
+
+.section-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(1.8rem, 3vw, 2.5rem) !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.2 !important;
+}
+
+.section-desc {
+  font-size: 1rem !important;
+  color: #6B7280 !important;
+  line-height: 1.75 !important;
+  max-width: 640px !important;
+}
+
+.que-es-card {
+  background-color: #F5F5F5 !important;
+  border-radius: 10px !important;
+  padding: 28px !important;
+  height: 100% !important;
+  border: 1px solid #EAEAEA !important;
+  transition: box-shadow 0.2s, border-color 0.2s !important;
+}
+
+.que-es-card:hover {
+  box-shadow: 0 8px 36px rgba(164, 7, 6, 0.12) !important;
+  border-color: rgba(164, 7, 6, 0.2) !important;
+}
+
+.que-es-card .card-icon {
+  font-size: 1.8rem !important;
+  color: #A40706 !important;
+  margin-bottom: 14px !important;
+}
+
+.que-es-card h5 {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  margin-bottom: 8px !important;
+}
+
+.que-es-card p {
+  font-size: 0.875rem !important;
+  color: #6B7280 !important;
+  line-height: 1.65 !important;
+  margin: 0 !important;
+}
+
+/* ==========================================================================
+   5. FUNCIONALIDADES
+   ========================================================================== */
+#funcionalidades {
+  padding: 96px 0 !important;
+  background-color: #F5F5F5 !important;
+}
+
+.func-card {
+  background-color: #FFFFFF !important;
+  border-radius: 10px !important;
+  padding: 32px 28px !important;
+  height: 100% !important;
+  border: 1px solid #EAEAEA !important;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.func-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 4px !important;
+  height: 100% !important;
+  background-color: #A40706 !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s !important;
+}
+
+.func-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 36px rgba(164, 7, 6, 0.12) !important;
+  border-color: rgba(164, 7, 6, 0.15) !important;
+}
+
+.func-card:hover::before {
+  opacity: 1 !important;
+}
+
+.func-card .fc-icon {
+  width: 52px !important;
+  height: 52px !important;
+  background-color: rgba(164, 7, 6, 0.08) !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.4rem !important;
+  color: #A40706 !important;
+  margin-bottom: 18px !important;
+}
+
+.func-card h5 {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  margin-bottom: 8px !important;
+}
+
+.func-card p {
+  font-size: 0.875rem !important;
+  color: #6B7280 !important;
+  line-height: 1.65 !important;
+  margin: 0 !important;
+}
+
+/* ==========================================================================
+   6. ROLES DE USUARIO
+   ========================================================================== */
+#roles {
+  padding: 96px 0 !important;
+  background-color: #FFFFFF !important;
+}
+
+.role-card {
+  border-radius: 10px !important;
+  padding: 36px 28px !important;
+  height: 100% !important;
+  border: 1px solid #EAEAEA !important;
+  transition: box-shadow 0.2s, transform 0.2s !important;
+}
+
+.role-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 36px rgba(164, 7, 6, 0.12) !important;
+}
+
+.role-card.admin {
+  background-color: #FFF7F7 !important;
+  border-color: rgba(164, 7, 6, 0.15) !important;
+}
+
+.role-card.gerente {
+  background-color: #F5F5F5 !important;
+}
+
+.role-card.empleado {
+  background-color: #F7F7FF !important;
+}
+
+.role-card .role-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background-color: #A40706 !important;
+  color: white !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  padding: 5px 14px !important;
+  border-radius: 50px !important;
+  margin-bottom: 18px !important;
+  letter-spacing: 0.5px !important;
+}
+
+.role-card.gerente .role-badge {
+  background-color: #2B2B2B !important;
+}
+
+.role-card.empleado .role-badge {
+  background-color: #1a1a6e !important;
+}
+
+.role-card h4 {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  margin-bottom: 12px !important;
+}
+
+.role-card .role-icon {
+  font-size: 2.4rem !important;
+  margin-bottom: 12px !important;
+  display: block !important;
+}
+
+.role-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.role-list li {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 0.875rem !important;
+  color: #2B2B2B !important;
+  padding: 6px 0 !important;
+  border-bottom: 1px solid #EAEAEA !important;
+}
+
+.role-list li:last-child {
+  border-bottom: none !important;
+}
+
+.role-list li i {
+  color: #A40706 !important;
+  font-size: 0.85rem !important;
+}
+
+/* ==========================================================================
+   7. SEGURIDAD
+   ========================================================================== */
+#seguridad {
+  padding: 96px 0 !important;
+  background-color: #F5F5F5 !important;
+}
+
+.sec-feature {
+  display: flex !important;
+  gap: 18px !important;
+  align-items: flex-start !important;
+  margin-bottom: 28px !important;
+}
+
+.sec-feature .sf-icon {
+  width: 46px !important;
+  height: 46px !important;
+  background-color: #A40706 !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  font-size: 1.2rem !important;
+  flex-shrink: 0 !important;
+}
+
+.sec-feature h6 {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  margin-bottom: 4px !important;
+}
+
+.sec-feature p {
+  font-size: 0.84rem !important;
+  color: #6B7280 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+}
+
+.security-img-wrap {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  position: relative !important;
+}
+
+.security-img-wrap img {
+  width: 100% !important;
+  height: 420px !important;
+  object-fit: cover !important;
+}
+
+.security-badge {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  background-color: #000000 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.security-badge i {
+  color: #A40706 !important;
+  font-size: 1rem !important;
+}
+
+/* ==========================================================================
+   8. EMPRESA
+   ========================================================================== */
+#empresa {
+  padding: 96px 0 !important;
+  background-color: #FFFFFF !important;
+}
+
+.empresa-img-wrap {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.empresa-img-wrap img {
+  width: 100% !important;
+  height: 420px !important;
+  object-fit: cover !important;
+}
+
+.empresa-stat {
+  text-align: center !important;
+  padding: 20px !important;
+  border-right: 1px solid #EAEAEA !important;
+}
+
+.empresa-stat:last-child {
+  border-right: none !important;
+}
+
+.empresa-stat .stat-num {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  color: #A40706 !important;
+  line-height: 1 !important;
+  margin-bottom: 4px !important;
+}
+
+.empresa-stat .stat-label {
+  font-size: 0.78rem !important;
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+.empresa-stats {
+  background-color: #F5F5F5 !important;
+  border-radius: 10px !important;
+  border: 1px solid #EAEAEA !important;
+  padding: 16px 0 !important;
+  display: flex !important;
+  margin-top: 28px !important;
+}
+
+.empresa-feat-box {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: rgba(164, 7, 6, 0.08) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* ==========================================================================
+   9. CTA SECCIÓN
+   ========================================================================== */
+#cta {
+  background-color: #A40706 !important;
+  padding: 96px 0 !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#cta::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -80px !important;
+  right: -80px !important;
+  width: 320px !important;
+  height: 320px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 50 !important;
+  border-radius: 50% !important;
+}
+
+#cta::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -60px !important;
+  left: -60px !important;
+  width: 240px !important;
+  height: 240px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: 50% !important;
+}
+
+#cta h2 {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  font-weight: 700 !important;
+  color: white !important;
+  margin-bottom: 1rem !important;
+}
+
+#cta p {
+  font-size: 1.05rem !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+  max-width: 560px !important;
+  margin: 0 auto 2rem !important;
+  line-height: 1.7 !important;
+}
+
+.btn-cta {
+  background: white !important;
+  color: #A40706 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.9rem 2.4rem !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+}
+
+.btn-cta:hover {
+  color: #8a0605 !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2) !important;
+}
+
+.cta-section-wrap {
+  z-index: 1 !important;
+}
+
+.cta-map-iframe {
+  border: 0 !important;
+  border-radius: 5px !important;
+}
+
+/* ==========================================================================
+   10. FOOTER
+   ========================================================================== */
 footer {
-  text-align: center;
-  padding: 1rem;
-  color: #5F6C7A;
-  font-size: 0.75rem;
-  margin-top: 2rem;
+  background-color: #000000 !important;
+  color: #D1D5DB !important;
+  padding: 64px 0 28px !important;
+}
+
+footer .footer-brand .name {
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+}
+
+footer .footer-brand .desc {
+  font-size: 0.82rem !important;
+  color: #D1D5DB !important;
+  margin-top: 4px !important;
+}
+
+footer h6 {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  margin-bottom: 14px !important;
+}
+
+footer ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+footer ul li {
+  font-size: 0.84rem !important;
+  color: #9ca3af !important;
+  padding: 4px 0 !important;
+}
+
+footer ul li i {
+  color: #A40706 !important;
+  margin-right: 6px !important;
+  font-size: 0.8rem !important;
+}
+
+footer .footer-divider {
+  border-color: #2B2B2B !important;
+  margin: 36px 0 20px !important;
+}
+
+footer .footer-bottom {
+  font-size: 0.8rem !important;
+  color: #6b7280 !important;
+}
+
+footer .footer-bottom span {
+  color: #A40706 !important;
+}
+
+/* ==========================================================================
+   11. ANIMACIONES Y RESPONSIVE
+   ========================================================================== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 991px) {
+  .hero-img-wrap img {
+    height: 320px !important;
+  }
+
+  .security-img-wrap img,
+  .empresa-img-wrap img {
+    height: 300px !important;
+  }
+
+  #inicio {
+    padding-top: 130px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .empresa-stats {
+    flex-wrap: wrap !important;
+  }
+
+  .empresa-stat {
+    border-right: none !important;
+    border-bottom: 1px solid #EAEAEA !important;
+  }
+
+  .empresa-stat:last-child {
+    border-bottom: none !important;
+  }
+
+  .hero-img-wrap {
+    margin-top: 40px !important;
+  }
+}
+
+/* 
+Mapa iframe de Google Maps de Estación Paisa 
+
+Ajuste responsive para el mapa en la sección CTA */
+@media (max-width: 1399px) and (min-width: 300px) {
+  #cta .row .col-lg-4 iframe {
+    width: 90% !important;
+    height: 100% !important;
+    max-width: 100%;
+  }
+  
+  #cta .row {
+    gap: 1.5rem !important;
+  }
 }
