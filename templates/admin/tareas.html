@@ -1,0 +1,328 @@
+{% extends "admin/base/base.html" %}
+{% load static %}
+
+{% block title %}OperPan | Gestión de Tareas{% endblock %}
+
+{% block section_title %}Gestión de Tareas{% endblock %}
+{% block section_subtitle %}Asigna, modifica y da seguimiento a las tareas del personal{% endblock %}
+
+{% block active_tareas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/tareas.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <!-- ==================== KPIs ==================== -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card d-flex justify-content-between">
+                <div>
+                    <span class="text-muted">Pendientes</span>
+                    <h3>{{ kpis.pendientes|default:0 }}</h3>
+                </div>
+                <i class="bi bi-hourglass-split fs-2" style="color:#A40706;"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card d-flex justify-content-between">
+                <div>
+                    <span class="text-muted">En progreso</span>
+                    <h3>{{ kpis.en_progreso|default:0 }}</h3>
+                </div>
+                <i class="bi bi-arrow-repeat fs-2" style="color:#A40706;"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card d-flex justify-content-between">
+                <div>
+                    <span class="text-muted">Finalizadas</span>
+                    <h3>{{ kpis.finalizadas|default:0 }}</h3>
+                </div>
+                <i class="bi bi-check2-circle fs-2" style="color:#1E7B48;"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card d-flex justify-content-between">
+                <div>
+                    <span class="text-muted">Total asignadas</span>
+                    <h3>{{ kpis.total|default:0 }}</h3>
+                </div>
+                <i class="bi bi-list-task fs-2" style="color:#A40706;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FORMULARIO (Crear / Editar) ==================== -->
+    <div class="form-section">
+        <h3 class="mb-3">
+            <i class="bi bi-plus-circle-fill me-2"></i>
+            {% if editando %}
+                Editar tarea
+            {% else %}
+                Asignar nueva tarea
+            {% endif %}
+        </h3>
+
+        <form method="POST"
+              action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
+              id="taskForm">
+            {% csrf_token %}
+
+            <div class="row g-3">
+
+                <!-- Título -->
+                <div class="col-12">
+                    <label class="form-label">Título *</label>
+                    <input type="text" class="form-control" name="titulo" id="id_titulo"
+                           required placeholder="Ej: Limpieza de vitrina"
+                           value="{{ form.titulo.value|default:'' }}">
+                    {% if form.titulo.errors %}
+                        <div class="invalid-feedback d-block">{{ form.titulo.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Empleado -->
+                <div class="col-md-6">
+                    <label class="form-label">Empleado *</label>
+                    <select class="form-select" name="empleado" id="id_empleado" required>
+                        <option value="" disabled {% if not form.empleado.value %}selected{% endif %}>
+                            Seleccionar empleado
+                        </option>
+                        {% for emp in form.empleado.field.queryset %}
+                            <option value="{{ emp.pk }}"
+                                    {% if form.empleado.value == emp.pk %}selected{% endif %}>
+                                {{ emp.perfil.nombre_completo }} ({{ emp.perfil.get_cargo_display }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.empleado.errors %}
+                        <div class="invalid-feedback d-block">{{ form.empleado.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Prioridad -->
+                <div class="col-md-6">
+                    <label class="form-label">Prioridad *</label>
+                    <select class="form-select" name="prioridad" id="id_prioridad">
+                        {% for value, label in form.prioridad.field.choices %}
+                            <option value="{{ value }}"
+                                    {% if form.prioridad.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.prioridad.errors %}
+                        <div class="invalid-feedback d-block">{{ form.prioridad.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Descripción -->
+                <div class="col-12">
+                    <label class="form-label">Descripción *</label>
+                    <textarea class="form-control" name="descripcion" id="id_descripcion"
+                              rows="2" required placeholder="Instrucciones detalladas...">{{ form.descripcion.value|default:'' }}</textarea>
+                    {% if form.descripcion.errors %}
+                        <div class="invalid-feedback d-block">{{ form.descripcion.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Fecha límite -->
+                <div class="col-md-3">
+                    <label class="form-label">Fecha límite *</label>
+                    <input type="date" class="form-control" name="fecha_limite" id="id_fecha_limite"
+                           required value="{{ form.fecha_limite.value|date:'Y-m-d'|default:'' }}">
+                    {% if form.fecha_limite.errors %}
+                        <div class="invalid-feedback d-block">{{ form.fecha_limite.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Hora límite -->
+                <div class="col-md-3">
+                    <label class="form-label">Hora límite</label>
+                    <input type="time" class="form-control" name="hora_limite" id="id_hora_limite"
+                           value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
+                    {% if form.hora_limite.errors %}
+                        <div class="invalid-feedback d-block">{{ form.hora_limite.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Área -->
+                <div class="col-md-3">
+                    <label class="form-label">Área</label>
+                    <select class="form-select" name="area" id="id_area">
+                        <option value="">Sin área</option>
+                        {% for value, label in form.area.field.choices %}
+                            <option value="{{ value }}"
+                                    {% if form.area.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.area.errors %}
+                        <div class="invalid-feedback d-block">{{ form.area.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Turno asociado -->
+                <div class="col-md-3">
+                    <label class="form-label">Turno asociado</label>
+                    <select class="form-select" name="turno_asociado" id="id_turno_asociado">
+                        <option value="">Sin turno</option>
+                        {% for value, label in form.turno_asociado.field.choices %}
+                            <option value="{{ value }}"
+                                    {% if form.turno_asociado.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.turno_asociado.errors %}
+                        <div class="invalid-feedback d-block">{{ form.turno_asociado.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Botones -->
+                <div class="col-12 d-flex gap-3">
+                    <button type="submit" class="btn btn-primary-corporate">
+                        <i class="bi bi-save"></i>
+                        {% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
+                    </button>
+                    {% if editando %}
+                        <a href="{% url 'tareas:admin_tareas_list' %}" class="btn btn-outline-corporate">
+                            Cancelar
+                        </a>
+                    {% endif %}
+                    <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+                </div>
+
+            </div><!-- /row -->
+        </form>
+    </div>
+
+    <!-- ==================== FILTROS Y BÚSQUEDA ==================== -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <h3><i class="bi bi-table me-2"></i> Listado de tareas</h3>
+        <div class="filters-bar">
+            <a href="?{% if request.GET %}{{ request.GET.urlencode }}&estado={% else %}estado={% endif %}"
+               class="btn btn-sm filter-btn {% if not request.GET.estado %}active{% endif %}">Todas</a>
+            <a href="?estado=PENDIENTE{% if request.GET %}&{{ request.GET.urlencode|cut:'estado' }}{% endif %}"
+               class="btn btn-sm filter-btn {% if request.GET.estado == 'PENDIENTE' %}active{% endif %}">Pendientes</a>
+            <a href="?estado=EN_PROGRESO{% if request.GET %}&{{ request.GET.urlencode|cut:'estado' }}{% endif %}"
+               class="btn btn-sm filter-btn {% if request.GET.estado == 'EN_PROGRESO' %}active{% endif %}">En progreso</a>
+            <a href="?estado=FINALIZADA{% if request.GET %}&{{ request.GET.urlencode|cut:'estado' }}{% endif %}"
+               class="btn btn-sm filter-btn {% if request.GET.estado == 'FINALIZADA' %}active{% endif %}">Finalizadas</a>
+        </div>
+    </div>
+
+    <div class="input-group mb-3 w-50">
+        <input type="text" class="form-control" name="busqueda" id="searchTask"
+               placeholder="Buscar por título, empleado..."
+               value="{{ busqueda|default:'' }}">
+        <button class="btn btn-outline-secondary" id="searchBtn"><i class="bi bi-search"></i></button>
+    </div>
+
+    <!-- ==================== LISTADO DE TAREAS ==================== -->
+    <div id="tasksContainer">
+        {% if tareas %}
+            {% for tarea in tareas %}
+            <div class="task-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap">
+                    <div>
+                        <h5 class="mb-1">{{ tarea.titulo }}</h5>
+                        <span class="priority-{{ tarea.prioridad|lower }}">{{ tarea.get_prioridad_display }}</span>
+                        <span class="badge-status badge-{{ tarea.estado|lower }}">{{ tarea.get_estado_display }}</span>
+                    </div>
+                    <div>
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i> {{ tarea.empleado.perfil.nombre_completo }}
+                        </small>
+                    </div>
+                </div>
+                <p class="mt-2 mb-2">{{ tarea.descripcion }}</p>
+                <div class="d-flex gap-3 small text-muted">
+                    <span><i class="bi bi-calendar"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
+                    <span><i class="bi bi-briefcase"></i> {{ tarea.get_area_display }}</span>
+                    <span><i class="bi bi-clock"></i> Turno: {{ tarea.get_turno_asociado_display|default:"Sin turno" }}</span>
+                </div>
+                <div class="mt-3 d-flex gap-2 flex-wrap">
+                    {% if tarea.estado != 'FINALIZADA' %}
+                        <a href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
+                           class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-arrow-repeat"></i> Progreso
+                        </a>
+                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
+                           class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-check-lg"></i> Finalizar
+                        </a>
+                    {% endif %}
+                    <button type="button" class="btn btn-sm btn-outline-danger eliminarTarea"
+                            data-id="{{ tarea.pk }}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#confirmModal">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-light text-center">No hay tareas con los filtros seleccionados.</div>
+        {% endif %}
+    </div>
+
+    <footer><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
+</div>
+
+<!-- ==================== MODAL DE CONFIRMACIÓN ==================== -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBodyText">
+                ¿Eliminar permanentemente la tarea? Esta acción se registrará en auditoría.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="POST" id="deleteForm" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/tareas.js' %}"></script>
+<script>
+    // Lógica mínima para el modal de eliminación
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmModal = document.getElementById('confirmModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const modalBody = document.getElementById('modalBodyText');
+
+        confirmModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            // Construir la URL de eliminación
+            const url = "{% url 'tareas:admin_tarea_delete' 0 %}".replace('0', id);
+            deleteForm.action = url;
+
+            // Obtener el título de la tarea desde la tarjeta
+            const card = button.closest('.task-card');
+            const titulo = card.querySelector('h5').innerText;
+            modalBody.innerText = `¿Eliminar permanentemente la tarea "${titulo}"? Esta acción se registrará en auditoría.`;
+        });
+    });
+</script>
+{% endblock %}

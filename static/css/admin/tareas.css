@@ -1,0 +1,146 @@
+/* DASHBOARD */
+.dashboard-container {
+    padding: 2rem;
+}
+
+/* Tarjetas de resumen */
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EDF2F7;
+}
+
+/* Formulario moderno */
+.form-section {
+    background: white;
+    border-radius: 28px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    border: 1px solid #EDF2F7;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: 16px;
+    border: 1.5px solid #E2E8F0;
+    padding: 0.7rem 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #A40706;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
+}
+
+.btn-primary-corporate {
+    background: white;
+    color: #A40706;
+    border: 1px solid;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0504;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-outline-corporate {
+    border: 1.5px solid #A40706;
+    background: transparent;
+    color: #A40706;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+}
+
+/* Tarjetas de tareas */
+.task-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: 0.2s;
+    border: 1px solid #EDF2F7;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+}
+
+.priority-high {
+    color: #B91C1C;
+    background: #FEF2F0;
+    padding: 0.2rem 0.6rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+}
+
+.priority-medium {
+    color: #C77A00;
+    background: #FFF3E0;
+    padding: 0.2rem 0.6rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+}
+
+.priority-low {
+    color: #1E7B48;
+    background: #E0F2E9;
+    padding: 0.2rem 0.6rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+}
+
+.badge-status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+}
+
+.badge-pendiente {
+    background: #FFF3E0;
+    color: #C77A00;
+}
+
+.badge-progreso {
+    background: #E6F0FA;
+    color: #1A5D9C;
+}
+
+.badge-finalizada {
+    background: #E0F2E9;
+    color: #1E7B48;
+}
+
+/* Filtros */
+.filters-bar {
+    background: white;
+    border-radius: 60px;
+    padding: 0.3rem;
+    display: inline-flex;
+    margin-bottom: 1.5rem;
+}
+
+/* Toast */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1100;
+}
