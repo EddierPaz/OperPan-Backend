@@ -1,0 +1,136 @@
+/* DASHBOARD */
+.dashboard-container {
+    padding: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EDF2F7;
+    transition: 0.2s;
+}
+
+.card-modern {
+    background: white;
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid #EDF2F7;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: 16px;
+    border: 1.5px solid #E2E8F0;
+    padding: 0.7rem 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #A40706;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
+}
+
+.btn-primary-corporate {
+    background: #A40706;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 0.2s;
+    color: white;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0504;
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-outline-corporate {
+    border: 1.5px solid #A40706;
+    background: transparent;
+    color: #A40706;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+}
+
+.table-custom {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.table-custom thead {
+    background: #F8F9FC;
+}
+
+.badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
+}
+
+.badge-active {
+    background: #E0F2E9;
+    color: #1E7B48;
+}
+
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1100;
+}
+
+/* CALENDARIO DÍAS */
+.dias-calendario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.dia-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #E2E8F0;
+    background: white;
+    font-weight: 600;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dia-btn:hover {
+    border-color: #A40706;
+    color: #A40706;
+}
+
+.dia-btn.seleccionado {
+    background: #A40706;
+    border-color: #A40706;
+    color: white;
+}

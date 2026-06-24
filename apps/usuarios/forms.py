@@ -13,9 +13,6 @@ class PerfilEmpleadoForm(forms.ModelForm):
 
     class Meta:
         model = PerfilEmpleado
-        fields = [
-            'primer_nombre', 'segundo_nombre', 'primer_apellido',
-            'segundo_apellido', 'tipo_documento', 'numero_documento',
-            'fecha_nacimiento', 'genero', 'estado_civil',
-            'tipo_sangre', 'telefono', 'correo'
-        ]
+        fields = '__all__'
+
+        

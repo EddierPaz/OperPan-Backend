@@ -1,717 +1,264 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends 'admin/base/base.html' %}
+{% load static %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>OperPan | Horarios</title>
-    
-  <!-- Meta Tags SEO -->
-  <meta name="description" content="OperPan — Sistema de Gestión de Personal para Estación Paisa. Automatiza procesos administrativos, control de asistencia, horarios, permisos y reportes." />
-  <meta name="keywords" content="gestión de personal, recursos humanos, control de asistencia, horarios, permisos, reportes, Estación Paisa, OperPan" />
-  <meta name="author" content="ClessLab: EddierPaz, Paula Herrera, Santiago Muñeton" />
-  <meta name="robots" content="index, follow" />
+{% block title %}
+OperPan | Horarios
+{% endblock %}
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:title" content="OperPan — Sistema de Gestión de Personal · Estación Paisa" />
-  <meta property="og:description" content="Centraliza la gestión del personal y optimiza la operación administrativa de Estación Paisa. Todo en un solo lugar, seguro y organizado." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://github.com/operpangestion/OperPan/blob/main/Assets/img/logo/00-operpan.png" />
-  <meta property="og:url" content="https://operpangestion.github.io/OperPan/" />
+{% block section_title %}
+Asigna turnos y controla asistencia del personal
+{% endblock %}
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="OperPan — Sistema de Gestión de Personal" />
-  <meta name="twitter:description" content="Gestión integral de empleados, horarios, asistencia y permisos para Estación Paisa." />
-  <meta name="twitter:image" content="https://github.com/operpangestion/OperPan/blob/main/Assets/img/logo/00-operpan.png" />
+{% block section_subtitle %}
+Panel de Administración
+{% endblock %}
 
-  <link rel="icon" type="image/png" href="../../../Assets/img/logo/00-operpan.png" />
+{% block active_horarios %}
+active
+{% endblock %}
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/asistencia.css' %}">
+{% endblock %}
 
-  <link rel="stylesheet" href="../Assets/style.css">
-  <link rel="stylesheet" href="../Assets/horarios.css">
-</head>
+{% block content %}
 
-<body>
-  <div class="wrapper">
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo-area">
-          <div class="logo-icon">
-            <img src="../../../Assets/img/logo/01-estacion-paisa.png" alt="Empresa">
-          </div>
-        </div>
-      </div>
-      <nav class="nav-menu">
-        <ul>
-          <li><a href="../landingAdmin.html"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a></li>
-          <li class="active"><a href="./7-horarios.html"><i class="bi bi-calendar3-week"></i> Horarios</a></li>
-          <li><a href="./1-cuentas.html"><i class="bi bi-people"></i> Cuentas</a></li>
-          <li><a href="./2-tareas.html"><i class="bi bi-list-task"></i> Tareas Operativas</a></li>
-          <li><a href="./3-novedades.html"><i class="bi bi-megaphone"></i> Novedades</a></li>
-          <li><a href="./4-reportes.html"><i class="bi bi-bar-chart"></i> Reportes</a></li>
-        </ul>
-      </nav>
-      <div class="p-3 border-top border-secondary">
-        <a class="soporte"
-          href="https://mail.google.com/mail/?view=cm&fs=1&to=eddierpaz9@gmail.com&su=Soporte%20OperPan">
-          <small><i class="bi bi-question-circle me-2"></i>Ayuda / Soporte</small>
-        </a>
-      </div>
-      <div class="p-3 border-top border-secondary">
-        <small class="text-white-50"><i class="bi bi-shield-lock"></i> v2.0 · Administrador</small>
-      </div>
-    </aside>
+<main class="dashboard-container">
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="main-content">
-      <header class="topbar">
-        <div class="d-flex align-items-center gap-3">
-          <button class="menu-toggle btn btn-dark" id="menuToggle"><i class="bi bi-list"></i></button>
-          <div class="company-info">
-            <h2>Gestión de Horarios</h2>
-            <p>Asigna turnos y controla asistencia del personal</p>
-          </div>
-        </div>
-        <div class="user-info">
-          <div class="user-badge">
-            <i class="bi bi-shield-fill-check"></i>
-            <span>Administrador</span>
-          </div>
-          <button class="btn-logout" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Salir</button>
-        </div>
-      </header>
+  <div class="card-modern mb-4">
 
-      <main class="dashboard-container">
-
-        <!-- KPIs (4 tarjetas) -->
-        <h3 class="mb-3"><i class="bi-clipboard-check me-2"></i> Asistencia empleados hoy</h3>
-        <div class="row g-3 mb-4">
-          <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
-              <div><span class="text-muted" style="font-size:0.78rem;">Total empleados</span>
-                <h3 class="mt-1" id="totalEmpleados">0</h3>
-              </div> <i class="bi bi-people-fill fs-2" style="color:#A40706;"></i>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
-              <div> <span class="text-muted" style="font-size:0.78rem;">Jornada Mañana</span>
-                <h3 class="mt-1" id="totalManana">0</h3>
-              </div> <i class="bi bi-sunrise fs-2" style="color:#E67E22;"></i>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
-              <div> <span class="text-muted" style="font-size:0.78rem;">Jornada Tarde</span>
-                <h3 class="mt-1" id="totalTarde">0</h3>
-              </div> <i class="bi bi-sunset fs-2" style="color:#6C3483;"></i>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
-              <div><span class="text-muted" style="font-size:0.78rem;">Retardos</span>
-                <h3 class="mt-1" id="retardosHoy">0</h3>
-              </div> <i class="bi bi-exclamation-triangle-fill fs-2" style="color:#B91C1C;"></i>
-            </div>
-          </div>
-        </div>
-
-        <!-- Formulario asignar/editar horario -->
-        <div class="card-modern">
-          <div class="card-header">
-            <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i> <span id="formTitle">Asignar nuevo horario</span>
-            </h3>
-          </div>
-          <div class="p-4">
-            <form id="horarioForm">
-              <div class="row g-3">
-
-                <!-- Paso 1: Cargo -->
-                <div class="col-md-4">
-                  <label class="form-label">Cargo *</label>
-                  <select class="form-select" id="cargoSelect" required>
-                    <option value="">Seleccionar cargo</option>
-                    <option value="Panadero">Panadero</option>
-                    <option value="Cajero">Cajero</option>
-                    <option value="Mesero">Mesero</option>
-                    <option value="Pastelero">Pastelero</option>
-                    <option value="Cocina Desayuno">Cocina Desayuno</option>
-                    <option value="Cocina Almuerzo">Cocina Almuerzo / Ayudante</option>
-                    <option value="Bueñuelero">Bueñuelero</option>
-                    <option value="Greca">Greca</option>
-                  </select>
-                </div>
-
-                <!-- Paso 2: Tipo de turno (se actualiza según cargo) -->
-                <div class="col-md-4">
-                  <label class="form-label">Tipo de turno *</label>
-                  <select class="form-select" id="turnoTipo" required>
-                    <option value="">Seleccione cargo primero</option>
-                  </select>
-                </div>
-
-                <!-- Paso 3: Empleado (filtrado por cargo) -->
-                <div class="col-md-4">
-                  <label class="form-label">Empleado *</label>
-                  <select class="form-select" id="empleadoSelect" required>
-                    <option value="">Seleccione cargo primero</option>
-                  </select>
-                </div>
-
-                <!-- Hora entrada (automática pero editable) -->
-                <div class="col-md-3">
-                  <label class="form-label">Hora entrada *</label>
-                  <input type="time" class="form-control" id="horaEntrada" required>
-                </div>
-
-                <!-- Hora salida (automática pero editable) -->
-                <div class="col-md-3">
-                  <label class="form-label">Hora salida *</label>
-                  <input type="time" class="form-control" id="horaSalida" required>
-                </div>
-
-                <!-- Selector de días tipo calendario -->
-                <div class="col-md-6">
-                  <label class="form-label">Días laborales *</label>
-                  <div class="dias-calendario" id="diasCalendario">
-                    <button type="button" class="dia-btn" data-dia="Lun">Lun</button>
-                    <button type="button" class="dia-btn" data-dia="Mar">Mar</button>
-                    <button type="button" class="dia-btn" data-dia="Mié">Mié</button>
-                    <button type="button" class="dia-btn" data-dia="Jue">Jue</button>
-                    <button type="button" class="dia-btn" data-dia="Vie">Vie</button>
-                    <button type="button" class="dia-btn" data-dia="Sáb">Sáb</button>
-                    <button type="button" class="dia-btn" data-dia="Dom">Dom</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" id="btnTodosDias"
-                      style="border-radius:20px; font-size:0.75rem; padding: 4px 12px;">Todos</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btnLimpiarDias"
-                      style="border-radius:20px; font-size:0.75rem; padding: 4px 12px;">Limpiar</button>
-                  </div>
-                  <input type="hidden" id="diasSeleccionados">
-                </div>
-
-                <div class="col-12 d-flex gap-3 flex-wrap">
-                  <button type="submit" class="btn btn-primary-corporate"><i class="bi bi-save"></i> Guardar
-                    horario</button>
-                  <button type="button" class="btn btn-outline-corporate" id="cancelarEdicion"
-                    style="display:none;">Cancelar</button>
-                  <button type="reset" class="btn btn-outline-secondary" id="btnReset">Limpiar</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <!-- Horarios asignados -->
-        <div class="card-modern">
-          <div class="card-header">
-            <h3 class="mb-0"><i class="bi bi-table me-2"></i> Horarios asignados</h3>
-          </div>
-          <div class="p-3">
-            <div class="table-responsive">
-              <table class="table table-custom">
-                <thead>
-                  <tr>
-                    <th>Empleado</th>
-                    <th>Cargo</th>
-                    <th>Turno</th>
-                    <th>Horario</th>
-                    <th>Días</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="tablaHorariosBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Asistencias recientes -->
-        <div class="card-modern">
-          <div class="card-header">
-            <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Asistencias recientes (entradas/salidas)</h3>
-          </div>
-          <div class="p-3">
-            <div class="table-responsive">
-              <table class="table table-custom">
-                <thead>
-                  <tr>
-                    <th>Empleado</th>
-                    <th>Cargo</th>
-                    <th>Fecha</th>
-                    <th>Entrada</th>
-                    <th>Salida</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody id="tablaAsistenciasBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <footer><i class="bi bi-shield-check"></i> Trazabilidad garantizada - Cada acción queda registrada</footer>
-      </main>
+    <div class="card-header">
+      <h3>
+        <i class="bi bi-plus-circle me-2"></i>
+        Asignar nuevo horario
+      </h3>
     </div>
+
+    <div class="p-4">
+
+      <form method="POST">
+
+        {% csrf_token %}
+
+        <div class="row g-3">
+
+          <div class="col-md-4">
+
+            <label class="form-label">
+              Empleado *
+            </label>
+
+            <select name="empleado" id="empleadoSelect" class="form-select" required>
+
+              <option value="">
+                Seleccione empleado
+              </option>
+
+              {% for empleado in empleados %}
+              <option value="{{ empleado.id }}" data-cargo="{{ empleado.get_cargo_display }}">
+
+                {{ empleado.nombre_completo }}
+
+              </option>
+              {% endfor %}
+
+            </select>
+
+          </div>
+
+          <div class="col-md-4">
+
+            <label class="form-label">
+              Cargo
+            </label>
+
+            <input type="text" id="cargoInput" class="form-control" readonly>
+
+          </div>
+
+          <div class="col-md-4">
+
+            <label class="form-label">
+              Jornada *
+            </label>
+
+            <select name="turno" id="turnoSelect" class="form-select" required>
+
+              <option value="">
+                Seleccione jornada
+              </option>
+
+              <option value="MANANA">
+                Mañana
+              </option>
+
+              <option value="TARDE">
+                Tarde
+              </option>
+
+              <option value="FIJO">
+                Fijo
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="col-md-3">
+
+            <label class="form-label">
+              Hora entrada
+            </label>
+
+            <input type="time" name="hora_entrada" id="horaEntrada" class="form-control" required>
+
+          </div>
+
+          <div class="col-md-3">
+
+            <label class="form-label">
+              Hora salida
+            </label>
+
+            <input type="time" name="hora_salida" id="horaSalida" class="form-control" required>
+
+          </div>
+
+          <div class="col-md-6">
+
+            <label class="form-label">
+              Días laborales
+            </label>
+
+            <input type="text" name="dias_laborales" class="form-control" placeholder="Lun,Mar,Mie,Jue,Vie" required>
+
+          </div>
+
+          <div class="col-12">
+
+            <button type="submit" class="btn btn-primary-corporate">
+
+              <i class="bi bi-save"></i>
+              Guardar horario
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+
   </div>
 
-  <!-- Toast -->
-  <div class="toast-message" id="liveToast" style="display:none;">
-    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
-      <div class="d-flex gap-2"><i class="bi bi-info-circle-fill text-danger fs-5"></i><span id="toastMsg"></span></div>
+  <div class="card-modern">
+
+    <div class="card-header">
+
+      <h3>
+        <i class="bi bi-table me-2"></i>
+        Horarios asignados
+      </h3>
+
     </div>
+
+    <div class="p-3">
+
+      <div class="table-responsive">
+
+        <table class="table table-custom">
+
+          <thead>
+
+            <tr>
+              <th>Empleado</th>
+              <th>Cargo</th>
+              <th>Turno</th>
+              <th>Horario</th>
+              <th>Días</th>
+              <th>Estado</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {% for horario in horarios %}
+
+            <tr>
+
+              <td>
+                {{ horario.empleado.nombre_completo }}
+              </td>
+
+              <td>
+                {{ horario.empleado.get_cargo_display }}
+              </td>
+
+              <td>
+                {{ horario.get_turno_display }}
+              </td>
+
+              <td>
+                {{ horario.hora_entrada }}
+                -
+                {{ horario.hora_salida }}
+              </td>
+
+              <td>
+                {{ horario.dias_laborales|join:", " }}
+              </td>
+
+              <td>
+
+                {% if horario.estado %}
+
+                <span class="badge bg-success">
+                  Activo
+                </span>
+
+                {% else %}
+
+                <span class="badge bg-danger">
+                  Inactivo
+                </span>
+
+                {% endif %}
+
+              </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+              <td colspan="6" class="text-center">
+
+                No hay horarios registrados
+
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // ============================================================
-    // MÓDULO DE HORARIOS - OPERPAN
-    // ============================================================
+</main>
 
-    const STORAGE_HORARIOS = "operpan_horarios";
-    const STORAGE_ASISTENCIAS = "operpan_asistencias";
-    const STORAGE_USERS = "operpan_usuarios";
-    const STORAGE_AUDIT = "operpan_audit_horarios";
+{% endblock %}
 
-    let horarios = [];
-    let asistencias = [];
-    let empleados = [];
-    let auditLog = [];
-    let editandoId = null;
-    let diasSeleccionados = [];
-
-    // Turnos por cargo+jornada: clave = "Cargo|Turno"
-    // Cargos con una sola jornada (Fijo): clave = "Cargo|Fijo"
-    const TURNOS_POR_CARGO = {
-      "Panadero|Mañana": { entrada: "05:00", salida: "13:00" },
-      "Panadero|Tarde": { entrada: "13:00", salida: "22:00" },
-      "Cajero|Mañana": { entrada: "04:00", salida: "14:00" },
-      "Cajero|Tarde": { entrada: "13:30", salida: "23:00" },
-      "Mesero|Mañana": { entrada: "04:00", salida: "14:00" },
-      "Mesero|Tarde": { entrada: "13:30", salida: "23:00" },
-      "Bueñuelero|Mañana": { entrada: "05:00", salida: "13:00" },
-      "Bueñuelero|Tarde": { entrada: "13:00", salida: "22:00" },
-      "Pastelero|Fijo": { entrada: "08:00", salida: "17:00" },
-      "Cocina Desayuno|Fijo": { entrada: "04:00", salida: "14:00" },
-      "Cocina Almuerzo|Fijo": { entrada: "07:00", salida: "16:00" },
-      "Greca|Fijo": { entrada: "07:00", salida: "19:00" },
-    };
-
-    // Jornadas disponibles por cargo
-    const JORNADAS_POR_CARGO = {
-      "Panadero": ["Mañana", "Tarde"],
-      "Cajero": ["Mañana", "Tarde"],
-      "Mesero": ["Mañana", "Tarde"],
-      "Bueñuelero": ["Mañana", "Tarde"],
-      "Pastelero": ["Fijo"],
-      "Cocina Desayuno": ["Fijo"],
-      "Cocina Almuerzo": ["Fijo"],
-      "Greca": ["Fijo"],
-    };
-
-    // ─── INIT ────────────────────────────────────────────────────
-    function inicializarDatos() {
-      const storedUsers = localStorage.getItem(STORAGE_USERS);
-      if (storedUsers) {
-        empleados = JSON.parse(storedUsers).filter(u => u.estado === "activo");
-      } else {
-        empleados = [
-          { id: "EMP-2024-156", nombres: "Eddier", apellidos: "Paz Pardo", cargo: "Panadero", estado: "activo" },
-          { id: "EMP-2024-157", nombres: "Santiago", apellidos: "Muñeton", cargo: "Cajero", estado: "activo" },
-          { id: "EMP-2024-158", nombres: "Paula", apellidos: "Herrera", cargo: "Mesero", estado: "activo" },
-          { id: "EMP-2024-159", nombres: "Laura", apellidos: "Gómez", cargo: "Pastelero", estado: "activo" },
-          { id: "EMP-2024-160", nombres: "Camilo", apellidos: "Ríos", cargo: "Cocina Desayuno", estado: "activo" },
-          { id: "EMP-2024-161", nombres: "Diana", apellidos: "Torres", cargo: "Cocina Almuerzo", estado: "activo" },
-          { id: "EMP-2024-162", nombres: "Andrés", apellidos: "López", cargo: "Bueñuelero", estado: "activo" },
-          { id: "EMP-2024-163", nombres: "Natalia", apellidos: "Castro", cargo: "Greca", estado: "activo" }
-        ];
-      }
-
-      const storedH = localStorage.getItem(STORAGE_HORARIOS);
-      if (!storedH) {
-        const hoy = obtenerDiaSemana();
-        horarios = [
-          { id: "h1", empleadoId: "EMP-2024-156", cargo: "Panadero", turnoTipo: "Mañana", horaEntrada: "05:00", horaSalida: "13:00", dias: ["Lun", "Mar", "Mié", "Jue", "Vie"], estado: "activo" },
-          { id: "h2", empleadoId: "EMP-2024-157", cargo: "Cajero", turnoTipo: "Mañana", horaEntrada: "04:00", horaSalida: "14:00", dias: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], estado: "activo" },
-          { id: "h3", empleadoId: "EMP-2024-158", cargo: "Mesero", turnoTipo: "Mañana", horaEntrada: "04:00", horaSalida: "14:00", dias: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"], estado: "activo" }
-        ];
-        localStorage.setItem(STORAGE_HORARIOS, JSON.stringify(horarios));
-      } else {
-        horarios = JSON.parse(storedH);
-        // Compatibilidad: si vienen con diasLaborales (string antiguo), convertir
-        horarios = horarios.map(h => {
-          if (!h.dias) {
-            if (h.diasLaborales === "Lun-Vie") h.dias = ["Lun", "Mar", "Mié", "Jue", "Vie"];
-            else if (h.diasLaborales === "Lun-Sáb") h.dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-            else if (h.diasLaborales === "Lun-Dom") h.dias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-            else h.dias = [];
-          }
-          return h;
-        });
-      }
-
-      const storedA = localStorage.getItem(STORAGE_ASISTENCIAS);
-      if (!storedA) {
-        const hoy = new Date().toISOString().split('T')[0];
-        asistencias = [
-          { id: "a1", empleadoId: "EMP-2024-156", cargo: "Panadero", turno: "Mañana", fecha: hoy, entrada: "05:05", salida: "13:10", estado: "Completo" },
-          { id: "a2", empleadoId: "EMP-2024-157", cargo: "Cajero", turno: "Mañana", fecha: hoy, entrada: "04:20", salida: "14:00", estado: "Retardo" },
-          { id: "a3", empleadoId: "EMP-2024-158", cargo: "Mesero", turno: "Mañana", fecha: hoy, entrada: "04:02", salida: "", estado: "En turno" }
-        ];
-        localStorage.setItem(STORAGE_ASISTENCIAS, JSON.stringify(asistencias));
-      } else {
-        asistencias = JSON.parse(storedA);
-      }
-
-      const storedAudit = localStorage.getItem(STORAGE_AUDIT);
-      auditLog = storedAudit ? JSON.parse(storedAudit) : [];
-    }
-
-    function obtenerDiaSemana() {
-      const dias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-      return dias[new Date().getDay()];
-    }
-
-    function guardarDatos() {
-      localStorage.setItem(STORAGE_HORARIOS, JSON.stringify(horarios));
-      localStorage.setItem(STORAGE_ASISTENCIAS, JSON.stringify(asistencias));
-      localStorage.setItem(STORAGE_AUDIT, JSON.stringify(auditLog));
-    }
-
-    function registrarAuditoria(accion, detalles, horarioId, empleadoAfectado) {
-      const registro = { fecha: new Date().toISOString(), administrador: "Administrador", accion, detalles, horarioId, empleadoAfectado, timestamp: Date.now() };
-      auditLog.unshift(registro);
-      if (auditLog.length > 200) auditLog.pop();
-      guardarDatos();
-    }
-
-    function mostrarMensaje(msg) {
-      const toast = document.getElementById("liveToast");
-      document.getElementById("toastMsg").innerText = msg;
-      toast.style.display = "block";
-      setTimeout(() => toast.style.display = "none", 3000);
-    }
-
-    // ─── KPIs ────────────────────────────────────────────────────
-    function actualizarKPIs() {
-      const hoy = new Date().toISOString().split('T')[0];
-      const diaActual = obtenerDiaSemana();
-
-      const totalEmpleados = empleados.length;
-      const retardosHoy = asistencias.filter(a => a.fecha === hoy && a.estado === "Retardo").length;
-
-      // Contar empleados con horario activo programados HOY según jornada
-      const horariosHoy = horarios.filter(h => h.estado === "activo" && Array.isArray(h.dias) && h.dias.includes(diaActual));
-
-      const totalManana = horariosHoy.filter(h => h.turnoTipo === "Mañana" || h.turnoTipo === "Completo").length;
-      const totalTarde = horariosHoy.filter(h => h.turnoTipo === "Tarde").length;
-
-      document.getElementById("totalEmpleados").innerText = totalEmpleados;
-      document.getElementById("totalManana").innerText = totalManana;
-      document.getElementById("totalTarde").innerText = totalTarde;
-      document.getElementById("retardosHoy").innerText = retardosHoy;
-    }
-
-    // ─── SELECTOR DE DÍAS ────────────────────────────────────────
-    function inicializarDiasCalendario() {
-      document.querySelectorAll(".dia-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const dia = btn.dataset.dia;
-          if (diasSeleccionados.includes(dia)) {
-            diasSeleccionados = diasSeleccionados.filter(d => d !== dia);
-            btn.classList.remove("seleccionado");
-          } else {
-            diasSeleccionados.push(dia);
-            btn.classList.add("seleccionado");
-          }
-          document.getElementById("diasSeleccionados").value = diasSeleccionados.join(",");
-        });
-      });
-
-      document.getElementById("btnTodosDias").addEventListener("click", () => {
-        const todosDias = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-        diasSeleccionados = [...todosDias];
-        document.querySelectorAll(".dia-btn").forEach(b => b.classList.add("seleccionado"));
-        document.getElementById("diasSeleccionados").value = diasSeleccionados.join(",");
-      });
-
-      document.getElementById("btnLimpiarDias").addEventListener("click", () => {
-        diasSeleccionados = [];
-        document.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
-        document.getElementById("diasSeleccionados").value = "";
-      });
-    }
-
-    function marcarDiasEnCalendario(dias) {
-      diasSeleccionados = [...dias];
-      document.querySelectorAll(".dia-btn").forEach(b => {
-        if (dias.includes(b.dataset.dia)) b.classList.add("seleccionado");
-        else b.classList.remove("seleccionado");
-      });
-      document.getElementById("diasSeleccionados").value = diasSeleccionados.join(",");
-    }
-
-    // ─── CARGO → actualiza turno + empleados ─────────────────────
-    function actualizarTurnosPorCargo(cargo) {
-      const selectTurno = document.getElementById("turnoTipo");
-      selectTurno.innerHTML = '<option value="">Seleccionar turno</option>';
-      if (!cargo) return;
-
-      const jornadas = JORNADAS_POR_CARGO[cargo] || [];
-      jornadas.forEach(j => {
-        const label = j === "Fijo" ? "Fijo (horario único)" : `Jornada ${j}`;
-        selectTurno.innerHTML += `<option value="${j}">${label}</option>`;
-      });
-
-      // Si solo hay una opción (Fijo), seleccionarla automáticamente y cargar horas
-      if (jornadas.length === 1) {
-        selectTurno.value = jornadas[0];
-        autocompleteHoras(cargo, jornadas[0]);
-      } else {
-        document.getElementById("horaEntrada").value = "";
-        document.getElementById("horaSalida").value = "";
-      }
-    }
-
-    function autocompleteHoras(cargo, turno) {
-      const key = `${cargo}|${turno}`;
-      const info = TURNOS_POR_CARGO[key];
-      if (info) {
-        document.getElementById("horaEntrada").value = info.entrada;
-        document.getElementById("horaSalida").value = info.salida;
-      }
-    }
-
-    function cargarEmpleadosPorCargo(cargo) {
-      const select = document.getElementById("empleadoSelect");
-      if (!cargo) {
-        select.innerHTML = '<option value="">Seleccione cargo primero</option>';
-        return;
-      }
-      const cargoBase = cargo.toLowerCase();
-      const filtrados = empleados.filter(e => (e.cargo || "").toLowerCase().includes(cargoBase) || cargoBase.includes((e.cargo || "").toLowerCase()));
-      const lista = filtrados.length > 0 ? filtrados : empleados;
-      select.innerHTML = '<option value="">Seleccionar empleado</option>';
-      lista.forEach(emp => {
-        select.innerHTML += `<option value="${emp.id}">${emp.nombres} ${emp.apellidos}</option>`;
-      });
-    }
-
-    document.getElementById("cargoSelect").addEventListener("change", function () {
-      const cargo = this.value;
-      actualizarTurnosPorCargo(cargo);
-      cargarEmpleadosPorCargo(cargo);
-    });
-
-    document.getElementById("turnoTipo").addEventListener("change", function () {
-      const cargo = document.getElementById("cargoSelect").value;
-      autocompleteHoras(cargo, this.value);
-    });
-
-    // ─── TABLA HORARIOS ──────────────────────────────────────────
-    function renderizarHorarios() {
-      const tbody = document.getElementById("tablaHorariosBody");
-      if (!tbody) return;
-      tbody.innerHTML = "";
-      if (horarios.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">No hay horarios asignados</td></tr>`;
-        return;
-      }
-      horarios.forEach(h => {
-        const emp = empleados.find(e => e.id === h.empleadoId) || { nombres: "Desconocido", apellidos: "" };
-        const diasStr = Array.isArray(h.dias) ? h.dias.join(", ") : (h.diasLaborales || "—");
-        tbody.innerHTML += `
-      <tr>
-        <td>${emp.nombres} ${emp.apellidos}</td>
-        <td>${h.cargo || "—"}</td>
-        <td>${h.turnoTipo}</td>
-        <td>${h.horaEntrada} - ${h.horaSalida}</td>
-        <td><small>${diasStr}</small></td>
-        <td><span class="badge badge-active">Activo</span></td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary editarHorario me-1" data-id="${h.id}" title="Editar"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-danger eliminarHorario" data-id="${h.id}" title="Eliminar"><i class="bi bi-trash"></i></button>
-        </td>
-      </tr>
-    `;
-      });
-      document.querySelectorAll(".editarHorario").forEach(btn => btn.addEventListener("click", () => editarHorario(btn.dataset.id)));
-      document.querySelectorAll(".eliminarHorario").forEach(btn => btn.addEventListener("click", () => eliminarHorario(btn.dataset.id)));
-    }
-
-    // ─── TABLA ASISTENCIAS ───────────────────────────────────────
-    function renderizarAsistencias() {
-      const tbody = document.getElementById("tablaAsistenciasBody");
-      if (!tbody) return;
-      const ultimas = [...asistencias].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).slice(0, 15);
-      tbody.innerHTML = "";
-      if (ultimas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-3">Sin registros de asistencia</td></tr>`;
-        return;
-      }
-      ultimas.forEach(a => {
-        const emp = empleados.find(e => e.id === a.empleadoId) || { nombres: "Desconocido", apellidos: "" };
-        let badge = "";
-        if (a.estado === "Completo") badge = '<span class="badge bg-success">Completo</span>';
-        else if (a.estado === "Retardo") badge = '<span class="badge bg-warning text-dark">Retardo</span>';
-        else if (a.estado === "En turno") badge = '<span class="badge bg-info text-dark">En turno</span>';
-        else badge = '<span class="badge bg-danger">Ausente</span>';
-        tbody.innerHTML += `
-      <tr>
-        <td>${emp.nombres} ${emp.apellidos}</td>
-        <td>${a.cargo || "—"}</td>
-        <td>${a.fecha}</td>
-        <td>${a.entrada || "—"}</td>
-        <td>${a.salida || "—"}</td>
-        <td>${badge}</td>
-      </tr>
-    `;
-      });
-    }
-
-    // ─── CRUD ────────────────────────────────────────────────────
-    function editarHorario(id) {
-      const h = horarios.find(x => x.id === id);
-      if (!h) return;
-      editandoId = id;
-      document.getElementById("formTitle").innerText = "Editar horario";
-
-      // 1. Cargo
-      document.getElementById("cargoSelect").value = h.cargo || "";
-
-      // 2. Turno: poblar opciones del select según cargo, luego asignar valor
-      actualizarTurnosPorCargo(h.cargo || "");
-      document.getElementById("turnoTipo").value = h.turnoTipo || "";
-
-      // 3. Horas (se ponen manualmente, no desde autocomplete para respetar el valor guardado)
-      document.getElementById("horaEntrada").value = h.horaEntrada;
-      document.getElementById("horaSalida").value = h.horaSalida;
-
-      // 4. Empleados: poblar lista y seleccionar el correcto
-      cargarEmpleadosPorCargo(h.cargo || "");
-      document.getElementById("empleadoSelect").value = h.empleadoId;
-
-      // 5. Días
-      marcarDiasEnCalendario(Array.isArray(h.dias) ? h.dias : []);
-
-      // 6. Mostrar botón cancelar y hacer scroll
-      document.getElementById("cancelarEdicion").style.display = "inline-block";
-      document.querySelector(".card-modern").scrollIntoView({ behavior: "smooth" });
-    }
-
-    function cancelarEdicion() {
-      editandoId = null;
-      document.getElementById("formTitle").innerText = "Asignar nuevo horario";
-      document.getElementById("horarioForm").reset();
-      document.getElementById("cancelarEdicion").style.display = "none";
-      document.getElementById("turnoTipo").innerHTML = '<option value="">Seleccione cargo primero</option>';
-      diasSeleccionados = [];
-      document.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
-      document.getElementById("diasSeleccionados").value = "";
-      document.getElementById("empleadoSelect").innerHTML = '<option value="">Seleccione cargo primero</option>';
-    }
-
-    function eliminarHorario(id) {
-      if (!confirm("¿Eliminar este horario? Se registrará en auditoría.")) return;
-      const h = horarios.find(x => x.id === id);
-      if (!h) return;
-      horarios = horarios.filter(x => x.id !== id);
-      registrarAuditoria("ELIMINAR HORARIO", `Horario eliminado para empleado ${h.empleadoId}`, id, h.empleadoId);
-      mostrarMensaje("Horario eliminado correctamente.");
-      guardarDatos();
-      renderizarHorarios();
-      actualizarKPIs();
-    }
-
-    document.getElementById("horarioForm")?.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const cargo = document.getElementById("cargoSelect").value;
-      const empleadoId = document.getElementById("empleadoSelect").value;
-      const turnoTipo = document.getElementById("turnoTipo").value;
-      // turnoVal ya declarado arriba
-      const horaEntrada = document.getElementById("horaEntrada").value;
-      const horaSalida = document.getElementById("horaSalida").value;
-
-      if (!cargo || !empleadoId || !turnoTipo || !horaEntrada || !horaSalida) {
-        mostrarMensaje("Complete todos los campos obligatorios.");
-        return;
-      }
-      if (diasSeleccionados.length === 0) {
-        mostrarMensaje("Seleccione al menos un día laboral.");
-        return;
-      }
-      if (horaEntrada >= horaSalida && turnoTipo !== "Noche") {
-        mostrarMensaje("La hora de salida debe ser posterior a la hora de entrada (o use turno Noche).");
-        return;
-      }
-
-      const emp = empleados.find(e => e.id === empleadoId);
-      if (!emp) return;
-
-      if (editandoId) {
-        const idx = horarios.findIndex(h => h.id === editandoId);
-        if (idx !== -1) {
-          horarios[idx] = { ...horarios[idx], cargo, empleadoId, turnoTipo, horaEntrada, horaSalida, dias: [...diasSeleccionados] };
-          registrarAuditoria("MODIFICAR HORARIO", `Horario modificado para ${emp.nombres} ${emp.apellidos}`, editandoId, empleadoId);
-          mostrarMensaje("Horario actualizado correctamente.");
-        }
-        cancelarEdicion();
-      } else {
-        const nuevoId = Date.now().toString();
-        horarios.push({ id: nuevoId, cargo, empleadoId, turnoTipo, horaEntrada, horaSalida, dias: [...diasSeleccionados], estado: "activo" });
-        registrarAuditoria("CREAR HORARIO", `Horario asignado a ${emp.nombres} ${emp.apellidos}`, nuevoId, empleadoId);
-        mostrarMensaje("Horario asignado correctamente.");
-        cancelarEdicion();
-      }
-
-      guardarDatos();
-      renderizarHorarios();
-      actualizarKPIs();
-    });
-
-    document.getElementById("cancelarEdicion")?.addEventListener("click", cancelarEdicion);
-    document.getElementById("btnReset")?.addEventListener("click", () => {
-      diasSeleccionados = [];
-      document.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
-      document.getElementById("diasSeleccionados").value = "";
-      document.getElementById("turnoTipo").innerHTML = '<option value="">Seleccione cargo primero</option>';
-      document.getElementById("empleadoSelect").innerHTML = '<option value="">Seleccione cargo primero</option>';
-    });
-
-    // Cerrar sesión
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
-      mostrarMensaje("Cerrando sesión...");
-      setTimeout(() => window.location.href = "../../login.html", 800);
-    });
-
-    // Sidebar toggle móvil
-    const menuToggle = document.getElementById("menuToggle");
-    const sidebar = document.getElementById("sidebar");
-    if (menuToggle) {
-      menuToggle.addEventListener("click", () => sidebar.classList.toggle("active"));
-    }
-    document.addEventListener("click", (event) => {
-      if (sidebar.classList.contains("active")) {
-        if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-          sidebar.classList.remove("active");
-        }
-      }
-    });
-
-    // ─── ARRANQUE ────────────────────────────────────────────────
-    inicializarDatos();
-    inicializarDiasCalendario();
-    renderizarHorarios();
-    renderizarAsistencias();
-    actualizarKPIs();
-  </script>
-</body>
-
-</html>
+{% block extra_js %}
+<script src="{% static 'js/admin/asistencia.js' %}"></script>
+{% endblock %}
