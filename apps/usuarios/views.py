@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import User, PerfilEmpleado
 from django.utils.dateparse import parse_date
 from .decorators import admin_required
+from apps.asistencia.models import Horario
 
 # ========================
 
@@ -87,9 +88,43 @@ def admin_dashboard(request):
 
 @login_required
 def employee_dashboard(request):
+
+    perfil = request.user.perfil
+
+    horario = (
+        Horario.objects
+        .filter(
+            empleado=perfil,
+            estado=True
+        )
+        .first()
+    )
+
+    proximo_descanso = None
+
+    if horario:
+
+        proximo_descanso = (
+            horario.descansos
+            .filter(
+                es_descanso=True
+            )
+            .order_by("fecha")
+            .first()
+        )
+
+    context = {
+
+        "horario": horario,
+
+        "proximo_descanso": proximo_descanso,
+
+    }
+
     return render(
         request,
-        "empleado/landingEmpleado.html"
+        "empleado/landingEmpleado.html",
+        context
     )
 
 # ========================

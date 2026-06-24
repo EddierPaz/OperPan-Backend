@@ -4,15 +4,16 @@ from apps.usuarios.models import PerfilEmpleado
 
 class Horario(models.Model):
 
-    TURNOS = [
+    TURNOS = (
         ('MANANA', 'Mañana'),
         ('TARDE', 'Tarde'),
         ('FIJO', 'Fijo'),
-    ]
+    )
 
     empleado = models.ForeignKey(
         PerfilEmpleado,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='horarios'
     )
 
     turno = models.CharField(
@@ -21,20 +22,40 @@ class Horario(models.Model):
     )
 
     hora_entrada = models.TimeField()
+
     hora_salida = models.TimeField()
-
-    dias_laborales = models.JSONField(
-        default=list
-    )
-
-    descanso = models.DateField(
-        null=True,
-        blank=True
-    )
 
     estado = models.BooleanField(
         default=True
     )
 
+    fecha_creacion = models.DateTimeField(
+        auto_now_add=True
+    )
+
     def __str__(self):
-        return f"{self.empleado} - {self.get_turno_display()}"
+        return f"{self.empleado.nombre_completo()} - {self.get_turno_display()}"
+
+
+class DescansoEmpleado(models.Model):
+
+    horario = models.ForeignKey(
+        Horario,
+        on_delete=models.CASCADE,
+        related_name='descansos'
+    )
+
+    fecha = models.DateField()
+
+    es_descanso = models.BooleanField(
+        default=True
+    )
+
+    class Meta:
+        unique_together = (
+            'horario',
+            'fecha'
+        )
+
+    def __str__(self):
+        return f"{self.horario.empleado.nombre_completo()} - {self.fecha}"

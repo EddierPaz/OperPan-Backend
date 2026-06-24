@@ -8,11 +8,9 @@ class HorarioForm(forms.ModelForm):
         model = Horario
         fields = [
             'empleado',
-            'cargo',
             'turno',
             'hora_entrada',
             'hora_salida',
-            'dias_laborales',
             'estado'
         ]
 

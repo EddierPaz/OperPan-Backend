@@ -215,3 +215,64 @@
     background: #E6F0FA;
     color: #1A5D9C;
 }
+
+.horario-card {
+    border-radius: 16px;
+}
+
+.info-box {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.info-box h5 {
+    margin: 8px 0 0;
+    font-weight: 700;
+}
+
+.dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.dia-card {
+    min-height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f7fa;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    transition: .2s;
+}
+
+.dia-card:hover {
+    transform: translateY(-2px);
+}
+
+.dia-card.descanso {
+    background: #A40706;
+    color: white;
+}
+
+.dia-card small {
+    display: block;
+    font-size: .75rem;
+}

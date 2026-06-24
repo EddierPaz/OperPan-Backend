@@ -150,5 +150,10 @@ console.log(`[ACCESO] Empleado ${empleadoActual.nombre} ingresó al panel princi
 
 // Simular saludo de bienvenida
 setTimeout(() => {
-    mostrarMensaje(`¡Bienvenido ${empleadoActual.nombre}! Revisa tus tareas pendientes.`, "success");
+
+    mostrarMensaje(
+        "¡Bienvenido {{ request.user.perfil.nombre_completo }}! Revisa tus tareas pendientes.",
+        "success"
+    );
+
 }, 500);

@@ -109,19 +109,21 @@
 }
 
 .dia-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #E2E8F0;
-    background: white;
-    font-weight: 600;
-    font-size: 0.78rem;
-    cursor: pointer;
-    transition: 0.2s;
-    color: #555;
+    width: 100%;
+    min-height: 56px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #f5f7fa;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    font-weight: 600;
+
+    transition: .2s;
 }
 
 .dia-btn:hover {
@@ -133,4 +135,65 @@
     background: #A40706;
     border-color: #A40706;
     color: white;
+}
+
+.dia-btn--ultimo {
+    border-style: dashed;
+    border-color: #A40706;
+    color: #A40706;
+}
+
+.dia-btn--ultimo:hover {
+    background: #A40706;
+    color: white;
+}
+
+/* Confirmación debajo del ciclo */
+#descansoLabel {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.calendario-wrapper {
+    width: 100%;
+}
+
+.dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.dia-semana {
+    text-align: center;
+    font-weight: 700;
+    color: #6c757d;
+}
+
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+.dia-vacio {
+    width: 100%;
+    min-height: 56px;
+}
+
+.dia-btn:hover {
+    transform: translateY(-2px);
+}
+
+.dia-btn.selected {
+    background: #dc3545;
+    color: white;
+}
+
+.dia-btn.seleccionado {
+    background: #b91c1c;
+    color: white;
+    border-color: #b91c1c;
 }

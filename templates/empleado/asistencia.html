@@ -46,15 +46,156 @@
         </div>
     </div>
 
-    <!-- Botones de acción rápidos -->
-    <!-- <div class="action-buttons">
-                    <button id="btnEntrada" class="btn btn-primary-corporate"><i class="bi bi-door-open"></i> Registrar
-                        entrada</button>
-                    <button id="btnSalida" class="btn btn-outline-corporate"><i class="bi bi-door-closed"></i> Registrar
-                        salida</button>
-                    <button id="exportPDFbtn" class="btn btn-outline-secondary"><i class="bi bi-file-pdf"></i> Exportar
-                        PDF</button>
-                </div>  -->
+    <div class="card-modern horario-card mt-4 mb-4">
+
+        <div class="card-header">
+
+            <h3>
+                <i class="bi bi-calendar-week me-2"></i>
+                Mi horario de trabajo
+            </h3>
+
+        </div>
+
+        <div class="stat-card p-4">
+
+            {% if horario %}
+
+            <div class="row mb-4">
+
+                <div class="col-md-4">
+
+                    <div class="info-box">
+
+                        <span class="text-muted">
+                            Turno
+                        </span>
+
+                        <h5 class="mt-2">
+                            {{ horario.get_turno_display }}
+                        </h5>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="info-box">
+
+                        <span class="text-muted">
+                            Horario
+                        </span>
+
+                        <h5 class="mt-2">
+
+                            {{ horario.hora_entrada }}
+                            -
+                            {{ horario.hora_salida }}
+
+                        </h5>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <div class="info-box">
+
+                        <span class="text-muted">
+                            Próximo descanso
+                        </span>
+
+                        <h5 class="mt-2">
+
+                            {% if proximo_descanso %}
+
+                            {{ proximo_descanso.fecha|date:"d/m/Y" }}
+
+                            {% else %}
+
+                            Sin asignar
+
+                            {% endif %}
+
+                        </h5>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="dias-semana">
+
+                <div>Lun</div>
+                <div>Mar</div>
+                <div>Mié</div>
+                <div>Jue</div>
+                <div>Vie</div>
+                <div>Sáb</div>
+                <div>Dom</div>
+
+            </div>
+
+            <div class="calendario-grid">
+
+                {% for dia in calendario %}
+
+                {% if dia %}
+
+                {% if dia.es_descanso %}
+
+                <div class="dia-card descanso">
+
+                    <div>
+
+                        <div>
+                            {{ dia.numero }}
+                        </div>
+
+                        <small>
+                            Descanso
+                        </small>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="dia-card">
+
+                    {{ dia.numero }}
+
+                </div>
+
+                {% endif %}
+
+                {% else %}
+
+                <div></div>
+
+                {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-warning mb-0">
+
+                No tienes un horario asignado actualmente.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>  
 
     <!-- Tabla de asistencia histórica -->
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">

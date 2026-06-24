@@ -71,6 +71,29 @@
             <div class="bg-white rounded-4 p-3 h-100 border">
                 <h5 class="mb-3"><i class="bi bi-bell me-2" style="color:#A40706;"></i> Últimas novedades
                 </h5>
+                <div class="stat-summary">
+                    <div class="info-box">
+
+                        <span class="text-muted">
+                            Próximo descanso
+                        </span>
+
+                        <h5 class="mt-2">
+
+                            {% if proximo_descanso %}
+
+                            {{ proximo_descanso.fecha|date:"d/m/Y" }}
+
+                            {% else %}
+
+                            Sin asignar
+
+                            {% endif %}
+
+                        </h5>
+
+                    </div>
+                </div>
                 <div id="notificationsContainer">
                     <div class="notification-item">
                         <small class="text-muted"><i class="bi bi-calendar-check"></i> Hoy</small>
