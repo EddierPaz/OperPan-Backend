@@ -12,6 +12,38 @@
 
 {% block content %}
 <main class="dashboard-container">
+    <div class="row stats-row g-3">
+        <h3 class="mb-0"><i class="bi bi-bar-chart"></i> Estadisticas del mes</h3>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Solicitudes enviadas</span>
+                    <h3 class="mt-1" id="asistenciasCompletas">0</h3>
+                </div>
+                <i class="bi bi-capslock-fill" style="color:#1E7B48;"></i>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Solicitudes pendientes</span>
+                    <h3 class="mt-1" id="totalHorasMes">0</h3>
+                </div>
+                <div class="spinner-border" style="color: rgb(216, 195, 9);" role="status">
+                </div>
+                
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">Solicitudes con respuesta</span>
+                    <h3 class="mt-1" id="totalRetardos">0</h3>
+                </div>
+                <i class="bi bi-check-circle-fill" style="color:#1E7B48;"></i>
+            </div>
+        </div>
+    </div>
     <!-- Mensajes de Django -->
     {% if messages %}
         {% for message in messages %}

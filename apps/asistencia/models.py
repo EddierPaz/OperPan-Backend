@@ -59,3 +59,44 @@ class DescansoEmpleado(models.Model):
 
     def __str__(self):
         return f"{self.horario.empleado.nombre_completo()} - {self.fecha}"
+
+class Asistencia(models.Model):
+
+    ESTADOS = (
+        ('PRESENTE', 'Presente'),
+        ('TARDE', 'Tarde'),
+        ('AUSENTE', 'Ausente'),
+    )
+
+    horario = models.ForeignKey(
+        Horario,
+        on_delete=models.CASCADE,
+        related_name='asistencias'
+    )
+
+    fecha = models.DateField()
+
+    estado = models.CharField(
+        max_length=10,
+        choices=ESTADOS,
+        null=True,
+        blank=True
+    )
+
+    hora_marcada = models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    fecha_registro = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        unique_together = (
+            'horario',
+            'fecha'
+        )
+
+    def __str__(self):
+        return f"{self.horario.empleado.nombre_completo()} - {self.fecha} - {self.get_estado_display() if self.estado else 'Sin marcar'}"

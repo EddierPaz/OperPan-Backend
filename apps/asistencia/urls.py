@@ -33,6 +33,12 @@ urlpatterns = [
         'asistencia/empleado',
         views.asistencia_empleado,
         name="empleado"
+    ),
+
+    path(
+        "registrar-asistencia/",
+        views.registrar_asistencia,
+        name="registrar_asistencia"
     )
 
 ]

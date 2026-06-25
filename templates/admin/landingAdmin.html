@@ -22,7 +22,7 @@
         <h2 class="mb-1">
           ¡Bienvenido, {{ perfil.primer_nombre }} {{ perfil.primer_apellido }}!
         </h2>
-        <p class="text-muted">Hoy es <strong id="fechaActual"></strong></p>
+        <p class="mb-0">Hoy es <strong id="fechaActual"></strong></p>
         <div class="d-flex flex-wrap gap-2">
           <span class="badge-role"><i class="bi bi-shield-check"></i> <span class="fw-semibold"
               style="font-size: 13px;"> Rol:</span> Administrador</span>
@@ -178,6 +178,6 @@
 
 {% endblock %}
 {% block extra_js %}
-
+<script src="{% static 'js/script.js' %}"></script>
 <script src="{% static 'js/admin/dashboard.js' %}"></script>
 {% endblock %}

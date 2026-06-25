@@ -52,3 +52,12 @@ function cargarKPIs() {
     } catch (e) { reportesPendientes = 1; }
     document.getElementById("reportesPendientes").innerText = reportesPendientes;
 }
+
+// Mostrar fecha actual
+function mostrarFecha() {
+    const fecha = new Date();
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById("fechaActual").innerText = fecha.toLocaleDateString('es-ES', opciones);
+}
+
+mostrarFecha()

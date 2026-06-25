@@ -114,11 +114,9 @@ def employee_dashboard(request):
         )
 
     context = {
-
         "horario": horario,
-
         "proximo_descanso": proximo_descanso,
-
+        "perfil": perfil,
     }
 
     return render(

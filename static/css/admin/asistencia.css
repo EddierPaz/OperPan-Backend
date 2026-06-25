@@ -12,6 +12,16 @@
     transition: 0.2s;
 }
 
+.stat-card-one {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #A40706;
+    transition: 0.2s;
+}
+
+
 .card-modern {
     background: white;
     border-radius: 24px;

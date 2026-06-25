@@ -13,16 +13,180 @@
 {% block content %}
 <main class="dashboard-container">
 
-  <div class="d-flex justify-content-end mb-4">
-    <button class="btn btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#modalHorario">
-      <i class="bi bi-plus-circle me-2"></i>Agregar horario
-    </button>
+  <!-- ============================================================
+       SECCIÓN: ASISTENCIA DEL DÍA
+  ============================================================ -->
+
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3><i class="bi bi-clipboard2-check me-2"></i>Asistencia de hoy</h3>
+    <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
   </div>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Programados</span>
+          <h3 class="mt-1">{{ resumen_asistencia.programados }}</h3>
+        </div>
+        <i class="bi bi-people-fill fs-2" style="color:#17bd62;"></i>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Presentes</span>
+          <h3 class="mt-1">{{ resumen_asistencia.presentes }}</h3>
+        </div>
+        <i class="bi bi-check-circle fs-2" style="color:#17bd62;"></i>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Tardanzas</span>
+          <h3 class="mt-1">{{ resumen_asistencia.tardanzas }}</h3>
+        </div>
+        <i class="bi bi-clock-history fs-2" style="color:#17bd62;"></i>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Ausentes / Sin marcar</span>
+          <h3 class="mt-1">{{ resumen_asistencia.ausentes }}</h3>
+        </div>
+        <i class="bi bi-x-circle fs-2" style="color:#17bd62;"></i>
+      </div>
+    </div>
+  </div>
+  <div>
+
+    <!-- Bloques por turno -->
+    {% for turno_codigo, lista_horarios in turnos_hoy.items %}
+    <div class="stat-card-one turno-asistencia-bloque mb-4">
+      <div class="turno-asistencia-header d-flex align-items-center">
+        <h5>
+          <i class="bi bi-sun me-2"></i> Turno {{ turno_codigo|title }}
+        </h5>
+
+        <span class="badge-turno-conteo ms-auto" style="color: #A40706;">{{ lista_horarios|length }} programados</span>
+      </div>
+
+
+      <div class="table-responsive">
+        <table class="table table-custom align-middle">
+          <thead>
+            <tr>
+              <th>Empleado</th>
+              <th>Cargo</th>
+              <th>Hora programada</th>
+              <th>Hora marcada</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for horario in lista_horarios %}
+            <tr>
+              <td>{{ horario.empleado.nombre_completo }}</td>
+              <td>{{ horario.empleado.get_cargo_display }}</td>
+              <td>{{ horario.hora_entrada|time:"H:i" }}</td>
+
+              <td>
+                {% if horario.asistencia %}
+                {{ horario.asistencia.hora_marcada|time:"H:i" }}
+                {% else %}
+                <span class="text-muted">Sin marcar</span>
+                {% endif %}
+              </td>
+
+              <td>
+
+                {% if horario.asistencia %}
+
+                {% if horario.asistencia.estado == 'PRESENTE' %}
+                <span class="badge text-success">
+                  Presente
+                </span>
+
+                {% elif horario.asistencia.estado == 'TARDE' %}
+                <span class="badge text-warning">
+                  Tarde
+                </span>
+
+                {% elif horario.asistencia.estado == 'AUSENTE' %}
+                <span class="badge bg-danger">
+                  Ausente
+                </span>
+
+                {% endif %}
+
+                {% else %}
+
+                <span class="badge bg-secondary">
+                  Sin registrar
+                </span>
+
+                {% endif %}
+
+              </td>
+
+              <td>
+
+                {% if horario.asistencia %}
+
+                <span class="badge text-success">
+                  Registrado
+                </span>
+
+                {% else %}
+
+                <form method="POST" action="{% url 'asistencia:registrar_asistencia' %}">
+
+                  {% csrf_token %}
+
+                  <input type="hidden" name="horario_id" value="{{ horario.id }}">
+
+                  <button type="submit" class="btn btn-sm btn-outline-corporate">
+
+                    <i class="bi bi-fingerprint"></i>
+                    Registrar
+
+                  </button>
+
+                </form>
+
+                {% endif %}
+
+              </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted">
+                No hay personal programado en este turno hoy
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted mb-0">No hay horarios registrados para hoy.</p>
+    {% endfor %}
+
+  </div>
+
 
   <!-- Tabla -->
   <div class="card-modern">
-    <div class="card-header">
+    <div class="card-header d-flex align-items-center">
       <h3><i class="bi bi-table me-2"></i>Horarios asignados</h3>
+
+      <button class="btn btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalHorario">
+        <i class="bi bi-plus-circle me-2"></i>Agregar horario
+      </button>
     </div>
     <div class="p-3">
       <div class="table-responsive">
@@ -47,14 +211,14 @@
               <td>{{ horario.hora_entrada }} - {{ horario.hora_salida }}</td>
               <td>
                 {% for descanso in horario.descansos.all %}
-                  {% if descanso.es_descanso %}{{ descanso.fecha|date:"d/m/Y" }}{% endif %}
+                {% if descanso.es_descanso %}{{ descanso.fecha|date:"d/m/Y" }}{% endif %}
                 {% empty %}Sin descanso asignado{% endfor %}
               </td>
               <td>
                 {% if horario.estado %}
-                  <span class="badge bg-success">Activo</span>
+                <span class="badge bg-success">Activo</span>
                 {% else %}
-                  <span class="badge bg-danger">Inactivo</span>
+                <span class="badge bg-danger">Inactivo</span>
                 {% endif %}
               </td>
               <td>
@@ -122,14 +286,14 @@
                 </select>
               </div>
 
-              <div class="col-md-3">
-                <label class="form-label">Hora entrada</label>
-                <input type="time" name="hora_entrada" id="horaEntrada" class="form-control" required>
+              <div class="col-md-4">
+                <label class="form-label">Hora entrada *</label>
+                <input type="time" id="horaEntrada" name="hora_entrada" class="form-control" required>
               </div>
 
-              <div class="col-md-3">
-                <label class="form-label">Hora salida</label>
-                <input type="time" name="hora_salida" id="horaSalida" class="form-control" required>
+              <div class="col-md-4">
+                <label class="form-label">Hora salida *</label>
+                <input type="time" id="horaSalida" name="hora_salida" class="form-control" required>
               </div>
 
               <div class="col-12">
@@ -142,16 +306,14 @@
                   </div>
                   <div class="calendario-grid">
                     {% for dia in proximos_dias %}
-                      {% if dia %}
-                        <button type="button" class="dia-btn"
-                          data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
-                          data-label="{{ dia.fecha|date:'d/m' }}"
-                          title="{{ dia.fecha|date:'d/m/Y' }}">
-                          {{ dia.numero }}
-                        </button>
-                      {% else %}
-                        <div class="dia-vacio"></div>
-                      {% endif %}
+                    {% if dia %}
+                    <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+                      data-label="{{ dia.fecha|date:'d/m' }}" title="{{ dia.fecha|date:'d/m/Y' }}">
+                      {{ dia.numero }}
+                    </button>
+                    {% else %}
+                    <div class="dia-vacio"></div>
+                    {% endif %}
                     {% endfor %}
                   </div>
                   <input type="hidden" name="fecha_descanso" id="fechaDescansoInput" required>
@@ -282,16 +444,14 @@
                   </div>
                   <div class="calendario-grid">
                     {% for dia in proximos_dias %}
-                      {% if dia %}
-                        <button type="button" class="dia-btn"
-                          data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
-                          data-label="{{ dia.fecha|date:'d/m' }}"
-                          title="{{ dia.fecha|date:'d/m/Y' }}">
-                          {{ dia.numero }}
-                        </button>
-                      {% else %}
-                        <div class="dia-vacio"></div>
-                      {% endif %}
+                    {% if dia %}
+                    <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+                      data-label="{{ dia.fecha|date:'d/m' }}" title="{{ dia.fecha|date:'d/m/Y' }}">
+                      {{ dia.numero }}
+                    </button>
+                    {% else %}
+                    <div class="dia-vacio"></div>
+                    {% endif %}
                     {% endfor %}
                   </div>
                   <input type="hidden" name="fecha_descanso" id="fechaDescansoEditarInput">
@@ -317,6 +477,7 @@
       </div>
     </div>
   </div>
+
 
 </main>
 {% endblock %}

@@ -276,3 +276,157 @@
     display: block;
     font-size: .75rem;
 }
+
+/* ============================================================
+   BLOQUE: ASISTENCIA DEL DÍA
+============================================================ */
+
+.resumen-asistencia {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  height: 100%;
+}
+.resumen-asistencia .resumen-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: rgba(164, 7, 6, .08);
+  color: #A40706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.resumen-asistencia.resumen-success .resumen-icon { background: rgba(25,135,84,.1); color: #198754; }
+.resumen-asistencia.resumen-warning .resumen-icon { background: rgba(255,193,7,.15); color: #856404; }
+.resumen-asistencia.resumen-danger  .resumen-icon { background: rgba(164,7,6,.08);  color: #A40706; }
+
+.resumen-label {
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  margin-bottom: .15rem;
+}
+.resumen-valor {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #000;
+  line-height: 1;
+}
+
+/* Bloque por turno */
+.turno-asistencia-bloque {
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.turno-asistencia-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .85rem 1.1rem;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e8e8e8;
+}
+.turno-asistencia-header h5 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: .95rem;
+  margin: 0;
+  color: #000;
+}
+.badge-turno-conteo {
+  font-family: 'Open Sans', sans-serif;
+  font-size: .72rem;
+  font-weight: 700;
+  color: #A40706;
+  background: rgba(164,7,6,.08);
+  padding: .25rem .65rem;
+  border-radius: 20px;
+}
+
+.turno-asistencia-bloque .table {
+  margin-bottom: 0;
+}
+
+/* La fila usa <form> dentro de <tr>; los <td> hijos del form
+   se muestran como table-cell para mantener la alineación. */
+.form-asistencia-fila {
+  display: table-row;
+}
+.form-asistencia-fila td {
+  display: table-cell;
+}
+
+.hora-marcada-input {
+  width: 110px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: .82rem;
+}
+
+/* Grupo de estado Presente / Tarde / Ausente */
+.estado-asistencia-group {
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+}
+.estado-asistencia-group .btn {
+  font-family: 'Open Sans', sans-serif;
+  font-size: .76rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: .35rem .7rem;
+  border: 1.5px solid #e8e8e8;
+  background: #fff;
+  color: #6c757d;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+.estado-asistencia-group .btn:hover {
+  border-color: #c9c9c9;
+}
+
+.btn-check:checked + .btn-check-presente {
+  background: rgba(25,135,84,.1);
+  border-color: #198754;
+  color: #198754;
+}
+.btn-check:checked + .btn-check-tarde {
+  background: rgba(255,193,7,.15);
+  border-color: #c89200;
+  color: #856404;
+}
+.btn-check:checked + .btn-check-ausente {
+  background: rgba(164,7,6,.08);
+  border-color: #A40706;
+  color: #A40706;
+}
+
+.btn-check:disabled + .btn {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .estado-asistencia-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .estado-asistencia-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

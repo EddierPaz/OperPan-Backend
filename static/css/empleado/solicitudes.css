@@ -5,6 +5,25 @@
     padding: 2rem;
 }
 
+/* Cards de resumen */
+.stats-row {
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    border: 1px solid #EDF2F7;
+    transition: 0.2s;
+}
+
+.stat-card i {
+    font-size: 2rem;
+    color: #A40706;
+}
+
 .request-card {
     background: white;
     border-radius: 20px;

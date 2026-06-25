@@ -23,18 +23,20 @@ class AsistenciaForm(forms.ModelForm):
 
     class Meta:
         model = Asistencia
+
         fields = [
-            'empleado',
             'horario',
             'fecha',
-            'hora_entrada',
-            'hora_salida',
-            'estado',
-            'observaciones'
+            'hora_marcada',
+            'estado'
         ]
 
         widgets = {
-            'fecha': forms.DateInput(attrs={'type': 'date'}),
-            'hora_entrada': forms.TimeInput(attrs={'type': 'time'}),
-            'hora_salida': forms.TimeInput(attrs={'type': 'time'}),
+            'fecha': forms.DateInput(
+                attrs={'type': 'date'}
+            ),
+
+            'hora_marcada': forms.TimeInput(
+                attrs={'type': 'time'}
+            ),
         }
