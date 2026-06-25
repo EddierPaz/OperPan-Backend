@@ -1,3 +1,6 @@
+**Archivo: `apps/novedades/views.py`**
+
+```python
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -14,8 +17,8 @@ from .forms import (
     IncapacidadCrearForm,
     CertificadoCrearForm,
 )
-from .decorators import admin_required
-from apps.usuarios.decorators import admin_required as admin_required_html
+from .decorators import admin_required  # API (devuelve JSON)
+from apps.usuarios.decorators import admin_required as admin_required_html  # HTML (redirige)
 from apps.usuarios.decorators import empleado_required
 
 
@@ -37,48 +40,48 @@ def solicitudes_empleado(request):
     incapacidades = Incapacidad.objects.filter(empleado=perfil).order_by('-fecha_solicitud')
     certificados = Certificado.objects.filter(empleado=perfil).order_by('-fecha_emision')
 
-    # --- Inicializar formularios con prefijos para evitar colisiones ---
-    permiso_form = PermisoCrearForm(prefix='permiso')
-    incapacidad_form = IncapacidadCrearForm(prefix='incapacidad')
-    certificado_form = CertificadoCrearForm(prefix='certificado')
+    # --- Inicializar formularios vacíos para GET ---
+    permiso_form = PermisoCrearForm()
+    incapacidad_form = IncapacidadCrearForm()
+    certificado_form = CertificadoCrearForm()
 
     # --- Procesar POST (creación de solicitud) ---
     if request.method == 'POST':
         tipo_solicitud = request.POST.get('tipo_solicitud')
 
         if tipo_solicitud == 'permiso':
-            permiso_form = PermisoCrearForm(request.POST, prefix='permiso')
+            permiso_form = PermisoCrearForm(request.POST)
             if permiso_form.is_valid():
                 permiso = permiso_form.save(commit=False)
                 permiso.empleado = perfil
                 permiso.save()
                 messages.success(request, '✅ Permiso creado correctamente.')
                 return redirect('novedades:solicitudes_empleado')
-            # Si es inválido, se renderiza con el formulario con errores
+            # Si es inválido, se renderiza con el formulario con errores y los datos
 
         elif tipo_solicitud == 'incapacidad':
-            incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad')
+            incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES)
             if incapacidad_form.is_valid():
                 incapacidad = incapacidad_form.save(commit=False)
                 incapacidad.empleado = perfil
                 incapacidad.save()
                 messages.success(request, '✅ Incapacidad creada correctamente.')
                 return redirect('novedades:solicitudes_empleado')
-            # Si es inválido, se renderiza con el formulario con errores
+            # Si es inválido, se renderiza con el formulario con errores y los datos
 
         elif tipo_solicitud == 'certificado':
-            certificado_form = CertificadoCrearForm(request.POST, prefix='certificado')
+            certificado_form = CertificadoCrearForm(request.POST)
             if certificado_form.is_valid():
                 certificado = certificado_form.save(commit=False)
                 certificado.empleado = perfil
                 certificado.save()
                 messages.success(request, '✅ Certificado creado correctamente.')
                 return redirect('novedades:solicitudes_empleado')
-            # Si es inválido, se renderiza con el formulario con errores
+            # Si es inválido, se renderiza con el formulario con errores y los datos
 
         elif tipo_solicitud in ('cambio_turno', 'vacaciones'):
             # Se usa el formulario de permiso pero se fuerza el tipo
-            permiso_form = PermisoCrearForm(request.POST, prefix='permiso')
+            permiso_form = PermisoCrearForm(request.POST)
             if permiso_form.is_valid():
                 permiso = permiso_form.save(commit=False)
                 permiso.empleado = perfil
@@ -86,7 +89,7 @@ def solicitudes_empleado(request):
                 permiso.save()
                 messages.success(request, f'✅ Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.')
                 return redirect('novedades:solicitudes_empleado')
-            # Si es inválido, se renderiza con el formulario con errores
+            # Si es inválido, se renderiza con el formulario con errores y los datos
 
         else:
             messages.error(request, '❌ Tipo de solicitud no válido.')
@@ -102,7 +105,6 @@ def solicitudes_empleado(request):
             'incapacidad_form': incapacidad_form,
             'certificado_form': certificado_form,
         }
-        messages.error(request, '❌ Por favor, corrige los errores en el formulario.')
         return render(request, 'empleado/solicitudes.html', context)
 
     # --- GET: mostrar formulario y listado ---
@@ -136,6 +138,7 @@ def novedades_admin(request):
 @login_required
 @admin_required
 def permisos_pendientes(request):
+    """Lista permisos en estado pendiente."""
     pendientes = Permiso.objects.filter(estado='pendiente').select_related('empleado__user')
     data = [
         {
@@ -156,6 +159,7 @@ def permisos_pendientes(request):
 @login_required
 @admin_required
 def permisos_historial(request):
+    """Historial de permisos con filtros opcionales."""
     qs = Permiso.objects.all().select_related('empleado__user')
     estado = request.GET.get('estado')
     tipo = request.GET.get('tipo')
@@ -184,6 +188,7 @@ def permisos_historial(request):
 @login_required
 @admin_required
 def permiso_detalle(request, pk):
+    """Detalle completo de un permiso."""
     try:
         p = Permiso.objects.select_related('empleado__user', 'decision_por').get(pk=pk)
     except Permiso.DoesNotExist:
@@ -211,6 +216,7 @@ def permiso_detalle(request, pk):
 @login_required
 @admin_required
 def permiso_aprobar(request, pk):
+    """Aprueba un permiso pendiente."""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
     try:
@@ -229,6 +235,7 @@ def permiso_aprobar(request, pk):
 @login_required
 @admin_required
 def permiso_rechazar(request, pk):
+    """Rechaza un permiso pendiente con motivo obligatorio."""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
 
@@ -258,6 +265,7 @@ def permiso_rechazar(request, pk):
 @login_required
 @admin_required
 def incapacidades_pendientes(request):
+    """Lista incapacidades pendientes."""
     pendientes = Incapacidad.objects.filter(estado='pendiente').select_related('empleado__user')
     data = [
         {
@@ -277,6 +285,7 @@ def incapacidades_pendientes(request):
 @login_required
 @admin_required
 def incapacidades_historial(request):
+    """Historial de incapacidades con filtros."""
     qs = Incapacidad.objects.all().select_related('empleado__user')
     estado = request.GET.get('estado')
     empleado = request.GET.get('empleado')
@@ -339,7 +348,7 @@ def incapacidad_aprobar(request, pk):
     except Incapacidad.DoesNotExist:
         return JsonResponse({'error': 'Incapacidad no encontrada o ya procesada'}, status=404)
 
-    i.estado = 'aprobado'
+    i.estado = 'aprobado'  # Unificado
     i.decision_por = request.user
     i.decision_fecha = timezone.now()
     i.save()
@@ -367,7 +376,7 @@ def incapacidad_rechazar(request, pk):
     if not form.is_valid():
         return JsonResponse({'error': 'Motivo requerido', 'detalles': form.errors}, status=400)
 
-    i.estado = 'rechazado'
+    i.estado = 'rechazado'  # Unificado
     i.motivo_rechazo = form.cleaned_data['motivo']
     i.decision_por = request.user
     i.decision_fecha = timezone.now()
@@ -379,6 +388,7 @@ def incapacidad_rechazar(request, pk):
 @login_required
 @admin_required
 def certificados_lista(request):
+    """Lista certificados con filtros (empleado, tipo, fechas)."""
     qs = Certificado.objects.all().select_related('empleado__user', 'generado_por')
 
     form = CertificadoFiltroForm(request.GET)
@@ -459,6 +469,7 @@ def crear_certificado(request):
 @login_required
 @empleado_required
 def mis_solicitudes(request):
+    """Devuelve todas las solicitudes del empleado autenticado (formato JSON)."""
     perfil = request.user.perfil
 
     permisos = Permiso.objects.filter(empleado=perfil).values(
@@ -529,3 +540,4 @@ def mis_solicitudes(request):
 
     resultado.sort(key=lambda x: x['fecha_creacion'], reverse=True)
     return JsonResponse(resultado, safe=False)
+```

@@ -6,7 +6,7 @@ class Permiso(models.Model):
         ('personal', 'Personal'),
         ('cambio_turno', 'Cambio de turno'),
         ('medico', 'Médico'),
-        ('familiar', 'Familiar'),
+        ('familiar', 'Familiar'),          # <-- NUEVO
         ('vacaciones', 'Vacaciones'),
         ('academico', 'Académico'),
         ('calamidad', 'Calamidad'),

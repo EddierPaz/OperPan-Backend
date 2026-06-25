@@ -28,18 +28,18 @@
             <h3 class="mb-0"><i class="bi bi-plus-circle me-2" style="color:#A40706;"></i> Nueva solicitud</h3>
         </div>
         <div class="card-body p-4">
-            <form method="post" enctype="multipart/form-data" id="solicitudForm">
+            <form method="post" enctype="multipart/form-data" id="solicitudForm" action="{% url 'novedades:solicitudes_empleado' %}">
                 {% csrf_token %}
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Tipo de solicitud <span class="text-danger">*</span></label>
                         <select class="form-select" id="tipoSolicitud" name="tipo_solicitud" required>
                             <option value="">Seleccionar tipo</option>
-                            <option value="permiso">Permiso</option>
-                            <option value="incapacidad">Incapacidad médica</option>
-                            <option value="cambio_turno">Cambio de turno</option>
-                            <option value="vacaciones">Solicitud de vacaciones</option>
-                            <option value="certificado">Certificado</option>
+                            <option value="permiso" {% if request.POST.tipo_solicitud == 'permiso' %}selected{% endif %}>Permiso</option>
+                            <option value="incapacidad" {% if request.POST.tipo_solicitud == 'incapacidad' %}selected{% endif %}>Incapacidad médica</option>
+                            <option value="cambio_turno" {% if request.POST.tipo_solicitud == 'cambio_turno' %}selected{% endif %}>Cambio de turno</option>
+                            <option value="vacaciones" {% if request.POST.tipo_solicitud == 'vacaciones' %}selected{% endif %}>Solicitud de vacaciones</option>
+                            <option value="certificado" {% if request.POST.tipo_solicitud == 'certificado' %}selected{% endif %}>Certificado</option>
                         </select>
                     </div>
                 </div>
@@ -49,12 +49,12 @@
                     <div class="row g-3 mt-2">
                         <div class="col-md-6">
                             <label class="form-label">Tipo de permiso *</label>
-                            <select class="form-select" id="permisoTipo" name="tipo">
-                                <option value="personal">Personal</option>
-                                <option value="medico">Médico</option>
-                                <option value="academico">Académico</option>
-                                <option value="calamidad">Calamidad doméstica</option>
-                                <option value="otro">Otro</option>
+                            <select class="form-select" id="permisoTipo" name="permiso-tipo">
+                                <option value="personal" {% if permiso_form.tipo.value == 'personal' %}selected{% endif %}>Personal</option>
+                                <option value="medico" {% if permiso_form.tipo.value == 'medico' %}selected{% endif %}>Médico</option>
+                                <option value="academico" {% if permiso_form.tipo.value == 'academico' %}selected{% endif %}>Académico</option>
+                                <option value="calamidad" {% if permiso_form.tipo.value == 'calamidad' %}selected{% endif %}>Calamidad doméstica</option>
+                                <option value="otro" {% if permiso_form.tipo.value == 'otro' %}selected{% endif %}>Otro</option>
                             </select>
                             {% if permiso_form.tipo.errors %}
                                 <div class="text-danger small">{{ permiso_form.tipo.errors }}</div>
@@ -62,25 +62,25 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Fecha inicio *</label>
-                            <input type="date" class="form-control" id="permisoFechaInicio" name="fecha_inicio" value="{{ permiso_form.fecha_inicio.value|default:'' }}">
+                            <input type="date" class="form-control" id="permisoFechaInicio" name="permiso-fecha_inicio" value="{{ permiso_form.fecha_inicio.value|default:'' }}">
                             {% if permiso_form.fecha_inicio.errors %}
                                 <div class="text-danger small">{{ permiso_form.fecha_inicio.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Fecha fin *</label>
-                            <input type="date" class="form-control" id="permisoFechaFin" name="fecha_fin" value="{{ permiso_form.fecha_fin.value|default:'' }}">
+                            <input type="date" class="form-control" id="permisoFechaFin" name="permiso-fecha_fin" value="{{ permiso_form.fecha_fin.value|default:'' }}">
                             {% if permiso_form.fecha_fin.errors %}
                                 <div class="text-danger small">{{ permiso_form.fecha_fin.errors }}</div>
                             {% endif %}
                         </div>
-                        <!-- Nuevo horario (solo para cambio de turno, se oculta por defecto con JS) -->
+                        <!-- Nuevo horario (solo para cambio de turno) -->
                         <div class="col-md-6" id="nuevoHorarioGroup" style="display: none;">
                             <label class="form-label">Nuevo horario *</label>
-                            <select class="form-select" id="cambioTurnoSolicitado" name="nuevo_horario">
-                                <option value="Mañana">Mañana (6:00 - 14:00)</option>
-                                <option value="Tarde">Tarde (14:00 - 22:00)</option>
-                                <option value="Noche">Noche (22:00 - 6:00)</option>
+                            <select class="form-select" id="cambioTurnoSolicitado" name="permiso-nuevo_horario">
+                                <option value="Mañana" {% if permiso_form.nuevo_horario.value == 'Mañana' %}selected{% endif %}>Mañana (6:00 - 14:00)</option>
+                                <option value="Tarde" {% if permiso_form.nuevo_horario.value == 'Tarde' %}selected{% endif %}>Tarde (14:00 - 22:00)</option>
+                                <option value="Noche" {% if permiso_form.nuevo_horario.value == 'Noche' %}selected{% endif %}>Noche (22:00 - 6:00)</option>
                             </select>
                             {% if permiso_form.nuevo_horario.errors %}
                                 <div class="text-danger small">{{ permiso_form.nuevo_horario.errors }}</div>
@@ -88,14 +88,10 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Motivo</label>
-                            <textarea class="form-control" rows="2" id="permisoMotivo" name="justificacion" placeholder="Explique el motivo del permiso">{{ permiso_form.justificacion.value|default:'' }}</textarea>
+                            <textarea class="form-control" rows="2" id="permisoMotivo" name="permiso-justificacion" placeholder="Explique el motivo del permiso">{{ permiso_form.justificacion.value|default:'' }}</textarea>
                             {% if permiso_form.justificacion.errors %}
                                 <div class="text-danger small">{{ permiso_form.justificacion.errors }}</div>
                             {% endif %}
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Adjuntar soporte (opcional)</label>
-                            <input type="file" class="form-control" id="permisoAdjunto" accept=".pdf,.jpg,.png,.jpeg">
                         </div>
                     </div>
                 </div>
@@ -105,21 +101,21 @@
                     <div class="row g-3 mt-2">
                         <div class="col-md-6">
                             <label class="form-label">Título *</label>
-                            <input type="text" class="form-control" id="incapacidadTitulo" name="titulo" placeholder="Ej. Incapacidad por cirugía" value="{{ incapacidad_form.titulo.value|default:'' }}">
+                            <input type="text" class="form-control" id="incapacidadTitulo" name="incapacidad-titulo" placeholder="Ej. Incapacidad por cirugía" value="{{ incapacidad_form.titulo.value|default:'' }}">
                             {% if incapacidad_form.titulo.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.titulo.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Fecha inicio *</label>
-                            <input type="date" class="form-control" id="incapacidadFechaInicio" name="fecha_inicio" value="{{ incapacidad_form.fecha_inicio.value|default:'' }}">
+                            <input type="date" class="form-control" id="incapacidadFechaInicio" name="incapacidad-fecha_inicio" value="{{ incapacidad_form.fecha_inicio.value|default:'' }}">
                             {% if incapacidad_form.fecha_inicio.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.fecha_inicio.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Fecha fin *</label>
-                            <input type="date" class="form-control" id="incapacidadFechaFin" name="fecha_fin" value="{{ incapacidad_form.fecha_fin.value|default:'' }}">
+                            <input type="date" class="form-control" id="incapacidadFechaFin" name="incapacidad-fecha_fin" value="{{ incapacidad_form.fecha_fin.value|default:'' }}">
                             {% if incapacidad_form.fecha_fin.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.fecha_fin.errors }}</div>
                             {% endif %}
@@ -130,28 +126,28 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Entidad emisora *</label>
-                            <input type="text" class="form-control" id="incapacidadEntidad" name="entidad_emisora" placeholder="EPS o clínica" value="{{ incapacidad_form.entidad_emisora.value|default:'' }}">
+                            <input type="text" class="form-control" id="incapacidadEntidad" name="incapacidad-entidad_emisora" placeholder="EPS o clínica" value="{{ incapacidad_form.entidad_emisora.value|default:'' }}">
                             {% if incapacidad_form.entidad_emisora.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.entidad_emisora.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Número de incapacidad *</label>
-                            <input type="text" class="form-control" id="incapacidadNumero" name="numero_incapacidad" placeholder="Número de certificado" value="{{ incapacidad_form.numero_incapacidad.value|default:'' }}">
+                            <input type="text" class="form-control" id="incapacidadNumero" name="incapacidad-numero_incapacidad" placeholder="Número de certificado" value="{{ incapacidad_form.numero_incapacidad.value|default:'' }}">
                             {% if incapacidad_form.numero_incapacidad.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.numero_incapacidad.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-12">
                             <label class="form-label">Observaciones</label>
-                            <textarea class="form-control" rows="2" id="incapacidadObservaciones" name="descripcion" placeholder="Detalles adicionales">{{ incapacidad_form.descripcion.value|default:'' }}</textarea>
+                            <textarea class="form-control" rows="2" id="incapacidadObservaciones" name="incapacidad-descripcion" placeholder="Detalles adicionales">{{ incapacidad_form.descripcion.value|default:'' }}</textarea>
                             {% if incapacidad_form.descripcion.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.descripcion.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-12">
                             <label class="form-label">Adjuntar soporte (obligatorio) *</label>
-                            <input type="file" class="form-control" id="incapacidadAdjunto" name="archivo" accept=".pdf,.jpg,.png,.jpeg" required>
+                            <input type="file" class="form-control" id="incapacidadAdjunto" name="incapacidad-archivo" accept=".pdf,.jpg,.png,.jpeg">
                             <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB). Obligatorio para incapacidades.</small>
                             {% if incapacidad_form.archivo.errors %}
                                 <div class="text-danger small">{{ incapacidad_form.archivo.errors }}</div>
@@ -165,10 +161,10 @@
                     <div class="row g-3 mt-2">
                         <div class="col-md-6">
                             <label class="form-label">Tipo de certificado *</label>
-                            <select class="form-select" id="certificadoTipo" name="tipo">
-                                <option value="laboral">Certificado laboral</option>
-                                <option value="ingresos">Certificado de ingresos</option>
-                                <option value="antiguedad">Certificado de antigüedad</option>
+                            <select class="form-select" id="certificadoTipo" name="certificado-tipo">
+                                <option value="laboral" {% if certificado_form.tipo.value == 'laboral' %}selected{% endif %}>Certificado laboral</option>
+                                <option value="ingresos" {% if certificado_form.tipo.value == 'ingresos' %}selected{% endif %}>Certificado de ingresos</option>
+                                <option value="antiguedad" {% if certificado_form.tipo.value == 'antiguedad' %}selected{% endif %}>Certificado de antigüedad</option>
                             </select>
                             {% if certificado_form.tipo.errors %}
                                 <div class="text-danger small">{{ certificado_form.tipo.errors }}</div>
@@ -176,27 +172,44 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Dirigido a *</label>
-                            <input type="text" class="form-control" id="certificadoDirigido" name="dirigido_a" placeholder="Nombre de la entidad o persona" value="{{ certificado_form.dirigido_a.value|default:'' }}">
+                            <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" placeholder="Nombre de la entidad o persona" value="{{ certificado_form.dirigido_a.value|default:'' }}">
                             {% if certificado_form.dirigido_a.errors %}
                                 <div class="text-danger small">{{ certificado_form.dirigido_a.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-12" id="certificadoFinalidadGroup" style="display: none;">
                             <label class="form-label">Finalidad (opcional)</label>
-                            <input type="text" class="form-control" id="certificadoFinalidad" name="proposito" placeholder="Ej: trámite bancario, estudios" value="{{ certificado_form.proposito.value|default:'' }}">
+                            <input type="text" class="form-control" id="certificadoFinalidad" name="certificado-proposito" placeholder="Ej: trámite bancario, estudios" value="{{ certificado_form.proposito.value|default:'' }}">
                             {% if certificado_form.proposito.errors %}
                                 <div class="text-danger small">{{ certificado_form.proposito.errors }}</div>
                             {% endif %}
                         </div>
                         <div class="col-12" id="certificadoPeriodoGroup" style="display: none;">
                             <label class="form-label">Periodo solicitado</label>
-                            <input type="text" class="form-control" id="certificadoPeriodo" name="periodo" placeholder="Ej: Enero 2025 - Marzo 2025" value="{{ certificado_form.periodo.value|default:'' }}">
+                            <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" placeholder="Ej: Enero 2025 - Marzo 2025" value="{{ certificado_form.periodo.value|default:'' }}">
                             {% if certificado_form.periodo.errors %}
                                 <div class="text-danger small">{{ certificado_form.periodo.errors }}</div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
+
+                <!-- Mostrar errores no relacionados con campos -->
+                {% if permiso_form.non_field_errors %}
+                    <div class="alert alert-danger mt-3">
+                        {{ permiso_form.non_field_errors }}
+                    </div>
+                {% endif %}
+                {% if incapacidad_form.non_field_errors %}
+                    <div class="alert alert-danger mt-3">
+                        {{ incapacidad_form.non_field_errors }}
+                    </div>
+                {% endif %}
+                {% if certificado_form.non_field_errors %}
+                    <div class="alert alert-danger mt-3">
+                        {{ certificado_form.non_field_errors }}
+                    </div>
+                {% endif %}
 
                 <div class="d-flex flex-wrap mt-3 gap-2">
                     <button type="submit" class="btn btn-primary-corporate"><i class="bi bi-send"></i> Enviar solicitud</button>
@@ -298,7 +311,7 @@
     </footer>
 </main>
 
-<!-- Toast para notificaciones (opcional, se pueden usar los mensajes de Django) -->
+<!-- Toast para notificaciones (opcional) -->
 <div class="toast-message" id="liveToast" style="display: none;">
     <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
         <div class="d-flex gap-2 align-items-center">

@@ -32,8 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    tipoSelect.addEventListener('change', mostrarFormularioSegunTipo);
-    mostrarFormularioSegunTipo(); // Estado inicial
+    // Ejecutar al cargar la página para mostrar el formulario correcto si ya hay un valor seleccionado
+    mostrarFormularioSegunTipo();
+
+    tipoSelect.addEventListener('change', function() {
+        mostrarFormularioSegunTipo();
+    });
 
     // Calcular días para incapacidad
     function calcularDias(fechaInicio, fechaFin) {
