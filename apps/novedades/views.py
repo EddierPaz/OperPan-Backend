@@ -2,37 +2,129 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import render, redirect
 from django.utils import timezone
-from django.shortcuts import render
 
 from .models import Permiso, Incapacidad, Certificado
-from .forms import RechazoForm, CertificadoFiltroForm
-from .decorators import admin_required  # decorador para API (devuelve JSON)
-from apps.usuarios.decorators import admin_required as admin_required_html  # decorador para HTML (redirige)
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from .forms import (
+    RechazoForm,
+    CertificadoFiltroForm,
+    PermisoCrearForm,
+    IncapacidadCrearForm,
+    CertificadoCrearForm,
+)
+from .decorators import admin_required  # API (devuelve JSON)
+from apps.usuarios.decorators import admin_required as admin_required_html  # HTML (redirige)
 from apps.usuarios.decorators import empleado_required
+
+
+# ============================================================
+# VISTAS PARA EMPLEADO (HTML + POST)
+# ============================================================
 
 @login_required
 @empleado_required
 def solicitudes_empleado(request):
-    return render(request, 'empleado/solicitudes.html')
+    """
+    Vista principal del empleado para gestionar sus solicitudes.
+    Maneja GET (muestra el formulario y el listado) y POST (crea una nueva solicitud).
+    """
+    perfil = request.user.perfil
+
+    # --- Procesar POST (creación de solicitud) ---
+    if request.method == 'POST':
+        tipo_solicitud = request.POST.get('tipo_solicitud')
+
+        if tipo_solicitud == 'permiso':
+            form = PermisoCrearForm(request.POST)
+            if form.is_valid():
+                permiso = form.save(commit=False)
+                permiso.empleado = perfil
+                permiso.save()
+                messages.success(request, '✅ Permiso creado correctamente.')
+                return redirect('novedades:solicitudes_empleado')
+            else:
+                messages.error(request, '❌ Error al crear el permiso. Verifica los datos.')
+
+        elif tipo_solicitud == 'incapacidad':
+            form = IncapacidadCrearForm(request.POST, request.FILES)
+            if form.is_valid():
+                incapacidad = form.save(commit=False)
+                incapacidad.empleado = perfil
+                incapacidad.save()
+                messages.success(request, '✅ Incapacidad creada correctamente.')
+                return redirect('novedades:solicitudes_empleado')
+            else:
+                messages.error(request, '❌ Error al crear la incapacidad. Verifica los datos.')
+
+        elif tipo_solicitud == 'certificado':
+            form = CertificadoCrearForm(request.POST)
+            if form.is_valid():
+                certificado = form.save(commit=False)
+                certificado.empleado = perfil
+                certificado.save()
+                messages.success(request, '✅ Certificado creado correctamente.')
+                return redirect('novedades:solicitudes_empleado')
+            else:
+                messages.error(request, '❌ Error al crear el certificado. Verifica los datos.')
+
+        elif tipo_solicitud in ('cambio_turno', 'vacaciones'):
+            # Ambos se tratan como un permiso con tipo específico
+            form = PermisoCrearForm(request.POST)
+            if form.is_valid():
+                permiso = form.save(commit=False)
+                permiso.empleado = perfil
+                # Forzar el tipo según lo seleccionado
+                permiso.tipo = 'cambio_turno' if tipo_solicitud == 'cambio_turno' else 'vacaciones'
+                permiso.save()
+                messages.success(request, f'✅ Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.')
+                return redirect('novedades:solicitudes_empleado')
+            else:
+                messages.error(request, '❌ Error al crear la solicitud. Verifica los datos.')
+
+        else:
+            messages.error(request, '❌ Tipo de solicitud no válido.')
+
+        # Si hay error, redirigir de vuelta al formulario
+        return redirect('novedades:solicitudes_empleado')
+
+    # --- GET: mostrar formulario y listado ---
+    permisos = Permiso.objects.filter(empleado=perfil).order_by('-fecha_solicitud')
+    incapacidades = Incapacidad.objects.filter(empleado=perfil).order_by('-fecha_solicitud')
+    certificados = Certificado.objects.filter(empleado=perfil).order_by('-fecha_emision')
+
+    context = {
+        'permisos': permisos,
+        'incapacidades': incapacidades,
+        'certificados': certificados,
+        'permiso_form': PermisoCrearForm(),
+        'incapacidad_form': IncapacidadCrearForm(),
+        'certificado_form': CertificadoCrearForm(),
+    }
+    return render(request, 'empleado/solicitudes.html', context)
 
 
-# ---------- VISTA PRINCIPAL (HTML) ----------
+# ============================================================
+# VISTA PRINCIPAL PARA ADMINISTRADOR (HTML)
+# ============================================================
+
 @login_required
 @admin_required_html
 def novedades_admin(request):
-    """Vista que renderiza el panel de novedades para administradores."""
+    """Panel de novedades para administradores."""
     return render(request, 'admin/novedades.html')
 
 
-# ---------- PERMISOS (API) ----------
+# ============================================================
+# VISTAS API PARA ADMINISTRADOR (JSON)
+# ============================================================
+
+# ---------- PERMISOS ----------
 @login_required
 @admin_required
 def permisos_pendientes(request):
-    """Lista todos los permisos en estado pendiente."""
+    """Lista permisos en estado pendiente."""
     pendientes = Permiso.objects.filter(estado='pendiente').select_related('empleado__user')
     data = [
         {
@@ -53,7 +145,7 @@ def permisos_pendientes(request):
 @login_required
 @admin_required
 def permisos_historial(request):
-    """Lista todos los permisos (historial). Puede filtrarse por estado, tipo, fechas."""
+    """Historial de permisos con filtros opcionales."""
     qs = Permiso.objects.all().select_related('empleado__user')
     estado = request.GET.get('estado')
     tipo = request.GET.get('tipo')
@@ -82,7 +174,7 @@ def permisos_historial(request):
 @login_required
 @admin_required
 def permiso_detalle(request, pk):
-    """Devuelve los detalles completos de un permiso específico."""
+    """Detalle completo de un permiso."""
     try:
         p = Permiso.objects.select_related('empleado__user', 'decision_por').get(pk=pk)
     except Permiso.DoesNotExist:
@@ -155,7 +247,7 @@ def permiso_rechazar(request, pk):
     return JsonResponse({'status': 'ok', 'mensaje': 'Permiso rechazado'})
 
 
-# ---------- INCAPACIDADES (API) ----------
+# ---------- INCAPACIDADES ----------
 @login_required
 @admin_required
 def incapacidades_pendientes(request):
@@ -179,7 +271,7 @@ def incapacidades_pendientes(request):
 @login_required
 @admin_required
 def incapacidades_historial(request):
-    """Historial de incapacidades (con filtros opcionales por estado, empleado)."""
+    """Historial de incapacidades con filtros."""
     qs = Incapacidad.objects.all().select_related('empleado__user')
     estado = request.GET.get('estado')
     empleado = request.GET.get('empleado')
@@ -242,7 +334,7 @@ def incapacidad_aprobar(request, pk):
     except Incapacidad.DoesNotExist:
         return JsonResponse({'error': 'Incapacidad no encontrada o ya procesada'}, status=404)
 
-    i.estado = 'aprobada'
+    i.estado = 'aprobado'  # Unificado
     i.decision_por = request.user
     i.decision_fecha = timezone.now()
     i.save()
@@ -270,7 +362,7 @@ def incapacidad_rechazar(request, pk):
     if not form.is_valid():
         return JsonResponse({'error': 'Motivo requerido', 'detalles': form.errors}, status=400)
 
-    i.estado = 'rechazada'
+    i.estado = 'rechazado'  # Unificado
     i.motivo_rechazo = form.cleaned_data['motivo']
     i.decision_por = request.user
     i.decision_fecha = timezone.now()
@@ -278,7 +370,7 @@ def incapacidad_rechazar(request, pk):
     return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad rechazada'})
 
 
-# ---------- CERTIFICADOS (API) ----------
+# ---------- CERTIFICADOS ----------
 @login_required
 @admin_required
 def certificados_lista(request):
@@ -312,3 +404,125 @@ def certificados_lista(request):
         for c in qs
     ]
     return JsonResponse(data, safe=False)
+
+
+# ============================================================
+# VISTAS API PARA EMPLEADO (JSON) - Compatibilidad con apps móviles/futuras
+# ============================================================
+
+@login_required
+@empleado_required
+def crear_permiso(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    form = PermisoCrearForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'error': 'Datos inválidos', 'detalles': form.errors}, status=400)
+    permiso = form.save(commit=False)
+    permiso.empleado = request.user.perfil
+    permiso.save()
+    return JsonResponse({'status': 'ok', 'mensaje': 'Permiso creado correctamente', 'id': permiso.id})
+
+
+@login_required
+@empleado_required
+def crear_incapacidad(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    form = IncapacidadCrearForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return JsonResponse({'error': 'Datos inválidos', 'detalles': form.errors}, status=400)
+    incapacidad = form.save(commit=False)
+    incapacidad.empleado = request.user.perfil
+    incapacidad.save()
+    return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad creada correctamente', 'id': incapacidad.id})
+
+
+@login_required
+@empleado_required
+def crear_certificado(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    form = CertificadoCrearForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'error': 'Datos inválidos', 'detalles': form.errors}, status=400)
+    certificado = form.save(commit=False)
+    certificado.empleado = request.user.perfil
+    certificado.save()
+    return JsonResponse({'status': 'ok', 'mensaje': 'Certificado creado correctamente', 'id': certificado.id})
+
+
+@login_required
+@empleado_required
+def mis_solicitudes(request):
+    """Devuelve todas las solicitudes del empleado autenticado (formato JSON)."""
+    perfil = request.user.perfil
+
+    permisos = Permiso.objects.filter(empleado=perfil).values(
+        'id', 'tipo', 'fecha_inicio', 'fecha_fin', 'justificacion', 'estado',
+        'fecha_solicitud', 'motivo_rechazo', 'nuevo_horario'
+    )
+    incapacidades = Incapacidad.objects.filter(empleado=perfil).values(
+        'id', 'titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'archivo',
+        'entidad_emisora', 'numero_incapacidad', 'estado', 'fecha_solicitud', 'motivo_rechazo'
+    )
+    certificados = Certificado.objects.filter(empleado=perfil).values(
+        'id', 'tipo', 'proposito', 'dirigido_a', 'periodo', 'fecha_emision'
+    )
+
+    resultado = []
+
+    for p in permisos:
+        resultado.append({
+            'id': p['id'],
+            'tipo': 'permiso',
+            'fecha_inicio': p['fecha_inicio'].isoformat() if p['fecha_inicio'] else None,
+            'fecha_fin': p['fecha_fin'].isoformat() if p['fecha_fin'] else None,
+            'estado': p['estado'],
+            'motivo': p['justificacion'],
+            'adjunto': None,
+            'fecha_creacion': p['fecha_solicitud'].isoformat(),
+            'motivo_rechazo': p['motivo_rechazo'],
+            'datos_especificos': {
+                'tipo_permiso': p['tipo'],
+                'nuevo_horario': p['nuevo_horario'],
+            }
+        })
+
+    for i in incapacidades:
+        resultado.append({
+            'id': i['id'],
+            'tipo': 'incapacidad',
+            'fecha_inicio': i['fecha_inicio'].isoformat() if i['fecha_inicio'] else None,
+            'fecha_fin': i['fecha_fin'].isoformat() if i['fecha_fin'] else None,
+            'estado': i['estado'],
+            'motivo': i['descripcion'],
+            'adjunto': i['archivo'] if i['archivo'] else None,
+            'fecha_creacion': i['fecha_solicitud'].isoformat(),
+            'motivo_rechazo': i['motivo_rechazo'],
+            'datos_especificos': {
+                'entidad': i['entidad_emisora'],
+                'numero_incapacidad': i['numero_incapacidad'],
+            }
+        })
+
+    for c in certificados:
+        resultado.append({
+            'id': c['id'],
+            'tipo': 'certificado',
+            'fecha_inicio': c['fecha_emision'].date().isoformat(),
+            'fecha_fin': c['fecha_emision'].date().isoformat(),
+            'estado': 'aprobado',
+            'motivo': c['proposito'],
+            'adjunto': None,
+            'fecha_creacion': c['fecha_emision'].isoformat(),
+            'motivo_rechazo': None,
+            'datos_especificos': {
+                'tipo_certificado': c['tipo'],
+                'dirigido_a': c['dirigido_a'],
+                'periodo': c['periodo'],
+            }
+        })
+
+    resultado.sort(key=lambda x: x['fecha_creacion'], reverse=True)
+    return JsonResponse(resultado, safe=False)

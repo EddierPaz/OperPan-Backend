@@ -1,18 +1,16 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-
-# Importamos los modelos de usuarios
 from apps.usuarios.models import PerfilEmpleado, User
-
-# User = get_user_model()  # también funciona, pero es mejor usar el import directo
 
 class Permiso(models.Model):
     TIPO_CHOICES = (
-        ('personal', 'Permiso personal'),
+        ('personal', 'Personal'),
         ('cambio_turno', 'Cambio de turno'),
-        ('medico', 'Cita médica'),
-        ('familiar', 'Asunto familiar'),
+        ('medico', 'Médico'),
+        ('familiar', 'Familiar'),
         ('vacaciones', 'Vacaciones'),
+        ('academico', 'Académico'),
+        ('calamidad', 'Calamidad'),
+        ('otro', 'Otro'),
     )
     ESTADO_CHOICES = (
         ('pendiente', 'Pendiente'),
@@ -20,11 +18,7 @@ class Permiso(models.Model):
         ('rechazado', 'Rechazado'),
     )
 
-    empleado = models.ForeignKey(
-        PerfilEmpleado,
-        on_delete=models.CASCADE,
-        related_name='permisos'
-    )
+    empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='permisos')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
@@ -33,13 +27,7 @@ class Permiso(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     decision_fecha = models.DateTimeField(null=True, blank=True)
-    decision_por = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='permisos_decididos'
-    )
+    decision_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='permisos_decididos')
     motivo_rechazo = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -49,30 +37,22 @@ class Permiso(models.Model):
 class Incapacidad(models.Model):
     ESTADO_CHOICES = (
         ('pendiente', 'Pendiente'),
-        ('aprobada', 'Aprobada'),
-        ('rechazada', 'Rechazada'),
+        ('aprobado', 'Aprobado'),
+        ('rechazado', 'Rechazado'),
     )
 
-    empleado = models.ForeignKey(
-        PerfilEmpleado,
-        on_delete=models.CASCADE,
-        related_name='incapacidades'
-    )
+    empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='incapacidades')
     titulo = models.CharField(max_length=100)
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     archivo = models.FileField(upload_to='incapacidades/', blank=True, null=True)
+    entidad_emisora = models.CharField(max_length=100, blank=True, null=True)
+    numero_incapacidad = models.CharField(max_length=50, blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     decision_fecha = models.DateTimeField(null=True, blank=True)
-    decision_por = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='incapacidades_decididos'
-    )
+    decision_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='incapacidades_decididos')
     motivo_rechazo = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -81,26 +61,18 @@ class Incapacidad(models.Model):
 
 class Certificado(models.Model):
     TIPO_CHOICES = (
-        ('laboral', 'Certificado laboral'),
-        ('ingresos', 'Certificado de ingresos'),
-        ('antiguedad', 'Certificado de antigüedad'),
+        ('laboral', 'Laboral'),
+        ('ingresos', 'Ingresos'),
+        ('antiguedad', 'Antigüedad'),
     )
 
-    empleado = models.ForeignKey(
-        PerfilEmpleado,
-        on_delete=models.CASCADE,
-        related_name='certificados'
-    )
+    empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='certificados')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     proposito = models.CharField(max_length=200)
+    dirigido_a = models.CharField(max_length=200, blank=True, null=True)
+    periodo = models.CharField(max_length=100, blank=True, null=True)
     fecha_emision = models.DateTimeField(auto_now_add=True)
-    generado_por = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='certificados_generados'
-    )
+    generado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='certificados_generados')
     descargas = models.PositiveIntegerField(default=0)
 
     def __str__(self):
