@@ -49,7 +49,7 @@
                         <a href="{% url 'user_list' %}"><i class="bi bi-people"></i> Cuentas</a>
                     </li>
                     <li class="{% block active_tareas %}{% endblock %}">
-                        <a href="/"><i class="bi bi-list-task"></i> Tareas Operativas</a>
+                        <a href="{% url 'tareas:admin_tareas_list' %}"><i class="bi bi-list-task"></i> Tareas Operativas</a>
                     </li>
                     <li class="{% block active_novedades %}{% endblock %}">
                         <a href="{% url 'novedades:novedades_admin' %}"><i class="bi bi-megaphone"></i> Novedades</a>

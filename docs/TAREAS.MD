@@ -696,6 +696,20 @@ Separar en archivos según la lógica
 
 
 
+1. OPCION A: PENDIENTE
+se abrirá con datos del servidor, recuerda que la idea es borrar el javascript en lo posible.
+Sí, debe enviar los datos al backend para guardarlos en la base de datos.
+3. utiliza el modelo de tareas como ejemplo(te enviaré el archivo models.py), dime si necesitas otro archivo
+
+C. al finalizar la tarea
+Opción A en django 
+
+5.Opción A-abre un modal
+6. si ,utiliza filtros de django
+7.En lo posible utilice iconos de boostrap y no emogis 
+8. Sí, extender de base.html y solo poner el contenido principal.
+
+Necesitas que te responda algo más?
 
 
 

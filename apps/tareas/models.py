@@ -134,31 +134,22 @@ class Task(models.Model):
         ]
 
     def __str__(self):
-        """Representación legible de la tarea."""
         nombre_empleado = self.get_nombre_empleado()
         return f"{self.titulo} - {nombre_empleado}"
 
-    # --- Métodos auxiliares ---
-
     def get_nombre_empleado(self):
-        """Obtiene el nombre del empleado de forma segura."""
         if hasattr(self.empleado, 'perfil'):
             return self.empleado.perfil.nombre_completo()
         return self.empleado.username
 
-    # ==========================================
-    # PROPIEDADES CALCULADAS (Lógica de negocio)
-    # ==========================================
+    # --- Propiedades calculadas ---
 
     @property
     def esta_vencida(self):
-        """Verifica si la tarea está vencida."""
         if self.estado == EstadoTarea.FINALIZADA:
             return False
-        
         hoy = date.today()
         ahora = timezone.now().time()
-        
         if self.fecha_limite < hoy:
             return True
         elif self.fecha_limite == hoy and self.hora_limite:
@@ -167,14 +158,12 @@ class Task(models.Model):
 
     @property
     def estado_visual(self):
-        """Retorna el estado a mostrar en la interfaz."""
         if self.esta_vencida:
             return 'VENCIDA'
         return self.estado
 
     @property
     def prioridad_color(self):
-        """Retorna el color correspondiente a la prioridad."""
         colores = {
             Prioridad.ALTA: 'red',
             Prioridad.MEDIA: 'yellow',
@@ -184,42 +173,35 @@ class Task(models.Model):
 
     @property
     def es_reciente(self):
-        """Verifica si la tarea fue creada en los últimos 7 días."""
         dias = (timezone.now().date() - self.fecha_asignacion.date()).days
         return dias <= 7
 
     @property
     def dias_restantes(self):
-        """Calcula los días restantes hasta la fecha límite."""
         if self.esta_vencida:
             return 0
         dias = (self.fecha_limite - date.today()).days
         return max(0, dias)
 
-    # ==========================================
-    # MÉTODOS DE CAMBIO DE ESTADO (Lógica de negocio)
-    # ==========================================
+    # --- Métodos de cambio de estado ---
 
     def cambiar_estado(self, nuevo_estado, usuario):
-        """Cambia el estado de la tarea y registra quién lo hizo."""
         estados_validos = [
             EstadoTarea.PENDIENTE,
             EstadoTarea.EN_PROGRESO,
             EstadoTarea.FINALIZADA
         ]
-        
         if nuevo_estado not in estados_validos:
             return False
         
         # Si ya está finalizada
         if self.estado == EstadoTarea.FINALIZADA:
-            # Solo admin puede reabrir una tarea finalizada
             if usuario.rol == 'admin' and nuevo_estado == EstadoTarea.PENDIENTE:
                 pass
             else:
                 return False
         
-        # Si es empleado, solo puede cambiar a EN_PROGRESO o FINALIZADA
+        # Restricciones para empleado
         if usuario.rol == 'empleado':
             if nuevo_estado == EstadoTarea.PENDIENTE and self.estado != EstadoTarea.PENDIENTE:
                 return False
@@ -232,24 +214,18 @@ class Task(models.Model):
         return True
 
     def marcar_como_en_progreso(self, usuario):
-        """Marca la tarea como 'En progreso' y registra quién lo hizo."""
         return self.cambiar_estado(EstadoTarea.EN_PROGRESO, usuario)
 
     def marcar_como_finalizada(self, usuario):
-        """Marca la tarea como 'Finalizada' y registra quién lo hizo."""
         return self.cambiar_estado(EstadoTarea.FINALIZADA, usuario)
 
     def marcar_como_pendiente(self, usuario):
-        """Marca la tarea como 'Pendiente' y registra quién lo hizo."""
         return self.cambiar_estado(EstadoTarea.PENDIENTE, usuario)
 
-    # ==========================================
-    # KPIs (Agregaciones específicas del negocio)
-    # ==========================================
+    # --- KPIs ---
 
     @classmethod
     def get_kpis_administrador(cls):
-        """KPIs para el dashboard del administrador."""
         hoy = date.today()
         return {
             'total': cls.objects.count(),
@@ -263,17 +239,13 @@ class Task(models.Model):
 
     @classmethod
     def get_kpis_empleado(cls, empleado):
-        """KPIs para el dashboard del empleado."""
         tareas = cls.objects.filter(empleado=empleado)
-        
         pendientes = tareas.filter(estado=EstadoTarea.PENDIENTE).count()
         en_progreso = tareas.filter(estado=EstadoTarea.EN_PROGRESO).count()
         finalizadas = tareas.filter(estado=EstadoTarea.FINALIZADA).count()
-        
         vencidas = tareas.exclude(
             estado=EstadoTarea.FINALIZADA
         ).filter(fecha_limite__lt=date.today()).count()
-        
         return {
             'pendientes': pendientes,
             'en_progreso': en_progreso,
