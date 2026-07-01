@@ -38,6 +38,21 @@
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
 }
 
+/* Solicitud pendiente */
+.request-pending{
+    border-left: 6px solid #FFC107;
+}
+
+/* Solicitud aprobada */
+.request-approved{
+    border-left: 6px solid #198754;
+}
+
+/* Solicitud rechazada */
+.request-rejected{
+    border-left: 6px solid #DC3545;
+}
+
 .file-info {
     font-size: 0.8rem;
     color: #2C3E50;
@@ -92,6 +107,26 @@
 .badge-rejected {
     background: #FEF2F0;
     color: #B91C1C;
+}
+
+.btn-corporate{
+    background: white;
+    color: #555;
+    border: 1px solid #ddd;
+    padding: .55rem 1rem;
+    transition: .25s;
+}
+
+.btn-corporate:hover{
+    background: #A40706;
+    color: white;
+    border-color: #A40706;
+}
+
+.btn-corporate.active{
+    background: #A40706;
+    color: white;
+    border-color: #A40706;
 }
 
 /* Responsive */

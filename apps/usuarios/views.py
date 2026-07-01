@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import User, PerfilEmpleado
+from .forms import UserForm, PerfilEmpleadoForm
 from django.utils.dateparse import parse_date
 from .decorators import admin_required
 from apps.asistencia.models import Horario
+from apps.asistencia.views import _contexto_base
 
 # ========================
 
@@ -76,13 +78,15 @@ def logout_view(request):
 @login_required
 @admin_required
 def admin_dashboard(request):
-    perfil = request.user.perfil
+
+    contexto = _contexto_base()
+
+    contexto["perfil"] = request.user.perfil
+
     return render(
         request,
         "admin/landingAdmin.html",
-        {
-            "perfil": perfil
-        }
+        contexto
     )
 
 
@@ -129,149 +133,49 @@ def employee_dashboard(request):
 # GESTIÓN DE USUARIOS
 # ========================
 
-#@login_required
-#@admin_required
+@login_required
+@admin_required
 def user_list_create(request):
+    usuarios = PerfilEmpleado.objects.select_related("user").all()
     if request.method == "POST":
-        username = request.POST.get(
-            "username",
-            ""
-        ).strip()
-        numero_documento = request.POST.get(
-            "numero_documento",
-            ""
-        ).strip()
-        
-        if User.objects.filter(
-            username=username
-        ).exists():
-            messages.error(
+        user_form = UserForm(request.POST)
+        perfil_form = PerfilEmpleadoForm(request.POST)
+        if user_form.is_valid() and perfil_form.is_valid():
+            user = user_form.save(commit=False)
+            user.set_password(
+                user_form.cleaned_data["password"]
+            )
+            user.save()
+            perfil = perfil_form.save(commit=False)
+            perfil.user = user
+            perfil.save()
+
+            messages.success(
                 request,
-                "Ese nombre de usuario ya existe."
+                "Usuario creado correctamente."
             )
-            return redirect(
-                "user_list"
-            )
+            return redirect("user_list")
 
-        if PerfilEmpleado.objects.filter(
-            numero_documento=numero_documento
-        ).exists():
-            messages.error(
-                request,
-                "Ya existe un empleado con ese número de documento."
-            )
-            return redirect(
-                "user_list"
-            )
-
-        user = User.objects.create_user(
-            username=username,
-            password=request.POST.get(
-                "password"
-            ),
-            rol=request.POST.get(
-                "rol"
-            )
-        )
-
-        PerfilEmpleado.objects.create(
-            user=user,
-            primer_nombre=request.POST.get(
-                "primer_nombre"
-            ),
-            segundo_nombre=request.POST.get(
-                "segundo_nombre"
-            ),
-            primer_apellido=request.POST.get(
-                "primer_apellido"
-            ),
-            segundo_apellido=request.POST.get(
-                "segundo_apellido"
-            ),
-            tipo_documento=request.POST.get(
-                "tipo_documento"
-            ),
-            numero_documento=numero_documento,
-            fecha_nacimiento=request.POST.get(
-                "fecha_nacimiento"
-            ) or None,
-            genero=request.POST.get(
-                "genero"
-            ),
-            estado_civil=request.POST.get(
-                "estado_civil"
-            ),
-            tipo_sangre=request.POST.get(
-                "tipo_sangre"
-            ),
-            telefono=request.POST.get(
-                "telefono"
-            ),
-            correo=request.POST.get(
-                "correo"
-            ),
-            ciudad=request.POST.get(
-                "ciudad"
-            ),
-            direccion=request.POST.get(
-                "direccion"
-            ),
-            contacto_emergencia=request.POST.get(
-                "contacto_emergencia"
-            ),
-            parentesco_emergencia=request.POST.get(
-                "parentesco_emergencia"
-            ),
-            telefono_emergencia=request.POST.get(
-                "telefono_emergencia"
-            ),
-            cargo=request.POST.get(
-                "cargo"
-            ),
-            fecha_ingreso=request.POST.get(
-                "fecha_ingreso"
-            ) or None,
-            estado="activo",
-            eps=request.POST.get(
-                "eps"
-            ),
-            arl=request.POST.get(
-                "arl"
-            ),
-            fondo_pension=request.POST.get(
-                "fondo_pension"
-            ),
-        )
-        messages.success(
+        messages.error(
             request,
-            "Usuario creado correctamente."
-        )
-
-        return redirect(
-            "user_list"
-        )
-
-    usuarios = PerfilEmpleado.objects.select_related(
-        "user"
-    ).all()
-
+            "Corrige los errores del formulario."
+        )   
+    else:
+        user_form = UserForm()
+        perfil_form = PerfilEmpleadoForm()
     context = {
-
         "usuarios": usuarios,
-
         "total_usuarios": usuarios.count(),
-
         "total_admins": usuarios.filter(
             user__rol="admin"
         ).count(),
-
         "total_empleados": usuarios.filter(
             user__rol="empleado"
         ).count(),
-
         "perfil_editar": None,
+        "user_form": user_form,
+        "perfil_form": perfil_form,
     }
-
     return render(
         request,
         "admin/usuarios.html",

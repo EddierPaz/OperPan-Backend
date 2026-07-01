@@ -62,120 +62,155 @@
   <div>
 
     <!-- Bloques por turno -->
-    {% for turno_codigo, lista_horarios in turnos_hoy.items %}
-    <div class="stat-card-one turno-asistencia-bloque mb-4">
-      <div class="turno-asistencia-header d-flex align-items-center">
-        <h5>
-          <i class="bi bi-sun me-2"></i> Turno {{ turno_codigo|title }}
-        </h5>
+    <div class="accordion" id="accordionTurnos" style="border-color: blue;"> 
 
-        <span class="badge-turno-conteo ms-auto" style="color: #A40706;">{{ lista_horarios|length }} programados</span>
+      {% for turno_codigo, lista_horarios in turnos_hoy.items %}
+
+      <div class="accordion-item mb-3 " style="border-color: #A40706;">  
+
+        <h2 class="accordion-header" id="heading{{ turno_codigo }}">
+
+          <button class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse{{ turno_codigo }}"
+                  aria-expanded="false">
+
+              <div class="d-flex align-items-center">
+                  <i class="bi bi-sun me-2"></i>
+                  <strong>Turno {{ turno_codigo|title }}</strong>
+              </div>
+
+              <span class="turno-badge">
+                  {{ lista_horarios|length }} programados
+              </span>
+
+          </button>
+
+        </h2>
+
+        <div id="collapse{{ turno_codigo }}" class="accordion-collapse collapse" data-bs-parent="#accordionTurnos">
+
+          <div class="accordion-body">
+
+            <div class="table-responsive">
+
+              <table class="table table-custom align-middle">
+
+                <thead>
+                  <tr>
+                    <th>Empleado</th>
+                    <th>Cargo</th>
+                    <th>Hora programada</th>
+                    <th>Hora marcada</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  {% for horario in lista_horarios %}
+
+                  <tr>
+
+                    <td>{{ horario.empleado.nombre_completo }}</td>
+
+                    <td>{{ horario.empleado.get_cargo_display }}</td>
+
+                    <td>{{ horario.hora_entrada|time:"H:i" }}</td>
+
+                    <td>
+                      {% if horario.asistencia %}
+                      {{ horario.asistencia.hora_marcada|time:"H:i" }}
+                      {% else %}
+                      <span class="text-muted">Sin marcar</span>
+                      {% endif %}
+                    </td>
+
+                    <td>
+
+                      {% if horario.asistencia %}
+
+                      {% if horario.asistencia.estado == "PRESENTE" %}
+                      <span class="badge text-success">Presente</span>
+
+                      {% elif horario.asistencia.estado == "TARDE" %}
+                      <span class="badge text-warning">Tarde</span>
+
+                      {% elif horario.asistencia.estado == "AUSENTE" %}
+                      <span class="badge bg-danger">Ausente</span>
+
+                      {% endif %}
+
+                      {% else %}
+
+                      <span class="badge bg-secondary">
+                        Sin registrar
+                      </span>
+
+                      {% endif %}
+
+                    </td>
+
+                    <td>
+
+                      {% if horario.asistencia %}
+
+                      <span class="badge text-success">
+                        Registrado
+                      </span>
+
+                      {% else %}
+
+                      <form method="POST" action="{% url 'asistencia:registrar_asistencia' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="horario_id" value="{{ horario.id }}">
+
+                        <button type="submit" class="btn btn-sm btn-outline-corporate">
+                          <i class="bi bi-fingerprint"></i>
+                          Registrar
+                        </button>
+
+                      </form>
+
+                      {% endif %}
+
+                    </td>
+
+                  </tr>
+
+                  {% empty %}
+
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">
+                      No hay personal programado.
+                    </td>
+                  </tr>
+
+                  {% endfor %}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
+      {% empty %}
 
-      <div class="table-responsive">
-        <table class="table table-custom align-middle">
-          <thead>
-            <tr>
-              <th>Empleado</th>
-              <th>Cargo</th>
-              <th>Hora programada</th>
-              <th>Hora marcada</th>
-              <th>Estado</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for horario in lista_horarios %}
-            <tr>
-              <td>{{ horario.empleado.nombre_completo }}</td>
-              <td>{{ horario.empleado.get_cargo_display }}</td>
-              <td>{{ horario.hora_entrada|time:"H:i" }}</td>
+      <p class="text-center text-muted">
+        No hay horarios registrados para hoy.
+      </p>
 
-              <td>
-                {% if horario.asistencia %}
-                {{ horario.asistencia.hora_marcada|time:"H:i" }}
-                {% else %}
-                <span class="text-muted">Sin marcar</span>
-                {% endif %}
-              </td>
+      {% endfor %}
 
-              <td>
-
-                {% if horario.asistencia %}
-
-                {% if horario.asistencia.estado == 'PRESENTE' %}
-                <span class="badge text-success">
-                  Presente
-                </span>
-
-                {% elif horario.asistencia.estado == 'TARDE' %}
-                <span class="badge text-warning">
-                  Tarde
-                </span>
-
-                {% elif horario.asistencia.estado == 'AUSENTE' %}
-                <span class="badge bg-danger">
-                  Ausente
-                </span>
-
-                {% endif %}
-
-                {% else %}
-
-                <span class="badge bg-secondary">
-                  Sin registrar
-                </span>
-
-                {% endif %}
-
-              </td>
-
-              <td>
-
-                {% if horario.asistencia %}
-
-                <span class="badge text-success">
-                  Registrado
-                </span>
-
-                {% else %}
-
-                <form method="POST" action="{% url 'asistencia:registrar_asistencia' %}">
-
-                  {% csrf_token %}
-
-                  <input type="hidden" name="horario_id" value="{{ horario.id }}">
-
-                  <button type="submit" class="btn btn-sm btn-outline-corporate">
-
-                    <i class="bi bi-fingerprint"></i>
-                    Registrar
-
-                  </button>
-
-                </form>
-
-                {% endif %}
-
-              </td>
-
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="6" class="text-center text-muted">
-                No hay personal programado en este turno hoy
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
     </div>
-    {% empty %}
-    <p class="text-center text-muted mb-0">No hay horarios registrados para hoy.</p>
-    {% endfor %}
-
   </div>
 
 

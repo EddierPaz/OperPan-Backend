@@ -38,11 +38,24 @@ def _contexto_base():
         "FIJO": []
     }
 
+    programados = 0
     presentes = 0
     tardanzas = 0
     ausentes = 0
 
     for horario in horarios:
+
+        # Verificar si hoy es descanso
+        descanso_hoy = horario.descansos.filter(
+            fecha=hoy,
+            es_descanso=True
+        ).exists()
+
+        # Si está de descanso hoy, no se muestra ni se cuenta
+        if descanso_hoy:
+            continue
+
+        programados += 1
 
         asistencia = Asistencia.objects.filter(
             horario=horario,
@@ -51,8 +64,7 @@ def _contexto_base():
 
         horario.asistencia = asistencia
 
-        if horario.turno in turnos_hoy:
-            turnos_hoy[horario.turno].append(horario)
+        turnos_hoy[horario.turno].append(horario)
 
         if asistencia:
 
@@ -69,7 +81,7 @@ def _contexto_base():
             ausentes += 1
 
     resumen_asistencia = {
-        "programados": horarios.count(),
+        "programados": programados,
         "presentes": presentes,
         "tardanzas": tardanzas,
         "ausentes": ausentes
@@ -100,12 +112,6 @@ def _contexto_base():
         "resumen_asistencia": resumen_asistencia,
     }
 
-    return {
-        "empleados": PerfilEmpleado.objects.all(),
-        "horarios": Horario.objects.select_related("empleado").order_by("-id"),
-        "proximos_dias": proximos_dias,
-        "dias_semana": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
-    }
 
 
 def horarios(request):

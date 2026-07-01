@@ -252,29 +252,61 @@
     </div>
 
     <!-- Listado de solicitudes recientes -->
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-3 flex-wrap gap-2">
-        <h3><i class="bi bi-clock-history me-2"></i> Mis solicitudes</h3>
-        <div class="btn-group" role="group" aria-label="Filtros de solicitudes">
-            <button class="btn btn-sm btn-outline-secondary filter-btn active" data-filter="todas">Todas</button>
-            <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="pendiente">Pendiente</button>
-            <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="aprobado">Aprobado</button>
-            <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="rechazado">Rechazado</button>
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3 flex-wrap gap-3">
+
+        <h3 class="mb-0">
+            <i class="bi bi-file-earmark-text me-2"></i>
+            Mis solicitudes
+        </h3>
+
+        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+
+            <button class="btn btn-corporate filter-btn active"
+                    data-filter="todas">
+                <i class="bi bi-grid me-1"></i>
+                Todas
+            </button>
+
+            <button class="btn btn-corporate filter-btn"
+                    data-filter="pendiente">
+                <i class="bi bi-hourglass-split me-1"></i>
+                Pendientes
+            </button>
+
+            <button class="btn btn-corporate filter-btn"
+                    data-filter="aprobado">
+                <i class="bi bi-check-circle me-1"></i>
+                Aprobadas
+            </button>
+
+            <button class="btn btn-corporate filter-btn"
+                    data-filter="rechazado">
+                <i class="bi bi-x-circle me-1"></i>
+                Rechazadas
+            </button>
+
         </div>
+
     </div>
 
     <div id="solicitudesContainer">
         {% if permisos or incapacidades or certificados %}
             <!-- PERMISOS -->
             {% for p in permisos %}
-                <div class="request-card" data-estado="{{ p.estado }}">
+                <div class="request-card
+                        {% if p.estado == 'aprobado' %}
+                            request-approved
+                        {% elif p.estado == 'rechazado' %}
+                            request-rejected
+                        {% else %}
+                            request-pending
+                        {% endif %}"
+                        data-estado="{{ p.estado }}">
                     <div class="d-flex justify-content-between align-items-start flex-wrap">
                         <div>
                             <h5 class="mb-1">Permiso</h5>
                             <small class="text-muted">{{ p.get_tipo_display }} · {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
                             <p class="mb-2 mt-2">{{ p.justificacion }}</p>
-                            {% if p.nuevo_horario %}
-                                <span class="badge bg-info text-white"><i class="bi bi-clock"></i> Nuevo horario: {{ p.nuevo_horario }}</span>
-                            {% endif %}
                             <div class="small text-muted mt-2">Creada: {{ p.fecha_solicitud|date:"d/m/Y H:i" }}</div>
                             {% if p.motivo_rechazo %}
                                 <div class="small text-danger mt-1"><i class="bi bi-chat-dots"></i> Rechazo: {{ p.motivo_rechazo }}</div>

@@ -207,3 +207,54 @@
     color: white;
     border-color: #b91c1c;
 }
+
+.accordion-item{
+    border:none;
+    border-left:5px solid #A40706;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    margin-bottom:18px;
+}
+
+.accordion-button{
+    display:grid !important;
+    grid-template-columns: 1fr auto 30px;
+    align-items:center;
+    position: relative;
+}
+
+.accordion-button{
+    position: relative;
+}
+
+.turno-badge{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #A40706;
+    color: #fff;
+    padding: .35rem .9rem;
+    border-radius: 999px;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.turno-info{
+    display:flex;
+    align-items:center;
+}
+
+.accordion-button:not(.collapsed){
+    background:#fff;
+    color:#A40706;
+    box-shadow:none;
+}
+
+.accordion-button:focus{
+    box-shadow:none;
+    border:none;
+}
+
+.accordion-body{
+    border-top:1px solid #ececec;
+}

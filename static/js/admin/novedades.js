@@ -114,7 +114,6 @@
                         <div class="col-md-6"><strong>Tipo:</strong><br>${p.tipo}</div>
                         <div class="col-12"><strong>Justificación:</strong><br>${p.justificacion}</div>
                         <div class="col-6"><strong>Fechas:</strong><br><i class="bi bi-calendar3"></i> ${p.fecha_inicio} → ${p.fecha_fin}</div>
-                        ${p.nuevo_horario ? `<div class="col-6"><strong>Nuevo horario:</strong><br>${p.nuevo_horario}</div>` : ''}
                     </div>
                 `;
                 const modal = new bootstrap.Modal(document.getElementById('permisosDetalleModal'));
