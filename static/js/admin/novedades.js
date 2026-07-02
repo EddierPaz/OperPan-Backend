@@ -261,8 +261,8 @@
                 const now = new Date();
                 const mes = now.getMonth();
                 const año = now.getFullYear();
-                const aprobadas = data.filter(i => i.estado === 'Aprobada' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
-                const rechazadas = data.filter(i => i.estado === 'Rechazada' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
+                const aprobadas = data.filter(i => i.estado === 'Aprobado' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
+                const rechazadas = data.filter(i => i.estado === 'Rechazado' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
                 document.getElementById('incapacidadesKpiAprobadas').innerText = aprobadas;
                 document.getElementById('incapacidadesKpiRechazadas').innerText = rechazadas;
             })
@@ -291,7 +291,7 @@
                 let html = '';
                 filtradas.forEach(i => {
                     let badgeClass = i.estado === 'Pendiente' ? 'badge-pending' :
-                                    i.estado === 'Aprobada' ? 'badge-approved' :
+                                    i.estado === 'Aprobado' ? 'badge-approved' :
                                     'badge-rejected';
                     html += `<div class="incapacidad-card">
                         <div class="d-flex justify-content-between">
@@ -327,8 +327,8 @@
                 tbody.innerHTML = '';
                 data.forEach(i => {
                     let badge = i.estado === 'Pendiente' ? '<span class="badge badge-pending">Pendiente</span>' :
-                                i.estado === 'Aprobada' ? '<span class="badge badge-approved">Aprobada</span>' :
-                                '<span class="badge badge-rejected">Rechazada</span>';
+                                i.estado === 'Aprobado' ? '<span class="badge badge-approved">Aprobado</span>' :
+                                '<span class="badge badge-rejected">Rechazado</span>';
                     tbody.innerHTML += `<tr>
                         <td data-label="Fecha solicitud">${new Date(i.fecha_solicitud).toLocaleString()}</td>
                         <td data-label="Empleado">${i.empleado}</td>

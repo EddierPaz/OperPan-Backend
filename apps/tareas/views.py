@@ -26,7 +26,7 @@ def admin_tareas_list(request):
 
     # Query base
     tareas = Task.objects.select_related(
-        'empleado__perfil',
+        'empleado',
         'creador__perfil',
         'ultimo_cambio_por__perfil'
     ).all()
@@ -101,7 +101,7 @@ def admin_tarea_create(request):
             tarea.save()
             messages.success(
                 request,
-                f"✅ Tarea '{tarea.titulo}' creada exitosamente para {tarea.empleado.perfil.nombre_completo()}."
+                f"✅ Tarea '{tarea.titulo}' creada exitosamente para {tarea.empleado.nombre_completo()}."
             )
         else:
             messages.error(request, "❌ Por favor corrige los errores del formulario.")
@@ -140,7 +140,7 @@ def admin_tarea_delete(request, pk):
     tarea = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         titulo = tarea.titulo
-        empleado = tarea.empleado.perfil.nombre_completo()
+        empleado = tarea.empleado.nombre_completo()
         tarea.delete()
         messages.success(
             request,
@@ -185,7 +185,7 @@ def admin_tareas_vencidas(request):
         fecha_limite__lt=hoy
     ).exclude(
         estado=EstadoTarea.FINALIZADA
-    ).select_related('empleado__perfil')
+    ).select_related('empleado')
 
     context = {
         'tareas': tareas,
@@ -212,7 +212,7 @@ def empleado_tareas_list(request):
     kpis = Task.get_kpis_empleado(empleado)
 
     # Tareas del empleado
-    tareas = Task.objects.filter(empleado=empleado).select_related(
+    tareas = Task.objects.filter(empleado__user=request.user).select_related(
         'creador__perfil',
         'ultimo_cambio_por__perfil'
     )
@@ -234,7 +234,7 @@ def empleado_tareas_list(request):
     tarea_detalle = None
     if detalle_id:
         try:
-            tarea_detalle = Task.objects.get(pk=detalle_id, empleado=empleado)
+            tarea_detalle = Task.objects.get(pk=detalle_id, empleado__user=request.user)
         except Task.DoesNotExist:
             pass
 

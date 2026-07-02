@@ -94,7 +94,7 @@
                         {% for emp in form.empleado.field.queryset %}
                             <option value="{{ emp.pk }}"
                                     {% if form.empleado.value == emp.pk %}selected{% endif %}>
-                                {{ emp.perfil.nombre_completo }} ({{ emp.perfil.get_cargo_display }})
+                                {{ emp.nombre_completo }} ({{ emp.get_cargo_display }})
                             </option>
                         {% endfor %}
                     </select>
@@ -236,7 +236,7 @@
                     </div>
                     <div>
                         <small class="text-muted">
-                            <i class="bi bi-person"></i> {{ tarea.empleado.perfil.nombre_completo }}
+                            <i class="bi bi-person"></i> {{ tarea.empleado.nombre_completo }}
                         </small>
                     </div>
                 </div>

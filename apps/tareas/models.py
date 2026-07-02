@@ -1,4 +1,6 @@
+from datetime import date
 from django.db import models
+from django.utils import timezone
 from apps.usuarios.models import PerfilEmpleado, User
 
 
@@ -100,3 +102,56 @@ class Task(models.Model):
 
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_limite})"
+
+    # ============================================================
+    # MÉTODOS DE NEGOCIO
+    # ============================================================
+
+    @classmethod
+    def get_kpis_administrador(cls):
+        """KPIs generales para el panel de administrador."""
+        hoy = date.today()
+        qs = cls.objects.all()
+        return {
+            'total': qs.count(),
+            'pendientes': qs.filter(estado=EstadoTarea.PENDIENTE).count(),
+            'en_progreso': qs.filter(estado=EstadoTarea.EN_PROGRESO).count(),
+            'finalizadas': qs.filter(estado=EstadoTarea.FINALIZADA).count(),
+            'vencidas': qs.filter(
+                fecha_limite__lt=hoy
+            ).exclude(estado=EstadoTarea.FINALIZADA).count(),
+        }
+
+    @classmethod
+    def get_kpis_empleado(cls, user):
+        """KPIs personales para el panel del empleado."""
+        hoy = date.today()
+        qs = cls.objects.filter(empleado__user=user)
+        return {
+            'total': qs.count(),
+            'pendientes': qs.filter(estado=EstadoTarea.PENDIENTE).count(),
+            'en_progreso': qs.filter(estado=EstadoTarea.EN_PROGRESO).count(),
+            'finalizadas': qs.filter(estado=EstadoTarea.FINALIZADA).count(),
+            'vencidas': qs.filter(
+                fecha_limite__lt=hoy
+            ).exclude(estado=EstadoTarea.FINALIZADA).count(),
+        }
+
+    def cambiar_estado(self, nuevo_estado, usuario):
+        """
+        Cambia el estado de la tarea y registra quién hizo el cambio.
+        Devuelve True si tuvo éxito, False si el estado no es válido.
+        """
+        if nuevo_estado not in dict(EstadoTarea.choices):
+            return False
+
+        self.estado = nuevo_estado
+        self.ultimo_cambio_por = usuario
+
+        if nuevo_estado == EstadoTarea.FINALIZADA:
+            self.fecha_finalizacion = timezone.now()
+        else:
+            self.fecha_finalizacion = None
+
+        self.save()
+        return True

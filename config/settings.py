@@ -57,10 +57,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ── Base de datos ─────────────────────────────
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', #En config/settings.py Antes estaba por medio de mysql en una base de datos llamada operpan , eso era lo que generaba error respecto a las migraciones , ahora manejamos django 6.0.6 esta:
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'operpan',
+        'USER': 'operpan_user',
+        'PASSWORD': 'Operpan123',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
+
+AUTH_USER_MODEL = 'usuarios.User'
 
 # ── Usuario personalizado ─────────────────────
 AUTH_USER_MODEL = 'usuarios.User'

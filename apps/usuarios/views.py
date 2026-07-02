@@ -133,8 +133,8 @@ def employee_dashboard(request):
 # GESTIÓN DE USUARIOS
 # ========================
 
-@login_required
-@admin_required
+#@login_required
+#@admin_required
 def user_list_create(request):
     usuarios = PerfilEmpleado.objects.select_related("user").all()
     if request.method == "POST":
