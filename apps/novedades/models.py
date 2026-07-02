@@ -65,15 +65,27 @@ class Certificado(models.Model):
         ('ingresos', 'Ingresos'),
         ('antiguedad', 'Antigüedad'),
     )
+    ESTADO_CHOICES = (
+        ('pendiente', 'Pendiente'),
+        ('aprobado', 'Aprobado'),
+        ('rechazado', 'Rechazado'),
+    )
 
     empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='certificados')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     proposito = models.CharField(max_length=200)
     dirigido_a = models.CharField(max_length=200, blank=True, null=True)
     periodo = models.CharField(max_length=100, blank=True, null=True)
-    fecha_emision = models.DateTimeField(auto_now_add=True)
+
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')  # <-- NUEVO
+    fecha_solicitud = models.DateTimeField(auto_now_add=True)   # <-- RENOMBRADO (antes fecha_emision)
+    fecha_emision = models.DateTimeField(null=True, blank=True)  # <-- ahora se llena SOLO al aprobar
+    decision_fecha = models.DateTimeField(null=True, blank=True)  # <-- NUEVO
+    decision_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='certificados_decididos')  # <-- NUEVO
+    motivo_rechazo = models.TextField(blank=True, null=True)  # <-- NUEVO
+
     generado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='certificados_generados')
     descargas = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.empleado.nombre_completo()} - {self.get_tipo_display()} ({self.fecha_emision.date()})"
+        return f"{self.empleado.nombre_completo()} - {self.get_tipo_display()} ({self.estado})"

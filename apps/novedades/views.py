@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.utils import timezone
-
 from .models import Permiso, Incapacidad, Certificado
 from .forms import (
     RechazoForm,
@@ -17,7 +16,11 @@ from .forms import (
 from .decorators import admin_required
 from apps.usuarios.decorators import admin_required as admin_required_html
 from apps.usuarios.decorators import empleado_required
-
+import io
+from django.http import FileResponse, HttpResponseForbidden, Http404
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import cm
+from reportlab.pdfgen import canvas
 
 # ============================================================
 # VISTAS PARA EMPLEADO (HTML + POST)
@@ -393,14 +396,16 @@ def certificados_lista(request):
         if data.get('hasta'):
             qs = qs.filter(fecha_emision__date__lte=data['hasta'])
 
-    qs = qs.order_by('-fecha_emision')
+    qs = qs.order_by('-fecha_solicitud')
     data = [
         {
             'id': c.id,
             'empleado': c.empleado.nombre_completo(),
             'cargo': c.empleado.cargo,
             'tipo': c.get_tipo_display(),
-            'fecha_emision': c.fecha_emision.isoformat(),
+            'estado': c.get_estado_display(),
+            'fecha_solicitud': c.fecha_solicitud.isoformat(),
+            'fecha_emision': c.fecha_emision.isoformat() if c.fecha_emision else None,  # <-- ARREGLADO
             'proposito': c.proposito,
             'generado_por': c.generado_por.username if c.generado_por else None,
             'descargas': c.descargas,
@@ -408,7 +413,6 @@ def certificados_lista(request):
         for c in qs
     ]
     return JsonResponse(data, safe=False)
-
 
 # ============================================================
 # VISTAS API PARA EMPLEADO (JSON) - Compatibilidad con apps móviles/futuras
@@ -470,7 +474,8 @@ def mis_solicitudes(request):
         'entidad_emisora', 'numero_incapacidad', 'estado', 'fecha_solicitud', 'motivo_rechazo'
     )
     certificados = Certificado.objects.filter(empleado=perfil).values(
-        'id', 'tipo', 'proposito', 'dirigido_a', 'periodo', 'fecha_emision'
+        'id', 'tipo', 'proposito', 'dirigido_a', 'periodo',
+        'estado', 'fecha_solicitud', 'fecha_emision', 'motivo_rechazo'
     )
 
     resultado = []
@@ -513,19 +518,141 @@ def mis_solicitudes(request):
         resultado.append({
             'id': c['id'],
             'tipo': 'certificado',
-            'fecha_inicio': c['fecha_emision'].date().isoformat(),
-            'fecha_fin': c['fecha_emision'].date().isoformat(),
-            'estado': 'aprobado',
+            'fecha_inicio': c['fecha_solicitud'].date().isoformat(),
+            'fecha_fin': c['fecha_emision'].date().isoformat() if c['fecha_emision'] else None,
+            'estado': c['estado'],  # <-- ahora sí es dinámico
             'motivo': c['proposito'],
             'adjunto': None,
-            'fecha_creacion': c['fecha_emision'].isoformat(),
-            'motivo_rechazo': None,
+            'fecha_creacion': c['fecha_solicitud'].isoformat(),
+            'motivo_rechazo': c['motivo_rechazo'],
             'datos_especificos': {
                 'tipo_certificado': c['tipo'],
                 'dirigido_a': c['dirigido_a'],
                 'periodo': c['periodo'],
+                'puede_descargar': c['estado'] == 'aprobado',  # <-- el frontend usa esto para mostrar el botón
             }
         })
 
     resultado.sort(key=lambda x: x['fecha_creacion'], reverse=True)
     return JsonResponse(resultado, safe=False)
+
+    # ---------- CERTIFICADOS: flujo de aprobación ----------
+
+@login_required
+@admin_required
+def certificados_pendientes(request):
+    pendientes = Certificado.objects.filter(estado='pendiente').select_related('empleado__user')
+    data = [
+        {
+            'id': c.id,
+            'empleado': c.empleado.nombre_completo(),
+            'empleado_id': c.empleado.id,
+            'tipo': c.get_tipo_display(),
+            'proposito': c.proposito,
+            'dirigido_a': c.dirigido_a,
+            'periodo': c.periodo,
+            'fecha_solicitud': c.fecha_solicitud.isoformat(),
+        }
+        for c in pendientes
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+@login_required
+@admin_required
+def certificado_aprobar(request, pk):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    try:
+        c = Certificado.objects.get(pk=pk, estado='pendiente')
+    except Certificado.DoesNotExist:
+        return JsonResponse({'error': 'Certificado no encontrado o ya procesado'}, status=404)
+
+    c.estado = 'aprobado'
+    c.fecha_emision = timezone.now()
+    c.decision_por = request.user
+    c.decision_fecha = timezone.now()
+    c.generado_por = request.user
+    c.save()
+    return JsonResponse({'status': 'ok', 'mensaje': 'Certificado aprobado'})
+
+
+@csrf_exempt
+@login_required
+@admin_required
+def certificado_rechazar(request, pk):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        c = Certificado.objects.get(pk=pk, estado='pendiente')
+    except Certificado.DoesNotExist:
+        return JsonResponse({'error': 'Certificado no encontrado o ya procesado'}, status=404)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+
+    form = RechazoForm(data)
+    if not form.is_valid():
+        return JsonResponse({'error': 'Motivo requerido', 'detalles': form.errors}, status=400)
+
+    c.estado = 'rechazado'
+    c.motivo_rechazo = form.cleaned_data['motivo']
+    c.decision_por = request.user
+    c.decision_fecha = timezone.now()
+    c.save()
+    return JsonResponse({'status': 'ok', 'mensaje': 'Certificado rechazado'})
+
+@login_required
+def certificado_descargar(request, pk):
+    try:
+        c = Certificado.objects.select_related('empleado__user').get(pk=pk)
+    except Certificado.DoesNotExist:
+        raise Http404('Certificado no encontrado')
+
+    # Permiso: solo el dueño del certificado o un admin puede descargarlo
+    perfil = getattr(request.user, 'perfil', None)
+    es_dueño = perfil is not None and c.empleado_id == perfil.id
+    es_admin = request.user.is_staff or request.user.is_superuser  # ajusta si tu lógica de admin es distinta
+
+    if not (es_dueño or es_admin):
+        return HttpResponseForbidden('No tienes permiso para descargar este certificado.')
+
+    if c.estado != 'aprobado':
+        return JsonResponse({'error': 'El certificado aún no ha sido aprobado.'}, status=400)
+
+    # --- Generar PDF ---
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    p.setFont('Helvetica-Bold', 16)
+    p.drawCentredString(width / 2, height - 3 * cm, 'CERTIFICADO')
+
+    p.setFont('Helvetica', 11)
+    lineas = [
+        f"Tipo: {c.get_tipo_display()}",
+        f"Empleado: {c.empleado.nombre_completo()}",
+        f"Cargo: {c.empleado.cargo}",
+        f"Propósito: {c.proposito}",
+        f"Dirigido a: {c.dirigido_a or '-'}",
+        f"Período: {c.periodo or '-'}",
+        f"Fecha de emisión: {c.fecha_emision.strftime('%d/%m/%Y %H:%M')}",
+    ]
+    y = height - 5 * cm
+    for linea in lineas:
+        p.drawString(3 * cm, y, linea)
+        y -= 1 * cm
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    c.descargas += 1
+    c.save(update_fields=['descargas'])
+
+    filename = f"certificado_{c.id}_{c.empleado.nombre_completo().replace(' ', '_')}.pdf"
+    return FileResponse(buffer, as_attachment=True, filename=filename, content_type='application/pdf')

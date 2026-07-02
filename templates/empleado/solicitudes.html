@@ -348,19 +348,27 @@
 
             <!-- CERTIFICADOS -->
             {% for c in certificados %}
-                <div class="request-card" data-estado="aprobado">
+                <div class="request-card" data-estado="{{ c.estado }}">
                     <div class="d-flex justify-content-between align-items-start flex-wrap">
                         <div>
                             <h5 class="mb-1">Certificado</h5>
-                            <small class="text-muted">{{ c.get_tipo_display }} · {{ c.fecha_emision|date:"d/m/Y" }}</small>
+                            <small class="text-muted">{{ c.get_tipo_display }}</small>
                             <p class="mb-2 mt-2">{{ c.proposito }}</p>
-                            {% if c.dirigido_a %}
-                                <span class="badge bg-light text-dark"><i class="bi bi-person"></i> Dirigido a: {{ c.dirigido_a }}</span>
+                            <div class="small text-muted mt-2">Solicitado: {{ c.fecha_solicitud|date:"d/m/Y H:i" }}</div>
+                            {% if c.motivo_rechazo %}
+                                <div class="small text-danger mt-1"><i class="bi bi-chat-dots"></i> Rechazo: {{ c.motivo_rechazo }}</div>
                             {% endif %}
-                            <div class="small text-muted mt-2">Emitido: {{ c.fecha_emision|date:"d/m/Y H:i" }}</div>
                         </div>
-                        <div>
-                            <span class="badge badge-approved">Emitido</span>
+                        <div class="text-end">
+                            <span class="badge {% if c.estado == 'pendiente' %}badge-pending{% elif c.estado == 'aprobado' %}badge-approved{% else %}badge-rejected{% endif %}">
+                                {{ c.get_estado_display }}
+                            </span>
+                            {% if c.estado == 'aprobado' %}
+                                <br>
+                                <a href="{% url 'novedades:certificado_pdf' c.id %}" class="btn btn-sm btn-outline-corporate mt-2" target="_blank">
+                                    <i class="bi bi-download"></i> Descargar PDF
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

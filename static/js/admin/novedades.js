@@ -581,3 +581,161 @@ document.querySelectorAll('.novedades-tab').forEach(tab => {
         document.getElementById(`tab${target.charAt(0).toUpperCase()+target.slice(1)}`).classList.add('active');
     });
 });
+
+// ============================================================
+// CERTIFICADOS - Bandeja de pendientes y aprobación
+// ============================================================
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+let certificadoSeleccionadoId = null;
+
+async function cargarCertificadosPendientes() {
+    const container = document.getElementById('certificadosSolicitudesContainer');
+    if (!container) return;
+
+    try {
+        const resp = await fetch('/novedades/certificados/pendientes/');
+        const data = await resp.json();
+
+        if (data.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted py-3">No hay certificados pendientes.</div>';
+            return;
+        }
+
+        container.innerHTML = data.map(c => `
+            <div class="request-card request-pending mb-2">
+                <div class="d-flex justify-content-between align-items-start flex-wrap">
+                    <div>
+                        <h5 class="mb-1">${c.empleado}</h5>
+                        <small class="text-muted">${c.tipo} · Solicitado: ${new Date(c.fecha_solicitud).toLocaleString('es-CO')}</small>
+                        <p class="mb-0 mt-2">${c.proposito || ''}</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-corporate" onclick="verDetalleCertificado(${c.id})">
+                            <i class="bi bi-eye"></i> Ver detalle
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error('Error cargando certificados pendientes:', err);
+        container.innerHTML = '<div class="text-center text-danger py-3">Error al cargar certificados pendientes.</div>';
+    }
+}
+
+async function verDetalleCertificado(id) {
+    certificadoSeleccionadoId = id;
+    try {
+        const resp = await fetch(`/novedades/certificados/pendientes/`);
+        const data = await resp.json();
+        const c = data.find(item => item.id === id);
+        if (!c) return;
+
+        document.getElementById('certificadosModalBody').innerHTML = `
+            <p><strong>Empleado:</strong> ${c.empleado}</p>
+            <p><strong>Tipo:</strong> ${c.tipo}</p>
+            <p><strong>Propósito:</strong> ${c.proposito || '-'}</p>
+            <p><strong>Dirigido a:</strong> ${c.dirigido_a || '-'}</p>
+            <p><strong>Periodo:</strong> ${c.periodo || '-'}</p>
+            <p><strong>Fecha de solicitud:</strong> ${new Date(c.fecha_solicitud).toLocaleString('es-CO')}</p>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById('certificadosDetalleModal'));
+        modal.show();
+    } catch (err) {
+        console.error('Error obteniendo detalle:', err);
+    }
+}
+
+// Botón "Aprobar" dentro del modal de detalle -> abre modal de confirmación
+document.getElementById('certificadosAprobarBtn')?.addEventListener('click', () => {
+    const modalDetalle = bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal'));
+    modalDetalle?.hide();
+    const modalConfirm = new bootstrap.Modal(document.getElementById('certificadosConfirmApproveModal'));
+    modalConfirm.show();
+});
+
+// Confirmar aprobación
+document.getElementById('certificadosConfirmApprove')?.addEventListener('click', async () => {
+    if (!certificadoSeleccionadoId) return;
+    try {
+        const resp = await fetch(`/novedades/certificados/${certificadoSeleccionadoId}/aprobar/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        const data = await resp.json();
+
+        bootstrap.Modal.getInstance(document.getElementById('certificadosConfirmApproveModal'))?.hide();
+
+        if (resp.ok) {
+            cargarCertificadosPendientes();
+            if (typeof cargarCertificadosHistorial === 'function') cargarCertificadosHistorial();
+        } else {
+            alert(data.error || 'Error al aprobar el certificado');
+        }
+    } catch (err) {
+        console.error('Error aprobando certificado:', err);
+    }
+});
+
+// Botón "Rechazar" dentro del modal de detalle -> abre modal de motivo
+document.getElementById('certificadosRechazarBtn')?.addEventListener('click', () => {
+    const modalDetalle = bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal'));
+    modalDetalle?.hide();
+    const modalReject = new bootstrap.Modal(document.getElementById('certificadosRejectModal'));
+    modalReject.show();
+});
+
+// Confirmar rechazo
+document.getElementById('certificadosConfirmReject')?.addEventListener('click', async () => {
+    if (!certificadoSeleccionadoId) return;
+    const motivo = document.getElementById('certificadosRejectReason').value.trim();
+    if (!motivo) {
+        alert('Debes indicar un motivo de rechazo.');
+        return;
+    }
+
+    try {
+        const resp = await fetch(`/novedades/certificados/${certificadoSeleccionadoId}/rechazar/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ motivo: motivo })
+        });
+        const data = await resp.json();
+
+        bootstrap.Modal.getInstance(document.getElementById('certificadosRejectModal'))?.hide();
+        document.getElementById('certificadosRejectReason').value = '';
+
+        if (resp.ok) {
+            cargarCertificadosPendientes();
+            if (typeof cargarCertificadosHistorial === 'function') cargarCertificadosHistorial();
+        } else {
+            alert(data.error || 'Error al rechazar el certificado');
+        }
+    } catch (err) {
+        console.error('Error rechazando certificado:', err);
+    }
+});
+
+// Cargar al iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    cargarCertificadosPendientes();
+});
