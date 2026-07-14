@@ -5,7 +5,8 @@
 
 /* Tarjeta de bienvenida */
 .welcome-card {
-  background: white;
+  background: #A40706;
+  color:#F0F2F5;
   border-radius: 28px;
   padding: 1.8rem;
   margin-bottom: 2rem;
@@ -13,18 +14,6 @@
   border: 1px solid #F0F2F5;
 }
 
-.employee-avatar-large {
-  width: 80px;
-  height: 80px;
-  background: #F0F2F5;
-  border-radius: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 2rem;
-  color: #A40706;
-}
 
 .badge-role {
   background: #A40706;
