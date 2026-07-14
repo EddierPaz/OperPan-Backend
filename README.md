@@ -26,11 +26,34 @@ Plantilla base para proyectos Django.
     pip install -r requirements.txt
 ```
 
+Instalar dependencia para certificados de novedades
+
+Solo en el caso, pues los requerimientos ya estan actualizados y este comando no es necesario.
+
+```bash
+    pip install reportlab
+```
+
 ## Instalar pymysql
 
 ```bash
     pip install pymysql
 ```
+
+Por temas de usuarios en nuestro xampp:
+
+```sql
+    CREATE USER 'operpan_user'@'localhost'
+    IDENTIFIED BY 'Operpan123';
+
+    GRANT ALL PRIVILEGES
+    ON operpan.*
+    TO 'operpan_user'@'localhost';
+```
+
+
+
+
 
 ## Ejecutar migraciones
 
