@@ -54,20 +54,43 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+
+
+
+
+
+
 # ── Base de datos ─────────────────────────────
+# -- Modificacion para MAC (problema de credenciales de administrador para nosotros como aprendices)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'operpan',
-        'USER': 'operpan_user',
-        'PASSWORD': 'Operpan123',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
+
+# En caso de trabajar con windows:
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'operpan',
+#         'USER': 'operpan_user',
+#         'PASSWORD': 'Operpan123',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
+
+
+
+
+
 
 AUTH_USER_MODEL = 'usuarios.User'
 
