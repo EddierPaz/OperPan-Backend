@@ -60,23 +60,23 @@
         <h3><i class="bi bi-list-task me-2"></i> Mis tareas</h3>
         <div class="filter-bar">
             <a href="{% url 'tareas:empleado_tareas_list' %}"
-               class="btn btn-sm btn-link text-dark filter-btn {% if not estado_filtro %}active{% endif %}">
+               class="btn btn-sm text-dark filter-btn {% if not estado_filtro %}active{% endif %}">
                 Todas
             </a>
             <a href="{% url 'tareas:empleado_tareas_list' %}?estado=PENDIENTE"
-               class="btn btn-sm btn-link text-dark filter-btn {% if estado_filtro == 'PENDIENTE' %}active{% endif %}">
+               class="btn btn-sm text-dark filter-btn {% if estado_filtro == 'PENDIENTE' %}active{% endif %}">
                 Pendientes
             </a>
             <a href="{% url 'tareas:empleado_tareas_list' %}?estado=EN_PROGRESO"
-               class="btn btn-sm btn-link text-dark filter-btn {% if estado_filtro == 'EN_PROGRESO' %}active{% endif %}">
+               class="btn btn-sm text-dark filter-btn {% if estado_filtro == 'EN_PROGRESO' %}active{% endif %}">
                 En progreso
             </a>
             <a href="{% url 'tareas:empleado_tareas_list' %}?estado=FINALIZADA"
-               class="btn btn-sm btn-link text-dark filter-btn {% if estado_filtro == 'FINALIZADA' %}active{% endif %}">
+               class="btn btn-sm text-dark filter-btn {% if estado_filtro == 'FINALIZADA' %}active{% endif %}">
                 Finalizadas
             </a>
             <a href="{% url 'tareas:empleado_tareas_list' %}?vencidas=true"
-               class="btn btn-sm btn-link text-dark filter-btn {% if request.GET.vencidas == 'true' %}active{% endif %}">
+               class="btn btn-sm text-dark filter-btn {% if request.GET.vencidas == 'true' %}active{% endif %}">
                 Vencidas
             </a>
         </div>
