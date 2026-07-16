@@ -1,0 +1,38 @@
+<div class="row stats-row g-3">
+
+    <h3 class="mb-0">
+        <i class="bi bi-bar-chart"></i>
+        Estadísticas del mes
+    </h3>
+
+    <div class="col-md-4">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Días con asistencia</span>
+                <h3 class="mt-1">{{ dias_asistencia }}</h3>
+            </div>
+            <i class="bi bi-check-circle-fill" style="color:#1E7B48;"></i>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Días sin asistencia</span>
+                <h3 class="mt-1">{{ dias_sin_asistencia }}</h3>
+            </div>
+            <i class="bi bi-x-circle-fill" style="color:#A40706;"></i>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Retardos</span>
+                <h3 class="mt-1">{{ retardos }}</h3>
+            </div>
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+    </div>
+
+</div>

@@ -71,8 +71,10 @@
             {% endif %}
 
             <div class="forgot-link">
-                <a href="#" id="forgotPasswordLink"><i class="bi bi-question-circle"></i> ¿Olvidaste tu contraseña o
-                    código?</a>
+                <a href="{% url 'password_reset_documento' %}">
+                    <i class="bi bi-question-circle"></i>
+                    ¿Olvidaste tu contraseña?
+                </a>
             </div>
             <div class="forgot-link">
                 <a href="https://mail.google.com/mail/?view=cm&fs=1&to=eddierpaz9@gmail.com&su=Soporte%20OperPan"

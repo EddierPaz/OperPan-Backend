@@ -144,7 +144,7 @@ def horarios(request):
 
         return redirect("asistencia:horarios")
 
-    return render(request, "admin/asistencia.html", _contexto_base())
+    return render(request, "admin/asistencia/asistencia.html", _contexto_base())
 
 
 def horario_json(request, id):
@@ -276,7 +276,7 @@ def asistencia_empleado(request):
 
     return render(
         request,
-        "empleado/asistencia.html",
+        "empleado/asistencia/asistencia.html",
         {
             "horario": horario,
             "proximo_descanso": proximo_descanso,

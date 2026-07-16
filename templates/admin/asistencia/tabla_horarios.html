@@ -1,0 +1,63 @@
+<div class="card-modern">
+  <div class="card-header d-flex align-items-center">
+    <h3><i class="bi bi-table me-2"></i>Horarios asignados</h3>
+    <button class="btn btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalHorario">
+      <i class="bi bi-plus-circle me-2"></i>Agregar horario
+    </button>
+  </div>
+  <div class="p-3">
+    <div class="table-responsive">
+      <table class="table table-custom">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Cargo</th>
+            <th>Turno</th>
+            <th>Horario</th>
+            <th>Descanso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for horario in horarios %}
+          <tr>
+            <td>{{ horario.empleado.nombre_completo }}</td>
+            <td>{{ horario.empleado.get_cargo_display }}</td>
+            <td>{{ horario.get_turno_display }}</td>
+            <td>{{ horario.hora_entrada }} - {{ horario.hora_salida }}</td>
+            <td>
+              {% for descanso in horario.descansos.all %}
+              {% if descanso.es_descanso %}{{ descanso.fecha|date:"d/m/Y" }}{% endif %}
+              {% empty %}Sin descanso asignado{% endfor %}
+            </td>
+            <td>
+              {% if horario.estado %}
+              <span class="badge bg-success">Activo</span>
+              {% else %}
+              <span class="badge bg-danger">Inactivo</span>
+              {% endif %}
+            </td>
+            <td>
+              <button class="btn btn-sm btn-ver-horario" data-id="{{ horario.id }}">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-editar-horario" data-id="{{ horario.id }}">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <a href="{% url 'asistencia:eliminar_horario' horario.id %}" class="btn btn-sm"
+                onclick="return confirm('¿Desea eliminar este horario?')">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center">No hay horarios registrados</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

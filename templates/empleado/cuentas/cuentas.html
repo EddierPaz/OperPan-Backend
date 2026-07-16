@@ -1,0 +1,28 @@
+{% extends 'empleado/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block section_title %}Panel de Administración{% endblock %}
+{% block section_subtitle %}Bienvenido al panel de control de Estación Paisa{% endblock %}
+{% block active_perfil %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+
+    {% include "empleado/cuentas/informacion_personal.html" %}
+
+    <footer>
+        <i class="bi bi-shield-check"></i> Trazabilidad garantizada - Información actualizada en tiempo real
+    </footer>
+</main>
+
+
+
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/empleado/cuentas.js' %}"></script>
+{% endblock %}

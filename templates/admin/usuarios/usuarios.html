@@ -1,0 +1,50 @@
+{% extends 'admin/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block section_title %}Visualiza, edita y gestiona los usuarios del sistema{% endblock %}
+{% block section_subtitle %}Panel de Administración{% endblock %}
+{% block active_cuentas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/cuentas.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% include "admin/usuarios/stats.html" %}
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h3><i class="bi bi-table me-2"></i> Listado de cuentas</h3>
+        <button class="btn-primary-corporate" id="btnCrearCuenta">
+            <i class="bi bi-person-plus-fill me-1"></i> Crear cuenta
+        </button>
+    </div>
+
+    {% include "admin/usuarios/form_usuarios.html" %}
+
+    {% include "admin/usuarios/tabla_usuarios.html" %}
+
+    <footer>
+        <i class="bi bi-shield-check"></i> Trazabilidad completa — Cada acción queda registrada en auditoría
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/cuentas.js' %}"></script>
+<script>
+    const urlCrear = "{% url 'user_list' %}";
+</script>
+{% endblock %}

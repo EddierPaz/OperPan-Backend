@@ -1,0 +1,31 @@
+{% extends 'admin/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Horarios{% endblock %}
+{% block section_title %}Asigna turnos y controla asistencia del personal{% endblock %}
+{% block section_subtitle %}Panel de Administración{% endblock %}
+{% block active_horarios %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/asistencia.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+
+  {% include "admin/asistencia/resumen_hoy.html" %}
+
+  {% include "admin/asistencia/tabla_horarios.html" %}
+
+  {% include "admin/asistencia/crear_horario.html" %}
+
+  {% include "admin/asistencia/ver_horario.html" %}
+
+  {% include "admin/asistencia/editar_horario.html" %}
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/asistencia.js' %}"></script>
+{% endblock %}

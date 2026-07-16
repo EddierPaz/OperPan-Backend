@@ -1,4 +1,3 @@
-from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -8,68 +7,6 @@ from django.utils.dateparse import parse_date
 from .decorators import admin_required
 from apps.asistencia.models import Horario
 from apps.asistencia.views import _contexto_base
-
-# ========================
-
-# VISTAS PÚBLICAS
-
-# ========================
-
-def inicio(request):
-    return render(request, "index.html")
-
-def login_view(request):
-    if request.method == "POST":
-        identificador = request.POST.get(
-            "username",
-            ""
-        ).strip()
-        contrasena = request.POST.get(
-            "password",
-            ""
-        )
-        user = authenticate(
-            request,
-            username=identificador,
-            password=contrasena
-        )
-
-        if user is not None:
-            if not user.is_active:
-                messages.error(
-                    request,
-                    "Esta cuenta se encuentra desactivada."
-                )
-                return render(
-                    request,
-                    "login/login.html"
-                )
-            login(request, user)
-            if user.rol == "admin":
-                return redirect(
-                    "admin_dashboard"
-                )
-            return redirect(
-                "employee_dashboard"
-            )
-        messages.error(
-            request,
-            "Usuario o contraseña incorrectos."
-        )
-    return render(
-        request,
-        "login/login.html"
-    )
-
-
-@login_required
-def logout_view(request):
-    logout(request)
-    messages.info(
-        request,
-        "Sesión cerrada correctamente."
-    )
-    return redirect("login")
 
 # ========================
 # DASHBOARDS
@@ -142,10 +79,12 @@ def user_list_create(request):
         perfil_form = PerfilEmpleadoForm(request.POST)
         if user_form.is_valid() and perfil_form.is_valid():
             user = user_form.save(commit=False)
+            user.email = perfil_form.cleaned_data["correo"]
             user.set_password(
                 user_form.cleaned_data["password"]
             )
             user.save()
+
             perfil = perfil_form.save(commit=False)
             perfil.user = user
             perfil.save()
@@ -178,7 +117,7 @@ def user_list_create(request):
     }
     return render(
         request,
-        "admin/usuarios.html",
+        "admin/usuarios/usuarios.html",
         context
     )
 
@@ -366,7 +305,7 @@ def employee_profile(request):
     perfil = request.user.perfil
     return render(
         request,
-        "empleado/cuentas.html",
+        "empleado/cuentas/cuentas.html",
         {
             "perfil": perfil
         }

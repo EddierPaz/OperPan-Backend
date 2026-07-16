@@ -1,0 +1,166 @@
+<div class="employee-card">
+
+    <form method="POST" action="{% url 'employee_profile_update' %}">
+        {% csrf_token %}
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">
+                <i class="bi bi-person-vcard"></i>
+                Información Personal
+            </h4>
+
+            <button type="button" id="btnEditar" class="btn fw-bold" style="background:#A40706;color:white;">
+                <i class="bi bi-pencil-square"></i>
+                Editar
+            </button>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <small class="text-muted">Nombre completo</small>
+                <div class="fw-semibold">{{ perfil.nombre_completo }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Usuario</small>
+                <div class="fw-semibold">{{ request.user.username }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Documento</small>
+                <div class="fw-semibold">{{ perfil.numero_documento }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Tipo Documento</small>
+                <div class="fw-semibold">{{ perfil.get_tipo_documento_display }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Fecha Nacimiento</small>
+                <div class="fw-semibold">{{ perfil.fecha_nacimiento }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Género</small>
+                <div class="view-mode fw-semibold">{{ perfil.get_genero_display }}</div>
+                <select name="genero" class="form-select edit-mode d-none">
+                    <option value="M" {% if perfil.genero == 'M' %} selected {% endif %}>Masculino</option>
+                    <option value="F" {% if perfil.genero == 'F' %} selected {% endif %}>Femenino</option>
+                    <option value="O" {% if perfil.genero == 'O' %} selected {% endif %}>Otro</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Estado Civil</small>
+                <div class="view-mode fw-semibold">{{ perfil.get_estado_civil_display }}</div>
+                <select name="estado_civil" class="form-select edit-mode d-none">
+                    <option value="soltero" {% if perfil.estado_civil == 'soltero' %} selected {% endif %}>Soltero</option>
+                    <option value="casado" {% if perfil.estado_civil == 'casado' %} selected {% endif %}>Casado</option>
+                    <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %} selected {% endif %}>Unión Libre</option>
+                    <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %} selected {% endif %}>Divorciado</option>
+                    <option value="viudo" {% if perfil.estado_civil == 'viudo' %} selected {% endif %}>Viudo</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Teléfono</small>
+                <div class="view-mode fw-semibold">{{ perfil.telefono }}</div>
+                <input type="text" name="telefono" class="form-control edit-mode d-none" value="{{ perfil.telefono }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Correo</small>
+                <div class="view-mode fw-semibold">{{ perfil.correo }}</div>
+                <input type="email" name="correo" class="form-control edit-mode d-none" value="{{ perfil.correo }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Dirección</small>
+                <div class="view-mode fw-semibold">{{ perfil.direccion }}</div>
+                <input type="text" name="direccion" class="form-control edit-mode d-none" value="{{ perfil.direccion }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Ciudad</small>
+                <div class="view-mode fw-semibold">{{ perfil.ciudad }}</div>
+                <input type="text" name="ciudad" class="form-control edit-mode d-none" value="{{ perfil.ciudad }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Nombre del contacto de emergencia</small>
+                <div class="view-mode fw-semibold">{{ perfil.contacto_emergencia }}</div>
+                <input type="text" name="contacto_emergencia" class="form-control edit-mode d-none" value="{{ perfil.contacto_emergencia }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Parentesco</small>
+                <div class="view-mode fw-semibold">{{ perfil.parentesco_emergencia }}</div>
+                <input type="text" name="parentesco_emergencia" class="form-control edit-mode d-none" value="{{ perfil.parentesco_emergencia }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Teléfono del contacto de emergencia</small>
+                <div class="view-mode fw-semibold">{{ perfil.telefono_emergencia }}</div>
+                <input type="text" name="telefono_emergencia" class="form-control edit-mode d-none" value="{{ perfil.telefono_emergencia }}">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Cargo</small>
+                <div class="fw-semibold">{{ perfil.get_cargo_display }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Fecha Ingreso</small>
+                <div class="fw-semibold">{{ perfil.fecha_ingreso }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Estado</small>
+                <div class="fw-semibold">{{ perfil.get_estado_display }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">EPS</small>
+                <div class="fw-semibold">{{ perfil.eps }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">ARL</small>
+                <div class="fw-semibold">{{ perfil.arl }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Fondo de Pensión</small>
+                <div class="fw-semibold">{{ perfil.fondo_pension }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Tipo Sangre</small>
+                <div class="fw-semibold">{{ perfil.tipo_sangre }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted">Contraseña</small>
+                <div class="view-mode fw-semibold">••••••••••••</div>
+                <input type="password" name="password" class="form-control edit-mode d-none" placeholder="Nueva contraseña">
+            </div>
+
+            <div class="col-md-4">
+                <small class="text-muted edit-mode d-none">Confirmar contraseña</small>
+                <input type="password" name="confirmar_password" class="form-control edit-mode d-none" placeholder="Confirmar contraseña">
+            </div>
+
+        </div>
+
+        <div class="mt-4 d-none" id="accionesEdicion">
+            <button type="submit" class="btn btn-success fw-bold" style="background:#A40706;color:white;border-color: #A40706;">
+                <i class="bi bi-check-circle"></i>
+                Guardar cambios
+            </button>
+        </div>
+
+    </form>
+
+</div>

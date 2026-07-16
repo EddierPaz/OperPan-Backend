@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.usuarios',
+    'apps.login',
     'apps.novedades',
     'apps.asistencia',
     'apps.tareas',
@@ -127,3 +128,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ── PK por defecto ────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===============================
+# CONFIGURACIÓN DE CORREO
+# ===============================
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "eddierpaz9@gmail.com"   # Cambia por tu correo
+EMAIL_HOST_PASSWORD = "dtaa vqvg bgvq vbae"
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

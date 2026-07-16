@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import uuid
+from django.utils import timezone
+from datetime import timedelta
 
 
 class User(AbstractUser):
@@ -215,3 +218,13 @@ class PerfilEmpleado(models.Model):
 
     def __str__(self):
         return  f'{self.nombre_completo()} {self.cargo} '
+    
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reset_tokens')
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    creado = models.DateTimeField(auto_now_add=True)
+    usado = models.BooleanField(default=False)
+
+    def es_valido(self):
+        vencimiento = self.creado + timedelta(hours=1)
+        return not self.usado and timezone.now() < vencimiento

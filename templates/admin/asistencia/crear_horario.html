@@ -1,0 +1,91 @@
+<div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Asignar nuevo horario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row g-3">
+
+            <div class="col-md-4">
+              <label class="form-label">Empleado *</label>
+              <select name="empleado" id="empleadoSelect" class="form-select" required>
+                <option value="">Seleccione empleado</option>
+                {% for empleado in empleados %}
+                <option value="{{ empleado.id }}" data-cargo="{{ empleado.get_cargo_display }}">
+                  {{ empleado.nombre_completo }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Cargo</label>
+              <input type="text" id="cargoInput" class="form-control" readonly>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Jornada *</label>
+              <select name="turno" id="turnoSelect" class="form-select" required>
+                <option value="">Seleccione jornada</option>
+                <option value="MANANA">Mañana</option>
+                <option value="TARDE">Tarde</option>
+                <option value="FIJO">Fijo</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Hora entrada *</label>
+              <input type="time" id="horaEntrada" name="hora_entrada" class="form-control" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Hora salida *</label>
+              <input type="time" id="horaSalida" name="hora_salida" class="form-control" required>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Seleccione el día de descanso</label>
+              <div class="calendario-wrapper" id="ciclo14x1">
+                <div class="dias-semana">
+                  {% for nombre in dias_semana %}
+                  <div class="dia-semana">{{ nombre }}</div>
+                  {% endfor %}
+                </div>
+                <div class="calendario-grid">
+                  {% for dia in proximos_dias %}
+                  {% if dia %}
+                  <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+                    data-label="{{ dia.fecha|date:'d/m' }}" title="{{ dia.fecha|date:'d/m/Y' }}">
+                    {{ dia.numero }}
+                  </button>
+                  {% else %}
+                  <div class="dia-vacio"></div>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="fecha_descanso" id="fechaDescansoInput" required>
+                <p class="text-muted small mt-2" id="descansoLabel" style="display:none;">
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>
+                  Descanso asignado para el día <strong id="descansoFechaTexto"></strong>
+                </p>
+              </div>
+              <div class="d-flex mt-3 gap-2">
+                <button type="submit" class="btn btn-primary-corporate">
+                  <i class="bi bi-save"></i> Guardar horario
+                </button>
+                <button type="reset" id="btnLimpiarHorario" class="btn btn-outline-corporate">
+                  Limpiar campos
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

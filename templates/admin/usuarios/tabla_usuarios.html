@@ -1,0 +1,79 @@
+<div class="table-responsive mb-4">
+    <table class="table table-custom">
+        <thead>
+            <tr>
+                <th>Documento</th>
+                <th>Usuario</th>
+                <th>Nombre Completo</th>
+                <th>Cargo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr data-id="{{ usuario.user.id }}" data-primer-nombre="{{ usuario.primer_nombre }}"
+                data-segundo-nombre="{{ usuario.segundo_nombre }}"
+                data-primer-apellido="{{ usuario.primer_apellido }}"
+                data-segundo-apellido="{{ usuario.segundo_apellido }}"
+                data-tipo-documento="{{ usuario.tipo_documento }}"
+                data-numero-documento="{{ usuario.numero_documento }}"
+                data-fecha-nacimiento="{{ usuario.fecha_nacimiento }}" data-genero="{{ usuario.genero }}"
+                data-estado-civil="{{ usuario.estado_civil }}" data-tipo-sangre="{{ usuario.tipo_sangre }}"
+                data-telefono="{{ usuario.telefono }}" data-correo="{{ usuario.correo }}"
+                data-ciudad="{{ usuario.ciudad }}" data-direccion="{{ usuario.direccion|default:'' }}"
+                data-contacto-emergencia="{{ usuario.contacto_emergencia|default:'' }}"
+                data-parentesco-emergencia="{{ usuario.parentesco_emergencia|default:'' }}"
+                data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}"
+                data-cargo="{{ usuario.cargo }}" data-fecha-ingreso="{{ usuario.fecha_ingreso|default:'' }}"
+                data-eps="{{ usuario.eps|default:'' }}" data-arl="{{ usuario.arl|default:'' }}"
+                data-fondo-pension="{{ usuario.fondo_pension|default:'' }}" data-estado="{{ usuario.estado }}"
+                data-username="{{ usuario.user.username }}" data-rol="{{ usuario.user.rol }}">
+                <td>{{ usuario.numero_documento }}</td>
+                <td>{{ usuario.user.username }}</td>
+                <td>{{ usuario.nombre_completo }}</td>
+                <td>{{ usuario.get_cargo_display }}</td>
+                <td>
+                    {% if usuario.user.rol == 'admin' %}
+                    <span class="badge badge-rol-admin">Administrador</span>
+                    {% else %}
+                    <span class="badge badge-rol-empleado">Empleado</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if usuario.estado == 'activo' %}
+                    <span class="badge badge-active">Activo</span>
+                    {% elif usuario.estado == 'suspendido' %}
+                    <span class="badge badge-inactive">Suspendido</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Retirado</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button type="button" class="action-btn" title="Ver" onclick="verUsuario(this)">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="action-btn" title="Editar" onclick="editarUsuario(this)">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <form method="POST" action="{% url 'user_delete' usuario.user.id %}"
+                        style="display:inline;"
+                        onsubmit="return confirm('¿Eliminar permanentemente a {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}?')">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox me-2"></i> No hay usuarios registrados
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

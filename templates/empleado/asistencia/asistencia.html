@@ -1,0 +1,38 @@
+{% extends 'empleado/base/base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Listado de Cuentas{% endblock %}
+{% block section_title %}Panel de Administración{% endblock %}
+{% block section_subtitle %}Bienvenido al panel de control de Estación Paisa{% endblock %}
+{% block active_asistencia %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/asistencia.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-container">
+
+    {% include "empleado/asistencia/stats.html" %}
+
+    {% include "empleado/asistencia/mi_horario.html" %}
+
+    {% include "empleado/asistencia/tabla_historial.html" %}
+
+    <footer>
+        <i class="bi bi-shield-check"></i> Sistema de gestión de asistencia - Trazabilidad garantizada
+    </footer>
+</main>
+
+<div class="toast-message" id="liveToast" style="display: none;">
+    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
+        <div class="d-flex gap-2 align-items-center">
+            <i class="bi bi-info-circle-fill text-danger fs-5"></i>
+            <span id="toastMsg">Mensaje</span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+{% endblock %}
