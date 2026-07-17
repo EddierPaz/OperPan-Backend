@@ -49,7 +49,7 @@ def password_reset_documento(request):
                 reverse("password_reset_confirmar", args=[str(token_obj.token)])
             )
             contexto_email = {"nombre": perfil.primer_nombre, "reset_url": reset_url}
-            html_content = render_to_string("login/email/password_reset_email.html", contexto_email)
+            html_content = render_to_string("login/password_reset_email.html", contexto_email)
 
             email = EmailMultiAlternatives(
                 subject="Recupera tu contraseña - OperPan",

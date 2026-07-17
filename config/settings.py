@@ -139,7 +139,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "eddierpaz9@gmail.com"   # Cambia por tu correo
-EMAIL_HOST_PASSWORD = "dtaa vqvg bgvq vbae"
+EMAIL_HOST_USER = "operpangestion@gmail.com"   # Cambia por tu correo
+EMAIL_HOST_PASSWORD = "xyem pixd lphs ftmu"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
