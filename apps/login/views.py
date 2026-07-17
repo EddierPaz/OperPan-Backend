@@ -6,7 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.urls import reverse
-from apps.usuarios.models import PerfilEmpleado, PasswordResetToken, User
+from apps.usuarios.models import PerfilEmpleado, PasswordResetToken
 
 
 def inicio(request):

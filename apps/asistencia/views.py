@@ -5,6 +5,8 @@ from .models import Horario, DescansoEmpleado, Asistencia
 from django.utils import timezone
 from apps.usuarios.models import PerfilEmpleado
 
+def dias_ciclo(turno):
+    return 7 if turno == "FIJO" else 15
 
 def _contexto_base():
 
@@ -23,10 +25,13 @@ def _contexto_base():
             "fecha": fecha,
             "numero": fecha.day,
             "weekday": fecha.weekday(),
+            "indice": i,  # posición 0..14 dentro del ciclo, usada por el JS
+                          # para mostrar solo 7 días cuando el turno es FIJO
         })
 
     horarios = (
         Horario.objects
+        .filter(estado=True)
         .select_related("empleado")
         .prefetch_related("descansos")
         .order_by("-id")
@@ -124,8 +129,17 @@ def horarios(request):
         hora_salida    = request.POST.get("hora_salida")
         fecha_descanso = request.POST.get("fecha_descanso")
 
-        empleado = PerfilEmpleado.objects.get(id=empleado_id)
+        empleado = get_object_or_404(PerfilEmpleado,id=empleado_id)
 
+        # Desactivar horario anterior
+        Horario.objects.filter(
+            empleado=empleado,
+            estado=True
+        ).update(
+            estado=False
+        )
+
+        # Crear nuevo horario
         horario = Horario.objects.create(
             empleado=empleado,
             turno=turno,
@@ -134,7 +148,7 @@ def horarios(request):
             estado=True,
         )
 
-        for i in range(15):
+        for i in range(dias_ciclo(turno)):
             fecha = date.today() + timedelta(days=i)
             DescansoEmpleado.objects.create(
                 horario=horario,
@@ -148,7 +162,6 @@ def horarios(request):
 
 
 def horario_json(request, id):
-    """Devuelve los datos de un horario en JSON — lo usa el JS para llenar los modales"""
 
     horario = get_object_or_404(
         Horario.objects.select_related("empleado").prefetch_related("descansos"),
@@ -185,7 +198,8 @@ def editar_horario(request, id):
         if fecha_descanso:
             # Borra el ciclo anterior y lo recrea con el nuevo día de descanso
             horario.descansos.all().delete()
-            for i in range(15):
+
+            for i in range(dias_ciclo(horario.turno)):
                 fecha = date.today() + timedelta(days=i)
                 DescansoEmpleado.objects.create(
                     horario=horario,
@@ -201,9 +215,11 @@ def editar_horario(request, id):
 def eliminar_horario(request, id):
 
     horario = get_object_or_404(Horario, id=id)
-    horario.delete()
-    return redirect("asistencia:horarios")
 
+    horario.estado = False
+    horario.save()
+
+    return redirect("asistencia:horarios")
 
 def asistencia_empleado(request):
 
@@ -247,8 +263,7 @@ def asistencia_empleado(request):
         for _ in range(hoy.weekday()):
             calendario.append(None)
 
-        for i in range(15):
-
+        for i in range(dias_ciclo(horario.turno)):
             fecha = hoy + timedelta(days=i)
 
             calendario.append({

@@ -1,6 +1,40 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // ==========================
+    // HELPER: mostrar/ocultar días
+    // según el turno (7 días para
+    // FIJO, 15 para MANANA/TARDE)
+    // ==========================
+
+    function diasVisibles(turno) {
+        return turno === "FIJO" ? 7 : 15;
+    }
+
+    function actualizarDiasCalendario(ciclo, turno, inputFecha, label, texto) {
+        if (!ciclo) return;
+
+        const maxDias = diasVisibles(turno);
+
+        ciclo.querySelectorAll(".dia-btn").forEach(function (btn) {
+            const indice = parseInt(btn.dataset.indice, 10);
+
+            if (indice < maxDias) {
+                btn.style.display = "";
+            } else {
+                // Si el día que se estaba mostrando queda fuera del nuevo
+                // rango, se oculta y se limpia su selección
+                btn.style.display = "none";
+                if (btn.classList.contains("seleccionado")) {
+                    btn.classList.remove("seleccionado");
+                    if (inputFecha) inputFecha.value = "";
+                    if (label) label.style.display = "none";
+                    if (texto) texto.textContent = "";
+                }
+            }
+        });
+    }
+
+    // ==========================
     // CARGAR CARGO EMPLEADO
     // ==========================
 
@@ -22,17 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const horaEntrada = document.getElementById("horaEntrada");
     const horaSalida = document.getElementById("horaSalida");
 
-    if (turnoSelect) {
-        turnoSelect.addEventListener("change", function () {
-            switch (this.value) {
-                case "MANANA": horaEntrada.value = "05:00"; horaSalida.value = "13:00"; break;
-                case "TARDE": horaEntrada.value = "13:00"; horaSalida.value = "22:00"; break;
-                case "FIJO": horaEntrada.value = "08:00"; horaSalida.value = "17:00"; break;
-                default: horaEntrada.value = ""; horaSalida.value = "";
-            }
-        });
-    }
-
     // ==========================
     // CALENDARIO — CREAR
     // ==========================
@@ -42,10 +65,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const labelCrear = document.getElementById("descansoLabel");
     const textoCrear = document.getElementById("descansoFechaTexto");
 
+    if (turnoSelect) {
+        turnoSelect.addEventListener("change", function () {
+            switch (this.value) {
+                case "MANANA": horaEntrada.value = "05:00"; horaSalida.value = "13:00"; break;
+                case "TARDE": horaEntrada.value = "13:00"; horaSalida.value = "22:00"; break;
+                case "FIJO": horaEntrada.value = "08:00"; horaSalida.value = "17:00"; break;
+                default: horaEntrada.value = ""; horaSalida.value = "";
+            }
+
+            // Ajustar cuántos días del calendario se muestran
+            actualizarDiasCalendario(cicloCrear, this.value, inputCrear, labelCrear, textoCrear);
+        });
+
+        // Estado inicial (por si el select ya trae un valor precargado)
+        actualizarDiasCalendario(cicloCrear, turnoSelect.value, inputCrear, labelCrear, textoCrear);
+    }
+
     if (cicloCrear) {
         cicloCrear.addEventListener("click", function (e) {
             const btn = e.target.closest(".dia-btn");
-            if (!btn) return;
+            if (!btn || btn.style.display === "none") return;
             cicloCrear.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
             btn.classList.add("seleccionado");
             inputCrear.value = btn.dataset.fecha;
@@ -71,6 +111,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     b.classList.remove("seleccionado");
                     b.blur();
                 });
+                // Al limpiar también se resetea la vista del calendario a 15 días
+                actualizarDiasCalendario(cicloCrear, "", inputCrear, labelCrear, textoCrear);
             }, 10);
         });
     }
@@ -83,11 +125,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputEditar = document.getElementById("fechaDescansoEditarInput");
     const labelEditar = document.getElementById("descansoEditarLabel");
     const textoEditar = document.getElementById("descansoEditarFechaTexto");
+    const editarTurnoSelect = document.getElementById("editar-turno");
+
+    if (editarTurnoSelect) {
+        editarTurnoSelect.addEventListener("change", function () {
+            actualizarDiasCalendario(cicloEditar, this.value, inputEditar, labelEditar, textoEditar);
+        });
+    }
 
     if (cicloEditar) {
         cicloEditar.addEventListener("click", function (e) {
             const btn = e.target.closest(".dia-btn");
-            if (!btn) return;
+            if (!btn || btn.style.display === "none") return;
             cicloEditar.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
             btn.classList.add("seleccionado");
             inputEditar.value = btn.dataset.fecha;
@@ -143,6 +192,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (labelActual) {
                         labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
                     }
+
+                    // Ajustar el calendario (7 o 15 días) según el turno actual del horario
+                    actualizarDiasCalendario(cicloEditar, data.turno_valor, inputEditar, labelEditar, textoEditar);
 
                     if (cicloEditar) {
                         cicloEditar.querySelectorAll(".dia-btn").forEach(function (b) {
