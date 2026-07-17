@@ -1,3 +1,4 @@
+<!-- MODAL: Crear horario -->
 <div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
@@ -59,7 +60,8 @@
                   {% for dia in proximos_dias %}
                   {% if dia %}
                   <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
-                    data-label="{{ dia.fecha|date:'d/m' }}" title="{{ dia.fecha|date:'d/m/Y' }}">
+                    data-label="{{ dia.fecha|date:'d/m' }}" data-indice="{{ dia.indice }}"
+                    title="{{ dia.fecha|date:'d/m/Y' }}">
                     {{ dia.numero }}
                   </button>
                   {% else %}
