@@ -128,7 +128,12 @@ def solicitudes_empleado(request):
 @admin_required_html
 def novedades_admin(request):
     """Panel de novedades para administradores."""
-    return render(request, 'admin/novedades.html')
+
+    context = {
+        'fecha_hoy': timezone.now().date(),
+    }
+
+    return render(request, 'admin/novedades.html', context)
 
 
 # ============================================================

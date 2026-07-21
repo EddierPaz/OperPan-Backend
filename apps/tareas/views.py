@@ -73,6 +73,7 @@ def admin_tareas_list(request):
             messages.error(request, "La tarea que intentas editar no existe.")
 
     context = {
+        'fecha_hoy': timezone.now().date(),
         'tareas': tareas,
         'kpis': kpis,
         'filter_form': filter_form,

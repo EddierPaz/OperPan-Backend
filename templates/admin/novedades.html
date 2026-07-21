@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}OperPan | Novedades{% endblock %}
-{% block section_title %}Gestión unificada de permisos, incapacidades y certificados{% endblock %}
+{% block section_title %}Gestión unificada de permisos, incapacidades, certificados y memorandos{% endblock %}
 {% block section_subtitle %}Panel de Administración{% endblock %}
 {% block active_novedades %}active{% endblock %}
 
@@ -13,400 +13,54 @@
 {% block content %}
 <main class="dashboard-container">
     <!-- Pestañas principales -->
-    <div class="novedades-tabs">
-        <button class="novedades-tab active" data-tab="permisos"><i class="bi bi-file-earmark-text"></i> Permisos</button>
-        <button class="novedades-tab" data-tab="incapacidades"><i class="bi bi-clipboard2-pulse"></i> Incapacidades</button>
-        <button class="novedades-tab" data-tab="certificados"><i class="bi bi-award"></i> Certificados</button>
+    <div class="novedades-tabs d-flex align-items-center">
+        <button class="novedades-tab active" data-tab="permisos">
+            <i class="bi bi-file-earmark-text"></i> Permisos
+        </button>
+        <button class="novedades-tab" data-tab="incapacidades">
+            <i class="bi bi-clipboard2-pulse"></i> Incapacidades
+        </button>
+        <button class="novedades-tab" data-tab="certificados">
+            <i class="bi bi-award"></i> Certificados
+        </button>
+        <span class="card-header small ms-auto">
+            {{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}
+        </span>
     </div>
+
 
     <!-- ==================== PESTAÑA PERMISOS ==================== -->
     <div id="tabPermisos" class="tab-pane active">
-        <!-- KPIs mensuales -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-4 col-6">
-                <div class="kpi-card">
-                    <div class="text-muted">Pendientes</div>
-                    <h3 id="permisosKpiPendientes">0</h3>
-                </div>
-            </div>
-            <div class="col-md-4 col-6">
-                <div class="kpi-card">
-                    <div class="text-muted">Aprobadas este mes</div>
-                    <h3 id="permisosKpiAprobados">0</h3>
-                </div>
-            </div>
-            <div class="col-md-4 col-6">
-                <div class="kpi-card">
-                    <div class="text-muted">Rechazadas este mes</div>
-                    <h3 id="permisosKpiRechazados">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-modern">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="bi bi-inbox me-2"></i> Novedades pendientes</h3>
-            </div>
-            <div class="p-3" id="permisosSolicitudesContainer"></div>
-        </div>
-
-        <div class="card-modern">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="bi bi-table me-2"></i> Historial completo de permisos</h3>
-            </div>
-            <div class="p-3 table-responsive-stack">
-                <table class="table table-custom">
-                    <thead>
-                        <tr>
-                            <th>Fecha solicitud</th>
-                            <th>Empleado</th>
-                            <th>Tipo</th>
-                            <th>Fechas</th>
-                            <th>Estado</th>
-                            <th>Aprobado por</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="permisosHistorialBody"></tbody>
-                </table>
-            </div>
-        </div>
+        {% include "admin/novedades/permisos/content.html" %}
     </div>
 
     <!-- ==================== PESTAÑA INCAPACIDADES ==================== -->
     <div id="tabIncapacidades" class="tab-pane">
-        <div class="mb-4">
-            <h3><i class="bi bi-calendar-month me-2 text-danger"></i> Resumen mensual de incapacidades</h3>
-        </div>
-        <div class="row g-3 mb-4">
-            <div class="col-md-4 col-6">
-                <div class="kpi-card">
-                    <div class="text-muted">Pendientes</div>
-                    <h3 id="incapacidadesKpiPendientes">0</h3>
-                </div>
-            </div>
-            <div class="col-md-4 col-6">
-                <div class="kpi-card">
-                    <div class="text-muted">Aprobadas este mes</div>
-                    <h3 id="incapacidadesKpiAprobadas">0</h3>
-                </div>
-            </div>
-            <div class="col-md-4 col-6">
-                <div class="kpi-card">
-                    <div class="text-muted">Rechazadas este mes</div>
-                    <h3 id="incapacidadesKpiRechazadas">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-modern">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="bi bi-inbox me-2"></i> Bandeja de incapacidades</h3>
-            </div>
-            <div class="p-3">
-                <div class="row g-2 mb-3">
-                    <div class="col-md-4">
-                        <select class="form-select" id="incapacidadesFiltroEstado">
-                            <option value="todas">Todos los estados</option>
-                            <option value="pendiente">Pendientes</option>
-                            <option value="aprobado">Aprobadas</option>
-                            <option value="rechazado">Rechazadas</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" id="incapacidadesBuscarEmpleado" placeholder="Buscar por empleado">
-                    </div>
-                </div>
-                <div id="incapacidadesListaContainer"></div>
-            </div>
-        </div>
-
-        <div class="card-modern">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial completo de incapacidades</h3>
-            </div>
-            <div class="p-3 table-responsive-stack">
-                <table class="table table-custom">
-                    <thead>
-                        <tr>
-                            <th>Fecha solicitud</th>
-                            <th>Empleado</th>
-                            <th>Diagnóstico</th>
-                            <th>Período</th>
-                            <th>Estado</th>
-                            <th>Aprobado por</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="incapacidadesHistorialBody"></tbody>
-                </table>
-            </div>
-        </div>
+        {% include "admin/novedades/incapacidades/content.html" %}
     </div>
 
     <!-- ==================== PESTAÑA CERTIFICADOS ==================== -->
     <div id="tabCertificados" class="tab-pane">
+        {% include "admin/novedades/certificados/content.html" %}
+    </div>
 
-        <!-- Bandeja de certificados pendientes de aprobación (AHORA SÍ dentro del tab-pane) -->
-        <div class="card-modern">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="bi bi-inbox me-2"></i> Certificados pendientes de aprobación</h3>
-            </div>
-            <div class="p-3" id="certificadosSolicitudesContainer"></div>
-        </div>
-
-        <div class="row g-4 mb-4">
-            <div class="col-md-6 col-12">
-                <div class="kpi-card">
-                    <div class="kpi-number" id="certificadosKpiMes">0</div>
-                    <div class="text-muted"><i class="bi bi-calendar-month me-1"></i> Certificados emitidos este mes</div>
-                </div>
-            </div>
-            <div class="col-md-6 col-12">
-                <div class="kpi-card">
-                    <div class="kpi-number" id="certificadosKpiHoy">0</div>
-                    <div class="text-muted"><i class="bi bi-calendar-day me-1"></i> Certificados emitidos hoy</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="filter-card card-modern p-3">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3 col-12">
-                    <label class="form-label">Empleado</label>
-                    <select id="certificadosFiltroEmpleado" class="form-select">
-                        <option value="">Todos</option>
-                        <!-- Se llenará con JS -->
-                    </select>
-                </div>
-                <div class="col-md-3 col-12">
-                    <label class="form-label">Tipo de Certificado</label>
-                    <select id="certificadosFiltroTipo" class="form-select">
-                        <option value="">Todos</option>
-                        <option value="laboral">Certificado laboral</option>
-                        <option value="ingresos">Certificado de ingresos</option>
-                        <option value="antiguedad">Certificado de antigüedad</option>
-                    </select>
-                </div>
-                <div class="col-md-2 col-12">
-                    <label class="form-label">Fecha desde</label>
-                    <input type="date" id="certificadosFiltroDesde" class="form-control">
-                </div>
-                <div class="col-md-2 col-12">
-                    <label class="form-label">Fecha hasta</label>
-                    <input type="date" id="certificadosFiltroHasta" class="form-control">
-                </div>
-                <div class="col-md-2 col-12">
-                    <button id="certificadosBtnLimpiar" class="btn btn-outline-corporate w-100"><i class="bi bi-eraser"></i> Limpiar</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-modern">
-            <div class="card-header">
-                <h3 class="mb-0"><i class="bi bi-table me-2"></i> Historial de certificados emitidos</h3>
-            </div>
-            <div class="p-3 table-responsive-stack">
-                <table class="table table-custom">
-                    <thead>
-                        <tr>
-                            <th>Empleado</th>
-                            <th>Cargo</th>
-                            <th>Tipo de certificado</th>
-                            <th>Fecha de emisión</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="certificadosTablaBody"></tbody>
-                </table>
-                <div id="certificadosSinResultados" class="text-center text-muted py-4 d-none">No se encontraron certificados con los filtros seleccionados.</div>
-            </div>
-        </div>
+    <!-- ==================== PESTAÑA MEMORANDOS ==================== -->
+    <div id="tabMemorandos" class="tab-pane">
+        {% include "admin/novedades/memorandos/content.html" %}
     </div>
 </main>
 
 <!-- MODALES PARA PERMISOS -->
-<div class="modal fade" id="permisosDetalleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalle del permiso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="permisosModalBody"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="permisosAprobarBtn">Aprobar</button>
-                <button type="button" class="btn btn-danger" id="permisosRechazarBtn">Rechazar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="permisosConfirmApproveModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar aprobación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">¿Está seguro de aprobar este permiso?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success" id="permisosConfirmApprove">Confirmar aprobación</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="permisosConfirmRejectFirstModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar rechazo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">¿Está seguro de rechazar este permiso?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="permisosConfirmRejectFirst">Confirmar rechazo</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="permisosRejectModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Rechazar solicitud</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <label class="form-label">Motivo del rechazo *</label>
-                <textarea class="form-control" id="permisosRejectReason" rows="3" placeholder="Explique al empleado por qué se rechaza la solicitud de permiso..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="permisosConfirmReject">Confirmar rechazo</button>
-            </div>
-        </div>
-    </div>
-</div>
+{% include "admin/novedades/permisos/modals.html" %}
 
 <!-- MODALES PARA INCAPACIDADES -->
-<div class="modal fade" id="incapacidadesDetalleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalle de incapacidad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="incapacidadesModalBody"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="incapacidadesAprobarBtn">Aprobar</button>
-                <button type="button" class="btn btn-danger" id="incapacidadesRechazarBtn">Rechazar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="incapacidadesConfirmApproveModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar aprobación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">¿Está seguro de aprobar esta incapacidad?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success" id="incapacidadesConfirmApprove">Confirmar aprobación</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="incapacidadesConfirmRejectFirstModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar rechazo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">¿Está seguro de rechazar esta incapacidad?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="incapacidadesConfirmRejectFirst">Confirmar rechazo</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="incapacidadesRejectModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Rechazar incapacidad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <label class="form-label">Motivo del rechazo *</label>
-                <textarea class="form-control" id="incapacidadesRejectReason" rows="3" placeholder="Explique al empleado por qué se rechaza la incapacidad..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="incapacidadesConfirmReject">Confirmar rechazo</button>
-            </div>
-        </div>
-    </div>
-</div>
+{% include "admin/novedades/incapacidades/modals.html" %}
 
 <!-- MODALES PARA CERTIFICADOS -->
-<div class="modal fade" id="certificadosDetalleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalle del certificado</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="certificadosModalBody"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="certificadosAprobarBtn">Aprobar</button>
-                <button type="button" class="btn btn-danger" id="certificadosRechazarBtn">Rechazar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="certificadosConfirmApproveModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar aprobación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">¿Está seguro de aprobar este certificado?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success" id="certificadosConfirmApprove">Confirmar aprobación</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="certificadosRejectModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Rechazar certificado</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <label class="form-label">Motivo del rechazo *</label>
-                <textarea class="form-control" id="certificadosRejectReason" rows="3" placeholder="Explique al empleado por qué se rechaza el certificado..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="certificadosConfirmReject">Confirmar rechazo</button>
-            </div>
-        </div>
-    </div>
-</div>
+{% include "admin/novedades/certificados/modals.html" %}
+
+<!-- MODALES PARA MEMORANDOS -->
+{% include "admin/novedades/memorandos/modals.html" %}
 
 <!-- Toast -->
 <div class="toast-message" id="liveToast" style="display:none;">

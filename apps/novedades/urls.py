@@ -37,4 +37,13 @@ urlpatterns = [
     path('certificados/<int:pk>/rechazar/', views.certificado_rechazar, name='certificado_rechazar'),
 
     path('certificados/<int:pk>/descargar/', views.certificado_descargar, name='certificado_pdf'),
+
+
+    # Admin - Memorandos
+    path('memorandos/', views.memorandos_lista, name='memorandos_lista'),
+    path('memorandos/crear/', views.memorando_crear, name='memorando_crear'),
+    path('memorandos/<int:pk>/descargar/', views.memorando_descargar, name='memorando_descargar'),
+
+    # Empleado Memorandos
+    path('memorandos/empleado/', views.memorandos_empleado, name='memorandos_empleado'),
 ]

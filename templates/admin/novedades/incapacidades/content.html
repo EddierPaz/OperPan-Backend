@@ -1,0 +1,68 @@
+<div class="mb-4">
+    <h3><i class="bi bi-calendar-month me-2 text-danger"></i> Resumen mensual de incapacidades</h3>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-6">
+        <div class="kpi-card">
+            <div class="text-muted">Pendientes</div>
+            <h3 id="incapacidadesKpiPendientes">0</h3>
+        </div>
+    </div>
+    <div class="col-md-4 col-6">
+        <div class="kpi-card">
+            <div class="text-muted">Aprobadas este mes</div>
+            <h3 id="incapacidadesKpiAprobadas">0</h3>
+        </div>
+    </div>
+    <div class="col-md-4 col-6">
+        <div class="kpi-card">
+            <div class="text-muted">Rechazadas este mes</div>
+            <h3 id="incapacidadesKpiRechazadas">0</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card-modern">
+    <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-inbox me-2"></i> Bandeja de incapacidades</h3>
+    </div>
+    <div class="p-3">
+        <div class="row g-2 mb-3">
+            <div class="col-md-4">
+                <select class="form-select" id="incapacidadesFiltroEstado">
+                    <option value="todas">Todos los estados</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="aprobado">Aprobadas</option>
+                    <option value="rechazado">Rechazadas</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="incapacidadesBuscarEmpleado" placeholder="Buscar por empleado">
+            </div>
+        </div>
+        <div id="incapacidadesListaContainer"></div>
+    </div>
+</div>
+
+<div class="card-modern">
+    <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial completo de incapacidades</h3>
+    </div>
+    <div class="p-3 table-responsive-stack">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Fecha solicitud</th>
+                    <th>Empleado</th>
+                    <th>Diagnóstico</th>
+                    <th>Período</th>
+                    <th>Estado</th>
+                    <th>Aprobado por</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="incapacidadesHistorialBody"></tbody>
+        </table>
+    </div>
+</div>

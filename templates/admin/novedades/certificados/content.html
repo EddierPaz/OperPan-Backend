@@ -1,0 +1,75 @@
+<!-- Bandeja de certificados pendientes de aprobación -->
+<div class="card-modern">
+    <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-inbox me-2"></i> Certificados pendientes de aprobación</h3>
+    </div>
+    <div class="p-3" id="certificadosSolicitudesContainer"></div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-12">
+        <div class="kpi-card">
+            <div class="kpi-number" id="certificadosKpiMes">0</div>
+            <div class="text-muted"><i class="bi bi-calendar-month me-1"></i> Certificados emitidos este mes</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-12">
+        <div class="kpi-card">
+            <div class="kpi-number" id="certificadosKpiHoy">0</div>
+            <div class="text-muted"><i class="bi bi-calendar-day me-1"></i> Certificados emitidos hoy</div>
+        </div>
+    </div>
+</div>
+
+<div class="filter-card card-modern p-3">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3 col-12">
+            <label class="form-label">Empleado</label>
+            <select id="certificadosFiltroEmpleado" class="form-select">
+                <option value="">Todos</option>
+                <!-- Se llenará con JS -->
+            </select>
+        </div>
+        <div class="col-md-3 col-12">
+            <label class="form-label">Tipo de Certificado</label>
+            <select id="certificadosFiltroTipo" class="form-select">
+                <option value="">Todos</option>
+                <option value="laboral">Certificado laboral</option>
+                <option value="ingresos">Certificado de ingresos</option>
+                <option value="antiguedad">Certificado de antigüedad</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-12">
+            <label class="form-label">Fecha desde</label>
+            <input type="date" id="certificadosFiltroDesde" class="form-control">
+        </div>
+        <div class="col-md-2 col-12">
+            <label class="form-label">Fecha hasta</label>
+            <input type="date" id="certificadosFiltroHasta" class="form-control">
+        </div>
+        <div class="col-md-2 col-12">
+            <button id="certificadosBtnLimpiar" class="btn btn-outline-corporate w-100"><i class="bi bi-eraser"></i> Limpiar</button>
+        </div>
+    </div>
+</div>
+
+<div class="card-modern">
+    <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-table me-2"></i> Historial de certificados emitidos</h3>
+    </div>
+    <div class="p-3 table-responsive-stack">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Cargo</th>
+                    <th>Tipo de certificado</th>
+                    <th>Fecha de emisión</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="certificadosTablaBody"></tbody>
+        </table>
+        <div id="certificadosSinResultados" class="text-center text-muted py-4 d-none">No se encontraron certificados con los filtros seleccionados.</div>
+    </div>
+</div>
