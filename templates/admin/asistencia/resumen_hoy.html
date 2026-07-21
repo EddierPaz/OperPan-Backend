@@ -76,18 +76,15 @@
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
         data-bs-target="#collapse{{ turno_codigo }}" aria-expanded="false">
         <div class="d-flex align-items-center">
+
+
+
+          
           <!-- Ícono dinámico por turno -->
           <i class="bi 
             {% if turno_codigo == 'MANANA' %}bi-sun{% elif turno_codigo == 'TARDE' %}bi-moon{% else %}bi-clock-history{% endif %} 
           me-2"></i>
-          <strong>
-            Turno 
-            {% if turno_codigo == 'MANANA' %}
-              Mañana
-            {% else %}
-              {{ turno_codigo|title }}
-            {% endif %}
-          </strong>
+          <strong>Turno {{ turno_codigo|title }}</strong>
         </div>
         <span class="turno-badge">{{ lista_horarios|length }} programados</span>
       </button>
