@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}OperPan | Mis Memorandos{% endblock %}
+{% block section_title %}Mis Memorandos{% endblock %}
+{% block section_subtitle %}Consulta los memorandos emitidos para ti{% endblock %}
+{% block active_solicitudes %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/memorandos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="card-modern">
+        <div class="card-header">
+            <h3 class="mb-0"><i class="bi bi-file-pdf me-2"></i> Mis memorandos</h3>
+        </div>
+        <div class="p-3">
+            <div id="misMemorandosContainer">
+                <div class="text-center py-5" id="sinMemorandos">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="mt-3 text-muted">Aún no tienes memorandos registrados.</p>
+                </div>
+                <div id="misMemorandosTabla" style="display:none;">
+                    <div class="table-responsive-stack">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Consecutivo</th>
+                                    <th>Tipo</th>
+                                    <th>Asunto</th>
+                                    <th>Fecha emisión</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="misMemorandosBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/empleado/memorandos.js' %}"></script>
+{% endblock %}

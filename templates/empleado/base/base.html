@@ -48,6 +48,12 @@
                             Solicitudes
                         </a>
                     </li>
+                    <li class="{% block active_memorandos %}{% endblock %}">
+                        <a href="{% url 'novedades:memorandos_empleado' %}">
+                            <i class="bi bi-file-pdf"></i>
+                            Memorandos
+                        </a>
+                    </li>
                     <li class="{% block active_tareas %}{% endblock %}">
                         <a href="{% url 'tareas:empleado_tareas_list' %}">
                             <i class="bi bi-list-check"></i>

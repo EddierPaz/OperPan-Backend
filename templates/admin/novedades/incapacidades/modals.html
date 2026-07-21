@@ -1,0 +1,67 @@
+<div class="modal fade" id="incapacidadesDetalleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle de incapacidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="incapacidadesModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="incapacidadesAprobarBtn">Aprobar</button>
+                <button type="button" class="btn btn-danger" id="incapacidadesRechazarBtn">Rechazar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="incapacidadesConfirmApproveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar aprobación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">¿Está seguro de aprobar esta incapacidad?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="incapacidadesConfirmApprove">Confirmar aprobación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="incapacidadesConfirmRejectFirstModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar rechazo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">¿Está seguro de rechazar esta incapacidad?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="incapacidadesConfirmRejectFirst">Confirmar rechazo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="incapacidadesRejectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rechazar incapacidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Motivo del rechazo *</label>
+                <textarea class="form-control" id="incapacidadesRejectReason" rows="3" placeholder="Explique al empleado por qué se rechaza la incapacidad..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="incapacidadesConfirmReject">Confirmar rechazo</button>
+            </div>
+        </div>
+    </div>
+</div>

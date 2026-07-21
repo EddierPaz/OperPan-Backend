@@ -1,0 +1,93 @@
+<!-- KPIs de memorandos -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-6">
+        <div class="kpi-card">
+            <div class="text-muted">Total emitidos</div>
+            <h3 id="memorandosKpiTotal">0</h3>
+        </div>
+    </div>
+    <div class="col-md-4 col-6">
+        <div class="kpi-card">
+            <div class="text-muted">Emitidos este mes</div>
+            <h3 id="memorandosKpiMes">0</h3>
+        </div>
+    </div>
+    <div class="col-md-4 col-6">
+        <div class="kpi-card">
+            <div class="text-muted">Emitidos hoy</div>
+            <h3 id="memorandosKpiHoy">0</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Formulario de creación -->
+<div class="card-modern">
+    <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i> Generar nuevo memorando</h3>
+    </div>
+    <div class="p-3">
+        <form id="memorandoForm">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Empleado *</label>
+                    <select class="form-select" id="memorandoEmpleado" required>
+                        <option value="">Seleccionar empleado</option>
+                        <!-- Se llenará con JS -->
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de memorando *</label>
+                    <select class="form-select" id="memorandoTipo" required>
+                        <option value="">Seleccionar tipo</option>
+                        <option value="llamado_atencion">Llamado de atención</option>
+                        <option value="amonestacion">Amonestación escrita</option>
+                        <option value="reconocimiento">Reconocimiento</option>
+                        <option value="informacion">Información general</option>
+                        <option value="advertencia">Advertencia</option>
+                        <option value="cambio_funciones">Cambio de funciones</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Asunto *</label>
+                    <input type="text" class="form-control" id="memorandoAsunto" placeholder="Asunto del memorando" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Contenido *</label>
+                    <textarea class="form-control" id="memorandoContenido" rows="5" placeholder="Redacte el contenido completo del memorando..." required></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary-corporate" id="memorandoBtnGenerar">
+                        <i class="bi bi-file-pdf me-1"></i> Generar memorando
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div id="memorandoMensaje" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- Historial de memorandos -->
+<div class="card-modern">
+    <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial de memorandos</h3>
+    </div>
+    <div class="p-3 table-responsive-stack">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Consecutivo</th>
+                    <th>Empleado</th>
+                    <th>Tipo</th>
+                    <th>Asunto</th>
+                    <th>Fecha emisión</th>
+                    <th>Generado por</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="memorandosTablaBody"></tbody>
+        </table>
+        <div id="memorandosSinResultados" class="text-center text-muted py-4 d-none">No hay memorandos registrados.</div>
+    </div>
+</div>

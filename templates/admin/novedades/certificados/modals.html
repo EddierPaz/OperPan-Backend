@@ -1,0 +1,51 @@
+<div class="modal fade" id="certificadosDetalleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle del certificado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="certificadosModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="certificadosAprobarBtn">Aprobar</button>
+                <button type="button" class="btn btn-danger" id="certificadosRechazarBtn">Rechazar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="certificadosConfirmApproveModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar aprobación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">¿Está seguro de aprobar este certificado?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="certificadosConfirmApprove">Confirmar aprobación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="certificadosRejectModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rechazar certificado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Motivo del rechazo *</label>
+                <textarea class="form-control" id="certificadosRejectReason" rows="3" placeholder="Explique al empleado por qué se rechaza el certificado..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="certificadosConfirmReject">Confirmar rechazo</button>
+            </div>
+        </div>
+    </div>
+</div>
