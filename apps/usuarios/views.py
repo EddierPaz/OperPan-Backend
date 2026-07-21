@@ -7,6 +7,7 @@ from django.utils.dateparse import parse_date
 from .decorators import admin_required
 from apps.asistencia.models import Horario
 from apps.asistencia.views import _contexto_base
+from django.utils import timezone
 
 # ========================
 # DASHBOARDS
@@ -103,6 +104,7 @@ def user_list_create(request):
         user_form = UserForm()
         perfil_form = PerfilEmpleadoForm()
     context = {
+        "fecha_hoy": timezone.now().date(),
         "usuarios": usuarios,
         "total_usuarios": usuarios.count(),
         "total_admins": usuarios.filter(

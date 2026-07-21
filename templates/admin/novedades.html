@@ -13,11 +13,21 @@
 {% block content %}
 <main class="dashboard-container">
     <!-- Pestañas principales -->
-    <div class="novedades-tabs">
-        <button class="novedades-tab active" data-tab="permisos"><i class="bi bi-file-earmark-text"></i> Permisos</button>
-        <button class="novedades-tab" data-tab="incapacidades"><i class="bi bi-clipboard2-pulse"></i> Incapacidades</button>
-        <button class="novedades-tab" data-tab="certificados"><i class="bi bi-award"></i> Certificados</button>
+    <div class="novedades-tabs d-flex align-items-center">
+        <button class="novedades-tab active" data-tab="permisos">
+            <i class="bi bi-file-earmark-text"></i> Permisos
+        </button>
+        <button class="novedades-tab" data-tab="incapacidades">
+            <i class="bi bi-clipboard2-pulse"></i> Incapacidades
+        </button>
+        <button class="novedades-tab" data-tab="certificados">
+            <i class="bi bi-award"></i> Certificados
+        </button>
+        <span class="card-header small ms-auto">
+            {{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}
+        </span>
     </div>
+
 
     <!-- ==================== PESTAÑA PERMISOS ==================== -->
     <div id="tabPermisos" class="tab-pane active">
