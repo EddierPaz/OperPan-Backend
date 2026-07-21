@@ -5,13 +5,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import Permiso, Incapacidad, Certificado
+from .models import Permiso, Incapacidad, Certificado, Memorando
 from .forms import (
     RechazoForm,
     CertificadoFiltroForm,
     PermisoCrearForm,
     IncapacidadCrearForm,
     CertificadoCrearForm,
+    MemorandoForm,
+    MemorandoFiltroForm,
 )
 from .decorators import admin_required
 from apps.usuarios.decorators import admin_required as admin_required_html
@@ -661,3 +663,291 @@ def certificado_descargar(request, pk):
 
     filename = f"certificado_{c.id}_{c.empleado.nombre_completo().replace(' ', '_')}.pdf"
     return FileResponse(buffer, as_attachment=True, filename=filename, content_type='application/pdf')
+
+# ============================================================
+# VISTAS PARA MEMORANDOS (ADMIN)
+# ============================================================
+
+
+
+@csrf_exempt
+@login_required
+@admin_required
+def memorando_crear(request):
+    """Crea un nuevo memorando, genera el PDF y lo almacena."""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+
+    form = MemorandoForm(data)
+    if not form.is_valid():
+        return JsonResponse({
+            'error': 'Datos inválidos',
+            'detalles': form.errors
+        }, status=400)
+
+    # Crear el memorando
+    memorando = form.save(commit=False)
+    memorando.generado_por = request.user
+    memorando.save()  # Esto genera el consecutivo automáticamente
+
+    # Generar el PDF
+    try:
+        pdf_path = generar_pdf_memorando(memorando)
+        memorando.archivo_pdf = pdf_path
+        memorando.save(update_fields=['archivo_pdf'])
+    except Exception as e:
+        # Si falla la generación del PDF, igualmente el memorando queda registrado
+        print(f"Error al generar PDF para memorando {memorando.id}: {e}")
+
+    return JsonResponse({
+        'status': 'ok',
+        'mensaje': 'Memorando generado correctamente',
+        'id': memorando.id,
+        'consecutivo': memorando.consecutivo,
+        'archivo_pdf': memorando.archivo_pdf.url if memorando.archivo_pdf else None,
+    })
+
+
+@login_required
+@admin_required
+def memorandos_lista(request):
+    """Lista todos los memorandos con filtros opcionales (API JSON)."""
+    qs = Memorando.objects.all().select_related('empleado', 'generado_por').order_by('-fecha_emision')
+    form = MemorandoFiltroForm(request.GET)
+    if form.is_valid():
+        data = form.cleaned_data
+        if data.get('empleado'):
+            qs = qs.filter(empleado=data['empleado'])
+        if data.get('tipo'):
+            qs = qs.filter(tipo=data['tipo'])
+        if data.get('desde'):
+            qs = qs.filter(fecha_emision__date__gte=data['desde'])
+        if data.get('hasta'):
+            qs = qs.filter(fecha_emision__date__lte=data['hasta'])
+    data = [
+        {
+            'id': m.id,
+            'consecutivo': m.consecutivo,
+            'empleado': m.empleado.nombre_completo(),
+            'empleado_id': m.empleado.id,
+            'tipo': m.get_tipo_display(),
+            'tipo_raw': m.tipo,
+            'asunto': m.asunto,
+            'contenido': m.contenido,
+            'fecha_emision': m.fecha_emision.isoformat(),
+            'estado': m.get_estado_display(),
+            'generado_por': m.generado_por.username if m.generado_por else None,
+            'archivo_pdf': m.archivo_pdf.url if m.archivo_pdf else None,
+            'descargas': m.descargas,
+        }
+        for m in qs
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@admin_required
+def memorandos_empleados_lista(request):
+    """Lista de empleados para el dropdown (API JSON)."""
+    empleados = PerfilEmpleado.objects.filter(estado='activo').order_by('primer_nombre', 'primer_apellido')
+    data = [
+        {
+            'id': e.id,
+            'nombre_completo': e.nombre_completo(),
+            'cargo': e.cargo,
+        }
+        for e in empleados
+    ]
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+@empleado_required
+def memorandos_empleado(request):
+    """Vista del empleado para ver sus propios memorandos."""
+    return render(request, 'empleado/memorandos.html')
+
+
+@login_required
+@empleado_required
+def mis_memorandos_api(request):
+    """API para que el empleado obtenga sus propios memorandos (JSON)."""
+    perfil = request.user.perfil
+    memorandos = Memorando.objects.filter(
+        empleado=perfil,
+        estado='emitido'
+    ).select_related('generado_por').order_by('-fecha_emision')
+    data = [
+        {
+            'id': m.id,
+            'consecutivo': m.consecutivo,
+            'tipo': m.get_tipo_display(),
+            'asunto': m.asunto,
+            'contenido': m.contenido,
+            'fecha_emision': m.fecha_emision.isoformat(),
+            'generado_por': m.generado_por.username if m.generado_por else None,
+            'archivo_pdf': m.archivo_pdf.url if m.archivo_pdf else None,
+            'descargas': m.descargas,
+        }
+        for m in memorandos
+    ]
+    return JsonResponse(data, safe=False)
+
+
+# ============================================================
+# FUNCIÓN AUXILIAR PARA GENERAR PDF DE MEMORANDO
+# ============================================================
+
+def generar_pdf_memorando(memorando):
+    """
+    Genera un PDF profesional para el memorando usando ReportLab.
+    Retorna la ruta relativa del archivo guardado en media/.
+    """
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    from django.conf import settings
+    import os
+    from datetime import datetime
+    from textwrap import wrap
+
+    media_dir = os.path.join(settings.MEDIA_ROOT, 'memorandos')
+    os.makedirs(media_dir, exist_ok=True)
+
+    filename = f"{memorando.consecutivo}.pdf"
+    filepath = os.path.join(media_dir, filename)
+
+    c = canvas.Canvas(filepath, pagesize=letter)
+    width, height = letter
+
+    # Logo (intentar cargar)
+    logo_path = None
+    possible_paths = [
+        os.path.join(settings.STATIC_ROOT, 'img', 'LOGO EMPRESA.png'),
+        os.path.join(settings.BASE_DIR, 'static', 'img', 'LOGO EMPRESA.png'),
+        os.path.join(settings.MEDIA_ROOT, 'logo.png'),
+    ]
+    for path in possible_paths:
+        if os.path.exists(path):
+            logo_path = path
+            break
+
+    if logo_path:
+        try:
+            c.drawImage(logo_path, 2*cm, height - 2.8*cm, width=3*cm, height=1.5*cm, preserveAspectRatio=True)
+        except Exception:
+            pass
+
+    # Encabezado
+    c.setFont('Helvetica-Bold', 18)
+    c.drawCentredString(width / 2, height - 2.2*cm, 'OPERPAN - ESTACIÓN PAISA')
+    c.setFont('Helvetica-Bold', 14)
+    c.drawCentredString(width / 2, height - 2.8*cm, 'MEMORANDO')
+    c.line(2*cm, height - 3.3*cm, width - 2*cm, height - 3.3*cm)
+
+    # Datos del documento
+    c.setFont('Helvetica', 10)
+    y = height - 3.9*cm
+    fecha_str = datetime.now().strftime('%d de %B de %Y')
+    c.drawString(2*cm, y, f'Fecha: {fecha_str}')
+    y -= 0.6*cm
+    c.drawString(2*cm, y, f'Consecutivo: {memorando.consecutivo}')
+    y -= 1.2*cm
+
+    # Datos del empleado
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(2*cm, y, 'PARA:')
+    y -= 0.6*cm
+    c.setFont('Helvetica', 11)
+    c.drawString(2*cm, y, f'{memorando.empleado.nombre_completo()}')
+    y -= 0.5*cm
+    c.drawString(2*cm, y, f'Cargo: {memorando.empleado.cargo}')
+    y -= 0.5*cm
+
+    # Tipo y asunto
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(2*cm, y, 'Tipo:')
+    y -= 0.6*cm
+    c.setFont('Helvetica', 11)
+    c.drawString(2*cm, y, f'{memorando.get_tipo_display()}')
+    y -= 0.8*cm
+
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(2*cm, y, 'ASUNTO:')
+    y -= 0.6*cm
+    c.setFont('Helvetica', 11)
+    c.drawString(2*cm, y, f'{memorando.asunto}')
+    y -= 1.2*cm
+
+    # Contenido
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(2*cm, y, 'CONTENIDO:')
+    y -= 0.8*cm
+
+    c.setFont('Helvetica', 11)
+    lines = memorando.contenido.split('\n')
+    for line in lines:
+        if y < 4*cm:
+            c.showPage()
+            c.setFont('Helvetica', 11)
+            y = height - 2*cm
+        wrapped_lines = wrap(line, 90)
+        for wrapped in wrapped_lines:
+            c.drawString(2*cm, y, wrapped)
+            y -= 0.6*cm
+        y -= 0.2*cm
+
+    # Firma
+    y -= 1.5*cm
+    if y < 3*cm:
+        c.showPage()
+        y = height - 2*cm
+
+    c.setFont('Helvetica-Bold', 11)
+    c.drawString(2*cm, y, 'FIRMA Y SELLO')
+    y -= 0.8*cm
+    c.setFont('Helvetica', 10)
+    c.drawString(2*cm, y, '_____________________________')
+    y -= 0.4*cm
+    nombre_admin = memorando.generado_por.get_full_name() if memorando.generado_por else 'Administrador'
+    c.drawString(2*cm, y, nombre_admin)
+    y -= 0.4*cm
+    c.drawString(2*cm, y, datetime.now().strftime('%d/%m/%Y'))
+
+    # Pie de página
+    c.setFont('Helvetica', 8)
+    c.drawCentredString(width / 2, 1.5*cm, f'Documento generado por OperPan - {memorando.consecutivo}')
+
+    c.save()
+    return f'memorandos/{filename}'
+
+
+@login_required
+def memorando_descargar(request, pk):
+    """Descarga el PDF de un memorando (admin o empleado dueño)."""
+    try:
+        memorando = Memorando.objects.select_related('empleado', 'generado_por').get(pk=pk)
+    except Memorando.DoesNotExist:
+        raise Http404('Memorando no encontrado')
+
+    perfil = getattr(request.user, 'perfil', None)
+    es_dueño = perfil is not None and memorando.empleado_id == perfil.id
+    es_admin = request.user.is_staff or request.user.is_superuser
+
+    if not (es_dueño or es_admin):
+        return HttpResponseForbidden('No tienes permiso para descargar este memorando.')
+
+    if not memorando.archivo_pdf:
+        return JsonResponse({'error': 'El memorando no tiene archivo PDF asociado.'}, status=404)
+
+    memorando.descargas += 1
+    memorando.save(update_fields=['descargas'])
+
+    response = FileResponse(memorando.archivo_pdf.open('rb'), as_attachment=True)
+    response['Content-Disposition'] = f'attachment; filename="{memorando.consecutivo}.pdf"'
+    return response

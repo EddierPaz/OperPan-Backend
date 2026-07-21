@@ -1,0 +1,126 @@
+/* ==============================================
+    ESTILOS PARA MIS MEMORANDOS (EMPLEADO)
+============================================== */
+.dashboard-container {
+    padding: 2rem;
+}
+
+.card-modern {
+    background: white;
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid #EDF2F7;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+}
+
+.card-header h3 {
+    font-size: 1.25rem;
+    color: #1E293B;
+}
+
+/* Tabla personalizada */
+.table-custom {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.table-custom thead {
+    background: #F8F9FC;
+}
+
+.table-custom thead th {
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 2px solid #EDF2F7;
+    padding: 0.8rem 1rem;
+}
+
+.table-custom tbody td {
+    padding: 0.8rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.btn-primary-corporate {
+    background: #A40706 !important;
+    border-color: #A40706 !important;
+    border-radius: 12px;
+    padding: 0.3rem 1rem;
+    font-size: 0.85rem;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0504 !important;
+    border-color: #8a0504 !important;
+}
+
+/* Estado vacío */
+#sinMemorandos i {
+    font-size: 3rem;
+    color: #CBD5E1;
+}
+
+#sinMemorandos p {
+    font-size: 1.1rem;
+    color: #94A3B8;
+}
+
+/* Responsive */
+.table-responsive-stack {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767.98px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .table-custom thead {
+        display: none;
+    }
+
+    .table-custom tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #EDF2F7;
+        border-radius: 16px;
+        padding: 0.75rem;
+        background: white;
+    }
+
+    .table-custom tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .table-custom tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .table-custom tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        width: 40%;
+        color: #1E293B;
+    }
+
+    .btn-primary-corporate {
+        width: 100%;
+        text-align: center;
+    }
+}

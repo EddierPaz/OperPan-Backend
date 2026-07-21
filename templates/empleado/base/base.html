@@ -48,12 +48,7 @@
                             Solicitudes
                         </a>
                     </li>
-                    <li class="{% block active_memorandos %}{% endblock %}">
-                        <a href="{% url 'novedades:memorandos_empleado' %}">
-                            <i class="bi bi-file-pdf"></i>
-                            Memorandos
-                        </a>
-                    </li>
+
                     <li class="{% block active_tareas %}{% endblock %}">
                         <a href="{% url 'tareas:empleado_tareas_list' %}">
                             <i class="bi bi-list-check"></i>
@@ -64,6 +59,13 @@
                         <a href="{% url 'employee_profile' %}">
                             <i class="bi bi-person-badge"></i>
                             Información personal
+                        </a>
+                    </li>
+
+                    <li class="{% block active_memorandos %}{% endblock %}">
+                        <a href="{% url 'novedades:memorandos_empleado' %}">
+                            <i class="bi bi-file-pdf"></i>
+                            Memorandos
                         </a>
                     </li>
                 </ul>
@@ -102,7 +104,7 @@
                 <div class="user-info">
                     <div class="user-badge">
                         <a href="{% url 'employee_profile' %}"
-                        class="d-flex align-items-center gap-2 text-decoration-none">
+                            class="d-flex align-items-center gap-2 text-decoration-none">
 
                             <i class="bi bi-person-circle fs-4"></i>
 

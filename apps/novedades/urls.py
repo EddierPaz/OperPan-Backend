@@ -35,15 +35,15 @@ urlpatterns = [
     path('certificados/pendientes/', views.certificados_pendientes, name='certificados_pendientes'),
     path('certificados/<int:pk>/aprobar/', views.certificado_aprobar, name='certificado_aprobar'),
     path('certificados/<int:pk>/rechazar/', views.certificado_rechazar, name='certificado_rechazar'),
-
     path('certificados/<int:pk>/descargar/', views.certificado_descargar, name='certificado_pdf'),
 
-
-    # Admin - Memorandos
+    # API - Admin (memorandos)
     path('memorandos/', views.memorandos_lista, name='memorandos_lista'),
+    path('memorandos/empleados/', views.memorandos_empleados_lista, name='memorandos_empleados_lista'),
     path('memorandos/crear/', views.memorando_crear, name='memorando_crear'),
     path('memorandos/<int:pk>/descargar/', views.memorando_descargar, name='memorando_descargar'),
 
-    # Empleado Memorandos
+    # Empleado - Memorandos
+    path('memorandos/mis/', views.mis_memorandos_api, name='mis_memorandos_api'),
     path('memorandos/empleado/', views.memorandos_empleado, name='memorandos_empleado'),
 ]

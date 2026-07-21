@@ -191,3 +191,109 @@
 @media (min-width: 993px) {
     .menu-toggle { display: none; }
 }
+
+
+/* ==============================================
+    ESTILOS PARA MEMORANDOS
+============================================== */
+
+/* Formulario de memorandos */
+#memorandoForm .form-label {
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 0.25rem;
+}
+
+#memorandoForm .form-control,
+#memorandoForm .form-select {
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    padding: 0.6rem 1rem;
+    transition: border-color 0.2s;
+}
+
+#memorandoForm .form-control:focus,
+#memorandoForm .form-select:focus {
+    border-color: #A40706;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.1);
+}
+
+#memorandoForm textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+#memorandoBtnGenerar {
+    background: #A40706;
+    border: none;
+    border-radius: 12px;
+    padding: 0.7rem 2rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+#memorandoBtnGenerar:hover {
+    background: #8a0504;
+}
+
+/* Tarjetas de memorandos en el historial */
+.memorando-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border: 1px solid #EDF2F7;
+    transition: 0.2s;
+}
+
+.memorando-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #A40706;
+}
+
+.memorando-card .consecutivo {
+    font-weight: 700;
+    color: #A40706;
+    font-size: 0.9rem;
+}
+
+.memorando-card .tipo-badge {
+    background: #EEF2FF;
+    color: #1E293B;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Badge de tipo de memorando */
+.badge-memorando-llamado_atencion { background: #FEF3C7; color: #92400E; }
+.badge-memorando-amonestacion { background: #FEE2E2; color: #991B1B; }
+.badge-memorando-reconocimiento { background: #D1FAE5; color: #065F46; }
+.badge-memorando-informacion { background: #DBEAFE; color: #1E40AF; }
+.badge-memorando-advertencia { background: #FFEDD5; color: #9A3412; }
+.badge-memorando-cambio_funciones { background: #E0E7FF; color: #3730A3; }
+.badge-memorando-otro { background: #F3E8FF; color: #6B21A8; }
+
+/* Mensajes del formulario de memorandos */
+#memorandoMensaje .alert {
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+}
+
+/* KPI de memorandos - hereda de .kpi-card */
+.memorandos-kpi .kpi-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #A40706;
+}
+
+/* Responsive para tabla de memorandos */
+@media (max-width: 767.98px) {
+    .memorando-card {
+        padding: 0.8rem;
+    }
+    #memorandoBtnGenerar {
+        width: 100%;
+    }
+}
