@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Horario, DescansoEmpleado, Asistencia
 from django.utils import timezone
 from apps.usuarios.models import PerfilEmpleado
+from django.contrib import messages  
 
 def dias_ciclo(turno):
     return 7 if turno == "FIJO" else 15
@@ -118,28 +119,25 @@ def _contexto_base():
     }
 
 
-
 def horarios(request):
-
     if request.method == "POST":
-
-        empleado_id    = request.POST.get("empleado")
-        turno          = request.POST.get("turno")
-        hora_entrada   = request.POST.get("hora_entrada")
-        hora_salida    = request.POST.get("hora_salida")
+        empleado_id = request.POST.get("empleado")
+        turno = request.POST.get("turno")
+        hora_entrada = request.POST.get("hora_entrada")
+        hora_salida = request.POST.get("hora_salida")
         fecha_descanso = request.POST.get("fecha_descanso")
 
-        empleado = get_object_or_404(PerfilEmpleado,id=empleado_id)
+        empleado = get_object_or_404(PerfilEmpleado, id=empleado_id)
 
-        # Desactivar horario anterior
-        Horario.objects.filter(
-            empleado=empleado,
-            estado=True
-        ).update(
-            estado=False
-        )
+        # 1. Validar si el empleado ya tiene un horario activo
+        if Horario.objects.filter(empleado=empleado, estado=True).exists():
+            messages.error(
+                request,
+                f"El empleado {empleado} ya tiene un horario activo asignado.",
+            )
+            return redirect("asistencia:horarios")
 
-        # Crear nuevo horario
+        # 2. Si no tiene un horario activo, se crea el nuevo
         horario = Horario.objects.create(
             empleado=empleado,
             turno=turno,
@@ -156,9 +154,12 @@ def horarios(request):
                 es_descanso=(str(fecha) == fecha_descanso),
             )
 
+        messages.success(request, "Horario asignado correctamente.")
         return redirect("asistencia:horarios")
 
-    return render(request, "admin/asistencia/asistencia.html", _contexto_base())
+    return render(
+        request, "admin/asistencia/asistencia.html", _contexto_base()
+    )
 
 
 def horario_json(request, id):
