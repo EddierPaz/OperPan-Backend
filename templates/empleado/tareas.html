@@ -89,8 +89,8 @@
             <div class="task-card" id="task-{{ tarea.pk }}">
                 <div class="d-flex justify-content-between align-items-start flex-wrap">
                     <div class="flex-grow-1">
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                            <h5 class="mb-0">{{ tarea.titulo }}</h5>
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap text-title">
+                            <h5 class="mb-0 fw-bold">{{ tarea.titulo }}</h5>
 
                             <!-- Prioridad con ícono -->
                             {% if tarea.prioridad == 'ALTA' %}
@@ -110,15 +110,35 @@
                                 </span>
                             {% endif %}
                         </div>
-                        <p class="text-muted small mb-2">{{ tarea.descripcion|truncatechars:100 }}</p>
+                        <p class="text-black mb-2">{{ tarea.descripcion|truncatechars:100 }}</p>
                         <div class="d-flex gap-3 flex-wrap small text-muted">
-                            <span><i class="bi bi-calendar-event"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }}</span>
-                            <span><i class="bi bi-clock-history"></i> Asignada: {{ tarea.fecha_asignacion|date:"d/m/Y" }}</span>
+                            <span class="text-black"><i class="bi bi-calendar-event"></i> Límite: <span class="fw-bold">{{ tarea.fecha_limite|date:"Y-m-d" }}</span></span>
+                            <span class="text-black"><i class="bi bi-clock-history"></i> Asignada: <span class="fw-bold">{{ tarea.fecha_asignacion|date:"d/m/Y" }}</span></span>
                         </div>
                     </div>
-                    <div class="mt-2 mt-sm-0">
-                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}"
-                           class="btn-action">
+
+                    <!-- ==================== BOTONES RÁPIDOS ==================== -->
+                    <div class="mt-2 mt-sm-0 d-flex gap-2 flex-wrap align-items-center">
+                        {% if tarea.estado == 'PENDIENTE' %}
+                            <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-play-fill"></i> En progreso
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Primero marca 'En progreso'">
+                                <i class="bi bi-check-lg"></i> Finalizar
+                            </button>
+                        {% elif tarea.estado == 'EN_PROGRESO' %}
+                            <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-check-lg"></i> Finalizar
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn-action">
                             <i class="bi bi-eye"></i> Ver detalle
                         </a>
                     </div>
@@ -195,41 +215,53 @@
                     {% endif %}
                 </div>
 
-                <!-- Sección para cambiar estado (solo si no está finalizada y no está vencida) -->
+                <!-- ==================== SECCIÓN CAMBIAR ESTADO / EVIDENCIA ==================== -->
                 {% if puede_cambiar and not tarea_detalle.esta_vencida %}
-                <hr />
-                <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
-                <form method="POST" action="{% url 'tareas:empleado_tarea_detail' tarea_detalle.pk %}">
-                    {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-8">
-                            <select name="estado" class="form-select" id="id_estado">
-                                <option value="">--- Seleccionar estado ---</option>
-                                <option value="EN_PROGRESO" {% if tarea_detalle.estado == 'EN_PROGRESO' %}selected{% endif %}>
-                                    En progreso
-                                </option>
-                                <option value="FINALIZADA">Finalizada</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-primary-corporate text-white w-100">
-                                <i class="bi bi-check2-circle"></i> Actualizar estado
+                    <hr />
+                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
+
+                    {% if tarea_detalle.estado == 'PENDIENTE' %}
+                        <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea_detalle.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary-corporate text-white">
+                                <i class="bi bi-play-fill"></i> Marcar en progreso
                             </button>
-                        </div>
-                    </div>
-                </form>
+                        </form>
+
+                    {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                        <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea_detalle.pk %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Evidencia (opcional)</label>
+                                <input type="file" name="evidencia" class="form-control" accept="image/*,.pdf">
+                                <small class="text-muted">Puedes adjuntar una foto o documento que respalde la finalización.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary-corporate text-white">
+                                <i class="bi bi-check2-circle"></i> Finalizar tarea
+                            </button>
+                        </form>
+                    {% endif %}
+
                 {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                <hr />
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill"></i> Esta tarea ya está finalizada.
-                </div>
+                    <hr />
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle-fill"></i> Esta tarea ya está finalizada.
+                        {% if tarea_detalle.evidencia %}
+                            <br>
+                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline mt-2 d-inline-block">
+                                <i class="bi bi-paperclip"></i> Ver evidencia adjunta
+                            </a>
+                        {% endif %}
+                    </div>
+
                 {% elif tarea_detalle.esta_vencida %}
-                <hr />
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle-fill"></i> Esta tarea está vencida. No se puede modificar.
-                </div>
+                    <hr />
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Esta tarea está vencida. No se puede modificar.
+                    </div>
                 {% endif %}
             </div>
+
             <div class="modal-footer border-0">
                 <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate btn-cerrar-tarea">
                     Cerrar
@@ -245,22 +277,12 @@
 {% block extra_js %}
 <script src="{% static 'js/empleado/tareas.js' %}"></script>
 <script>
-    // Si hay una tarea en detalle, el modal se muestra automáticamente
-    // Este script solo asegura que el modal se comporte correctamente
     document.addEventListener('DOMContentLoaded', function() {
-        {% if tarea_detalle %}
-            // El modal ya está visible gracias a la clase 'show' y 'display:block'
-            // Solo necesitamos asegurar que el fondo oscuro cubra todo
-            const modal = document.getElementById('taskDetailModal');
-            if (modal) {
-                // Cerrar modal al hacer clic fuera (opcional)
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        window.location.href = "{% url 'tareas:empleado_tareas_list' %}";
-                    }
-                });
-            }
-        {% endif %}
+        var detailModal = document.getElementById('taskDetailModal');
+        if (detailModal) {
+            var modal = new bootstrap.Modal(detailModal);
+            modal.show();
+        }
     });
 </script>
 {% endblock %}

@@ -60,7 +60,7 @@
     margin-bottom: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     transition: 0.2s;
-    border: 1px solid #F0F2F5;
+    border: 1px solid #a40706;
 }
 
 .task-card:hover {
@@ -98,15 +98,15 @@
 
 /* Botón de acción "Ver detalle" */
 .btn-action {
-    background: transparent;
-    border: 1px solid #CBD5E1;
+    background: white;
+    border: 1px solid #a40706;
     border-radius: 10px;
     padding: 0.4rem 1rem;
     transition: 0.3s;
     text-decoration: none;
     font-size: 0.8rem;
     font-weight: 500;
-    color: #1E293B;
+    color: #a40706;
 }
 
 .btn-action:hover {
@@ -163,6 +163,11 @@
     background: #8a0504;
     color: white;
     transform: translateY(-2px);
+}
+
+.text-title h5 {
+    font-weight: 600;
+    color: #a40706;
 }
 
 /* Campos de formulario en modal */

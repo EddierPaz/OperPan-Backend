@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -67,6 +68,14 @@ def admin_tareas_list(request):
             editando = True
         except Task.DoesNotExist:
             messages.error(request, "La tarea que intentas editar no existe.")
+            
+    detalle_id = request.GET.get('detalle')
+    tarea_detalle = None
+    if detalle_id:
+        try:
+            tarea_detalle = Task.objects.get(pk=detalle_id)
+        except Task.DoesNotExist:
+            messages.error(request, "La tarea que intentas consultar no existe.")
 
     # --- Datos para el autocompletado (empleado -> cargo + horario activo) ---
     empleados_qs = PerfilEmpleado.objects.filter(user__rol='empleado', estado='activo')
@@ -75,11 +84,13 @@ def admin_tareas_list(request):
     for h in Horario.objects.filter(empleado__in=empleados_qs, estado=True).order_by('-fecha_creacion'):
         horarios_activos.setdefault(h.empleado_id, h)
 
+    # En views.py -> admin_tareas_list
+
     empleados_data = {}
     for emp in empleados_qs:
         horario = horarios_activos.get(emp.pk)
-        empleados_data[emp.pk] = {
-            'cargo': emp.cargo,
+        empleados_data[str(emp.pk)] = {
+            'cargo': emp.cargo if emp.cargo else '',
             'cargo_display': emp.get_cargo_display() if emp.cargo else '',
             'turno': horario.turno if horario else '',
             'turno_display': horario.get_turno_display() if horario else '',
@@ -97,7 +108,8 @@ def admin_tareas_list(request):
         'form': form,
         'editando': editando,
         'tarea_actual': tarea_actual,
-        'empleados_data': empleados_data,
+        'tarea_detalle': tarea_detalle,
+        'empleados_data': empleados_data,  # <-- Pásalo como diccionario normal
         'tareas_por_cargo': TAREAS_POR_CARGO,
         'cargo_area_map': CARGO_AREA_MAP,
         'otra_value': OTRA_VALUE,
@@ -238,7 +250,7 @@ def empleado_tareas_list(request):
 
 @login_required
 def empleado_tarea_detail(request, pk):
-    tarea = get_object_or_404(Task, pk=pk, empleado=request.user)
+    tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
 
     if request.method == 'POST':
         nuevo_estado = request.POST.get('estado')
@@ -256,19 +268,30 @@ def empleado_tarea_detail(request, pk):
 
 @login_required
 def empleado_tarea_marcar_progreso(request, pk):
-    tarea = get_object_or_404(Task, pk=pk, empleado=request.user)
-    if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
-        messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'En progreso'.")
-    else:
-        messages.error(request, "❌ No se pudo marcar la tarea como 'En progreso'.")
+    tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
+    if request.method == 'POST':
+        if tarea.estado == EstadoTarea.PENDIENTE:
+            if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
+                messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'En progreso'.")
+            else:
+                messages.error(request, "❌ No se pudo marcar la tarea como 'En progreso'.")
+        else:
+            messages.error(request, "❌ Esta tarea ya no está pendiente.")
     return redirect('tareas:empleado_tareas_list')
 
 
 @login_required
 def empleado_tarea_marcar_finalizada(request, pk):
-    tarea = get_object_or_404(Task, pk=pk, empleado=request.user)
-    if tarea.cambiar_estado(EstadoTarea.FINALIZADA, request.user):
-        messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'Finalizada'.")
-    else:
-        messages.error(request, "❌ No se pudo marcar la tarea como 'Finalizada'.")
+    tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
+    if request.method == 'POST':
+        if tarea.estado == EstadoTarea.EN_PROGRESO:
+            evidencia = request.FILES.get('evidencia')
+            if evidencia:
+                tarea.evidencia = evidencia
+            if tarea.cambiar_estado(EstadoTarea.FINALIZADA, request.user):
+                messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'Finalizada'.")
+            else:
+                messages.error(request, "❌ No se pudo marcar la tarea como 'Finalizada'.")
+        else:
+            messages.error(request, "❌ Primero debes marcar la tarea como 'En progreso'.")
     return redirect('tareas:empleado_tareas_list')
