@@ -8,6 +8,12 @@ from apps.usuarios.models import PerfilEmpleado, User
 # CHOICES (Enumeraciones)
 # ============================================================
 
+class Turno(models.TextChoices):
+    MANANA = 'MANANA', 'Mañana'
+    TARDE = 'TARDE', 'Tarde'
+    FIJO = 'FIJO', 'Fijo'
+
+
 class Prioridad(models.TextChoices):
     BAJA = 'BAJA', 'Baja'
     MEDIA = 'MEDIA', 'Media'
@@ -30,11 +36,6 @@ class Area(models.TextChoices):
     CAJA = 'CAJA', 'Caja'
 
 
-class Turno(models.TextChoices):
-    MAÑANA = 'MAÑANA', 'Mañana (4am-2pm)'
-    TARDE = 'TARDE', 'Tarde (1pm-11pm)'
-
-
 # ============================================================
 # MODELO TASK
 # ============================================================
@@ -43,7 +44,6 @@ class Task(models.Model):
     """
     Modelo para la gestión de tareas operativas en OperPan.
     """
-    # ---- Relaciones ----
     empleado = models.ForeignKey(
         PerfilEmpleado,
         on_delete=models.CASCADE,
@@ -64,11 +64,9 @@ class Task(models.Model):
         related_name='tareas_modificadas'
     )
 
-    # ---- Información principal ----
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
 
-    # ---- Categorización ----
     area = models.CharField(
         max_length=20,
         choices=Area.choices,
@@ -81,7 +79,6 @@ class Task(models.Model):
         null=True
     )
 
-    # ---- Gestión ----
     prioridad = models.CharField(
         max_length=10,
         choices=Prioridad.choices,
@@ -93,7 +90,6 @@ class Task(models.Model):
         default=EstadoTarea.PENDIENTE
     )
 
-    # ---- Fechas ----
     fecha_limite = models.DateField()
     hora_limite = models.TimeField(blank=True, null=True)
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
@@ -103,13 +99,8 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_limite})"
 
-    # ============================================================
-    # MÉTODOS DE NEGOCIO
-    # ============================================================
-
     @classmethod
     def get_kpis_administrador(cls):
-        """KPIs generales para el panel de administrador."""
         hoy = date.today()
         qs = cls.objects.all()
         return {
@@ -124,7 +115,6 @@ class Task(models.Model):
 
     @classmethod
     def get_kpis_empleado(cls, user):
-        """KPIs personales para el panel del empleado."""
         hoy = date.today()
         qs = cls.objects.filter(empleado__user=user)
         return {
@@ -138,10 +128,6 @@ class Task(models.Model):
         }
 
     def cambiar_estado(self, nuevo_estado, usuario):
-        """
-        Cambia el estado de la tarea y registra quién hizo el cambio.
-        Devuelve True si tuvo éxito, False si el estado no es válido.
-        """
         if nuevo_estado not in dict(EstadoTarea.choices):
             return False
 

@@ -69,7 +69,6 @@
 
     <!-- ==================== FILTROS Y BÚSQUEDA ==================== -->
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3 w-100">
-        <!-- Buscador a la izquierda -->
         <div class="input-group" style="max-width: 500px;">
             <input type="text" class="form-control" name="busqueda" id="searchTask"
                    placeholder="Buscar por título, empleado..."
@@ -79,7 +78,6 @@
             </button>
         </div>
 
-        <!-- Filtros a la extrema derecha -->
         <div class="filters-bar ms-auto">
             <a href="?{% if request.GET %}{{ request.GET.urlencode }}&estado={% else %}estado={% endif %}"
                class="btn btn-sm filter-btn {% if not request.GET.estado %}active{% endif %}">Todas</a>
@@ -147,41 +145,34 @@
     <footer><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
 </div>
 
+<!-- Datos para el JS del formulario -->
+{{ empleados_data|json_script:"empleados-data" }}
+{{ tareas_por_cargo|json_script:"tareas-por-cargo" }}
+{{ cargo_area_map|json_script:"cargo-area-map" }}
+
 <!-- ==================== MODAL TAREA (Crear / Editar) ==================== -->
 <div class="modal fade" id="modalTarea" tabindex="-1" aria-labelledby="modalTareaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            
+
             <div class="modal-header">
                 <h5 class="modal-title" id="modalTareaLabel">
                     <i class="bi bi-plus-circle-fill me-2"></i>
-                    {% if editando %}
-                        Editar tarea
-                    {% else %}
-                        Asignar nueva tarea
-                    {% endif %}
+                    {% if editando %}Editar tarea{% else %}Asignar nueva tarea{% endif %}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <form method="POST"
                   action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
-                  id="taskForm">
+                  id="taskForm"
+                  data-editando="{{ editando|yesno:'1,0' }}"
+                  data-empleado-actual="{{ form.empleado.value|default:'' }}"
+                  data-titulo-actual="{{ form.titulo.value|default:'' }}">
                 {% csrf_token %}
 
                 <div class="modal-body">
                     <div class="row g-3">
-
-                        <!-- Título -->
-                        <div class="col-12">
-                            <label class="form-label">Título *</label>
-                            <input type="text" class="form-control" name="titulo" id="id_titulo"
-                                   required placeholder="Ej: Limpieza de vitrina"
-                                   value="{{ form.titulo.value|default:'' }}">
-                            {% if form.titulo.errors %}
-                                <div class="invalid-feedback d-block">{{ form.titulo.errors }}</div>
-                            {% endif %}
-                        </div>
 
                         <!-- Empleado -->
                         <div class="col-md-6">
@@ -191,41 +182,64 @@
                                     Seleccionar empleado
                                 </option>
                                 {% for emp in form.empleado.field.queryset %}
-                                    <option value="{{ emp.pk }}"
-                                            {% if form.empleado.value == emp.pk %}selected{% endif %}>
-                                        {{ emp.nombre_completo }} ({{ emp.get_cargo_display }})
+                                    <option value="{{ emp.pk }}" {% if form.empleado.value == emp.pk %}selected{% endif %}>
+                                        {{ emp.nombre_completo }}
                                     </option>
                                 {% endfor %}
                             </select>
-                            {% if form.empleado.errors %}
-                                <div class="invalid-feedback d-block">{{ form.empleado.errors }}</div>
-                            {% endif %}
+                            {% if form.empleado.errors %}<div class="invalid-feedback d-block">{{ form.empleado.errors }}</div>{% endif %}
                         </div>
 
-                        <!-- Prioridad -->
-                        <div class="col-md-6">
+                        <!-- Cargo: solo informativo, no se envía al backend -->
+                        <div class="col-md-3">
+                            <label class="form-label">Cargo</label>
+                            <input type="text" class="form-control" id="id_cargo_display" readonly disabled placeholder="—">
+                        </div>
+
+                        <!-- Turno -->
+                        <div class="col-md-3">
+                            <label class="form-label">Turno *</label>
+                            <select class="form-select" name="turno_asociado" id="id_turno_asociado" required>
+                                <option value="">Seleccionar</option>
+                                {% for value, label in form.turno_asociado.field.choices %}
+                                    {% if value %}
+                                    <option value="{{ value }}" {% if form.turno_asociado.value == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            {% if form.turno_asociado.errors %}<div class="invalid-feedback d-block">{{ form.turno_asociado.errors }}</div>{% endif %}
+                        </div>
+
+                        <!-- Título preseleccionado según cargo -->
+                        <div class="col-md-8">
+                            <label class="form-label">Título *</label>
+                            <select class="form-select" id="id_titulo_preset">
+                                <option value="">Selecciona un empleado primero</option>
+                            </select>
+                            <input type="text" class="form-control mt-2" name="titulo" id="id_titulo"
+                                required placeholder="Escribe el título de la tarea"
+                                value="{{ form.titulo.value|default:'' }}"
+                                style="display:none;">
+                            {% if form.titulo.errors %}<div class="invalid-feedback d-block">{{ form.titulo.errors }}</div>{% endif %}
+                        </div>
+
+                        <!-- Prioridad (auto, editable solo si el título es "Otra") -->
+                        <div class="col-md-4">
                             <label class="form-label">Prioridad *</label>
-                            <select class="form-select" name="prioridad" id="id_prioridad">
+                            <select class="form-select locked-field" name="prioridad" id="id_prioridad" tabindex="-1">
                                 {% for value, label in form.prioridad.field.choices %}
-                                    <option value="{{ value }}"
-                                            {% if form.prioridad.value == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
+                                    <option value="{{ value }}" {% if form.prioridad.value == value %}selected{% endif %}>{{ label }}</option>
                                 {% endfor %}
                             </select>
-                            {% if form.prioridad.errors %}
-                                <div class="invalid-feedback d-block">{{ form.prioridad.errors }}</div>
-                            {% endif %}
+                            {% if form.prioridad.errors %}<div class="invalid-feedback d-block">{{ form.prioridad.errors }}</div>{% endif %}
                         </div>
 
-                        <!-- Descripción -->
+                        <!-- Descripción (bloqueada salvo que el título sea "Otra") -->
                         <div class="col-12">
                             <label class="form-label">Descripción *</label>
-                            <textarea class="form-control" name="descripcion" id="id_descripcion"
-                                      rows="3" required placeholder="Instrucciones detalladas...">{{ form.descripcion.value|default:'' }}</textarea>
-                            {% if form.descripcion.errors %}
-                                <div class="invalid-feedback d-block">{{ form.descripcion.errors }}</div>
-                            {% endif %}
+                            <textarea class="form-control locked-field" name="descripcion" id="id_descripcion"
+                                    rows="3" required readonly placeholder="Instrucciones detalladas...">{{ form.descripcion.value|default:'' }}</textarea>
+                            {% if form.descripcion.errors %}<div class="invalid-feedback d-block">{{ form.descripcion.errors }}</div>{% endif %}
                         </div>
 
                         <!-- Fecha límite -->
@@ -233,9 +247,7 @@
                             <label class="form-label">Fecha límite *</label>
                             <input type="date" class="form-control" name="fecha_limite" id="id_fecha_limite"
                                    required value="{{ form.fecha_limite.value|date:'Y-m-d'|default:'' }}">
-                            {% if form.fecha_limite.errors %}
-                                <div class="invalid-feedback d-block">{{ form.fecha_limite.errors }}</div>
-                            {% endif %}
+                            {% if form.fecha_limite.errors %}<div class="invalid-feedback d-block">{{ form.fecha_limite.errors }}</div>{% endif %}
                         </div>
 
                         <!-- Hora límite -->
@@ -243,58 +255,17 @@
                             <label class="form-label">Hora límite</label>
                             <input type="time" class="form-control" name="hora_limite" id="id_hora_limite"
                                    value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
-                            {% if form.hora_limite.errors %}
-                                <div class="invalid-feedback d-block">{{ form.hora_limite.errors }}</div>
-                            {% endif %}
+                            <small class="text-muted" id="hora-limite-hint"></small>
+                            {% if form.hora_limite.errors %}<div class="invalid-feedback d-block">{{ form.hora_limite.errors }}</div>{% endif %}
                         </div>
 
-                        <!-- Área -->
-                        <div class="col-md-3">
-                            <label class="form-label">Área</label>
-                            <select class="form-select" name="area" id="id_area">
-                                <option value="">Sin área</option>
-                                {% for value, label in form.area.field.choices %}
-                                    <option value="{{ value }}"
-                                            {% if form.area.value == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            {% if form.area.errors %}
-                                <div class="invalid-feedback d-block">{{ form.area.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Turno asociado -->
-                        <div class="col-md-3">
-                            <label class="form-label">Turno asociado</label>
-                            <select class="form-select" name="turno_asociado" id="id_turno_asociado">
-                                <option value="">Sin turno</option>
-                                {% for value, label in form.turno_asociado.field.choices %}
-                                    <option value="{{ value }}"
-                                            {% if form.turno_asociado.value == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            {% if form.turno_asociado.errors %}
-                                <div class="invalid-feedback d-block">{{ form.turno_asociado.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                    </div><!-- /row -->
-                </div><!-- /modal-body -->
+                    </div>
+                </div>
 
                 <div class="modal-footer">
-                    {% if editando %}
-                        <a href="{% url 'tareas:admin_tareas_list' %}" class="btn btn-outline-secondary">Cancelar</a>
-                    {% else %}
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    {% endif %}
-                    <button type="reset" class="btn btn-light">Limpiar</button>
+                    <button type="reset" class="btn btn-outline-corporate">Limpiar</button>
                     <button type="submit" class="btn btn-primary-corporate">
-                        <i class="bi bi-save me-1"></i>
-                        {% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
+                        <i class="bi bi-save me-1"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
                     </button>
                 </div>
 
@@ -331,13 +302,11 @@
 <script src="{% static 'js/admin/tareas.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Abrir Modal de Tarea si está en modo Edición o si el formulario tiene Errores
         {% if editando or form.errors %}
             var modalTarea = new bootstrap.Modal(document.getElementById('modalTarea'));
             modalTarea.show();
         {% endif %}
 
-        // 2. Lógica para el modal de eliminación
         const confirmModal = document.getElementById('confirmModal');
         const deleteForm = document.getElementById('deleteForm');
         const modalBody = document.getElementById('modalBodyText');

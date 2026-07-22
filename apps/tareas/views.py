@@ -3,10 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
+from django.urls import reverse
 from datetime import date
-from .models import Task, EstadoTarea, Prioridad, Area, Turno
-from .forms import TaskForm, TaskEstadoForm, TaskFilterForm, TaskSearchForm
+from .models import Task, EstadoTarea
+from .forms import TaskForm, TaskFilterForm
+from .constants import TAREAS_POR_CARGO, CARGO_AREA_MAP, OTRA_VALUE
 from apps.usuarios.decorators import admin_required
+from apps.usuarios.models import PerfilEmpleado
+from apps.asistencia.models import Horario
 
 
 # ==========================================
@@ -21,17 +25,12 @@ def admin_tareas_list(request):
     Muestra: KPIs, formulario (crear/editar), listado con filtros y búsqueda.
     Template: admin/tareas.html
     """
-    # KPIs
     kpis = Task.get_kpis_administrador()
 
-    # Query base
     tareas = Task.objects.select_related(
-        'empleado',
-        'creador__perfil',
-        'ultimo_cambio_por__perfil'
+        'empleado', 'creador__perfil', 'ultimo_cambio_por__perfil'
     ).all()
 
-    # --- Filtros (GET) ---
     filter_form = TaskFilterForm(request.GET or None)
     if filter_form.is_valid():
         if filter_form.cleaned_data.get('estado'):
@@ -45,7 +44,6 @@ def admin_tareas_list(request):
         if filter_form.cleaned_data.get('turno'):
             tareas = tareas.filter(turno_asociado=filter_form.cleaned_data['turno'])
 
-    # --- Búsqueda ---
     busqueda = request.GET.get('busqueda', '')
     if busqueda:
         tareas = tareas.filter(
@@ -55,10 +53,8 @@ def admin_tareas_list(request):
             Q(descripcion__icontains=busqueda)
         )
 
-    # Orden
     tareas = tareas.order_by('-prioridad', 'fecha_limite')
 
-    # --- Formulario de creación/edición ---
     editando = False
     tarea_actual = None
     form = TaskForm()
@@ -72,6 +68,25 @@ def admin_tareas_list(request):
         except Task.DoesNotExist:
             messages.error(request, "La tarea que intentas editar no existe.")
 
+    # --- Datos para el autocompletado (empleado -> cargo + horario activo) ---
+    empleados_qs = PerfilEmpleado.objects.filter(user__rol='empleado', estado='activo')
+
+    horarios_activos = {}
+    for h in Horario.objects.filter(empleado__in=empleados_qs, estado=True).order_by('-fecha_creacion'):
+        horarios_activos.setdefault(h.empleado_id, h)
+
+    empleados_data = {}
+    for emp in empleados_qs:
+        horario = horarios_activos.get(emp.pk)
+        empleados_data[emp.pk] = {
+            'cargo': emp.cargo,
+            'cargo_display': emp.get_cargo_display() if emp.cargo else '',
+            'turno': horario.turno if horario else '',
+            'turno_display': horario.get_turno_display() if horario else '',
+            'hora_entrada': horario.hora_entrada.strftime('%H:%M') if horario and horario.hora_entrada else '',
+            'hora_salida': horario.hora_salida.strftime('%H:%M') if horario and horario.hora_salida else '',
+        }
+
     context = {
         'fecha_hoy': timezone.now().date(),
         'tareas': tareas,
@@ -82,6 +97,10 @@ def admin_tareas_list(request):
         'form': form,
         'editando': editando,
         'tarea_actual': tarea_actual,
+        'empleados_data': empleados_data,
+        'tareas_por_cargo': TAREAS_POR_CARGO,
+        'cargo_area_map': CARGO_AREA_MAP,
+        'otra_value': OTRA_VALUE,
     }
     return render(request, 'admin/tareas.html', context)
 
@@ -89,10 +108,6 @@ def admin_tareas_list(request):
 @login_required
 @admin_required
 def admin_tarea_create(request):
-    """
-    Procesa la creación de una nueva tarea (POST).
-    Redirige al listado.
-    """
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -112,10 +127,6 @@ def admin_tarea_create(request):
 @login_required
 @admin_required
 def admin_tarea_edit(request, pk):
-    """
-    Procesa la edición de una tarea existente (POST).
-    Redirige al listado.
-    """
     tarea = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=tarea)
@@ -123,10 +134,7 @@ def admin_tarea_edit(request, pk):
             tarea_editada = form.save(commit=False)
             tarea_editada.ultimo_cambio_por = request.user
             tarea_editada.save()
-            messages.success(
-                request,
-                f"✅ Tarea '{tarea.titulo}' actualizada exitosamente."
-            )
+            messages.success(request, f"✅ Tarea '{tarea.titulo}' actualizada exitosamente.")
         else:
             messages.error(request, "❌ Por favor corrige los errores del formulario.")
     return redirect('tareas:admin_tareas_list')
@@ -135,38 +143,25 @@ def admin_tarea_edit(request, pk):
 @login_required
 @admin_required
 def admin_tarea_delete(request, pk):
-    """
-    Elimina una tarea (POST). Redirige al listado.
-    """
     tarea = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         titulo = tarea.titulo
         empleado = tarea.empleado.nombre_completo()
         tarea.delete()
-        messages.success(
-            request,
-            f"🗑️ Tarea '{titulo}' de {empleado} eliminada exitosamente."
-        )
+        messages.success(request, f"🗑️ Tarea '{titulo}' de {empleado} eliminada exitosamente.")
     return redirect('tareas:admin_tareas_list')
 
 
 @login_required
 @admin_required
 def admin_tarea_cambiar_estado(request, pk):
-    """
-    Cambia el estado de una tarea (GET con parámetro ?estado=...).
-    Redirige a la URL de origen (next) o al listado.
-    """
     tarea = get_object_or_404(Task, pk=pk)
     nuevo_estado = request.GET.get('estado')
     next_url = request.GET.get('next', request.META.get('HTTP_REFERER', 'tareas:admin_tareas_list'))
 
     if nuevo_estado in dict(EstadoTarea.choices):
         if tarea.cambiar_estado(nuevo_estado, request.user):
-            messages.success(
-                request,
-                f"✅ Estado de '{tarea.titulo}' actualizado a '{tarea.get_estado_display()}'."
-            )
+            messages.success(request, f"✅ Estado de '{tarea.titulo}' actualizado a '{tarea.get_estado_display()}'.")
         else:
             messages.error(request, "❌ No se pudo cambiar el estado de la tarea.")
     else:
@@ -178,9 +173,6 @@ def admin_tarea_cambiar_estado(request, pk):
 @login_required
 @admin_required
 def admin_tareas_vencidas(request):
-    """
-    Vista para ver solo tareas vencidas (Administrador)
-    """
     hoy = date.today()
     tareas = Task.objects.filter(
         fecha_limite__lt=hoy
@@ -204,33 +196,26 @@ def empleado_tareas_list(request):
     """
     Vista principal del empleado.
     Muestra: KPIs personales, listado de sus tareas con filtros.
-    Si viene parámetro 'detalle' en GET, se pasa la tarea al contexto para abrir el modal.
     Template: empleado/tareas.html
     """
     empleado = request.user
 
-    # KPIs del empleado
     kpis = Task.get_kpis_empleado(empleado)
 
-    # Tareas del empleado
     tareas = Task.objects.filter(empleado__user=request.user).select_related(
         'creador__perfil',
         'ultimo_cambio_por__perfil'
     )
 
-    # Filtro por estado (GET)
     estado_filtro = request.GET.get('estado')
     if estado_filtro and estado_filtro in dict(EstadoTarea.choices):
         tareas = tareas.filter(estado=estado_filtro)
 
-    # Filtro "Ver vencidas"
     if request.GET.get('vencidas') == 'true':
         tareas = tareas.filter(fecha_limite__lt=date.today()).exclude(estado=EstadoTarea.FINALIZADA)
 
-    # Orden
     tareas = tareas.order_by('-prioridad', 'fecha_limite')
 
-    # Verificar si se debe abrir el modal de detalle
     detalle_id = request.GET.get('detalle')
     tarea_detalle = None
     if detalle_id:
@@ -245,7 +230,7 @@ def empleado_tareas_list(request):
         'estado_filtro': estado_filtro,
         'total_tareas': tareas.count(),
         'estados': EstadoTarea.choices,
-        'tarea_detalle': tarea_detalle,  # Para abrir el modal automáticamente
+        'tarea_detalle': tarea_detalle,
         'puede_cambiar': tarea_detalle and tarea_detalle.estado != EstadoTarea.FINALIZADA,
     }
     return render(request, 'empleado/tareas.html', context)
@@ -253,36 +238,24 @@ def empleado_tareas_list(request):
 
 @login_required
 def empleado_tarea_detail(request, pk):
-    """
-    Procesa el cambio de estado desde el modal del empleado (POST).
-    También puede mostrar el detalle en una página separada (GET), pero aquí redirige al listado.
-    """
     tarea = get_object_or_404(Task, pk=pk, empleado=request.user)
 
     if request.method == 'POST':
         nuevo_estado = request.POST.get('estado')
-        # El empleado solo puede cambiar a EN_PROGRESO o FINALIZADA
         if nuevo_estado in [EstadoTarea.EN_PROGRESO, EstadoTarea.FINALIZADA]:
             if tarea.cambiar_estado(nuevo_estado, request.user):
-                messages.success(
-                    request,
-                    f"✅ Estado actualizado a '{tarea.get_estado_display()}'."
-                )
+                messages.success(request, f"✅ Estado actualizado a '{tarea.get_estado_display()}'.")
             else:
                 messages.error(request, "❌ No se pudo actualizar el estado.")
         else:
             messages.error(request, "❌ No tienes permiso para cambiar a ese estado.")
         return redirect('tareas:empleado_tareas_list')
 
-    # Si es GET, redirigimos al listado con el ID para abrir el modal
     return redirect(f"{reverse('tareas:empleado_tareas_list')}?detalle={pk}")
 
 
 @login_required
 def empleado_tarea_marcar_progreso(request, pk):
-    """
-    Marca tarea como 'En progreso' (empleado). Redirige al listado.
-    """
     tarea = get_object_or_404(Task, pk=pk, empleado=request.user)
     if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
         messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'En progreso'.")
@@ -293,9 +266,6 @@ def empleado_tarea_marcar_progreso(request, pk):
 
 @login_required
 def empleado_tarea_marcar_finalizada(request, pk):
-    """
-    Marca tarea como 'Finalizada' (empleado). Redirige al listado.
-    """
     tarea = get_object_or_404(Task, pk=pk, empleado=request.user)
     if tarea.cambiar_estado(EstadoTarea.FINALIZADA, request.user):
         messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'Finalizada'.")

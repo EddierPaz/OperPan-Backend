@@ -43,20 +43,21 @@
 }
 
 .btn-primary-corporate {
-    background: white;
-    color: #A40706;
-    border: 1px solid;
+    background: #A40706;
+    border: none;
     padding: 0.6rem 1.5rem;
     border-radius: 40px;
     font-weight: 600;
     transition: 0.2s;
+    color: white;
 }
 
 .btn-primary-corporate:hover {
     background: #8a0504;
-    color: white;
     transform: translateY(-2px);
+    color: white;
 }
+
 
 .btn-outline-corporate {
     border: 1.5px solid #A40706;
@@ -65,6 +66,13 @@
     padding: 0.6rem 1.5rem;
     border-radius: 40px;
     font-weight: 600;
+}
+
+.btn-outline-corporate:hover {
+    border: 1.5px solid #A40706;
+    background: #A40706;
+    transform: translateY(-2px);
+    color: white;
 }
 
 /* Tarjetas de tareas */
