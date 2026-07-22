@@ -1,7 +1,8 @@
 from django import forms
 from django.utils import timezone
-from .models import Task, Area, Turno, Prioridad, EstadoTarea
+from .models import Task, Turno, Prioridad, EstadoTarea
 from apps.usuarios.models import User, PerfilEmpleado
+from apps.asistencia.models import Horario
 
 
 class TaskForm(forms.ModelForm):
@@ -12,45 +13,17 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = [
-            'titulo',
-            'empleado',
-            'prioridad',
-            'descripcion',
-            'fecha_limite',
-            'hora_limite',
-            'area',
-            'turno_asociado'
+            'titulo', 'empleado', 'prioridad', 'descripcion',
+            'fecha_limite', 'hora_limite', 'turno_asociado'
         ]
         widgets = {
-            'titulo': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ej: Limpieza de vitrina'
-            }),
-            'descripcion': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 4,
-                'placeholder': 'Instrucciones detalladas...'
-            }),
-            'empleado': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'prioridad': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'area': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'turno_asociado': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'fecha_limite': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
-            'hora_limite': forms.TimeInput(attrs={
-                'class': 'form-control',
-                'type': 'time'
-            }),
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Limpieza de vitrina'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Instrucciones detalladas...'}),
+            'empleado': forms.Select(attrs={'class': 'form-select'}),
+            'prioridad': forms.Select(attrs={'class': 'form-select'}),
+            'turno_asociado': forms.Select(attrs={'class': 'form-select'}),
+            'fecha_limite': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'hora_limite': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
         }
         labels = {
             'titulo': 'Título *',
@@ -59,8 +32,7 @@ class TaskForm(forms.ModelForm):
             'descripcion': 'Descripción *',
             'fecha_limite': 'Fecha límite *',
             'hora_limite': 'Hora límite',
-            'area': 'Área',
-            'turno_asociado': 'Turno asociado',
+            'turno_asociado': 'Turno *',
         }
         help_texts = {
             'titulo': 'Título breve y descriptivo de la tarea.',
@@ -70,45 +42,30 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Filtrar solo empleados activos
-        # NOTA: Task.empleado es FK a PerfilEmpleado, no a User.
-        # 'rol' vive en User -> se filtra como user__rol.
-        # 'estado' vive directo en PerfilEmpleado -> sin prefijo.
         self.fields['empleado'].queryset = PerfilEmpleado.objects.filter(
             user__rol='empleado',
             estado='activo'
         ).select_related('user')
 
-        # Ordenar/mostrar empleados por nombre completo + cargo
         self.fields['empleado'].label_from_instance = lambda obj: f"{obj.nombre_completo()} ({obj.get_cargo_display()})"
 
-        # Marcar campos obligatorios con asterisco
-        for field_name in self.fields:
-            if self.fields[field_name].required:
-                self.fields[field_name].label = f"{self.fields[field_name].label}"
+        # El turno ahora es obligatorio (se autocompleta desde el horario del empleado)
+        self.fields['turno_asociado'].required = True
 
     def clean_fecha_limite(self):
-        """
-        Validar que la fecha límite no sea en el pasado
-        """
         fecha = self.cleaned_data.get('fecha_limite')
         hoy = timezone.now().date()
-
         if fecha and fecha < hoy:
             raise forms.ValidationError("La fecha límite no puede ser en el pasado.")
         return fecha
 
     def clean_hora_limite(self):
-        """
-        Validar que si hay hora límite, también haya fecha límite
-        """
         hora = self.cleaned_data.get('hora_limite')
         fecha = self.cleaned_data.get('fecha_limite')
 
         if hora and not fecha:
             raise forms.ValidationError("Debe especificar una fecha límite para asignar una hora límite.")
 
-        # Si es hoy, validar que la hora no haya pasado
         if hora and fecha == timezone.now().date():
             ahora = timezone.now().time()
             if hora < ahora:
@@ -116,11 +73,27 @@ class TaskForm(forms.ModelForm):
 
         return hora
 
+    def clean(self):
+        """La hora límite no puede superar la hora de salida del horario activo del empleado."""
+        cleaned_data = super().clean()
+        hora = cleaned_data.get('hora_limite')
+        empleado = cleaned_data.get('empleado')
+
+        if hora and empleado:
+            horario = Horario.objects.filter(
+                empleado=empleado, estado=True
+            ).order_by('-fecha_creacion').first()
+
+            if horario and horario.hora_salida and hora > horario.hora_salida:
+                self.add_error(
+                    'hora_limite',
+                    f"La hora límite no puede superar el fin de la jornada del empleado "
+                    f"({horario.hora_salida.strftime('%H:%M')})."
+                )
+        return cleaned_data
+
 
 class TaskEstadoForm(forms.Form):
-    """
-    Formulario para cambiar estado de tarea (Empleado y Administrador)
-    """
     estado = forms.ChoiceField(
         choices=[
             ('', '--- Seleccionar estado ---'),
@@ -129,26 +102,17 @@ class TaskEstadoForm(forms.Form):
             (EstadoTarea.FINALIZADA, 'Finalizada'),
         ],
         label='Nuevo estado',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     observacion = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={
-            'class': 'form-control',
-            'rows': 3,
-            'placeholder': 'Observaciones sobre el cambio de estado (opcional)...'
-        }),
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Observaciones sobre el cambio de estado (opcional)...'}),
         label='Observaciones'
     )
 
 
 class TaskFilterForm(forms.Form):
-    """
-    Formulario para filtrar tareas (Administrador)
-    """
     estado = forms.ChoiceField(
         choices=[
             ('', 'Todos los estados'),
@@ -158,9 +122,7 @@ class TaskFilterForm(forms.Form):
         ],
         required=False,
         label='Estado',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     empleado = forms.ModelChoiceField(
@@ -168,55 +130,31 @@ class TaskFilterForm(forms.Form):
         required=False,
         label='Empleado',
         empty_label='Todos los empleados',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
-    )
-
-    area = forms.ChoiceField(
-        choices=[('', 'Todas las áreas')] + Area.choices,
-        required=False,
-        label='Área',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     prioridad = forms.ChoiceField(
         choices=[('', 'Todas las prioridades')] + Prioridad.choices,
         required=False,
         label='Prioridad',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     turno = forms.ChoiceField(
         choices=[('', 'Todos los turnos')] + Turno.choices,
         required=False,
         label='Turno',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        })
+        widget=forms.Select(attrs={'class': 'form-select'})
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Ordenar/mostrar empleados por nombre completo
-        # empleado ya es PerfilEmpleado, no hace falta bajar por .perfil
         self.fields['empleado'].label_from_instance = lambda obj: obj.nombre_completo()
 
 
 class TaskSearchForm(forms.Form):
-    """
-    Formulario de búsqueda simple
-    """
     busqueda = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Buscar por título, empleado...'
-        }),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Buscar por título, empleado...'}),
         label=''
     )

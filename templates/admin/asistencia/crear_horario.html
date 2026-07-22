@@ -1,3 +1,22 @@
+<!-- BLOQUE DE ALERTAS Y MENSAJES (Colocar en el cuerpo principal de la vista) -->
+{% if messages %}
+  <div class="row mb-3">
+    <div class="col-12">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+          {% if message.tags == 'error' %}
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {% else %}
+            <i class="bi bi-check-circle-fill me-2"></i>
+          {% endif %}
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
 <!-- MODAL: Crear horario -->
 <div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl">
@@ -7,7 +26,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form method="POST">
+        <form method="POST" action="{% url 'asistencia:horarios' %}">
           {% csrf_token %}
           <div class="row g-3">
 
