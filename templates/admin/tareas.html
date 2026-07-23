@@ -99,49 +99,42 @@
     </div>
 
     <!-- ==================== LISTADO DE TAREAS ==================== -->
-    <div id="tasksContainer">
+    <div id="tasksContainer" class="row m-2 gap-3 justify-content-center">
         {% if tareas %}
             {% for tarea in tareas %}
-            <div class="task-card">
+            <div class="task-card col-md-5">
                 <div class="d-flex justify-content-between align-items-start flex-wrap">
                     <div>
-                        <h5 class="mb-1">{{ tarea.titulo }}</h5>
-                        <span class="priority-{{ tarea.prioridad|lower }}">{{ tarea.get_prioridad_display }}</span>
-                        <span class="badge-status badge-{{ tarea.estado|lower }}">{{ tarea.get_estado_display }}</span>
+                        <h5 class="text-title mb-1">{{ tarea.titulo }}</h5>
                     </div>
                     <div>
-                        <small class="text-muted">
+                        <span class="text-black">
                             <i class="bi bi-person"></i> {{ tarea.empleado.nombre_completo }}
-                        </small>
+                        </span>
                     </div>
                 </div>
-                <p class="mt-2 mb-2">{{ tarea.descripcion }}</p>
-                <div class="d-flex gap-3 small text-muted">
-                    <span><i class="bi bi-calendar"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
-                    <span><i class="bi bi-briefcase"></i> {{ tarea.get_area_display }}</span>
-                    <span><i class="bi bi-clock"></i> Turno: {{ tarea.get_turno_asociado_display|default:"Sin turno" }}</span>
+                <div class="d-flex gap-3">
+                    <span class="text-black"><i class="bi bi-calendar"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
                 </div>
                 <div class="mt-3 d-flex gap-2 flex-wrap">
                     {% if tarea.estado != 'FINALIZADA' %}
-                        <a href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}"
-                           class="btn btn-sm btn-outline-primary">
+                        <a href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
-                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
-                           class="btn btn-sm btn-outline-success">
+                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-success">
                             <i class="bi bi-arrow-repeat"></i> Progreso
                         </a>
-                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
-                           class="btn btn-sm btn-outline-success">
+                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-success">
                             <i class="bi bi-check-lg"></i> Finalizar
                         </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger eliminarTarea" data-id="{{ tarea.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    {% else %}
+                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate">
+                            <i class="bi bi-eye"></i> Ver detalles
+                        </a>
                     {% endif %}
-                    <button type="button" class="btn btn-sm btn-outline-danger eliminarTarea"
-                            data-id="{{ tarea.pk }}"
-                            data-bs-toggle="modal"
-                            data-bs-target="#confirmModal">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </button>
                 </div>
             </div>
             {% endfor %}
@@ -304,6 +297,71 @@
     </div>
 </div>
 
+<!-- ==================== MODAL DE DETALLE PARA ADMIN ==================== -->
+{% if tarea_detalle %}
+<div class="modal fade show" id="adminTaskDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Detalle de Tarea</h5>
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
+            </div>
+            <div class="modal-body pt-0 mt-3">
+                <h4 class="mb-2 fw-bold text-dark">{{ tarea_detalle.titulo }}</h4>
+
+                <div class="mb-3">
+                    {% if tarea_detalle.prioridad == 'ALTA' %}
+                        <span class="badge bg-danger">Alta prioridad</span>
+                    {% elif tarea_detalle.prioridad == 'MEDIA' %}
+                        <span class="badge bg-warning text-dark">Media prioridad</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Baja prioridad</span>
+                    {% endif %}
+
+                    <span class="badge badge-{{ tarea_detalle.estado|lower }} ms-1">
+                        {{ tarea_detalle.get_estado_display }}
+                    </span>
+                </div>
+
+                <p class="text-secondary bg-light p-3 rounded">{{ tarea_detalle.descripcion }}</p>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block"><i class="bi bi-person-badge me-1"></i> Asignado a:</small>
+                        <strong class="text-dark">{{ tarea_detalle.empleado.nombre_completo }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite:</small>
+                        <strong class="text-dark">
+                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }} 
+                            {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
+                        </strong>
+                    </div>
+                </div>
+
+                {% if tarea_detalle.estado == 'FINALIZADA' %}
+                    <hr class="my-3"/>
+                    <div class="alert alert-success mb-0">
+                        <i class="bi bi-check-circle-fill me-1"></i> <strong>Tarea Finalizada</strong>
+                        {% if tarea_detalle.evidencia %}
+                            <br>
+                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline mt-2 d-inline-block">
+                                <i class="bi bi-paperclip"></i> Ver evidencia subida por el empleado
+                            </a>
+                        {% else %}
+                            <br><small class="text-muted">El empleado no adjuntó archivo de evidencia.</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer border-0">
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn btn-secondary">Cerrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}
@@ -311,8 +369,19 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         {% if editando or form.errors %}
-            var modalTarea = new bootstrap.Modal(document.getElementById('modalTarea'));
-            modalTarea.show();
+            var modalTareaElement = document.getElementById('modalTarea');
+            if (modalTareaElement) {
+                var modalTarea = new bootstrap.Modal(modalTareaElement);
+                modalTarea.show();
+            }
+        {% endif %}
+
+        {% if tarea_detalle %}
+            var adminDetailModalElement = document.getElementById('adminTaskDetailModal');
+            if (adminDetailModalElement) {
+                var adminDetailModal = new bootstrap.Modal(adminDetailModalElement);
+                adminDetailModal.show();
+            }
         {% endif %}
 
         const confirmModal = document.getElementById('confirmModal');
@@ -322,13 +391,16 @@
         if (confirmModal) {
             confirmModal.addEventListener('show.bs.modal', function(event) {
                 const button = event.relatedTarget;
+                if (!button) return;
                 const id = button.getAttribute('data-id');
                 const url = "{% url 'tareas:admin_tarea_delete' 0 %}".replace('0', id);
-                deleteForm.action = url;
+                if (deleteForm) deleteForm.action = url;
 
                 const card = button.closest('.task-card');
-                const titulo = card.querySelector('h5').innerText;
-                modalBody.innerText = `¿Eliminar permanentemente la tarea "${titulo}"? Esta acción se registrará en auditoría.`;
+                if (card && modalBody) {
+                    const titulo = card.querySelector('h5') ? card.querySelector('h5').innerText : 'esta tarea';
+                    modalBody.innerText = `¿Eliminar permanentemente la tarea "${titulo}"? Esta acción se registrará en auditoría.`;
+                }
             });
         }
     });

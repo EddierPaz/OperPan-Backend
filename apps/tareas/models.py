@@ -96,8 +96,27 @@ class Task(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     fecha_finalizacion = models.DateTimeField(null=True, blank=True)
 
+    evidencia = models.FileField(
+        upload_to='tareas/evidencias/%Y/%m/',
+        blank=True,
+        null=True,
+        help_text='Foto o documento opcional como evidencia de finalización'
+    )
+
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_limite})"
+
+    @property
+    def esta_vencida(self):
+        """True si la fecha/hora límite ya pasó y la tarea no está finalizada."""
+        if self.estado == EstadoTarea.FINALIZADA:
+            return False
+        hoy = timezone.now().date()
+        if self.fecha_limite < hoy:
+            return True
+        if self.fecha_limite == hoy and self.hora_limite:
+            return timezone.now().time() > self.hora_limite
+        return False
 
     @classmethod
     def get_kpis_administrador(cls):

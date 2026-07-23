@@ -59,20 +59,22 @@
 }
 
 
-.btn-outline-corporate {
-    border: 1.5px solid #A40706;
-    background: transparent;
-    color: #A40706;
-    padding: 0.6rem 1.5rem;
-    border-radius: 40px;
-    font-weight: 600;
+.btn-outline-corporate  {
+    background: white;
+    border: 1px solid #a40706;
+    border-radius: 10px;
+    padding: 0.4rem 1rem;
+    transition: 0.3s;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #a40706;
 }
 
 .btn-outline-corporate:hover {
-    border: 1.5px solid #A40706;
     background: #A40706;
-    transform: translateY(-2px);
     color: white;
+    border-color: #A40706;
 }
 
 /* Tarjetas de tareas */
@@ -158,4 +160,10 @@
     bottom: 20px;
     right: 20px;
     z-index: 1100;
+}
+
+.text-title {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #a40706;
 }
