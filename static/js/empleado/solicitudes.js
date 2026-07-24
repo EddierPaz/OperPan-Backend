@@ -62,16 +62,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Filtros de solicitudes
-    document.querySelectorAll('.filter-btn').forEach(btn => {
+    document.querySelectorAll('.novedades-tab').forEach(btn => {
         btn.addEventListener('click', function() {
             const filter = this.getAttribute('data-filter');
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('active', 'btn-primary');
-                b.classList.add('btn-outline-secondary');
+            
+            // 1. Quitar la clase 'active' de todos los botones
+            document.querySelectorAll('.novedades-tab').forEach(b => {
+                b.classList.remove('active');
             });
-            this.classList.add('active', 'btn-primary');
-            this.classList.remove('btn-outline-secondary');
+            
+            // 2. Agregar la clase 'active' al botón presionado
+            this.classList.add('active');
 
+            // 3. Ocultar o mostrar las tarjetas según el estado
             document.querySelectorAll('.request-card').forEach(card => {
                 if (filter === 'todas') {
                     card.style.display = 'block';

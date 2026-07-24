@@ -69,6 +69,36 @@
     font-weight: 700;
 }
 
+/* Filtros */
+.novedades-tabs {
+    background: white;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #E9ECF3;
+    padding-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+.novedades-tab {
+    background: transparent;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    border-radius: 40px;
+    transition: 0.2s;
+    color: #475569;
+}
+.novedades-tab i {
+    margin-right: 8px;
+}
+.novedades-tab.active {
+    background: #A40706;
+    color: white;
+}
+
+
 .btn-outline-action {
     border-color: #A40706;
     color: #A40706;

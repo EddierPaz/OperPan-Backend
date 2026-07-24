@@ -55,98 +55,164 @@
         </div>
     </div>
 
-    <!-- ==================== FILTROS ==================== -->
+    <!-- ==================== FILTROS EMPLEADO ==================== -->
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
         <h3><i class="bi bi-list-task me-2"></i> Mis tareas</h3>
-        <div class="filter-bar">
-            <a href="{% url 'tareas:empleado_tareas_list' %}"
-               class="btn btn-sm text-dark filter-btn {% if not estado_filtro %}active{% endif %}">
-                Todas
+    </div>
+    
+        <!-- ==================== FILTROS Y BÚSQUEDA EMPLEADO ==================== -->
+    <form method="GET" action="" class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 w-100">
+        
+        <!-- Buscador Integrado del Empleado -->
+        <div class="search-box-container flex-grow-1" style="max-width: 400px;">
+            <div class="search-input-group">
+                <input type="text" 
+                    class="search-input" 
+                    name="busqueda" 
+                    id="searchTaskEmpleado"
+                    placeholder="Buscar en mis tareas..."
+                    value="{{ busqueda|default:'' }}">
+                
+                <button class="btn-search-addon" type="submit" id="searchBtnEmpleado" title="Buscar">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pestañas de Filtros (Igual que Admin) -->
+        <div class="novedades-tabs ms-auto">
+            <a href="?{% if request.GET %}{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+            class="novedades-tab {% if not request.GET.estado and not request.GET.vencidas %}active{% endif %}">
+                <i class="bi bi-grid"></i>Todas
             </a>
-            <a href="{% url 'tareas:empleado_tareas_list' %}?estado=PENDIENTE"
-               class="btn btn-sm text-dark filter-btn {% if estado_filtro == 'PENDIENTE' %}active{% endif %}">
-                Pendientes
+            
+            <a href="?estado=PENDIENTE{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+            class="novedades-tab {% if request.GET.estado == 'PENDIENTE' %}active{% endif %}">
+                <i class="bi bi-hourglass-split"></i>Pendientes
             </a>
-            <a href="{% url 'tareas:empleado_tareas_list' %}?estado=EN_PROGRESO"
-               class="btn btn-sm text-dark filter-btn {% if estado_filtro == 'EN_PROGRESO' %}active{% endif %}">
-                En progreso
+            
+            <a href="?estado=EN_PROGRESO{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+            class="novedades-tab {% if request.GET.estado == 'EN_PROGRESO' %}active{% endif %}">
+                <i class="bi bi-clock-history"></i>En progreso
             </a>
-            <a href="{% url 'tareas:empleado_tareas_list' %}?estado=FINALIZADA"
-               class="btn btn-sm text-dark filter-btn {% if estado_filtro == 'FINALIZADA' %}active{% endif %}">
-                Finalizadas
+            
+            <a href="?estado=FINALIZADA{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+            class="novedades-tab {% if request.GET.estado == 'FINALIZADA' %}active{% endif %}">
+                <i class="bi bi-check-circle"></i>Finalizadas
             </a>
-            <a href="{% url 'tareas:empleado_tareas_list' %}?vencidas=true"
-               class="btn btn-sm text-dark filter-btn {% if request.GET.vencidas == 'true' %}active{% endif %}">
-                Vencidas
+            
+            <a href="?vencidas=true{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+            class="novedades-tab {% if request.GET.vencidas == 'true' %}active{% endif %}">
+                <i class="bi bi-exclamation-triangle"></i>Vencidas
             </a>
         </div>
-    </div>
 
-    <!-- ==================== LISTADO DE TAREAS ==================== -->
-    <div id="tasksContainer">
+    </form>
+
+    <!-- ==================== LISTADO DE TAREAS EMPLEADO ==================== -->
+    <div id="tasksContainer" class="row g-4">
         {% if tareas %}
             {% for tarea in tareas %}
-            <div class="task-card" id="task-{{ tarea.pk }}">
-                <div class="d-flex justify-content-between align-items-start flex-wrap">
-                    <div class="flex-grow-1">
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap text-title">
-                            <h5 class="mb-0 fw-bold">{{ tarea.titulo }}</h5>
-
-                            <!-- Prioridad con ícono -->
-                            {% if tarea.prioridad == 'ALTA' %}
-                                <i class="bi bi-flag-fill text-danger" title="Alta prioridad"></i>
-                            {% elif tarea.prioridad == 'MEDIA' %}
-                                <i class="bi bi-flag-fill text-warning" title="Media prioridad"></i>
-                            {% else %}
-                                <i class="bi bi-flag-fill text-secondary" title="Baja prioridad"></i>
-                            {% endif %}
-
-                            <!-- Estado (incluye vencida) -->
+            <div class="col-12 col-md-6 col-lg-4 d-flex" id="task-{{ tarea.pk }}">
+                <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative">
+                    
+                    <!-- Cuerpo de la Tarjeta -->
+                    <div>
+                        <!-- Encabezado: Título + Bandera Prioridad + Badge Estado -->
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <div class="d-flex align-items-center gap-2 text-truncate">
+                                <!-- Prioridad con ícono -->
+                                {% if tarea.prioridad == 'ALTA' %}
+                                    <i class="bi bi-flag-fill text-danger fs-6" title="Alta prioridad"></i>
+                                {% elif tarea.prioridad == 'MEDIA' %}
+                                    <i class="bi bi-flag-fill text-warning fs-6" title="Media prioridad"></i>
+                                {% else %}
+                                    <i class="bi bi-flag-fill text-secondary fs-6" title="Baja prioridad"></i>
+                                {% endif %}
+                                
+                                <h5 class="text-title fw-bold m-0 text-truncate" title="{{ tarea.titulo }}">
+                                    {{ tarea.titulo }}
+                                </h5>
+                            </div>
+                            
+                            <!-- Badge de Estado / Vencida -->
                             {% if tarea.esta_vencida %}
-                                <span class="badge badge-expired">Vencida</span>
-                            {% else %}
-                                <span class="badge badge-{{ tarea.estado|lower }}">
-                                    {{ tarea.get_estado_display }}
-                                </span>
+                                <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">Vencida</span>
+                            {% elif tarea.estado == 'PENDIENTE' %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 small">Pendiente</span>
+                            {% elif tarea.estado == 'EN_PROGRESO' %}
+                                <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-2 py-1 small">En progreso</span>
+                            {% elif tarea.estado == 'FINALIZADA' %}
+                                <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2 py-1 small">Finalizada</span>
                             {% endif %}
                         </div>
-                        <p class="text-black mb-2">{{ tarea.descripcion|truncatechars:100 }}</p>
-                        <div class="d-flex gap-3 flex-wrap small text-muted">
-                            <span class="text-black"><i class="bi bi-calendar-event"></i> Límite: <span class="fw-bold">{{ tarea.fecha_limite|date:"Y-m-d" }}</span></span>
-                            <span class="text-black"><i class="bi bi-clock-history"></i> Asignada: <span class="fw-bold">{{ tarea.fecha_asignacion|date:"d/m/Y" }}</span></span>
-                        </div>
-                    </div>
 
-                    <!-- ==================== BOTONES RÁPIDOS ==================== -->
-                    <div class="mt-2 mt-sm-0 d-flex gap-2 flex-wrap align-items-center">
-                        {% if tarea.estado == 'PENDIENTE' %}
-                            <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-success">
-                                    <i class="bi bi-play-fill"></i> En progreso
-                                </button>
-                            </form>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Primero marca 'En progreso'">
-                                <i class="bi bi-check-lg"></i> Finalizar
-                            </button>
-                        {% elif tarea.estado == 'EN_PROGRESO' %}
-                            <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-success">
-                                    <i class="bi bi-check-lg"></i> Finalizar
-                                </button>
-                            </form>
+                        <!-- Descripción corta -->
+                        {% if tarea.descripcion %}
+                        <p class="text-muted small mb-3 text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ tarea.descripcion }}
+                        </p>
                         {% endif %}
 
-                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn-action">
-                            <i class="bi bi-eye"></i> Ver detalle
-                        </a>
+                        <!-- Fechas Límite y Asignación -->
+                        <div class="d-flex flex-column gap-1 text-muted small mb-3">
+                            <span>
+                                <i class="bi bi-calendar-event me-1"></i> Límite: <strong class="text-dark">{{ tarea.fecha_limite|date:"Y-m-d" }}</strong>
+                            </span>
+                            <span>
+                                <i class="bi bi-clock-history me-1"></i> Asignada: <strong class="text-dark">{{ tarea.fecha_asignacion|date:"d/m/Y" }}</strong>
+                            </span>
+                        </div>
                     </div>
+
+                    <!-- Footer de la Tarjeta: Botones Rápidos -->
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto gap-2">
+                        
+                        <!-- 1. CASO PENDIENTE -->
+                        {% if tarea.estado == 'PENDIENTE' %}
+                            <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    <i class="bi bi-play-fill me-1"></i> En progreso
+                                </button>
+                            </form>
+
+                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate rounded-pill px-3">
+                                <i class="bi bi-eye me-1"></i> Detalle
+                            </a>
+
+                        <!-- 2. CASO EN PROGRESO -->
+                        {% elif tarea.estado == 'EN_PROGRESO' %}
+                            <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                                    <i class="bi bi-check-lg me-1"></i> Finalizar
+                                </button>
+                            </form>
+
+                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate rounded-pill px-3">
+                                <i class="bi bi-eye me-1"></i> Detalle
+                            </a>
+
+                        <!-- 3. CASO FINALIZADA -->
+                        {% else %}
+                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate rounded-pill px-3 w-100 text-center">
+                                <i class="bi bi-eye me-1"></i> Ver detalle
+                            </a>
+                        {% endif %}
+
+                    </div>
+
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <div class="alert alert-light text-center">No hay tareas con el filtro seleccionado.</div>
+            <div class="col-12">
+                <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
+                    <i class="bi bi-inbox fs-3 d-block text-muted mb-2"></i>
+                    No hay tareas con el filtro seleccionado.
+                </div>
+            </div>
         {% endif %}
     </div>
 

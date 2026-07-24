@@ -58,8 +58,7 @@
     color: white;
 }
 
-
-.btn-outline-corporate  {
+.btn-outline-corporate {
     background: white;
     border: 1px solid #a40706;
     border-radius: 10px;
@@ -84,13 +83,41 @@
     padding: 1.2rem;
     margin-bottom: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid #EDF2F7;
+    
+    /* CORRECCIÓN DE SUPERPOSICIÓN Y CORTE DE MENÚS */
+    overflow: visible !important;
+    position: relative;
 }
 
 .task-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Eleva la tarjeta sobre las demás cuando su menú está abierto */
+.task-card:has(.dropdown-menu.show) {
+    z-index: 100;
+}
+
+/* Menú de Opciones Tres Puntos */
+.dropdown-menu {
+    border-radius: 14px !important;
+    border: 1px solid #EDF2F7 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.5rem 0 !important;
+    min-width: 155px;
+}
+
+.dropdown-item {
+    padding: 0.55rem 1rem !important;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #F8FAFC;
 }
 
 .card-header {
@@ -146,12 +173,91 @@
 }
 
 /* Filtros */
-.filters-bar {
+.novedades-tabs {
     background: white;
     border-radius: 60px;
-    padding: 0.3rem;
+    padding: 0.4rem 0.6rem;
     display: inline-flex;
-    margin-bottom: 1.5rem;
+    gap: 0.3rem;
+    border: 1px solid #EDF2F7;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.novedades-tab {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 40px;
+    transition: all 0.2s ease;
+    color: #475569;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.novedades-tab i {
+    margin-right: 6px;
+    font-size: 0.95rem;
+    line-height: 1;
+    display: inline-block;
+}
+
+.novedades-tab:hover:not(.active) {
+    background-color: #f8f9fa;
+    color: #1e293b;
+}
+
+.novedades-tab.active {
+    background: #A40706;
+    color: white !important;
+}
+
+/* Buscador */
+.search-input-group {
+    background: white;
+    border-radius: 40px;
+    border: 1px solid #E9ECF3;
+    padding: 0.25rem 0.5rem 0.25rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.search-input-group:focus-within {
+    border-color: #A40706;
+    box-shadow: 0 0 0 0.25rem rgba(164, 7, 6, 0.15);
+}
+
+.search-input-group .search-input {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #475569;
+    outline: none;
+    width: 100%;
+}
+
+.search-input-group .btn-search-addon {
+    border: none;
+    background: transparent;
+    color: #475569;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.search-input-group .btn-search-addon:hover {
+    background-color: #F1F5F9;
+    color: #A40706;
 }
 
 /* Toast */
@@ -164,6 +270,6 @@
 
 .text-title {
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: #a40706;
 }

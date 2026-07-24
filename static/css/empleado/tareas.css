@@ -26,30 +26,113 @@
     font-weight: 700;
 }
 
-/* Filtros */
-.filter-bar {
+.btn-outline-corporate  {
     background: white;
-    border-radius: 60px;
-    padding: 0.3rem;
-    display: inline-flex;
-    margin-bottom: 1.5rem;
-    border: 1px solid #EDF2F7;
-}
-
-.filter-btn {
-    border-radius: 40px;
-    padding: 0.4rem 1.2rem;
+    border: 1px solid #a40706;
+    border-radius: 10px;
+    padding: 0.4rem 1rem;
+    transition: 0.3s;
+    text-decoration: none;
+    font-size: 0.8rem;
     font-weight: 500;
-    transition: 0.2s;
+    color: #a40706;
 }
 
-.filter-btn.active {
+.btn-outline-corporate:hover {
+    background: #A40706;
+    color: white;
+    border-color: #A40706;
+}
+
+/* Filtros */
+.novedades-tabs {
+    background: white;
+    border-radius: 60px; /* Redondeado idéntico al buscador */
+    padding: 0.4rem 0.6rem;
+    display: inline-flex;
+    gap: 0.3rem;
+    border: 1px solid #EDF2F7;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.novedades-tab {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 40px;
+    transition: all 0.2s ease;
+    color: #475569;
+    text-decoration: none;
+    
+    /* Centrado vertical perfecto de texto + icono */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.novedades-tab i {
+    margin-right: 6px;
+    font-size: 0.95rem;
+    line-height: 1;
+    display: inline-block;
+}
+
+.novedades-tab:hover:not(.active) {
+    background-color: #f8f9fa;
+    color: #1e293b;
+}
+
+.novedades-tab.active {
     background: #A40706;
     color: white !important;
 }
 
-.filter-btn:not(.active):hover {
-    background: #f8f9fa;
+
+/* Estilo para el Buscador (Coincide con la estética de .novedades-tabs) */
+.search-input-group {
+    background: white;
+    border-radius: 40px; /* Mismo redondeo suave que las pestañas */
+    border: 1px solid #E9ECF3;
+    padding: 0.25rem 0.5rem 0.25rem 1rem;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.search-input-group:focus-within {
+    border-color: #A40706;
+    box-shadow: 0 0 0 0.25rem rgba(164, 7, 6, 0.15);
+}
+
+.search-input-group .search-input {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #475569;
+    outline: none;
+    width: 100%;
+}
+
+.search-input-group .btn-search-addon {
+    border: none;
+    background: transparent;
+    color: #475569;
+    padding: 0.4rem 0.8rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.search-input-group .btn-search-addon:hover {
+    background-color: #F1F5F9;
+    color: #A40706;
 }
 
 /* Tarjetas de tareas */
