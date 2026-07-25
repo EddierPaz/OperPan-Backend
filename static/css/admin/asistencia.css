@@ -266,3 +266,14 @@
 .accordion-body{
     border-top:1px solid #ececec;
 }
+
+@media (max-width: 768px) {
+.accordion-button{
+    grid-template-columns: 1fr auto;
+}
+.turno-badge{
+    position: static;
+    transform: none;
+    margin-left: 10px;
+}
+}

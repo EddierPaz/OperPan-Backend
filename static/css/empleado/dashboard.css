@@ -81,22 +81,9 @@
         margin-left: 0;
     }
 
-    .menu-toggle {
-        display: block;
-        background: black;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        margin-right: 1rem;
-        border-radius: 12px;
-    }
+    
 }
 
-@media (min-width: 993px) {
-    .menu-toggle {
-        display: none;
-    }
-}
 
 footer {
     text-align: center;
@@ -126,3 +113,4 @@ footer {
     border-radius: 40px;
     padding: 0.4rem 1rem;
 }
+

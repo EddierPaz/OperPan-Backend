@@ -217,7 +217,7 @@ class PerfilEmpleado(models.Model):
         ).strip()
 
     def __str__(self):
-        return  f'{self.nombre_completo()} {self.cargo} '
+        return  f'{self.nombre_completo()} {self.cargo}'
     
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reset_tokens')

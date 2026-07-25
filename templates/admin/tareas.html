@@ -138,7 +138,7 @@
                                 {% elif tarea.prioridad == 'MEDIA' %}
                                     <i class="bi bi-flag-fill text-warning fs-6" title="Media prioridad"></i>
                                 {% else %}
-                                    <i class="bi bi-flag-fill text-secondary fs-6" title="Baja prioridad"></i>
+                                    <i class="bi bi-flag-fill text-success fs-6" title="Baja prioridad"></i>
                                 {% endif %}
 
                                 <h5 class="text-title fw-bold m-0 text-truncate" title="{{ tarea.titulo }}">
@@ -199,7 +199,7 @@
 
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                                 <li>
-                                    <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
+                                    <a class="dropdown-item  small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
                                         <i class="bi bi-eye text-secondary"></i> Ver detalles
                                     </a>
                                 </li>
