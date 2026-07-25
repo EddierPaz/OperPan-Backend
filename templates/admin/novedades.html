@@ -14,18 +14,28 @@
 <main class="dashboard-container">
     <!-- Pestañas principales -->
     <div class="novedades-tabs d-flex align-items-center">
+
         <button class="novedades-tab active" data-tab="permisos">
             <i class="bi bi-file-earmark-text"></i> Permisos
         </button>
+
         <button class="novedades-tab" data-tab="incapacidades">
             <i class="bi bi-clipboard2-pulse"></i> Incapacidades
         </button>
+
         <button class="novedades-tab" data-tab="certificados">
             <i class="bi bi-award"></i> Certificados
         </button>
+
+        <!-- NUEVO -->
+        <button class="novedades-tab" data-tab="memorandos">
+            <i class="bi bi-file-pdf"></i> Memorandos
+        </button>
+
         <span class="card-header small ms-auto">
             {{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}
         </span>
+
     </div>
 
 
@@ -46,7 +56,7 @@
 
     <!-- ==================== PESTAÑA MEMORANDOS ==================== -->
     <div id="tabMemorandos" class="tab-pane">
-        {% include "admin/novedades/memorandos/content.html" %}
+        {% include "admin/memorandos/content.html" %}
     </div>
 </main>
 
@@ -60,12 +70,13 @@
 {% include "admin/novedades/certificados/modals.html" %}
 
 <!-- MODALES PARA MEMORANDOS -->
-{% include "admin/novedades/memorandos/modals.html" %}
+{% include "admin/memorandos/modals.html" %}
 
 <!-- Toast -->
 <div class="toast-message" id="liveToast" style="display:none;">
     <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
-        <div class="d-flex gap-2"><i class="bi bi-info-circle-fill text-danger fs-5"></i><span id="toastMsg"></span></div>
+        <div class="d-flex gap-2"><i class="bi bi-info-circle-fill text-danger fs-5"></i><span id="toastMsg"></span>
+        </div>
     </div>
 </div>
 

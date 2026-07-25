@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.login',
     'apps.novedades',
+    'apps.memorandos',
     'apps.asistencia',
     'apps.tareas',
 ]
