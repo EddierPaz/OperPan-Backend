@@ -27,11 +27,16 @@
 }
 
 .badge-role {
-    background: #A40706;
+    background: rgba(255, 255, 255, 0.2);
     color: white;
-    padding: 0.3rem 1rem;
+    padding: 0.4rem 1rem;
     border-radius: 40px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: inline-flex;
+    align-items: center;
 }
 
 
