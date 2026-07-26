@@ -2,7 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.inicio, name='index'),
+    # La vista 'inicio' se mueve a '/inicio/' para no ocupar la raíz
+    path('inicio/', views.inicio, name='index'),
+
+    # Rutas de autenticación (sin cambios)
     path('auth/login/', views.login_view, name='login'),
     path('auth/logout/', views.logout_view, name='logout'),
     path('recuperar/contrasena/', views.password_reset_documento, name='password_reset_documento'),
