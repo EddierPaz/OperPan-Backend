@@ -354,3 +354,25 @@
     justify-content: center;
   }
 }
+
+/* Sobrescribií icono-circular para panel de empleado - sin fondo circular  azul */
+.icono-circular {
+    background-color: transparent !important;
+}
+
+/* Botón primario corporativo - mismo estilo que en tareas- Para el botón ver mes completo */
+.btn-primary-corporate {
+    background: #A40706;
+    color: white;
+    border: 1px solid #A40706;
+    padding: 0.6rem 1.5rem;
+    border-radius: 40px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-primary-corporate:hover {
+    background: #8a0504;
+    color: white;
+    transform: translateY(-2px);
+}

@@ -108,11 +108,13 @@
 /* Estilos de botones corporativos (complemento a style.css) */
 .btn-primary-corporate, .btn-primary {
     background: #A40706 !important;
-    border-color: #A40706 !important;
+    border-color: #A40706 !important; 
+    color: white !important;
 }
 .btn-primary-corporate:hover, .btn-primary:hover {
     background: #8a0504 !important;
-    border-color: #8a0504 !important;
+    border-color: #8a0504 !important; 
+    color: white !important;
 }
 .btn-outline-corporate {
     transition: all 0.2s ease;
