@@ -34,7 +34,8 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1 gap-1 mb-3 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#accede">Accede</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#desarrolladores">Desarrolladores</a></li>
                     <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
                         <a class="nav-link btn-nav-login" href="{% url 'login' %}">
                             <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
@@ -53,85 +54,67 @@
         <div class="container">
             <div class="row align-items-center g-5">
 
-            <!-- Columna izquierda -->
-            <div class="col-lg-6 fade-in">
+                <!-- Columna izquierda -->
+                <div class="col-lg-6 fade-in">
+                    <h1 class="hero-title">
+                        Bienvenido a<br /><span>OperPan</span>
+                    </h1>
 
-                <h1 class="hero-title">
-                Bienvenido a<br /><span>OperPan</span>
-                </h1>
+                    <p class="hero-subtitle">
+                        Sistema de gestión de personal y recursos humanos diseñado para <strong>Estación Paisa</strong>.
+                    </p>
 
-                <p class="hero-subtitle">
-                Sistema de gestión de personal y recursos humanos diseñado para <strong>Estación Paisa</strong>.
-                </p>
+                    <ul class="hero-desc list-unstyled">
+                        <li><i class="bi bi-check-circle-fill"></i>Automatización de procesos administrativos</li>
+                        <li><i class="bi bi-check-circle-fill"></i>Gestión integral de empleados y horarios</li>
+                        <li><i class="bi bi-check-circle-fill"></i>Control de asistencia y permisos</li>
+                        <li><i class="bi bi-check-circle-fill"></i>Comunicación interna y organizacional</li>
+                        <li><i class="bi bi-check-circle-fill"></i>Centralización y trazabilidad de información</li>
+                    </ul>
 
-                <ul class="hero-desc list-unstyled">
-                <li><i class="bi bi-check-circle-fill"></i>Automatización de procesos administrativos</li>
-                <li><i class="bi bi-check-circle-fill"></i>Gestión integral de empleados y horarios</li>
-                <li><i class="bi bi-check-circle-fill"></i>Control de asistencia y permisos</li>
-                <li><i class="bi bi-check-circle-fill"></i>Comunicación interna y organizacional</li>
-                <li><i class="bi bi-check-circle-fill"></i>Centralización y trazabilidad de información</li>
-                </ul>
-
-                <div class="d-flex flex-wrap gap-3">
-                <a href="./Pages/login.html" class="btn-primary-red">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    Acceder al sistema
-                </a>
-                <a href="#funcionalidades" class="btn-outline-dark-custom">
-                    <i class="bi bi-grid-3x3-gap"></i>
-                    Conocer funcionalidades
-                </a>
-                </div>
-
-                <div class="hero-badges">
-                <span class="hero-badge"><i class="bi bi-clock"></i>Gestión de horarios</span>
-                <span class="hero-badge"><i class="bi bi-person-check"></i>Control de asistencia</span>
-                <span class="hero-badge"><i class="bi bi-file-earmark-text"></i>Permisos</span>
-                <span class="hero-badge"><i class="bi bi-bar-chart"></i>Reportes</span>
-                <span class="hero-badge"><i class="bi bi-clipboard-data"></i>Auditoría</span>
-                <span class="hero-badge"><i class="bi bi-lock"></i>Seguridad</span>
-                </div>
-            </div>
-
-            <!-- Columna derecha -->
-            <!-- Carrusel Imagenes -->
-
-            <div class="col-lg-6 fade-in">
-                <div id="heroCarousel" class="carousel slide hero-img-wrap" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="{% static '../static/img/homepage/01-solicitudes.png' %}" class="d-block w-100"
-                                alt="Administrador gestionando personal en panadería">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="{% static '../static/img/homepage/02-dashboard.png' %}" class="d-block w-100"
-                                alt="Servicio al cliente en panadería">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="{% static '../static/img/homepage/03-asistencia.png' %}" class="d-block w-100"
-                                alt="Gestión de empleados">
-                        </div>
+                    <div class="hero-badges">
+                        <span class="hero-badge"><i class="bi bi-clock"></i>Gestión de horarios</span>
+                        <span class="hero-badge"><i class="bi bi-person-check"></i>Control de asistencia</span>
+                        <span class="hero-badge"><i class="bi bi-file-earmark-text"></i>Permisos</span>
+                        <span class="hero-badge"><i class="bi bi-bar-chart"></i>Reportes</span>
+                        <span class="hero-badge"><i class="bi bi-clipboard-data"></i>Auditoría</span>
+                        <span class="hero-badge"><i class="bi bi-lock"></i>Seguridad</span>
                     </div>
+                </div>
 
-                    <div class="hero-img-overlay">
-                        <div class="ov-icon"><i class="bi bi-people-fill"></i></div>
-                        <div class="ov-text">
-                            <div class="label">TIENDA EN MARCHA</div>
-                            <div class="value">55 empleados</div>
+                <!-- Columna derecha: Carrusel vertical -->
+                <div class="col-lg-6 fade-in">
+                    <div class="hero-carousel-vertical" id="heroCarouselVertical">
+                        <div class="carousel-slides">
+                            <div class="slide active">
+                                <img src="{% static 'img/homepage/01-solicitudes.png' %}" alt="Administrador gestionando personal">
+                            </div>
+                            <div class="slide">
+                                <img src="{% static 'img/homepage/02-dashboard.png' %}" alt="Servicio al cliente">
+                            </div>
+                            <div class="slide">
+                                <img src="{% static 'img/homepage/03-asistencia.png' %}" alt="Gestión de empleados">
+                            </div>
+                        </div>
+                        <div class="hero-img-overlay">
+                            <div class="ov-icon"><i class="bi bi-people-fill"></i></div>
+                            <div class="ov-text">
+                                <div class="label">TIENDA EN MARCHA</div>
+                                <div class="value">55 empleados</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-    </div>
     </section>
 
 
     <!-- ══════════════════════════════════════
-         FUNCIONALIDADES (ACCIONES)
+         ACCIONES DISPONIBLES — BANDA INFINITA
     ═════════════════════════════════════════ -->
-    <section id="funcionalidades">
+    <section id="acciones">
         <div class="container">
             <div class="row justify-content-center mb-5">
                 <div class="col-lg-7 text-center fade-in">
@@ -143,47 +126,93 @@
                 </div>
             </div>
 
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4 fade-in">
-                    <div class="func-card">
-                        <div class="fc-icon"><i class="bi bi-clock-history"></i></div>
-                        <h5>Consulta de asistencia</h5>
-                        <p>Visualiza tus registros de entrada y salida, y lleva un control de tu puntualidad.</p>
+            <div class="infinite-band-wrapper fade-in">
+                <div class="infinite-band">
+                    <!-- Primera tanda de cards (se duplicará con CSS) -->
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-clock-history"></i></div>
+                        <div class="band-card-content">
+                            <h5>Consulta de asistencia</h5>
+                            <p>Visualiza tus registros de entrada y salida.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-4 fade-in">
-                    <div class="func-card">
-                        <div class="fc-icon"><i class="bi bi-file-earmark-check"></i></div>
-                        <h5>Gestión de solicitudes</h5>
-                        <p>Solicita permisos, vacaciones, incapacidades y cambios de turno de manera ágil.</p>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-file-earmark-check"></i></div>
+                        <div class="band-card-content">
+                            <h5>Gestión de solicitudes</h5>
+                            <p>Solicita permisos, vacaciones y cambios de turno.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-4 fade-in">
-                    <div class="func-card">
-                        <div class="fc-icon"><i class="bi bi-download"></i></div>
-                        <h5>Descarga de certificados</h5>
-                        <p>Obtén tus certificados laborales y constancias directamente desde la plataforma.</p>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-download"></i></div>
+                        <div class="band-card-content">
+                            <h5>Descarga de certificados</h5>
+                            <p>Obtén tus certificados laborales y constancias.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-4 fade-in">
-                    <div class="func-card">
-                        <div class="fc-icon"><i class="bi bi-list-task"></i></div>
-                        <h5>Tareas asignadas</h5>
-                        <p>Consulta y reporta el avance de tus tareas diarias de forma sencilla.</p>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-list-task"></i></div>
+                        <div class="band-card-content">
+                            <h5>Tareas asignadas</h5>
+                            <p>Consulta y reporta el avance de tus tareas.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-4 fade-in">
-                    <div class="func-card">
-                        <div class="fc-icon"><i class="bi bi-person-gear"></i></div>
-                        <h5>Actualización de datos</h5>
-                        <p>Mantén tu información personal y de contacto siempre actualizada.</p>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-person-gear"></i></div>
+                        <div class="band-card-content">
+                            <h5>Actualización de datos</h5>
+                            <p>Mantén tu información personal actualizada.</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-4 fade-in">
-                    <div class="func-card">
-                        <div class="fc-icon"><i class="bi bi-bar-chart-fill"></i></div>
-                        <h5>Indicadores y reportes</h5>
-                        <p>Accede a métricas y reportes adaptados a tu perfil para un mejor seguimiento.</p>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                        <div class="band-card-content">
+                            <h5>Indicadores y reportes</h5>
+                            <p>Accede a métricas adaptadas a tu perfil.</p>
+                        </div>
+                    </div>
+                    <!-- Se duplicarán con CSS mediante pseudo-elementos o duplicación en HTML (usaremos duplicación en HTML para mejor control) -->
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-clock-history"></i></div>
+                        <div class="band-card-content">
+                            <h5>Consulta de asistencia</h5>
+                            <p>Visualiza tus registros de entrada y salida.</p>
+                        </div>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-file-earmark-check"></i></div>
+                        <div class="band-card-content">
+                            <h5>Gestión de solicitudes</h5>
+                            <p>Solicita permisos, vacaciones y cambios de turno.</p>
+                        </div>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-download"></i></div>
+                        <div class="band-card-content">
+                            <h5>Descarga de certificados</h5>
+                            <p>Obtén tus certificados laborales y constancias.</p>
+                        </div>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-list-task"></i></div>
+                        <div class="band-card-content">
+                            <h5>Tareas asignadas</h5>
+                            <p>Consulta y reporta el avance de tus tareas.</p>
+                        </div>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-person-gear"></i></div>
+                        <div class="band-card-content">
+                            <h5>Actualización de datos</h5>
+                            <p>Mantén tu información personal actualizada.</p>
+                        </div>
+                    </div>
+                    <div class="band-card">
+                        <div class="band-card-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                        <div class="band-card-content">
+                            <h5>Indicadores y reportes</h5>
+                            <p>Accede a métricas adaptadas a tu perfil.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -192,25 +221,216 @@
 
 
     <!-- ══════════════════════════════════════
-         CTA FINAL
+         ACCEDE A OPERPAN (REDISEÑO)
     ═════════════════════════════════════════ -->
-    <section id="cta">
-        <div class="container position-relative" style="z-index:1;">
-            <div class="row d-flex flex-md-row justify-content-between fade-in gap-3">
-                <div class="col-lg-4 m-3">
-                    <iframe
+    <section id="accede">
+        <div class="accede-bg">
+            <div class="accede-image">
+                <img src="{% static 'img/estacion-paisa.png' %}" alt="Estación Paisa">
+            </div>
+            <div class="accede-gris"></div>
+        </div>
+
+        <div class="container accede-container">
+            <div class="accede-card fade-in">
+                <div class="row g-0">
+                    <!-- Columna izquierda: información institucional -->
+                    <div class="col-lg-6 accede-info">
+                        <h3>Estación Paisa</h3>
+                        <p class="accede-desc">
+                            Panadería y pastelería con más de 10 años de experiencia en Soacha, comprometida con la calidad y el servicio.
+                        </p>
+                        <ul class="accede-contact">
+                            <li><i class="bi bi-geo-alt"></i> Cra. 10 # 12-34, Soacha, Colombia</li>
+                            <li><i class="bi bi-telephone"></i> +57 300 123 4567</li>
+                            <li><i class="bi bi-clock"></i> Lunes a sábado: 6:00 am – 9:00 pm</li>
+                            <li><i class="bi bi-envelope"></i> contacto@estacionpaisa.com</li>
+                        </ul>
+                        <p class="accede-institucional">
+                            <strong>OperPan</strong> es la plataforma institucional utilizada para gestionar los procesos del personal de Estación Paisa.
+                        </p>
+                    </div>
+                    <!-- Columna derecha: mapa -->
+                    <div class="col-lg-6 accede-mapa">
+                        <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63632.40422203654!2d-74.23869908823555!3d4.58948908400435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9fcb51510d31%3A0xe441f492025f971!2sESTACI%C3%93N%20PAISA!5e0!3m2!1ses-419!2sco!4v1779797277338!5m2!1ses-419!2sco"
                         width="600" height="340" style="border:0;border-radius:5px;" allowfullscreen="" loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════
+         DESARROLLADORES DE OPERPAN
+    ═════════════════════════════════════════ -->
+    <section id="desarrolladores">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-7 text-center fade-in">
+                    <div class="section-label justify-content-center">Equipo</div>
+                    <h2 class="section-title">Desarrolladores de OperPan</h2>
+                    <p class="section-desc mx-auto">
+                        OperPan fue desarrollado por aprendices ADSO del SENA para apoyar la gestión del personal de Estación Paisa.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Desktop: tarjetas expansivas -->
+            <div class="team-cards-desktop d-none d-lg-flex fade-in">
+                <!-- Tarjeta 1: Eddier -->
+                <div class="team-card" data-member="eddier">
+                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/eddier-paz.png' %}');"></div>
+                    <div class="team-card-content">
+                        <h4>Eddier Antonio Paz Pardo</h4>
+                        <p class="team-role">Líder del Proyecto y Desarrollador de Software</p>
+                        <p class="team-desc">
+                            Responsable de coordinar el desarrollo de OperPan y mantener la comunicación entre Estación Paisa y el equipo de desarrollo. Participó en la construcción de la arquitectura del sistema, el desarrollo de funcionalidades principales y la planificación técnica del proyecto.
+                        </p>
+                        <ul class="team-contributions">
+                            <li>Liderazgo del proyecto.</li>
+                            <li>Coordinación con Estación Paisa.</li>
+                            <li>Desarrollo Backend y Frontend.</li>
+                            <li>Diseño de la arquitectura del sistema.</li>
+                            <li>Desarrollo de funcionalidades principales.</li>
+                        </ul>
+                        <p class="team-email"><i class="bi bi-envelope"></i> EddierPaz9@gmail.com</p>
+                    </div>
+                    <div class="team-card-footer">
+                        <span>“Comprometidos con la excelencia”</span>
+                    </div>
                 </div>
 
-                <div class="col-lg-6 m-3 d-flex align-items-center justify-content-center flex-column">
-                    <h2>Accede a OperPan</h2>
-                    <p>Gestiona tu información laboral y optimiza tu día a día con nuestra plataforma institucional.</p>
-                    <a href="{% url 'login' %}" class="btn-cta">
-                        <i class="bi bi-box-arrow-in-right"></i>
-                        Iniciar sesión
-                    </a>
+                <!-- Tarjeta 2: Santiago -->
+                <div class="team-card" data-member="santiago">
+                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/santiago-hernandez.png' %}');"></div>
+                    <div class="team-card-content">
+                        <h4>Santiago Muñeton Hernández</h4>
+                        <p class="team-role">Desarrollador de Software</p>
+                        <p class="team-desc">
+                            Participó en el desarrollo integral de OperPan con un enfoque especial en la experiencia de usuario y el diseño de interfaces. También apoyó el análisis de información, la organización de la documentación técnica y el desarrollo de diferentes módulos del sistema.
+                        </p>
+                        <ul class="team-contributions">
+                            <li>Desarrollo Frontend y Backend.</li>
+                            <li>Diseño de interfaces.</li>
+                            <li>Organización de documentación técnica.</li>
+                            <li>Análisis de información.</li>
+                            <li>Mejora de la experiencia de usuario.</li>
+                        </ul>
+                        <p class="team-email"><i class="bi bi-envelope"></i> santiagoencodigo@gmail.com</p>
+                    </div>
+                    <div class="team-card-footer">
+                        <span>“Innovación y calidad”</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 3: Paula -->
+                <div class="team-card" data-member="paula">
+                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/paula-herrera.png' %}');"></div>
+                    <div class="team-card-content">
+                        <h4>Paula Andrea Herrera Carrillo</h4>
+                        <p class="team-role">Desarrolladora de Software</p>
+                        <p class="team-desc">
+                            Participó en el desarrollo de interfaces de OperPan, colaboró en la implementación de funcionalidades del sistema y apoyó activamente la documentación del proyecto para fortalecer la organización del proceso de desarrollo.
+                        </p>
+                        <ul class="team-contributions">
+                            <li>Desarrollo Frontend y Backend.</li>
+                            <li>Implementación de funcionalidades.</li>
+                            <li>Organización documental.</li>
+                            <li>Apoyo técnico al desarrollo.</li>
+                            <li>Colaboración en el proyecto.</li>
+                        </ul>
+                        <p class="team-email"><i class="bi bi-envelope"></i> pandreaherrera01@gmail.com</p>
+                    </div>
+                    <div class="team-card-footer">
+                        <span>“Trabajo en equipo”</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile: acordeón -->
+            <div class="team-accordion d-lg-none fade-in">
+                <div class="accordion" id="teamAccordion">
+                    <!-- Eddier -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEddier">
+                                <img src="{% static 'img/team/eddier-paz.png' %}" alt="Eddier Paz" class="accordion-avatar">
+                                <span class="accordion-name">Eddier Antonio Paz Pardo</span>
+                            </button>
+                        </h2>
+                        <div id="collapseEddier" class="accordion-collapse collapse" data-bs-parent="#teamAccordion">
+                            <div class="accordion-body">
+                                <p class="team-role">Líder del Proyecto y Desarrollador de Software</p>
+                                <p>Responsable de coordinar el desarrollo de OperPan y mantener la comunicación entre Estación Paisa y el equipo de desarrollo. Participó en la construcción de la arquitectura del sistema, el desarrollo de funcionalidades principales y la planificación técnica del proyecto.</p>
+                                <ul class="team-contributions">
+                                    <li>Liderazgo del proyecto.</li>
+                                    <li>Coordinación con Estación Paisa.</li>
+                                    <li>Desarrollo Backend y Frontend.</li>
+                                    <li>Diseño de la arquitectura del sistema.</li>
+                                    <li>Desarrollo de funcionalidades principales.</li>
+                                </ul>
+                                <p class="team-email"><i class="bi bi-envelope"></i> EddierPaz9@gmail.com</p>
+                                <div class="team-card-footer">
+                                    <span>“Comprometidos con la excelencia”</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Santiago -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSantiago">
+                                <img src="{% static 'img/team/santiago-hernandez.png' %}" alt="Santiago Muñeton" class="accordion-avatar">
+                                <span class="accordion-name">Santiago Muñeton Hernández</span>
+                            </button>
+                        </h2>
+                        <div id="collapseSantiago" class="accordion-collapse collapse" data-bs-parent="#teamAccordion">
+                            <div class="accordion-body">
+                                <p class="team-role">Desarrollador de Software</p>
+                                <p>Participó en el desarrollo integral de OperPan con un enfoque especial en la experiencia de usuario y el diseño de interfaces. También apoyó el análisis de información, la organización de la documentación técnica y el desarrollo de diferentes módulos del sistema.</p>
+                                <ul class="team-contributions">
+                                    <li>Desarrollo Frontend y Backend.</li>
+                                    <li>Diseño de interfaces.</li>
+                                    <li>Organización de documentación técnica.</li>
+                                    <li>Análisis de información.</li>
+                                    <li>Mejora de la experiencia de usuario.</li>
+                                </ul>
+                                <p class="team-email"><i class="bi bi-envelope"></i> santiagoencodigo@gmail.com</p>
+                                <div class="team-card-footer">
+                                    <span>“Innovación y calidad”</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Paula -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePaula">
+                                <img src="{% static 'img/team/paula-herrera.png' %}" alt="Paula Herrera" class="accordion-avatar">
+                                <span class="accordion-name">Paula Andrea Herrera Carrillo</span>
+                            </button>
+                        </h2>
+                        <div id="collapsePaula" class="accordion-collapse collapse" data-bs-parent="#teamAccordion">
+                            <div class="accordion-body">
+                                <p class="team-role">Desarrolladora de Software</p>
+                                <p>Participó en el desarrollo de interfaces de OperPan, colaboró en la implementación de funcionalidades del sistema y apoyó activamente la documentación del proyecto para fortalecer la organización del proceso de desarrollo.</p>
+                                <ul class="team-contributions">
+                                    <li>Desarrollo Frontend y Backend.</li>
+                                    <li>Implementación de funcionalidades.</li>
+                                    <li>Organización documental.</li>
+                                    <li>Apoyo técnico al desarrollo.</li>
+                                    <li>Colaboración en el proyecto.</li>
+                                </ul>
+                                <p class="team-email"><i class="bi bi-envelope"></i> pandreaherrera01@gmail.com</p>
+                                <div class="team-card-footer">
+                                    <span>“Trabajo en equipo”</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,7 +446,7 @@
 
                 <div class="col-lg-4 col-md-6">
                     <div class="footer-brand">
-                        <img src="../static/img/l.png" alt="" style="width:150px; height:110px;">
+                        <img src="{% static 'img/l.png' %}" alt="OperPan" style="width:150px; height:110px;">
                     </div>
                 </div>
 
@@ -234,7 +454,8 @@
                     <h6>Navegación</h6>
                     <ul>
                         <li><i class="bi bi-chevron-right"></i><a href="#inicio" class="nav-link_footer">Inicio</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#funcionalidades" class="nav-link_footer">Funcionalidades</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#accede" class="nav-link_footer">Accede</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#desarrolladores" class="nav-link_footer">Desarrolladores</a></li>
                         <li><i class="bi bi-chevron-right"></i><a href="{% url 'login' %}" class="nav-link_footer">Iniciar sesión</a></li>
                     </ul>
                 </div>

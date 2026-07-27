@@ -1,13 +1,16 @@
-"""
-URL configuration for config project.
-"""
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView  # ← Importante
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Homepage: se sirve en la raíz
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+
+    # Rutas de las apps
     path('', include("apps.login.urls")),
     path('', include("apps.usuarios.urls")),
     path('novedades/', include('apps.novedades.urls')),
