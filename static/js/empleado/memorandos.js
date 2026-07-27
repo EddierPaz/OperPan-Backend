@@ -22,7 +22,7 @@
     // Cargar memorandos del empleado
     async function cargarMisMemorandos() {
         try {
-            const resp = await fetch('/novedades/memorandos/mis/');
+            const resp = await fetch('/memorandos/mis/');
             if (!resp.ok) {
                 throw new Error('Error al cargar los memorandos');
             }
@@ -43,7 +43,7 @@
 
             tbody.innerHTML = data.map(m => {
                 const btnDescarga = m.archivo_pdf 
-                    ? `<a href="/novedades/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF">
+                    ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF">
                         <i class="bi bi-download"></i> Descargar
                        </a>`
                     : `<span class="text-muted"><i class="bi bi-file-earmark-pdf"></i> No disponible</span>`;

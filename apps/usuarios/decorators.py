@@ -30,3 +30,13 @@ def empleado_required(view_func):
             return redirect("login")
         return view_func(request, *args, **kwargs)
     return wrapper
+
+def empleado_required_json(view_func):
+    def wrapper(request, *args, **kwargs):
+        if request.user.rol != "empleado":
+            return JsonResponse(
+                {'error': 'No tienes permisos para realizar esta acción.'},
+                status=403
+            )
+        return view_func(request, *args, **kwargs)
+    return wrapper

@@ -5,7 +5,7 @@ from django.http import FileResponse, HttpResponseForbidden, Http404, JsonRespon
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from apps.usuarios.decorators import admin_required_json as admin_required
-from apps.usuarios.decorators import empleado_required
+from apps.usuarios.decorators import empleado_required, empleado_required_json
 from .models import Memorando
 from .forms import MemorandoForm, MemorandoFiltroForm
 from .pdfs import generar_pdf_memorando
@@ -117,10 +117,13 @@ def memorandos_empleado(request):
 
 
 @login_required
-@empleado_required
+@empleado_required_json
 def mis_memorandos_api(request):
     """API para que el empleado obtenga sus propios memorandos (JSON)."""
-    perfil = request.user.perfil
+    perfil = getattr(request.user, 'perfil', None)
+    if perfil is None:
+        return JsonResponse({'error': 'No se encontró un perfil de empleado para este usuario.'}, status=404)
+
     memorandos = Memorando.objects.filter(
         empleado=perfil,
         estado='emitido'
@@ -152,7 +155,7 @@ def memorando_descargar(request, pk):
 
     perfil = getattr(request.user, 'perfil', None)
     es_dueño = perfil is not None and memorando.empleado_id == perfil.id
-    es_admin = request.user.is_staff or request.user.is_superuser
+    es_admin = request.user.rol == "admin" or request.user.is_staff or request.user.is_superuser
 
     if not (es_dueño or es_admin):
         return HttpResponseForbidden('No tienes permiso para descargar este memorando.')

@@ -7,6 +7,10 @@
     padding: 2rem;
 }
 
+.card-header {
+    font-weight: 700;
+}
+
 /* Tarjetas de resumen (KPIs) */
 .stat-card {
     background: white;
