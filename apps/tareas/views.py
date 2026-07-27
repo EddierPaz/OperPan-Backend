@@ -237,6 +237,7 @@ def empleado_tareas_list(request):
             pass
 
     context = {
+        'fecha_hoy': timezone.now().date(),
         'tareas': tareas,
         'kpis': kpis,
         'estado_filtro': estado_filtro,

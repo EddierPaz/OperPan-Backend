@@ -3,7 +3,7 @@
 
 {% block title %}OperPan | Mis Tareas{% endblock %}
 
-{% block section_title %}Centro de control laboral{% endblock %}
+{% block section_title %}Mis tareas{% endblock %}
 {% block section_subtitle %}Panel del Empleado{% endblock %}
 
 {% block active_tareas %}active{% endblock %}
@@ -14,7 +14,10 @@
 
 {% block content %}
 <div class="dashboard-container">
-
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas</h3>
+        <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
+    </div>
     <!-- ==================== KPIs ==================== -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">

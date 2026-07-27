@@ -1,4 +1,8 @@
 <!-- KPIs de memorandos -->
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <h3><i class="bi bi-calendar-check me-2"></i>Memorandos emitidos</h3>
+</div>
+
 <div class="row g-3 mb-4">
     <div class="col-md-4 col-6">
         <div class="kpi-card">
@@ -23,14 +27,13 @@
 </div>
 
 <!-- Formulario -->
+<div class="card-header">
+    <h3 class="mb-0">
+        <i class="bi bi-plus-circle me-2"></i>
+        Generar nuevo memorando
+    </h3>
+</div>
 <div class="card-modern">
-    <div class="card-header">
-        <h3 class="mb-0">
-            <i class="bi bi-plus-circle me-2"></i>
-            Generar nuevo memorando
-        </h3>
-    </div>
-
     <div class="p-3">
         <form id="memorandoForm">
             {% csrf_token %}
@@ -114,14 +117,13 @@
 </div>
 
 <!-- Historial -->
+<div class="card-header">
+    <h3 class="mb-0">
+        <i class="bi bi-clock-history me-2"></i>
+        Historial de memorandos
+    </h3>
+</div>
 <div class="card-modern">
-
-    <div class="card-header">
-        <h3 class="mb-0">
-            <i class="bi bi-clock-history me-2"></i>
-            Historial de memorandos
-        </h3>
-    </div>
 
     <div class="p-3 table-responsive-stack">
 

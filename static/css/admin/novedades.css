@@ -18,7 +18,7 @@
 .card-header {
     background: transparent;
     border-bottom: 1px solid #EDF2F7;
-    padding: 1rem 1.5rem;
+    padding: 1rem 0rem;
     font-weight: 700;
 }
 
@@ -184,15 +184,7 @@
         justify-content: flex-start;
     }
 }
-@media (max-width: 992px) {
-    .sidebar { margin-left: -280px; }
-    .sidebar.active { margin-left: 0; }
-    .main-content { margin-left: 0; }
-    .menu-toggle { display: block; background: black; color: white; border: none; padding: 0.5rem 1rem; margin-right: 1rem; border-radius: 12px; }
-}
-@media (min-width: 993px) {
-    .menu-toggle { display: none; }
-}
+
 
 
 /* ==============================================

@@ -12,20 +12,16 @@
 
 .row {
     margin-right: 0 !important;
-    margin-left: 0 !important;
 }
 
 /* ── KPIs ── */
 .stat-card {
     background: white;
     border-radius: 20px;
-    padding: 1rem 1.2rem;
+    padding: 1rem 0.8rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
     border: 1px solid #EDF2F7;
     transition: 0.2s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .stat-card:hover {
@@ -190,7 +186,7 @@
 .card-header {
     background: transparent;
     border-bottom: 1px solid #EDF2F7;
-    padding: 1rem 1.5rem;
+    padding: 1rem 0rem;
     font-weight: 700;
 }
 
