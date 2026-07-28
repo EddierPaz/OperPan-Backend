@@ -584,7 +584,7 @@ html body .navbar .btn-nav-login:hover,
    5. ACCIONES DISPONIBLES (BANDA INFINITA)
    ========================================================================== */
 #acciones {
-  padding: 96px 0 !important;
+  padding: 96px !important;
   background-color: var(--gris-fondo) !important;
 }
 
@@ -628,80 +628,81 @@ html body .navbar .btn-nav-login:hover,
   max-width: 640px !important;
 }
 
-/* Banda infinita */
+/* Banda infinita - Full width */
+
 .infinite-band-wrapper {
-  overflow: hidden;
-  width: 100%;
-  padding: 10px 0;
-  position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0;
+    position: relative;
 }
 
 .infinite-band {
-  display: flex;
-  gap: 24px;
-  animation: bandScroll 30s linear infinite;
-  width: max-content;
+    display: flex;
+    gap: 24px;
+    animation: bandScroll 40s linear infinite; /* más lento si quieres */
+    width: max-content;
 }
 
 .infinite-band:hover {
-  animation-play-state: paused;
+    animation-play-state: paused;
 }
 
 @keyframes bandScroll {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
+/* Las cards mantienen su estilo */
 .band-card {
-  flex: 0 0 auto;
-  width: 260px;
-  background: var(--blanco);
-  border-radius: 10px;
-  padding: 20px 24px;
-  border: 1px solid var(--gris-borde);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: box-shadow 0.2s, transform 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    flex: 0 0 auto;
+    width: 260px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid #EAEAEA;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
 .band-card:hover {
-  box-shadow: var(--sombra-hover);
-  transform: translateY(-4px);
-  border-color: rgba(164, 7, 6, 0.15);
+    box-shadow: var(--sombra-hover);
+    transform: translateY(-4px);
+    border-color: rgba(164, 7, 6, 0.15);
 }
 
 .band-card-icon {
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
-  background-color: var(--rojo-light);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  color: var(--rojo);
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    background-color: rgba(164, 7, 6, 0.08);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #A40706;
 }
 
 .band-card-content h5 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--negro);
-  margin: 0 0 2px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 0 2px 0;
 }
 
 .band-card-content p {
-  font-size: 0.8rem;
-  color: var(--gris-medio);
-  margin: 0;
-  line-height: 1.4;
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* ==========================================================================
@@ -924,7 +925,7 @@ html body .navbar .btn-nav-login:hover,
 .team-card-content .team-role {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #F5A623;
+  color: var(--rojo);
   margin-bottom: 12px;
 }
 
@@ -951,7 +952,7 @@ html body .navbar .btn-nav-login:hover,
 
 .team-card-content .team-contributions li::before {
   content: '•';
-  color: #F5A623;
+  color: var(--rojo);
   font-weight: 700;
   position: absolute;
   left: 0;
@@ -968,7 +969,7 @@ html body .navbar .btn-nav-login:hover,
 }
 
 .team-card-content .team-email i {
-  color: #F5A623;
+  color: var(--rojo);
 }
 
 .team-card-footer {
