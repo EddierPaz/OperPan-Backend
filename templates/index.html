@@ -1,39 +1,53 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OperPan — Sistema de Gestión de Personal · Estación Paisa</title>
+
+    <!-- Fuentes y Tipografía -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <!-- Frameworks & Iconos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+    <!-- Favicon & Estilos Propios -->
     <link rel="icon" type="image/png" href="{% static 'img/LOGO OPERPAN.png' %}" />
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 </head>
+
 <body>
 
-    <!-- ══════════════════════════════════════
+    <!-- ==========================================
          NAVBAR
-    ═════════════════════════════════════════ -->
+    =========================================== -->
     <nav class="navbar navbar-expand-lg" id="navbar">
         <div class="container">
-            <a class="navbar-brand" href="#inicio">
-                <div class="logo-icon">
-                    <img src="{% static 'img/LOGO EMPRESA.png' %}" alt="Estación Paisa">
+            <a class="navbar-brand d-flex align-items-center" href="#inicio">
+                <div class="logo-icon me-2">
+                    <img src="{% static 'img/LOGO EMPRESA.png' %}" alt="Logo Estación Paisa">
+                </div>
+                <div class="logo-text">
+                    <span class="fw-bold d-block">OperPan</span>
+                    <small class="d-block logo-subtext">Estación Paisa</small>
                 </div>
             </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                aria-label="Menú">
+                aria-controls="mainNav" aria-expanded="false" aria-label="Menú de navegación">
                 <i class="bi bi-list fs-4"></i>
             </button>
 
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1 gap-1 mb-3 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#accede">Accede</a></li>
                     <li class="nav-item"><a class="nav-link" href="#desarrolladores">Desarrolladores</a></li>
                     <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
@@ -47,88 +61,333 @@
     </nav>
 
 
-    <!-- ══════════════════════════════════════
-         HERO
-    ═════════════════════════════════════════ -->
-    <section id="inicio">
-        <div class="container">
-            <div class="row align-items-center g-5">
+    <!-- ==========================================
+         HERO / INICIO
+    =========================================== -->
+    <section id="inicio" class="py-5 position-relative overflow-hidden hero-with-bg">
+        <!-- Overlay degradado corporativo #a40607 -->
+        <div class="hero-overlay"></div>
 
-                <!-- Columna izquierda -->
-                <div class="col-lg-6 fade-in">
-                    <h1 class="hero-title">
-                        Bienvenido a<br /><span>OperPan</span>
+        <div class="container text-center position-relative z-2">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 fade-in">
+
+                    <!-- Eyebrow Superior -->
+                    <div
+                        class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-white bg-opacity-10 text-white border border-white border-opacity-25 mb-3 shadow-sm backdrop-blur">
+                        <i class="bi bi-shop"></i>
+                        <small class="fw-semibold tracking-wide">ESTACIÓN PAISA · PANADERÍA Y PASTELERÍA</small>
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="display-3 fw-bold mb-3 text-white">
+                        Bienvenidos a <span class="fw-black text-uppercase">ESTACIÓN PAISA</span>
                     </h1>
 
-                    <p class="hero-subtitle">
-                        Sistema de gestión de personal y recursos humanos diseñado para <strong>Estación Paisa</strong>.
+                    <!-- Subtitle -->
+                    <p class="hero-subtitle lead text-white-50 mx-auto mb-4" style="max-width: 720px;">
+                        El corazón digital de <strong class="text-white">Estación Paisa</strong>: gestionamos horarios,
+                        permisos y fuerza laboral con trazabilidad y control garantizado en tiempo real.
                     </p>
 
-                    <ul class="hero-desc list-unstyled">
-                        <li><i class="bi bi-check-circle-fill"></i>Automatización de procesos administrativos</li>
-                        <li><i class="bi bi-check-circle-fill"></i>Gestión integral de empleados y horarios</li>
-                        <li><i class="bi bi-check-circle-fill"></i>Control de asistencia y permisos</li>
-                        <li><i class="bi bi-check-circle-fill"></i>Comunicación interna y organizacional</li>
-                        <li><i class="bi bi-check-circle-fill"></i>Centralización y trazabilidad de información</li>
-                    </ul>
-
-                    <div class="hero-badges">
-                        <span class="hero-badge"><i class="bi bi-clock"></i>Gestión de horarios</span>
-                        <span class="hero-badge"><i class="bi bi-person-check"></i>Control de asistencia</span>
-                        <span class="hero-badge"><i class="bi bi-file-earmark-text"></i>Permisos</span>
-                        <span class="hero-badge"><i class="bi bi-bar-chart"></i>Reportes</span>
-                        <span class="hero-badge"><i class="bi bi-clipboard-data"></i>Auditoría</span>
-                        <span class="hero-badge"><i class="bi bi-lock"></i>Seguridad</span>
+                    <!-- Badges -->
+                    <div class="d-flex flex-wrap justify-content-center gap-2 max-w-750 mx-auto mb-5">
+                        <span class="hero-pill-badge-dark"><i class="bi bi-clock-history"></i> Gestión de
+                            horarios</span>
+                        <span class="hero-pill-badge-dark"><i class="bi bi-lightning-charge-fill"></i> Control de
+                            asistencia</span>
+                        <span class="hero-pill-badge-dark"><i class="bi bi-graph-up-arrow"></i> Analytics Pro</span>
+                        <span class="hero-pill-badge-dark"><i class="bi bi-shield-lock-fill"></i> Auditoría &
+                            Permisos</span>
                     </div>
-                </div>
 
-                <!-- Columna derecha: Carrusel vertical -->
-                <div class="col-lg-6 fade-in">
-                    <div class="hero-carousel-vertical" id="heroCarouselVertical">
-                        <div class="carousel-slides">
-                            <div class="slide active">
-                                <img src="{% static 'img/homepage/01-solicitudes.png' %}" alt="Administrador gestionando personal">
-                            </div>
-                            <div class="slide">
-                                <img src="{% static 'img/homepage/02-dashboard.png' %}" alt="Servicio al cliente">
-                            </div>
-                            <div class="slide">
-                                <img src="{% static 'img/homepage/03-asistencia.png' %}" alt="Gestión de empleados">
+                    <!-- System Status Floating Card -->
+                    <div class="row justify-content-center">
+                        <div class="col-xl-9 col-lg-10">
+                            <div class="card border-0 shadow-lg rounded-4 p-3 bg-white">
+                                <div class="row g-3 align-items-center text-center">
+
+                                    <div class="col-4 col-md-3 border-end">
+                                        <div class="h5 fw-bold text-brand mb-0">100%</div>
+                                        <small class="text-muted fw-semibold"
+                                            style="font-size: 0.75rem;">Sincronizado</small>
+                                    </div>
+
+                                    <div class="col-4 col-md-3 border-end">
+                                        <div class="h5 fw-bold text-brand mb-0">24/7</div>
+                                        <small class="text-muted fw-semibold" style="font-size: 0.75rem;">Monitoreo
+                                            Activo</small>
+                                    </div>
+
+                                    <div class="col-4 col-md-3 border-end-md">
+                                        <div class="h5 fw-bold text-dark mb-0">OperPan</div>
+                                        <small class="text-muted fw-semibold" style="font-size: 0.75rem;">Plataforma
+                                            V1.0</small>
+                                    </div>
+
+                                    <div class="col-12 col-md-3 mt-3 mt-md-0">
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                            <span class="spinner-grow spinner-grow-sm text-success"
+                                                role="status"></span>
+                                            <small class="fw-bold">Sistema En Línea</small>
+                                        </span>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
-                        <div class="hero-img-overlay">
-                            <div class="ov-icon"><i class="bi bi-people-fill"></i></div>
-                            <div class="ov-text">
-                                <div class="label">TIENDA EN MARCHA</div>
-                                <div class="value">55 empleados</div>
-                            </div>
-                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </section>
 
 
-    <!-- ══════════════════════════════════════
+    <!-- ==========================================
+         PRODUCTOS Y SERVICIOS
+    =========================================== -->
+    <section id="productos" class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-7 text-center fade-in">
+                    <div class="section-label justify-content-center">Qué ofrecemos</div>
+                    <h2 class="display-5 fw-bold text-dark">Nuestros Productos y Servicios</h2>
+                    <p class="text-muted mx-auto" style="max-width: 600px;">
+                        Explora nuestra variedad de productos recién horneados y servicios especiales, preparados
+                        diariamente con ingredientes frescos.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Botones de Categorías -->
+            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4" id="ofertaCats">
+                <button type="button" class="btn btn-cat active d-inline-flex align-items-center gap-2"
+                    data-target="cat-panaderia">
+                    <i class="bi bi-basket2"></i> Panadería
+                </button>
+                <button type="button" class="btn btn-cat d-inline-flex align-items-center gap-2"
+                    data-target="cat-pasteleria">
+                    <i class="bi bi-cake2"></i> Pastelería
+                </button>
+                <button type="button" class="btn btn-cat d-inline-flex align-items-center gap-2"
+                    data-target="cat-cafeteria">
+                    <i class="bi bi-cup-hot"></i> Cafetería
+                </button>
+                <button type="button" class="btn btn-cat d-inline-flex align-items-center gap-2"
+                    data-target="cat-eventos">
+                    <i class="bi bi-gift"></i> Eventos & Pedidos
+                </button>
+            </div>
+
+            <!-- Contenidos por Categoría -->
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+
+                        <!-- PANADERÍA -->
+                        <div class="cat-content row g-0 active" id="cat-panaderia">
+                            <div class="col-md-6 cat-img-box"
+                                style="background-image: url('https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop');">
+                                <div class="cat-img-overlay">
+                                    <span class="badge bg-white text-brand rounded-pill px-3 py-2 fw-bold shadow-sm">
+                                        <i class="bi bi-fire"></i> Horneado Diario
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                                <h3 class="fw-bold text-dark mb-2">Panadería Artesanal</h3>
+                                <p class="text-muted mb-4">Mantenemos la tradición panadera con recetas únicas,
+                                    horneando varias veces al día para garantizar frescura.</p>
+
+                                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Panes Tradicionales & Blandos</strong>
+                                            <small class="text-muted">Pan aliñado, queso, mantequilla, agridulce y
+                                                hojaldrados.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Línea Integral y Semillas</strong>
+                                            <small class="text-muted">Panes integrales 100%, avena, linaza y
+                                                multigranos.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Especialidades de la Casa</strong>
+                                            <small class="text-muted">Pan de bono, pandeyuca, almojábanas y buñuelos
+                                                recién salidos.</small>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- PASTELERÍA -->
+                        <div class="cat-content row g-0 d-none" id="cat-pasteleria">
+                            <div class="col-md-6 cat-img-box"
+                                style="background-image: url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=800&auto=format&fit=crop');">
+                                <div class="cat-img-overlay">
+                                    <span class="badge bg-white text-brand rounded-pill px-3 py-2 fw-bold shadow-sm">
+                                        <i class="bi bi-heart-fill"></i> Hecho a Mano
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                                <h3 class="fw-bold text-dark mb-2">Pastelería & Postres</h3>
+                                <p class="text-muted mb-4">El toque dulce perfecto para tus días, preparado por nuestros
+                                    maestros pasteleros.</p>
+
+                                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Tortas Personalizadas & Frías</strong>
+                                            <small class="text-muted">Tres leches, chocolate supremo, guanábana y
+                                                maracuyá.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Repostería Fina</strong>
+                                            <small class="text-muted">Milhojas, tartaletas de frutas, éclairs y
+                                                cheesecakes variados.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Porciones Individuales</strong>
+                                            <small class="text-muted">Postres en vaso, cupcakes y brownies para
+                                                disfrutar al instante.</small>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- CAFETERÍA -->
+                        <div class="cat-content row g-0 d-none" id="cat-cafeteria">
+                            <div class="col-md-6 cat-img-box"
+                                style="background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=800&auto=format&fit=crop');">
+                                <div class="cat-img-overlay">
+                                    <span class="badge bg-white text-brand rounded-pill px-3 py-2 fw-bold shadow-sm">
+                                        <i class="bi bi-cup-hot-fill"></i> Café Origen
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                                <h3 class="fw-bold text-dark mb-2">Bebidas & Cafetería</h3>
+                                <p class="text-muted mb-4">Acompaña tu pan favorito con las mejores bebidas calientes y
+                                    frías.</p>
+
+                                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Cafés Especiales</strong>
+                                            <small class="text-muted">Espresso, Cappuccino, Latte, Tinto campesino y
+                                                Mocaccino.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Chocolate & Bebidas Calientes</strong>
+                                            <small class="text-muted">Chocolate santafereño con queso, aromáticas de
+                                                frutas e infusiones.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Jugos Naturales & Granizados</strong>
+                                            <small class="text-muted">Jugos en agua/leche frescos, limonadas y
+                                                granizados de café.</small>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- EVENTOS -->
+                        <div class="cat-content row g-0 d-none" id="cat-eventos">
+                            <div class="col-md-6 cat-img-box"
+                                style="background-image: url('https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=800&auto=format&fit=crop');">
+                                <div class="cat-img-overlay">
+                                    <span class="badge bg-white text-brand rounded-pill px-3 py-2 fw-bold shadow-sm">
+                                        <i class="bi bi-star-fill"></i> Servicio Especial
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                                <h3 class="fw-bold text-dark mb-2">Eventos & Pedidos Especiales</h3>
+                                <p class="text-muted mb-4">Llevamos el sabor de Estación Paisa a tus reuniones
+                                    empresariales o familiares.</p>
+
+                                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Refrigerios Empresariales</strong>
+                                            <small class="text-muted">Combos corporativos ajustados a tu presupuesto y
+                                                cantidad.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Mesas de Dulces & Pasabocas</strong>
+                                            <small class="text-muted">Bocaditos salados, mini hojaldres, mini postres y
+                                                cupcakes temáticos.</small>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex align-items-start gap-3">
+                                        <i class="bi bi-check-circle-fill text-brand fs-5 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block text-dark">Tortas por Encargo</strong>
+                                            <small class="text-muted">Diseños temáticos para cumpleaños, bodas y
+                                                aniversarios.</small>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ==========================================
          ACCIONES DISPONIBLES — BANDA INFINITA
-    ═════════════════════════════════════════ -->
-    <section id="acciones">
+    =========================================== -->
+    <section id="acciones" class="py-5">
         <div class="container">
             <div class="row justify-content-center mb-5">
                 <div class="col-lg-7 text-center fade-in">
                     <div class="section-label justify-content-center">Qué puedes hacer</div>
                     <h2 class="section-title">Acciones disponibles</h2>
                     <p class="section-desc mx-auto">
-                        OperPan pone a tu disposición todas las herramientas necesarias para gestionar tu vida laboral de forma ágil y centralizada.
+                        OperPan pone a tu disposición todas las herramientas necesarias para gestionar tu vida laboral
+                        de forma ágil y centralizada.
                     </p>
                 </div>
             </div>
 
             <div class="infinite-band-wrapper fade-in">
                 <div class="infinite-band">
-                    <!-- Primera tanda de cards (se duplicará con CSS) -->
+                    <!-- Tanda 1 de Cards -->
                     <div class="band-card">
                         <div class="band-card-icon"><i class="bi bi-clock-history"></i></div>
                         <div class="band-card-content">
@@ -171,7 +430,8 @@
                             <p>Accede a métricas adaptadas a tu perfil.</p>
                         </div>
                     </div>
-                    <!-- Se duplicarán con CSS mediante pseudo-elementos o duplicación en HTML (usaremos duplicación en HTML para mejor control) -->
+
+                    <!-- Duplicación para ciclo infinito -->
                     <div class="band-card">
                         <div class="band-card-icon"><i class="bi bi-clock-history"></i></div>
                         <div class="band-card-content">
@@ -220,13 +480,13 @@
     </section>
 
 
-    <!-- ══════════════════════════════════════
-         ACCEDE A OPERPAN (REDISEÑO)
-    ═════════════════════════════════════════ -->
+    <!-- ==========================================
+         ACCEDE A OPERPAN / UBICACIÓN
+    =========================================== -->
     <section id="accede">
         <div class="accede-bg">
             <div class="accede-image">
-                <img src="{% static 'img/estacion-paisa.png' %}" alt="Estación Paisa">
+                <img src="{% static 'img/estacion-paisa.png' %}" alt="Estación Paisa Fachada" loading="lazy">
             </div>
             <div class="accede-gris"></div>
         </div>
@@ -234,28 +494,32 @@
         <div class="container accede-container">
             <div class="accede-card fade-in">
                 <div class="row g-0">
-                    <!-- Columna izquierda: información institucional -->
+                    <!-- Columna Izquierda: Información Institucional -->
                     <div class="col-lg-6 accede-info">
                         <h3>Estación Paisa</h3>
                         <p class="accede-desc">
-                            Panadería y pastelería con más de 10 años de experiencia en Soacha, comprometida con la calidad y el servicio.
+                            Panadería y pastelería con más de 10 años de experiencia en Soacha, comprometida con la
+                            calidad y el servicio.
                         </p>
-                        <ul class="accede-contact">
+                        <ul class="accede-contact list-unstyled">
                             <li><i class="bi bi-geo-alt"></i> Cra. 10 # 12-34, Soacha, Colombia</li>
                             <li><i class="bi bi-telephone"></i> +57 300 123 4567</li>
                             <li><i class="bi bi-clock"></i> Lunes a sábado: 6:00 am – 9:00 pm</li>
                             <li><i class="bi bi-envelope"></i> contacto@estacionpaisa.com</li>
                         </ul>
                         <p class="accede-institucional">
-                            <strong>OperPan</strong> es la plataforma institucional utilizada para gestionar los procesos del personal de Estación Paisa.
+                            <strong>OperPan</strong> es la plataforma institucional utilizada para gestionar los
+                            procesos del personal de Estación Paisa.
                         </p>
                     </div>
-                    <!-- Columna derecha: mapa -->
+
+                    <!-- Columna Derecha: Mapa de Google Maps -->
                     <div class="col-lg-6 accede-mapa">
                         <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63632.40422203654!2d-74.23869908823555!3d4.58948908400435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9fcb51510d31%3A0xe441f492025f971!2sESTACI%C3%93N%20PAISA!5e0!3m2!1ses-419!2sco!4v1779797277338!5m2!1ses-419!2sco"
-                        width="600" height="340" style="border:0;border-radius:5px;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63632.40422203654!2d-74.23869908823555!3d4.58948908400435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9fcb51510d31%3A0xe441f492025f971!2sESTACI%C3%93N%20PAISA!5e0!3m2!1ses-419!2sco!4v1779797277338!5m2!1ses-419!2sco"
+                            width="100%" height="340" style="border:0; border-radius:5px;" allowfullscreen=""
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            title="Ubicación de Estación Paisa"></iframe>
                     </div>
                 </div>
             </div>
@@ -263,31 +527,36 @@
     </section>
 
 
-    <!-- ══════════════════════════════════════
+    <!-- ==========================================
          DESARROLLADORES DE OPERPAN
-    ═════════════════════════════════════════ -->
-    <section id="desarrolladores">
+    =========================================== -->
+    <section id="desarrolladores" class="py-5">
         <div class="container">
             <div class="row justify-content-center mb-5">
                 <div class="col-lg-7 text-center fade-in">
                     <div class="section-label justify-content-center">Equipo</div>
                     <h2 class="section-title">Desarrolladores de OperPan</h2>
                     <p class="section-desc mx-auto">
-                        OperPan fue desarrollado por aprendices ADSO del SENA para apoyar la gestión del personal de Estación Paisa.
+                        OperPan fue desarrollado por aprendices ADSO del SENA para apoyar la gestión del personal de
+                        Estación Paisa.
                     </p>
                 </div>
             </div>
 
-            <!-- Desktop: tarjetas expansivas -->
+            <!-- Vista Desktop: Tarjetas expansivas -->
             <div class="team-cards-desktop d-none d-lg-flex fade-in">
-                <!-- Tarjeta 1: Eddier -->
+                <!-- Eddier -->
                 <div class="team-card" data-member="eddier">
-                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/eddier-paz.png' %}');"></div>
+                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/eddier-paz.png' %}');">
+                    </div>
                     <div class="team-card-content">
                         <h4>Eddier Antonio Paz Pardo</h4>
                         <p class="team-role">Líder del Proyecto y Desarrollador de Software</p>
                         <p class="team-desc">
-                            Responsable de coordinar el desarrollo de OperPan y mantener la comunicación entre Estación Paisa y el equipo de desarrollo. Participó en la construcción de la arquitectura del sistema, el desarrollo de funcionalidades principales y la planificación técnica del proyecto.
+                            Responsable de coordinar el desarrollo de OperPan y mantener la comunicación entre Estación
+                            Paisa y el equipo de desarrollo. Participó en la construcción de la arquitectura del
+                            sistema, el desarrollo de funcionalidades principales y la planificación técnica del
+                            proyecto.
                         </p>
                         <ul class="team-contributions">
                             <li>Liderazgo del proyecto.</li>
@@ -303,14 +572,17 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta 2: Santiago -->
+                <!-- Santiago -->
                 <div class="team-card" data-member="santiago">
-                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/santiago-hernandez.png' %}');"></div>
+                    <div class="team-card-bg"
+                        style="background-image: url('{% static 'img/team/santiago-hernandez.png' %}');"></div>
                     <div class="team-card-content">
                         <h4>Santiago Muñeton Hernández</h4>
                         <p class="team-role">Desarrollador de Software</p>
                         <p class="team-desc">
-                            Participó en el desarrollo integral de OperPan con un enfoque especial en la experiencia de usuario y el diseño de interfaces. También apoyó el análisis de información, la organización de la documentación técnica y el desarrollo de diferentes módulos del sistema.
+                            Participó en el desarrollo integral de OperPan con un enfoque especial en la experiencia de
+                            usuario y el diseño de interfaces. También apoyó el análisis de información, la organización
+                            de la documentación técnica y el desarrollo de diferentes módulos del sistema.
                         </p>
                         <ul class="team-contributions">
                             <li>Desarrollo Frontend y Backend.</li>
@@ -326,14 +598,17 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta 3: Paula -->
+                <!-- Paula -->
                 <div class="team-card" data-member="paula">
-                    <div class="team-card-bg" style="background-image: url('{% static 'img/team/paula-herrera.png' %}');"></div>
+                    <div class="team-card-bg"
+                        style="background-image: url('{% static 'img/team/paula-herrera.png' %}');"></div>
                     <div class="team-card-content">
                         <h4>Paula Andrea Herrera Carrillo</h4>
                         <p class="team-role">Desarrolladora de Software</p>
                         <p class="team-desc">
-                            Participó en el desarrollo de interfaces de OperPan, colaboró en la implementación de funcionalidades del sistema y apoyó activamente la documentación del proyecto para fortalecer la organización del proceso de desarrollo.
+                            Participó en el desarrollo de interfaces de OperPan, colaboró en la implementación de
+                            funcionalidades del sistema y apoyó activamente la documentación del proyecto para
+                            fortalecer la organización del proceso de desarrollo.
                         </p>
                         <ul class="team-contributions">
                             <li>Desarrollo Frontend y Backend.</li>
@@ -350,21 +625,26 @@
                 </div>
             </div>
 
-            <!-- Mobile: acordeón -->
+            <!-- Vista Móvil: Acordeón Bootstrap -->
             <div class="team-accordion d-lg-none fade-in">
                 <div class="accordion" id="teamAccordion">
                     <!-- Eddier -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEddier">
-                                <img src="{% static 'img/team/eddier-paz.png' %}" alt="Eddier Paz" class="accordion-avatar">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseEddier" aria-expanded="false" aria-controls="collapseEddier">
+                                <img src="{% static 'img/team/eddier-paz.png' %}" alt="Eddier Paz"
+                                    class="accordion-avatar me-2">
                                 <span class="accordion-name">Eddier Antonio Paz Pardo</span>
                             </button>
                         </h2>
                         <div id="collapseEddier" class="accordion-collapse collapse" data-bs-parent="#teamAccordion">
                             <div class="accordion-body">
-                                <p class="team-role">Líder del Proyecto y Desarrollador de Software</p>
-                                <p>Responsable de coordinar el desarrollo de OperPan y mantener la comunicación entre Estación Paisa y el equipo de desarrollo. Participó en la construcción de la arquitectura del sistema, el desarrollo de funcionalidades principales y la planificación técnica del proyecto.</p>
+                                <p class="team-role fw-bold">Líder del Proyecto y Desarrollador de Software</p>
+                                <p>Responsable de coordinar el desarrollo de OperPan y mantener la comunicación entre
+                                    Estación Paisa y el equipo de desarrollo. Participó en la construcción de la
+                                    arquitectura del sistema, el desarrollo de funcionalidades principales y la
+                                    planificación técnica del proyecto.</p>
                                 <ul class="team-contributions">
                                     <li>Liderazgo del proyecto.</li>
                                     <li>Coordinación con Estación Paisa.</li>
@@ -373,24 +653,31 @@
                                     <li>Desarrollo de funcionalidades principales.</li>
                                 </ul>
                                 <p class="team-email"><i class="bi bi-envelope"></i> EddierPaz9@gmail.com</p>
-                                <div class="team-card-footer">
+                                <div class="team-card-footer mt-2">
                                     <span>“Comprometidos con la excelencia”</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- Santiago -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSantiago">
-                                <img src="{% static 'img/team/santiago-hernandez.png' %}" alt="Santiago Muñeton" class="accordion-avatar">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseSantiago" aria-expanded="false"
+                                aria-controls="collapseSantiago">
+                                <img src="{% static 'img/team/santiago-hernandez.png' %}" alt="Santiago Muñeton"
+                                    class="accordion-avatar me-2">
                                 <span class="accordion-name">Santiago Muñeton Hernández</span>
                             </button>
                         </h2>
                         <div id="collapseSantiago" class="accordion-collapse collapse" data-bs-parent="#teamAccordion">
                             <div class="accordion-body">
-                                <p class="team-role">Desarrollador de Software</p>
-                                <p>Participó en el desarrollo integral de OperPan con un enfoque especial en la experiencia de usuario y el diseño de interfaces. También apoyó el análisis de información, la organización de la documentación técnica y el desarrollo de diferentes módulos del sistema.</p>
+                                <p class="team-role fw-bold">Desarrollador de Software</p>
+                                <p>Participó en el desarrollo integral de OperPan con un enfoque especial en la
+                                    experiencia de usuario y el diseño de interfaces. También apoyó el análisis de
+                                    información, la organización de la documentación técnica y el desarrollo de
+                                    diferentes módulos del sistema.</p>
                                 <ul class="team-contributions">
                                     <li>Desarrollo Frontend y Backend.</li>
                                     <li>Diseño de interfaces.</li>
@@ -399,24 +686,29 @@
                                     <li>Mejora de la experiencia de usuario.</li>
                                 </ul>
                                 <p class="team-email"><i class="bi bi-envelope"></i> santiagoencodigo@gmail.com</p>
-                                <div class="team-card-footer">
+                                <div class="team-card-footer mt-2">
                                     <span>“Innovación y calidad”</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <!-- Paula -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePaula">
-                                <img src="{% static 'img/team/paula-herrera.png' %}" alt="Paula Herrera" class="accordion-avatar">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapsePaula" aria-expanded="false" aria-controls="collapsePaula">
+                                <img src="{% static 'img/team/paula-herrera.png' %}" alt="Paula Herrera"
+                                    class="accordion-avatar me-2">
                                 <span class="accordion-name">Paula Andrea Herrera Carrillo</span>
                             </button>
                         </h2>
                         <div id="collapsePaula" class="accordion-collapse collapse" data-bs-parent="#teamAccordion">
                             <div class="accordion-body">
-                                <p class="team-role">Desarrolladora de Software</p>
-                                <p>Participó en el desarrollo de interfaces de OperPan, colaboró en la implementación de funcionalidades del sistema y apoyó activamente la documentación del proyecto para fortalecer la organización del proceso de desarrollo.</p>
+                                <p class="team-role fw-bold">Desarrolladora de Software</p>
+                                <p>Participó en el desarrollo de interfaces de OperPan, colaboró en la implementación de
+                                    funcionalidades del sistema y apoyó activamente la documentación del proyecto para
+                                    fortalecer la organización del proceso de desarrollo.</p>
                                 <ul class="team-contributions">
                                     <li>Desarrollo Frontend y Backend.</li>
                                     <li>Implementación de funcionalidades.</li>
@@ -425,7 +717,7 @@
                                     <li>Colaboración en el proyecto.</li>
                                 </ul>
                                 <p class="team-email"><i class="bi bi-envelope"></i> pandreaherrera01@gmail.com</p>
-                                <div class="team-card-footer">
+                                <div class="team-card-footer mt-2">
                                     <span>“Trabajo en equipo”</span>
                                 </div>
                             </div>
@@ -437,43 +729,55 @@
     </section>
 
 
-    <!-- ══════════════════════════════════════
-         FOOTER
-    ═════════════════════════════════════════ -->
-    <footer>
+    <!-- ==========================================
+     FOOTER
+=========================================== -->
+    <footer class="py-4 text-white">
         <div class="container">
-            <div class="row g-4">
+            <!-- text-center en móviles, text-lg-start en pantallas grandes -->
+            <div class="row g-4 justify-content-between text-center text-lg-start">
 
-                <div class="col-lg-4 col-md-6">
-                    <div class="footer-brand">
-                        <img src="{% static 'img/l.png' %}" alt="OperPan" style="width:150px; height:110px;">
+                <!-- LOGO / BRAND -->
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer-brand mb-3">
+                        <img src="{% static 'img/l.png' %}" alt="Logo OperPan" style="width: 150px; height: auto;">
                     </div>
                 </div>
 
-                <div class="col-lg-2 col-md-6">
-                    <h6>Navegación</h6>
-                    <ul>
-                        <li><i class="bi bi-chevron-right"></i><a href="#inicio" class="nav-link_footer">Inicio</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#accede" class="nav-link_footer">Accede</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#desarrolladores" class="nav-link_footer">Desarrolladores</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="{% url 'login' %}" class="nav-link_footer">Iniciar sesión</a></li>
+                <!-- NAVEGACIÓN -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-uppercase fw-bold mb-3">Navegación</h6>
+                    <!-- align-items-center para centrar los íconos/texto en móvil, align-items-lg-start para pantallas grandes -->
+                    <ul class="list-unstyled d-flex flex-column gap-2 align-items-center align-items-lg-start">
+                        <li><i class="bi bi-chevron-right me-1"></i><a href="#inicio" class="nav-link_footer">Inicio</a>
+                        </li>
+                        <li><i class="bi bi-chevron-right me-1"></i><a href="#productos"
+                                class="nav-link_footer">Productos</a></li>
+                        <li><i class="bi bi-chevron-right me-1"></i><a href="#accede" class="nav-link_footer">Accede</a>
+                        </li>
+                        <li><i class="bi bi-chevron-right me-1"></i><a href="#desarrolladores"
+                                class="nav-link_footer">Desarrolladores</a></li>
+                        <li><i class="bi bi-chevron-right me-1"></i><a href="{% url 'login' %}"
+                                class="nav-link_footer">Iniciar sesión</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-2 col-md-6">
-                    <h6>Empresa</h6>
-                    <ul>
-                        <li><i class="bi bi-building"></i>Estación Paisa</li>
-                        <li><i class="bi bi-geo-alt"></i>Colombia</li>
-                        <li><i class="bi bi-calendar3"></i>2026</li>
+                <!-- EMPRESA -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-uppercase fw-bold mb-3">Empresa</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 align-items-center align-items-lg-start">
+                        <li><i class="bi bi-building me-2"></i>Estación Paisa</li>
+                        <li><i class="bi bi-geo-alt me-2"></i>Colombia</li>
+                        <li><i class="bi bi-calendar3 me-2"></i>2026</li>
                     </ul>
                 </div>
 
             </div>
 
-            <hr class="footer-divider" />
-            <div class="footer-bottom d-flex flex-column flex-md-row justify-content-center align-items-center gap-2 bold">
-                <span>© <span>2026</span> OperPan · Estación Paisa. Todos los derechos reservados.</span>
+            <hr class="footer-divider my-4 border-secondary" />
+
+            <div class="footer-bottom text-center">
+                <span>© 2026 OperPan · Estación Paisa. Todos los derechos reservados.</span>
             </div>
         </div>
     </footer>
@@ -483,4 +787,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/index.js' %}"></script>
 </body>
+
 </html>

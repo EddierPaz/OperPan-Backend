@@ -4,7 +4,7 @@
 :root {
   --rojo: #A40706 !important;
   --rojo-hover: #8a0605 !important;
-  --rojo-light: rgba(185, 11, 11, 0.08) !important;
+  --rojo-light: rgba(164, 7, 6, 0.08) !important;
   --negro: #000000 !important;
   --blanco: #FFFFFF !important;
   --gris-fondo: #F5F5F5 !important;
@@ -29,9 +29,27 @@ html {
 
 body {
   font-family: 'Poppins', sans-serif !important;
-  background: #FFFFFF !important;
-  color: #2B2B2B !important;
+  background: var(--blanco) !important;
+  color: var(--gris-oscuro) !important;
   overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rojo);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rojo-hover);
 }
 
 /* ==========================================================================
@@ -43,13 +61,13 @@ html body #navbar.navbar {
   left: 0;
   right: 0;
   z-index: 1000 !important;
-  background-color: #FFFFFF !important;
+  background-color: var(--blanco) !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07) !important;
   transition: background-color 0.3s ease-in-out !important;
 }
 
 html body #navbar.navbar.scrolled {
-  background-color: #000000 !important;
+  background-color: var(--negro) !important;
 }
 
 html body #navbar.navbar.scrolled .nav-link,
@@ -59,16 +77,24 @@ html body #navbar.navbar.scrolled .navbar-brand .brand-text .sub {
 }
 
 html body #navbar.navbar.scrolled .nav-link:hover {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
+}
+
+html body #navbar.navbar.scrolled .logo-text span {
+  color: var(--blanco) !important;
+}
+
+html body #navbar.navbar.scrolled .logo-text small {
+  color: #f0f0f0 !important; /* O var(--blanco) */
 }
 
 .navbar-toggler i {
-  color: #000000;
+  color: var(--negro);
   transition: color 0.3s ease;
 }
 
 #navbar.navbar.scrolled .navbar-toggler i {
-  color: #ffffff;
+  color: var(--blanco);
 }
 
 .navbar-brand {
@@ -91,40 +117,46 @@ html body #navbar.navbar.scrolled .nav-link:hover {
   object-fit: cover;
 }
 
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  color: var(--rojo);
+}
+
+.logo-text small {
+  color: var(--rojo);
+}
+
 html body .navbar .nav-link {
   font-size: 0.875rem !important;
   font-weight: 500 !important;
-  color: #2B2B2B !important;
+  color: var(--gris-oscuro) !important;
   padding: 0.5rem 0.85rem !important;
   transition: color 0.2s !important;
 }
 
 html body .navbar .nav-link:hover {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
 }
 
 html body .navbar .btn-nav-login {
-  background-color: #A40706 !important;
-  color: #FFFFFF !important;
+  background-color: var(--rojo) !important;
+  color: var(--blanco) !important;
   border-radius: 7px !important;
   font-size: 0.875rem !important;
   font-weight: 600 !important;
   padding: 0.45rem 1.2rem !important;
   transition: all 0.3s, transform 0.15s !important;
-  border: 1px solid #A40706 !important;
+  border: 1px solid var(--rojo) !important;
   text-decoration: none;
 }
 
-html body .navbar .btn-nav-login:hover {
-  background-color: #FFFFFF !important;
-  color: #A40706 !important;
-  border: 1px solid #A40706 !important;
-}
-
+html body .navbar .btn-nav-login:hover,
 #navbar.navbar.scrolled .btn-nav-login:hover {
-  background-color: #FFFFFF !important;
-  color: #A40706 !important;
-  border: 1px solid #A40706 !important;
+  background-color: var(--blanco) !important;
+  color: var(--rojo) !important;
+  border: 1px solid var(--rojo) !important;
 }
 
 .nav-link_footer {
@@ -137,37 +169,72 @@ html body .navbar .btn-nav-login:hover {
 }
 
 .nav-link_footer:hover {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
 }
 
 /* ==========================================================================
-   3. HERO
+   3. HERO Y CARROUSEL
    ========================================================================== */
 #inicio {
   min-height: 100vh !important;
   padding-top: 160px !important;
   padding-bottom: 80px !important;
-  background-color: #FFFFFF !important;
+  background-color: var(--gris-fondo) !important;
   display: flex !important;
   align-items: center !important;
+}
+
+.hero-with-bg {
+  background: url('https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(20, 3, 3, 0.82) 0%, rgba(164, 6, 7, 0.88) 100%);
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: var(--rojo) !important;
+  background-color: var(--rojo-light) !important;
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  margin-bottom: 1.2rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.hero-eyebrow i {
+  font-size: 1rem !important;
 }
 
 .hero-title {
   font-family: 'Poppins', sans-serif !important;
   font-size: clamp(2.4rem, 5vw, 3.6rem) !important;
   font-weight: 700 !important;
-  color: #000000 !important;
+  color: var(--negro) !important;
   line-height: 1.15 !important;
   margin-bottom: 1rem !important;
 }
 
 .hero-title span {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
 }
 
 .hero-subtitle {
   font-size: 1.05rem !important;
-  color: #6B7280 !important;
+  color: var(--gris-medio) !important;
   font-weight: 400 !important;
   line-height: 1.7 !important;
   margin-bottom: 1.6rem !important;
@@ -176,7 +243,7 @@ html body .navbar .btn-nav-login:hover {
 
 .hero-desc {
   font-size: 0.92rem !important;
-  color: #2B2B2B !important;
+  color: var(--gris-oscuro) !important;
   line-height: 1.8 !important;
   margin-bottom: 2rem !important;
   max-width: 500px !important;
@@ -190,7 +257,7 @@ html body .navbar .btn-nav-login:hover {
 }
 
 .hero-desc li i {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
   font-size: 0.9rem !important;
   margin-top: 3px !important;
   flex-shrink: 0 !important;
@@ -207,9 +274,9 @@ html body .navbar .btn-nav-login:hover {
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  background-color: #F5F5F5 !important;
-  border: 1px solid #EAEAEA !important;
-  color: #2B2B2B !important;
+  background-color: var(--gris-fondo) !important;
+  border: 1px solid var(--gris-borde) !important;
+  color: var(--gris-oscuro) !important;
   font-size: 0.78rem !important;
   font-weight: 500 !important;
   padding: 5px 12px !important;
@@ -218,13 +285,44 @@ html body .navbar .btn-nav-login:hover {
 }
 
 .hero-badge i {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
   font-size: 0.8rem !important;
 }
 
 .hero-badge:hover {
-  border-color: #A40706 !important;
-  color: #A40706 !important;
+  border-color: var(--rojo) !important;
+  color: var(--rojo) !important;
+}
+
+/* Píldoras de estilo oscuro */
+.hero-pill-badge-dark {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--blanco);
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(6px);
+  transition: all 0.25s ease;
+}
+
+.hero-pill-badge-dark i {
+  color: var(--blanco);
+}
+
+.hero-pill-badge-dark:hover {
+  background: var(--blanco);
+  color: var(--rojo);
+  border-color: var(--blanco);
+  transform: translateY(-2px);
+}
+
+.hero-pill-badge-dark:hover i {
+  color: var(--rojo);
 }
 
 /* Carrusel vertical */
@@ -234,7 +332,7 @@ html body .navbar .btn-nav-login:hover {
   overflow: hidden !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.14) !important;
   height: 500px !important;
-  background: #000;
+  background: var(--negro);
 }
 
 .hero-carousel-vertical .carousel-slides {
@@ -271,7 +369,7 @@ html body .navbar .btn-nav-login:hover {
   position: absolute !important;
   bottom: 20px !important;
   left: 20px !important;
-  background: white !important;
+  background: var(--blanco) !important;
   border-radius: 10px !important;
   padding: 14px 18px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
@@ -280,24 +378,37 @@ html body .navbar .btn-nav-login:hover {
   gap: 12px !important;
   min-width: 200px !important;
   z-index: 2;
+  animation: floatAnimation 4s ease-in-out infinite;
+}
+
+@keyframes floatAnimation {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .hero-img-overlay .ov-icon {
   width: 40px !important;
   height: 40px !important;
-  background-color: rgba(164, 7, 6, 0.08) !important;
+  background-color: var(--rojo-light) !important;
   border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  color: #A40706 !important;
+  color: var(--rojo) !important;
   font-size: 1.1rem !important;
   flex-shrink: 0 !important;
 }
 
 .hero-img-overlay .ov-text .label {
   font-size: 0.7rem !important;
-  color: #6B7280 !important;
+  color: var(--gris-medio) !important;
   font-weight: 500 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
@@ -306,21 +417,181 @@ html body .navbar .btn-nav-login:hover {
 .hero-img-overlay .ov-text .value {
   font-size: 1.1rem !important;
   font-weight: 700 !important;
-  color: #000000 !important;
+  color: var(--negro) !important;
 }
 
 /* ==========================================================================
-   4. SECCIÓN ACCIONES DISPONIBLES (BANDA INFINITA)
+   4. SECCIÓN PRODUCTOS Y CATEGORÍAS
+   ========================================================================== */
+#productos {
+  padding: 96px 0 !important;
+  background-color: var(--blanco) !important;
+}
+
+.hero-oferta {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+}
+
+.hero-oferta-label {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  color: var(--rojo) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  margin-bottom: 20px !important;
+}
+
+.hero-oferta-cats {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  margin-top: 32px !important;
+  margin-bottom: 24px !important;
+}
+
+.oferta-cat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 14px 18px !important;
+  border-radius: 10px !important;
+  background: var(--gris-fondo) !important;
+  border: 1px solid var(--gris-borde) !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  flex: 1 1 auto !important;
+  min-width: 90px !important;
+  text-align: center !important;
+}
+
+.oferta-cat-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 8px !important;
+  background: var(--rojo-light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--rojo) !important;
+  font-size: 1.1rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.oferta-cat span {
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  color: var(--gris-oscuro) !important;
+  transition: color 0.25s ease !important;
+}
+
+.oferta-cat:hover {
+  border-color: rgba(164, 7, 6, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.oferta-cat.active {
+  background: var(--rojo) !important;
+  border-color: var(--rojo) !important;
+}
+
+.oferta-cat.active .oferta-cat-icon {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: var(--blanco) !important;
+}
+
+.oferta-cat.active span {
+  color: var(--blanco) !important;
+}
+
+.hero-oferta-preview {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  background: var(--gris-fondo) !important;
+  border-radius: 10px !important;
+  padding: 18px 22px !important;
+  border: 1px solid var(--gris-borde) !important;
+}
+
+.oferta-preview-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 10px !important;
+  background: var(--rojo-light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--rojo) !important;
+  font-size: 1.3rem !important;
+  flex-shrink: 0 !important;
+  transition: all 0.25s ease !important;
+}
+
+.oferta-preview-title {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: var(--negro) !important;
+  margin-bottom: 2px !important;
+}
+
+.oferta-preview-desc {
+  font-size: 0.85rem !important;
+  color: var(--gris-medio) !important;
+  line-height: 1.5 !important;
+}
+
+.btn-cat {
+  background-color: var(--blanco);
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+}
+
+.btn-cat:hover {
+  border-color: var(--rojo);
+  color: var(--rojo);
+}
+
+.btn-cat.active {
+  background-color: var(--rojo) !important;
+  border-color: var(--rojo) !important;
+  color: var(--blanco) !important;
+  box-shadow: 0 4px 12px rgba(164, 6, 7, 0.25);
+}
+
+.cat-img-box {
+  background-size: cover;
+  background-position: center;
+  min-height: 320px;
+  position: relative;
+}
+
+.cat-img-overlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+
+/* ==========================================================================
+   5. ACCIONES DISPONIBLES (BANDA INFINITA)
    ========================================================================== */
 #acciones {
   padding: 96px 0 !important;
-  background-color: #F5F5F5 !important;
+  background-color: var(--gris-fondo) !important;
 }
 
 .section-label {
   font-size: 0.75rem !important;
   font-weight: 600 !important;
-  color: #A40706 !important;
+  color: var(--rojo) !important;
   text-transform: uppercase !important;
   letter-spacing: 1.2px !important;
   margin-bottom: 0.5rem !important;
@@ -333,7 +604,7 @@ html body .navbar .btn-nav-login:hover {
   content: '' !important;
   width: 20px !important;
   height: 2px !important;
-  background-color: #A40706 !important;
+  background-color: var(--rojo) !important;
   border-radius: 2px !important;
 }
 
@@ -345,14 +616,14 @@ html body .navbar .btn-nav-login:hover {
   font-family: 'Poppins', sans-serif !important;
   font-size: clamp(1.8rem, 3vw, 2.5rem) !important;
   font-weight: 700 !important;
-  color: #000000 !important;
+  color: var(--negro) !important;
   margin-bottom: 1rem !important;
   line-height: 1.2 !important;
 }
 
 .section-desc {
   font-size: 1rem !important;
-  color: #6B7280 !important;
+  color: var(--gris-medio) !important;
   line-height: 1.75 !important;
   max-width: 640px !important;
 }
@@ -380,6 +651,7 @@ html body .navbar .btn-nav-login:hover {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -388,15 +660,15 @@ html body .navbar .btn-nav-login:hover {
 .band-card {
   flex: 0 0 auto;
   width: 260px;
-  background: #FFFFFF;
+  background: var(--blanco);
   border-radius: 10px;
   padding: 20px 24px;
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--gris-borde);
   display: flex;
   align-items: center;
   gap: 16px;
   transition: box-shadow 0.2s, transform 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .band-card:hover {
@@ -409,31 +681,31 @@ html body .navbar .btn-nav-login:hover {
   flex: 0 0 44px;
   width: 44px;
   height: 44px;
-  background-color: rgba(164, 7, 6, 0.08);
+  background-color: var(--rojo-light);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  color: #A40706;
+  color: var(--rojo);
 }
 
 .band-card-content h5 {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #000000;
+  color: var(--negro);
   margin: 0 0 2px 0;
 }
 
 .band-card-content p {
   font-size: 0.8rem;
-  color: #6B7280;
+  color: var(--gris-medio);
   margin: 0;
   line-height: 1.4;
 }
 
 /* ==========================================================================
-   5. ACCEDE A OPERPAN (SECCIÓN REDISEÑADA)
+   6. ACCEDE A OPERPAN
    ========================================================================== */
 #accede {
   position: relative;
@@ -468,7 +740,7 @@ html body .navbar .btn-nav-login:hover {
 
 .accede-gris {
   flex: 1;
-  background-color: #F5F5F5;
+  background-color: var(--gris-fondo);
 }
 
 .accede-container {
@@ -477,7 +749,7 @@ html body .navbar .btn-nav-login:hover {
 }
 
 .accede-card {
-  background: #FFFFFF;
+  background: var(--blanco);
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   padding: 40px;
@@ -498,13 +770,13 @@ html body .navbar .btn-nav-login:hover {
 .accede-info h3 {
   font-size: 2rem;
   font-weight: 700;
-  color: #000000;
+  color: var(--negro);
   margin-bottom: 0.5rem;
 }
 
 .accede-desc {
   font-size: 1rem;
-  color: #6B7280;
+  color: var(--gris-medio);
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
@@ -520,12 +792,12 @@ html body .navbar .btn-nav-login:hover {
   align-items: center;
   gap: 10px;
   font-size: 0.9rem;
-  color: #2B2B2B;
+  color: var(--gris-oscuro);
   padding: 6px 0;
 }
 
 .accede-contact li i {
-  color: #A40706;
+  color: var(--rojo);
   font-size: 1rem;
   width: 20px;
   text-align: center;
@@ -533,16 +805,16 @@ html body .navbar .btn-nav-login:hover {
 
 .accede-institucional {
   font-size: 0.95rem;
-  color: #2B2B2B;
+  color: var(--gris-oscuro);
   background: #F9F9F9;
   padding: 16px 20px;
   border-radius: 8px;
-  border-left: 4px solid #A40706;
+  border-left: 4px solid var(--rojo);
   margin-top: 1rem;
 }
 
 .accede-institucional strong {
-  color: #A40706;
+  color: var(--rojo);
 }
 
 .accede-mapa {
@@ -559,11 +831,11 @@ html body .navbar .btn-nav-login:hover {
 }
 
 /* ==========================================================================
-   6. DESARROLLADORES
+   7. DESARROLLADORES
    ========================================================================== */
 #desarrolladores {
   padding: 96px 0 !important;
-  background-color: #FFFFFF !important;
+  background-color: var(--blanco) !important;
 }
 
 /* Desktop: tarjetas expansivas */
@@ -580,10 +852,10 @@ html body .navbar .btn-nav-login:hover {
   border-radius: 16px;
   overflow: hidden;
   position: relative;
-  background: #2B2B2B;
+  background: var(--gris-oscuro);
   transition: flex 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s;
   cursor: default;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   min-height: 480px;
   display: flex;
   flex-direction: column;
@@ -612,7 +884,7 @@ html body .navbar .btn-nav-login:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.85) 80%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.85) 80%);
   z-index: 1;
   opacity: 0.7;
   transition: opacity 0.4s;
@@ -626,7 +898,7 @@ html body .navbar .btn-nav-login:hover {
   position: relative;
   z-index: 2;
   padding: 30px 24px 20px;
-  color: #fff;
+  color: var(--blanco);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -692,7 +964,7 @@ html body .navbar .btn-nav-login:hover {
   gap: 8px;
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .team-card-content .team-email i {
@@ -703,10 +975,10 @@ html body .navbar .btn-nav-login:hover {
   position: relative;
   z-index: 2;
   padding: 12px 24px 20px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.85rem;
   font-style: italic;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
   opacity: 0;
   transition: opacity 0.3s 0.2s;
@@ -716,7 +988,7 @@ html body .navbar .btn-nav-login:hover {
   opacity: 1;
 }
 
-/* Expansión en hover */
+/* Expansión Hover en Escritorio */
 .team-cards-desktop .team-card {
   flex: 1;
   transition: flex 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -730,17 +1002,17 @@ html body .navbar .btn-nav-login:hover {
   flex: 0.8;
 }
 
-/* Mobile: acordeón */
+/* Mobile: Acordeón */
 .team-accordion .accordion-item {
-  border: 1px solid #EAEAEA;
+  border: 1px solid var(--gris-borde);
   border-radius: 10px !important;
   margin-bottom: 12px;
   overflow: hidden;
 }
 
 .team-accordion .accordion-button {
-  background: #FFFFFF;
-  color: #2B2B2B;
+  background: var(--blanco);
+  color: var(--gris-oscuro);
   font-weight: 600;
   padding: 16px 20px;
   gap: 12px;
@@ -750,12 +1022,12 @@ html body .navbar .btn-nav-login:hover {
 
 .team-accordion .accordion-button:focus {
   box-shadow: none;
-  border-color: #EAEAEA;
+  border-color: var(--gris-borde);
 }
 
 .team-accordion .accordion-button:not(.collapsed) {
   background: #F9F9F9;
-  color: #A40706;
+  color: var(--rojo);
 }
 
 .team-accordion .accordion-avatar {
@@ -772,12 +1044,12 @@ html body .navbar .btn-nav-login:hover {
 
 .team-accordion .accordion-body {
   padding: 20px;
-  background: #FFFFFF;
+  background: var(--blanco);
 }
 
 .team-accordion .accordion-body .team-role {
   font-weight: 600;
-  color: #A40706;
+  color: var(--rojo);
   font-size: 0.95rem;
 }
 
@@ -796,7 +1068,7 @@ html body .navbar .btn-nav-login:hover {
 
 .team-accordion .accordion-body .team-contributions li::before {
   content: '•';
-  color: #A40706;
+  color: var(--rojo);
   font-weight: 700;
   position: absolute;
   left: 0;
@@ -809,50 +1081,87 @@ html body .navbar .btn-nav-login:hover {
   gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #EAEAEA;
+  border-top: 1px solid var(--gris-borde);
 }
 
 .team-accordion .accordion-body .team-email i {
-  color: #A40706;
+  color: var(--rojo);
 }
 
 .team-accordion .accordion-body .team-card-footer {
   margin-top: 16px;
   padding: 12px 16px;
-  background: #F5F5F5;
+  background: var(--gris-fondo);
   border-radius: 6px;
   font-style: italic;
-  color: #6B7280;
+  color: var(--gris-medio);
   font-size: 0.9rem;
   border: none;
   opacity: 1;
 }
 
 /* ==========================================================================
-   7. FOOTER
+   8. COMPONENTES INSTITUCIONALES Y DE MARCA
+   ========================================================================== */
+.text-brand {
+  color: var(--rojo) !important;
+}
+
+.bg-brand-subtle {
+  background-color: var(--rojo-light) !important;
+}
+
+.border-brand-subtle {
+  border-color: rgba(164, 7, 6, 0.2) !important;
+}
+
+.seal-badge {
+  background-color: rgba(255, 215, 0, 0.15);
+  color: #8B6508;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.z-2 {
+  z-index: 2;
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ==========================================================================
+   9. FOOTER
    ========================================================================== */
 footer {
-  background-color: #000000 !important;
-  color: #D1D5DB !important;
+  background-color: var(--negro) !important;
+  color: var(--gris-claro) !important;
   padding: 64px 0 28px !important;
 }
 
 footer .footer-brand .name {
   font-size: 1.3rem !important;
   font-weight: 700 !important;
-  color: white !important;
+  color: var(--blanco) !important;
 }
 
 footer .footer-brand .desc {
   font-size: 0.82rem !important;
-  color: #D1D5DB !important;
+  color: var(--gris-claro) !important;
   margin-top: 4px !important;
 }
 
 footer h6 {
   font-size: 0.78rem !important;
   font-weight: 700 !important;
-  color: white !important;
+  color: var(--blanco) !important;
   text-transform: uppercase !important;
   letter-spacing: 1px !important;
   margin-bottom: 14px !important;
@@ -871,13 +1180,13 @@ footer ul li {
 }
 
 footer ul li i {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
   margin-right: 6px !important;
   font-size: 0.8rem !important;
 }
 
 footer .footer-divider {
-  border-color: #2B2B2B !important;
+  border-color: var(--gris-oscuro) !important;
   margin: 36px 0 20px !important;
 }
 
@@ -887,11 +1196,74 @@ footer .footer-bottom {
 }
 
 footer .footer-bottom span {
-  color: #A40706 !important;
+  color: var(--rojo) !important;
 }
 
 /* ==========================================================================
-   8. ANIMACIONES Y RESPONSIVE
+   10. MODALES Y NOTIFICACIONES
+   ========================================================================== */
+.modal-content {
+  border-radius: var(--radio) !important;
+  border: 1px solid var(--gris-borde) !important;
+  box-shadow: var(--sombra) !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--gris-borde) !important;
+  background-color: var(--gris-fondo) !important;
+}
+
+.modal-title {
+  font-weight: 700 !important;
+  color: var(--negro) !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--gris-borde) !important;
+}
+
+.btn-brand {
+  background-color: var(--rojo) !important;
+  color: var(--blanco) !important;
+  border: 1px solid var(--rojo) !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-brand:hover {
+  background-color: var(--rojo-hover) !important;
+  border-color: var(--rojo-hover) !important;
+  color: var(--blanco) !important;
+  box-shadow: 0 4px 12px rgba(164, 7, 6, 0.2) !important;
+}
+
+.btn-secondary-custom {
+  background-color: var(--gris-fondo) !important;
+  color: var(--gris-oscuro) !important;
+  border: 1px solid var(--gris-claro) !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1.25rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #e5e7eb !important;
+  color: var(--negro) !important;
+}
+
+.toast-custom {
+  background-color: var(--negro) !important;
+  color: var(--blanco) !important;
+  border-left: 4px solid var(--rojo) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--sombra) !important;
+}
+
+/* ==========================================================================
+   11. ACCESIBILIDAD, UTILIDADES Y PRINT
    ========================================================================== */
 .fade-in {
   opacity: 0;
@@ -904,18 +1276,54 @@ footer .footer-bottom span {
   transform: translateY(0);
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--rojo) !important;
+  outline-offset: 2px !important;
+}
+
+.text-danger-custom {
+  color: var(--rojo) !important;
+}
+
+.bg-danger-custom {
+  background-color: var(--rojo) !important;
+}
+
+.border-danger-custom {
+  border-color: var(--rojo) !important;
+}
+
+/* ==========================================================================
+   12. RESPONSIVE Y MEDIA QUERIES
+   ========================================================================== */
 @media (max-width: 1399px) and (min-width: 300px) {
   #cta .row .col-lg-4 iframe {
     width: 90% !important;
     height: 100% !important;
     max-width: 100%;
   }
+
   #cta .row {
     gap: 1.5rem !important;
   }
 }
 
 @media (max-width: 991px) {
+  #mainNav {
+    background-color: var(--blanco);
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+  }
+
+  #navbar.navbar.scrolled #mainNav {
+    background-color: #111111;
+  }
+
   .hero-carousel-vertical {
     height: 320px !important;
   }
@@ -939,6 +1347,11 @@ footer .footer-bottom span {
 
   .accede-mapa iframe {
     min-height: 240px;
+  }
+
+  .hero-oferta {
+    padding: 0 !important;
+    margin-top: 0 !important;
   }
 }
 
@@ -976,5 +1389,45 @@ footer .footer-bottom span {
 
   .team-cards-desktop {
     min-height: auto;
+  }
+
+  .hero-oferta {
+    padding: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .oferta-cat {
+    min-width: 70px !important;
+    padding: 10px 12px !important;
+  }
+
+  .hero-oferta-preview {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 16px !important;
+  }
+}
+
+@media print {
+
+  #navbar,
+  footer,
+  .infinite-band-wrapper,
+  .hero-badges {
+    display: none !important;
+  }
+
+  body {
+    background: var(--blanco) !important;
+    color: var(--negro) !important;
+  }
+
+  #inicio,
+  #productos,
+  #acciones,
+  #accede,
+  #desarrolladores {
+    padding: 20px 0 !important;
+    min-height: auto !important;
   }
 }
