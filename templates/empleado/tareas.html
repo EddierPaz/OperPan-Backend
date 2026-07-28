@@ -14,10 +14,13 @@
 
 {% block content %}
 <div class="dashboard-container">
+    
+    <!-- Encabezado y Resumen -->
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas</h3>
         <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
     </div>
+
     <!-- ==================== KPIs ==================== -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
@@ -66,15 +69,15 @@
         </div>
     </div>
 
-    <!-- ==================== FILTROS EMPLEADO ==================== -->
+    <!-- ==================== TÍTULO DE SECCIÓN ==================== -->
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-        <h3><i class="bi bi-list-task me-2"></i> Mis tareas</h3>
+        <h3 class="m-0"><i class="bi bi-list-task me-2"></i> Mis tareas</h3>
     </div>
     
-        <!-- ==================== FILTROS Y BÚSQUEDA EMPLEADO ==================== -->
+    <!-- ==================== FILTROS Y BÚSQUEDA ==================== -->
     <form method="GET" action="" class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 w-100">
         
-        <!-- Buscador Integrado del Empleado -->
+        <!-- Buscador Integrado -->
         <div class="search-box-container flex-grow-1" style="max-width: 400px;">
             <div class="search-input-group">
                 <input type="text" 
@@ -90,7 +93,7 @@
             </div>
         </div>
 
-        <!-- Pestañas de Filtros (Igual que Admin) -->
+        <!-- Pestañas de Filtros -->
         <div class="novedades-tabs ms-auto">
             <a href="?{% if request.GET %}{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
             class="novedades-tab {% if not request.GET.estado and not request.GET.vencidas %}active{% endif %}">
@@ -120,7 +123,7 @@
 
     </form>
 
-    <!-- ==================== LISTADO DE TAREAS EMPLEADO ==================== -->
+    <!-- ==================== LISTADO DE TAREAS ==================== -->
     <div id="tasksContainer" class="row g-4">
         {% if tareas %}
             {% for tarea in tareas %}
@@ -129,10 +132,9 @@
                     
                     <!-- Cuerpo de la Tarjeta -->
                     <div>
-                        <!-- Encabezado: Título + Bandera Prioridad + Badge Estado -->
+                        <!-- Encabezado: Título + Prioridad + Estado -->
                         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                             <div class="d-flex align-items-center gap-2 text-truncate">
-                                <!-- Prioridad con ícono -->
                                 {% if tarea.prioridad == 'ALTA' %}
                                     <i class="bi bi-flag-fill text-danger fs-6" title="Alta prioridad"></i>
                                 {% elif tarea.prioridad == 'MEDIA' %}
@@ -146,7 +148,7 @@
                                 </h5>
                             </div>
                             
-                            <!-- Badge de Estado / Vencida -->
+                            <!-- Badges de Estado -->
                             {% if tarea.esta_vencida %}
                                 <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">Vencida</span>
                             {% elif tarea.estado == 'PENDIENTE' %}
@@ -176,10 +178,9 @@
                         </div>
                     </div>
 
-                    <!-- Footer de la Tarjeta: Botones Rápidos -->
+                    <!-- Footer de la Tarjeta: Acciones -->
                     <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto gap-2">
                         
-                        <!-- 1. CASO PENDIENTE -->
                         {% if tarea.estado == 'PENDIENTE' %}
                             <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="m-0">
                                 {% csrf_token %}
@@ -192,7 +193,6 @@
                                 <i class="bi bi-eye me-1"></i> Detalle
                             </a>
 
-                        <!-- 2. CASO EN PROGRESO -->
                         {% elif tarea.estado == 'EN_PROGRESO' %}
                             <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="m-0">
                                 {% csrf_token %}
@@ -205,7 +205,6 @@
                                 <i class="bi bi-eye me-1"></i> Detalle
                             </a>
 
-                        <!-- 3. CASO FINALIZADA -->
                         {% else %}
                             <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-primary-corporate rounded-pill px-3 w-100 text-center">
                                 <i class="bi bi-eye me-1"></i> Ver detalle
@@ -227,14 +226,15 @@
         {% endif %}
     </div>
 
-    <footer>
+    <!-- Pie de página informativo -->
+    <footer class="mt-4 text-center text-muted small">
         <i class="bi bi-shield-check"></i> Trazabilidad garantizada - Cada cambio queda registrado con fecha y hora.
     </footer>
 </div>
 
 <!-- ==================== MODAL DE DETALLE ==================== -->
 {% if tarea_detalle %}
-<div class="modal fade show" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
@@ -294,7 +294,7 @@
                     {% endif %}
                 </div>
 
-                <!-- ==================== SECCIÓN CAMBIAR ESTADO / EVIDENCIA ==================== -->
+                <!-- Cambiar Estado / Evidencia -->
                 {% if puede_cambiar and not tarea_detalle.esta_vencida %}
                     <hr />
                     <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
@@ -342,7 +342,7 @@
             </div>
 
             <div class="modal-footer border-0">
-                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate ">
+                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate">
                     Cerrar
                 </a>
             </div>
@@ -357,9 +357,9 @@
 <script src="{% static 'js/empleado/tareas.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var detailModal = document.getElementById('taskDetailModal');
-        if (detailModal) {
-            var modal = new bootstrap.Modal(detailModal);
+        var detailModalEl = document.getElementById('taskDetailModal');
+        if (detailModalEl) {
+            var modal = new bootstrap.Modal(detailModalEl);
             modal.show();
         }
     });

@@ -1,6 +1,8 @@
 /* ============================================================
-   GLOBALES Y RESET (OperPan - Estación Paisa)
+   BASE.CSS 
    ============================================= */
+
+/* ── RESET ── */
 * {
   margin: 0;
   padding: 0;
@@ -11,34 +13,40 @@ body {
   font-family: 'Poppins', sans-serif !important;
   background: #F4F7FC;
   overflow-x: hidden;
+  scrollbar-color: #A40706 #F4F7FC; /* Firefox: barra roja, fondo claro */
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
+/* Scrollbar rojo (Chrome, Edge, Safari) para el body y cualquier
+   contenedor con overflow, ej: .table-responsive-stack */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F4F7FC;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #A40706;
+  border-radius: 20px;
+  border: 2px solid #F4F7FC;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8a0605;
+}
+
+h1, h2, h3, h4, h5 {
   font-weight: 700;
   color: #000000;
 }
 
-h1 {
-  font-size: 2.5rem;
-}
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2.0rem; }
+h3 { font-size: 1.5rem; }
 
-h2 {
-  font-size: 2rem;
-}
-
-h3 {
-  font-size: 1.5rem;
-}
-
-p,
-span,
-a,
-li,
-button {
+p, span, a, li, button {
   font-size: 1rem;
 }
 
@@ -53,7 +61,7 @@ button {
   width: 280px;
   background-color: #000000;
   color: #FFFFFF;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   position: fixed;
   height: 100vh;
   z-index: 1000;
@@ -149,7 +157,7 @@ button {
 }
 
 .soporte {
-  color: #ffffff80;
+  color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
 }
 
@@ -159,37 +167,45 @@ button {
   color: #A40706;
 }
 
-/* ── Contenedor General ── */
+/* ── CONTENIDO PRINCIPAL Y TOPBAR ── */
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  transition: all 0.3s ease;
+  min-width: 0; /* Previene desbordamientos de grid/flex */
+}
+
 .dashboard-container {
   padding: 2rem;
 }
 
 .row {
+  margin-left: 0 !important;
   margin-right: 0 !important;
-}
-
-/* ── CONTENIDO PRINCIPAL Y TOPBAR ── */
-.main-content {
-  flex: 1;
-  margin-left: 280px;
-  transition: all 0.3s;
 }
 
 .topbar {
   background: #000000;
-  padding: 0.8rem 2rem;
+  padding: 0.8rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 15px;
   border-bottom: 1px solid #2C2C2C;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .company-info h2 {
   color: white;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   margin-bottom: 0;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .company-info p {
@@ -201,25 +217,28 @@ button {
 .user-info {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .user-badge {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0.4rem 1rem;
+  gap: 8px;
+  padding: 0.4rem 0.9rem;
   border-radius: 60px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .user-badge i {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: white;
 }
 
 .user-badge span {
   color: white;
   font-weight: 500;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .user-badge:hover i,
@@ -237,6 +256,10 @@ button {
   transition: 0.2s;
   cursor: pointer;
   text-decoration: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-secondary-corporate:hover {
@@ -245,7 +268,7 @@ button {
 }
 
 /* ============================================================
-   COMPONENTE BASE: TARJETAS DE MÉTRICAS (KPIS / STAT CARDS)
+   TARJETAS DE MÉTRICAS (KPIS / STAT CARDS)
    ============================================= */
 .stat-card,
 .kpi-card {
@@ -307,7 +330,7 @@ button {
 }
 
 /* ============================================================
-   COMPONENTES REUTILIZABLES (antes duplicados por módulo)
+   COMPONENTES DE TARJETAS Y TABLAS (texto no se corta)
    ============================================= */
 .card-modern {
   background: white;
@@ -322,6 +345,44 @@ button {
   background: transparent;
   padding: 1rem 0rem;
   font-weight: 700;
+}
+
+/* Envoltorio de tabla adaptable sin romper palabras */
+.table-responsive-stack {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-custom {
+  width: 100% !important;
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.table-custom thead th {
+  background-color: #F8F9FC !important;
+  color: #64748b !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 1rem 0.8rem;
+  white-space: nowrap;
+  word-break: normal;
+}
+
+.table-custom tbody td {
+  padding: 0.9rem 0.8rem;
+  vertical-align: middle;
+  white-space: normal; /* Permite saltos de línea naturales */
+  word-break: normal;  /* Evita que rompa letras individuales */
+  overflow-wrap: break-word;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #f8fafc !important;
 }
 
 .form-label {
@@ -353,6 +414,7 @@ button {
   font-weight: 500;
   transition: 0.2s;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-primary-corporate:hover {
@@ -376,44 +438,13 @@ button {
   border-color: #444444;
 }
 
-.table-responsive {
-  background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  overflow-x: auto;
-}
-
-.table-custom {
-  width: 100% !important;
-  margin-bottom: 0;
-}
-
-.table-custom thead th {
-  background-color: #F8F9FC !important;
-  color: #64748b !important;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 0.5px;
-  border-bottom: 2px solid #e2e8f0;
-  padding: 1rem;
-  white-space: nowrap;
-}
-
-.table-custom tbody td {
-  padding: 0.9rem 1rem;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.table-custom tbody tr:hover {
-  background-color: #f8fafc !important;
-}
-
 .badge {
   padding: 0.4rem 0.8rem;
   border-radius: 40px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .badge-active {
@@ -428,6 +459,10 @@ button {
   z-index: 1100;
 }
 
+/* ============================================================
+   PESTAÑAS DE FILTRO (componente compartido)
+   Usado en Novedades y en Tareas para filtrar por estado
+   ============================================= */
 .novedades-tabs {
   background: white;
   border-radius: 60px;
@@ -498,15 +533,70 @@ footer {
     width: 100%;
   }
 
+  .dashboard-container {
+    padding: 1rem;
+  }
+
   .menu-toggle {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: #A40706;
     color: white;
     border: none;
     padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 1.3rem;
+    border-radius: 12px;
+    font-size: 1.2rem;
     cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .topbar {
+    padding: 0.8rem 1rem;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+  }
+
+  .topbar-left {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .company-info h2 {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-info {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+    gap: 10px;
+  }
+
+  .btn-secondary-corporate {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* En celulares muy angostos, achicamos y truncamos el nombre en vez de ocultarlo */
+@media (max-width: 480px) {
+  .user-badge {
+    padding: 0.4rem 0.6rem;
+    max-width: 55vw;
+  }
+
+  .user-badge span {
+    font-size: 0.75rem;
+    max-width: 32vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

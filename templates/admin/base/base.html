@@ -49,7 +49,8 @@
                         <a href="{% url 'user_list' %}"><i class="bi bi-people"></i> Cuentas</a>
                     </li>
                     <li class="{% block active_tareas %}{% endblock %}">
-                        <a href="{% url 'tareas:admin_tareas_list' %}"><i class="bi bi-list-task"></i> Tareas Operativas</a>
+                        <a href="{% url 'tareas:admin_tareas_list' %}"><i class="bi bi-list-task"></i> Tareas
+                            Operativas</a>
                     </li>
                     <li class="{% block active_novedades %}{% endblock %}">
                         <a href="{% url 'novedades:novedades_admin' %}"><i class="bi bi-megaphone"></i> Novedades</a>
@@ -76,7 +77,7 @@
         <div class="main-content">
             <header class="topbar">
 
-                <div class="d-flex align-items-center gap-3">
+                <div class="topbar-left d-flex align-items-center gap-3">
                     <button class="menu-toggle" id="menuToggle">
                         <i class="bi bi-list"></i>
                     </button>
@@ -98,7 +99,7 @@
 
                     <a href="{% url 'logout' %}" class="btn-secondary-corporate">
                         <i class="bi bi-box-arrow-right"></i> Salir
-                    </a>    
+                    </a>
                 </div>
 
             </header>

@@ -1,6 +1,5 @@
 // ============================================================
-// TAREAS - EMPLEADO (OperPan)
-// JS mínimo: solo para funcionalidades que requieren interacción
+// TAREAS - EMPLEADO 
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -26,28 +25,4 @@ document.addEventListener('DOMContentLoaded', function() {
         mostrarNotificacion(msg.innerText, tipo);
         msg.remove();
     });
-
-    // Sidebar toggle (ya manejado por base.html, pero por si acaso)
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-        });
-    }
-
-    // Cerrar sidebar al hacer clic fuera (en móvil)
-    document.addEventListener('click', function(event) {
-        if (sidebar && sidebar.classList.contains('active')) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('active');
-            }
-        }
-    });
 });
-
-// Función global para cerrar sidebar (si se necesita desde otros lugares)
-function closeSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.remove('active');
-}

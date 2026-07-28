@@ -1,23 +1,42 @@
+// ============================================================
+// UTILIDADES COMPARTIDAS
+// Antes estaban duplicadas en Permisos, Incapacidades y Memorandos.
+// Ahora viven en un solo lugar y todos los módulos las reutilizan.
+// ============================================================
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function getCSRFToken() {
+    return getCookie('csrftoken');
+}
+
+function showMessage(msg) {
+    const toast = document.getElementById('liveToast');
+    if (toast) {
+        document.getElementById('toastMsg').innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    } else {
+        alert(msg);
+    }
+}
+
+
 // ============================== MÓDULO PERMISOS ==============================
 (function(){
     let currentPermisoId = null;
-
-    // Obtener token CSRF
-    function getCSRFToken() {
-        const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
-        return cookie ? cookie.split('=')[1] : '';
-    }
-
-    function showMessage(msg) {
-        const toast = document.getElementById('liveToast');
-        if (toast) {
-            document.getElementById('toastMsg').innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-        } else {
-            alert(msg);
-        }
-    }
 
     function updatePermisosKPIs() {
         fetch('/novedades/permisos/historial/?estado=pendiente')
@@ -230,22 +249,6 @@
 // ============================== MÓDULO INCAPACIDADES ==============================
 (function(){
     let currentIncapId = null;
-
-    function getCSRFToken() {
-        const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
-        return cookie ? cookie.split('=')[1] : '';
-    }
-
-    function showMessage(msg) {
-        const toast = document.getElementById('liveToast');
-        if (toast) {
-            document.getElementById('toastMsg').innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-        } else {
-            alert(msg);
-        }
-    }
 
     function updateIncapKPIs() {
         fetch('/novedades/incapacidades/historial/?estado=pendiente')
@@ -585,22 +588,6 @@ document.querySelectorAll('.novedades-tab').forEach(tab => {
 // ============================================================
 // CERTIFICADOS - Bandeja de pendientes y aprobación
 // ============================================================
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
 let certificadoSeleccionadoId = null;
 
 async function cargarCertificadosPendientes() {
@@ -676,7 +663,7 @@ document.getElementById('certificadosConfirmApprove')?.addEventListener('click',
     try {
         const resp = await fetch(`/novedades/certificados/${certificadoSeleccionadoId}/aprobar/`, {
             method: 'POST',
-            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            headers: { 'X-CSRFToken': getCSRFToken() }
         });
         const data = await resp.json();
 
@@ -714,7 +701,7 @@ document.getElementById('certificadosConfirmReject')?.addEventListener('click', 
         const resp = await fetch(`/novedades/certificados/${certificadoSeleccionadoId}/rechazar/`, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
+                'X-CSRFToken': getCSRFToken(),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ motivo: motivo })
@@ -747,24 +734,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Variables de estado
     let memorandosData = [];
     let empleadosData = [];
-
-    // Obtener token CSRF (reutiliza la función getCookie definida arriba)
-    function getCSRFToken() {
-        const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
-        return cookie ? cookie.split('=')[1] : '';
-    }
-
-    // Mostrar mensaje toast (reutiliza la función showMessage definida en el módulo de permisos)
-    function showMessage(msg) {
-        const toast = document.getElementById('liveToast');
-        if (toast) {
-            document.getElementById('toastMsg').innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-        } else {
-            alert(msg);
-        }
-    }
 
     // ============================================================
     // 1. CARGAR LISTA DE EMPLEADOS PARA EL DROPDOWN

@@ -12,32 +12,37 @@
 
 {% block content %}
 <main class="dashboard-container">
-    <!-- Pestañas principales -->
-    <div class="novedades-tabs d-flex align-items-center">
 
-        <button class="novedades-tab active" data-tab="permisos">
-            <i class="bi bi-file-earmark-text"></i> Permisos
-        </button>
-
-        <button class="novedades-tab" data-tab="incapacidades">
-            <i class="bi bi-clipboard2-pulse"></i> Incapacidades
-        </button>
-
-        <button class="novedades-tab" data-tab="certificados">
-            <i class="bi bi-award"></i> Certificados
-        </button>
-
-        <!-- NUEVO -->
-        <button class="novedades-tab" data-tab="memorandos">
-            <i class="bi bi-file-pdf"></i> Memorandos
-        </button>
-
-        <span class="card-header text-muted small ms-auto">
-            {{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}
-        </span>
-
+    <!-- Encabezado con la estructura idéntica de propiedades que pides -->
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <!-- Título principal opcional o espacio alineado -->
+        <h3 class="m-0 text-title fw-bold">
+            <i class="bi bi-journal-text me-2"></i>Novedades
+        </h3>
+        <!-- Fecha con exactamente tus clases -->
+        <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
     </div>
 
+    <!-- Pestañas situadas justo debajo -->
+    <div class="novedades-tabs-container mb-4">
+        <div class="novedades-tabs d-flex align-items-center flex-wrap">
+            <button class="novedades-tab active" data-tab="permisos">
+                <i class="bi bi-file-earmark-text"></i> Permisos
+            </button>
+
+            <button class="novedades-tab" data-tab="incapacidades">
+                <i class="bi bi-clipboard2-pulse"></i> Incapacidades
+            </button>
+
+            <button class="novedades-tab" data-tab="certificados">
+                <i class="bi bi-award"></i> Certificados
+            </button>
+
+            <button class="novedades-tab" data-tab="memorandos">
+                <i class="bi bi-file-pdf"></i> Memorandos
+            </button>
+        </div>
+    </div>
 
     <!-- ==================== PESTAÑA PERMISOS ==================== -->
     <div id="tabPermisos" class="tab-pane active">
