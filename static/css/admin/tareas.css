@@ -1,16 +1,6 @@
-/* DASHBOARD */
-.dashboard-container {
-    padding: 2rem;
-}
-
-/* Tarjetas de resumen */
-.stat-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-    border: 1px solid #EDF2F7;
-}
+/* ==============================================
+   MÓDULO DE TAREAS 
+============================================== */
 
 /* Formulario moderno */
 .form-section {
@@ -22,58 +12,37 @@
     border: 1px solid #EDF2F7;
 }
 
-.form-label {
-    font-weight: 600;
-    color: #1E293B;
-    margin-bottom: 0.5rem;
-}
-
-.form-control,
-.form-select {
-    border-radius: 16px;
-    border: 1.5px solid #E2E8F0;
-    padding: 0.7rem 1rem;
-    font-family: 'Poppins', sans-serif;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: #A40706;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
-}
-
-.btn-primary-corporate {
-    background: #A40706;
+/* ── Botones corporativos adicionales ── */
+.btn-corporate-sec {
+    background: rgb(54, 144, 166);
+    color: white;
     border: none;
-    padding: 0.6rem 1.5rem;
+    padding: 0.5rem 1.2rem;
     border-radius: 40px;
-    font-weight: 600;
-    transition: 0.2s;
-    color: white;
-}
-
-.btn-primary-corporate:hover {
-    background: #8a0504;
-    transform: translateY(-2px);
-    color: white;
-}
-
-.btn-outline-corporate {
-    background: white;
-    border: 1px solid #a40706;
-    border-radius: 10px;
-    padding: 0.4rem 1rem;
-    transition: 0.3s;
-    text-decoration: none;
-    font-size: 0.8rem;
     font-weight: 500;
-    color: #a40706;
+    transition: 0.2s;
+    cursor: pointer;
 }
 
-.btn-outline-corporate:hover {
-    background: #A40706;
+.btn-corporate-sec:hover {
+    background: rgb(42, 112, 130);
     color: white;
-    border-color: #A40706;
+}
+
+.btn-corporate-thi {
+    background: rgb(0, 128, 0);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 40px;
+    font-weight: 500;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.btn-corporate-thi:hover {
+    background: rgb(0, 100, 0);
+    color: white;
 }
 
 /* Tarjetas de tareas */
@@ -85,8 +54,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid #EDF2F7;
-    
-    /* CORRECCIÓN DE SUPERPOSICIÓN Y CORTE DE MENÚS */
     overflow: visible !important;
     position: relative;
 }
@@ -96,7 +63,6 @@
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* Eleva la tarjeta sobre las demás cuando su menú está abierto */
 .task-card:has(.dropdown-menu.show) {
     z-index: 100;
 }
@@ -120,13 +86,7 @@
     background-color: #F8FAFC;
 }
 
-.card-header {
-    background: transparent;
-    border-bottom: 1px solid #EDF2F7;
-    padding: 1rem 0rem;
-    font-weight: 700;
-}
-
+/* ── Prioridades ── */
 .priority-high {
     color: #B91C1C;
     background: #FEF2F0;
@@ -151,6 +111,7 @@
     font-size: 0.75rem;
 }
 
+/* ── Estados de tarea ── */
 .badge-status {
     padding: 0.3rem 0.8rem;
     border-radius: 40px;
@@ -172,51 +133,7 @@
     color: #1E7B48;
 }
 
-/* Filtros */
-.novedades-tabs {
-    background: white;
-    border-radius: 60px;
-    padding: 0.4rem 0.6rem;
-    display: inline-flex;
-    gap: 0.3rem;
-    border: 1px solid #EDF2F7;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.novedades-tab {
-    background: transparent;
-    border: none;
-    padding: 0.5rem 1.1rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-radius: 40px;
-    transition: all 0.2s ease;
-    color: #475569;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.novedades-tab i {
-    margin-right: 6px;
-    font-size: 0.95rem;
-    line-height: 1;
-    display: inline-block;
-}
-
-.novedades-tab:hover:not(.active) {
-    background-color: #f8f9fa;
-    color: #1e293b;
-}
-
-.novedades-tab.active {
-    background: #A40706;
-    color: white !important;
-}
-
-/* Buscador */
+/* ── Buscador ── */
 .search-input-group {
     background: white;
     border-radius: 40px;
@@ -260,16 +177,13 @@
     color: #A40706;
 }
 
-/* Toast */
-.toast-message {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1100;
-}
-
 .text-title {
     font-weight: bold;
     font-size: 1.25rem;
     color: #a40706;
+}
+
+/* Quita el borde del card-header suelto en el resumen de tareas */
+.dashboard-container > .card-header {
+    border-bottom: none;
 }

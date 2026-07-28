@@ -1,22 +1,10 @@
 /* ==============================================
     ESTILOS DEL MÓDULO DE SOLICITUDES (EMPLEADO)
 ============================================== */
-.dashboard-container {
-    padding: 2rem;
-}
 
 /* Cards de resumen */
 .stats-row {
     margin-bottom: 2rem;
-}
-
-.stat-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-    border: 1px solid #EDF2F7;
-    transition: 0.2s;
 }
 
 .stat-card i {
@@ -33,23 +21,24 @@
     transition: 0.2s;
     border: 1px solid #F0F2F5;
 }
+
 .request-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* Solicitud pendiente */
-.request-pending{
+.request-pending {
     border-left: 6px solid #FFC107;
 }
 
 /* Solicitud aprobada */
-.request-approved{
+.request-approved {
     border-left: 6px solid #198754;
 }
 
 /* Solicitud rechazada */
-.request-rejected{
+.request-rejected {
     border-left: 6px solid #DC3545;
 }
 
@@ -63,41 +52,8 @@
 }
 
 .card-modern .card-header {
-    background: transparent;
-    border-bottom: 1px solid #EDF2F7;
     padding: 1.2rem 1.5rem;
-    font-weight: 700;
 }
-
-/* Filtros */
-.novedades-tabs {
-    background: white;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid #E9ECF3;
-    padding-bottom: 0.5rem;
-    flex-wrap: wrap;
-}
-.novedades-tab {
-    background: transparent;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    font-weight: 600;
-    border-radius: 40px;
-    transition: 0.2s;
-    color: #475569;
-}
-.novedades-tab i {
-    margin-right: 8px;
-}
-.novedades-tab.active {
-    background: #A40706;
-    color: white;
-}
-
 
 .btn-outline-action {
     border-color: #A40706;
@@ -106,23 +62,9 @@
 }
 
 .btn-outline-action:hover {
-    background-color: #A40706; 
+    background-color: #A40706;
     color: aliceblue;
     border-radius: 40px;
-}
-
-.btn-outline-corporate {
-    border: 1.5px solid #1E1E1E;
-    background: transparent;
-    color: #1E1E1E;
-    padding: 0.7rem 1.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-.btn-outline-corporate:hover {
-    border-color: #A40706;
-    color: #A40706;
 }
 
 /* Estilos para badges */
@@ -130,16 +72,18 @@
     background: #FFF3E0;
     color: #C77A00;
 }
+
 .badge-approved {
     background: #E0F2E9;
     color: #1E7B48;
 }
+
 .badge-rejected {
     background: #FEF2F0;
     color: #B91C1C;
 }
 
-.btn-corporate{
+.btn-corporate {
     background: white;
     color: #555;
     border: 1px solid #ddd;
@@ -147,13 +91,13 @@
     transition: .25s;
 }
 
-.btn-corporate:hover{
+.btn-corporate:hover {
     background: #A40706;
     color: white;
     border-color: #A40706;
 }
 
-.btn-corporate.active{
+.btn-corporate.active {
     background: #A40706;
     color: white;
     border-color: #A40706;
@@ -164,28 +108,14 @@
     .request-card {
         padding: 0.75rem;
     }
+
     .btn-group {
         flex-wrap: wrap;
         gap: 0.25rem;
     }
+
     .btn-group .btn {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
     }
-}
-/* Botón primario corporativo - mismo estilo que en asistencia */
-.btn-primary-corporate {
-    background: #A40706 !important;
-    color: white !important;
-    border: 1px solid #A40706 !important;
-    padding: 0.6rem 1.5rem;
-    border-radius: 40px;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-.btn-primary-corporate:hover {
-    background: #8a0504 !important;
-    color: white !important;
-    transform: translateY(-2px);
 }

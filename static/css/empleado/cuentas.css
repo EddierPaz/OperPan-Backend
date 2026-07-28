@@ -1,11 +1,6 @@
 /* ==============================================
-   PERFIL EMPLEADO - OperPan · Estación Paisa
-   static/css/empleado/cuentas.css
+   PERFIL EMPLEADO - OperPan 
 ============================================== */
-
-.dashboard-container {
-    padding: 2rem;
-}
 
 /* ── Tarjeta principal ── */
 .employee-card {
@@ -108,87 +103,4 @@
     text-align: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     border: 1px solid #EDF2F7;
-}
-
-.metric-value {
-    font-size: 2rem;
-    font-weight: 800;
-}
-
-/* ── Tabla ── */
-.table-custom {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.table-custom thead {
-    background: #F8F9FC;
-}
-
-.badge-success {
-    background: #E0F2E9;
-    color: #1E7B48;
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
-}
-
-.badge-warning {
-    background: #FFF3E0;
-    color: #C77A00;
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
-}
-
-.badge-info {
-    background: #E6F0FA;
-    color: #1A5D9C;
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
-}
-
-/* ── Documentos ── */
-.doc-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    border: 1px solid #EDF2F7;
-}
-
-/* ── Botones corporativos ── */
-.btn-primary-corporate {
-    background: #A40706;
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 40px;
-    font-weight: 500;
-    transition: 0.2s;
-    cursor: pointer;
-}
-
-.btn-primary-corporate:hover {
-    background: #8a0605;
-    color: white;
-}
-
-.btn-outline-corporate {
-    border: 1.5px solid #A40706;
-    background: transparent;
-    color: #A40706;
-    padding: 0.5rem 1.2rem;
-    border-radius: 40px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn-outline-corporate:hover {
-    background: #A40706;
-    color: white;
 }

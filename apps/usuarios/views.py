@@ -104,7 +104,7 @@ def user_list_create(request):
         user_form = UserForm()
         perfil_form = PerfilEmpleadoForm()
     context = {
-        "fecha_hoy": timezone.now().date(),
+        "fecha_hoy": timezone.localdate(),
         "usuarios": usuarios,
         "total_usuarios": usuarios.count(),
         "total_admins": usuarios.filter(

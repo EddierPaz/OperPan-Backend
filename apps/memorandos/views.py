@@ -3,6 +3,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, HttpResponseForbidden, Http404, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from apps.usuarios.decorators import admin_required_json as admin_required
 from apps.usuarios.decorators import empleado_required, empleado_required_json
@@ -113,7 +114,8 @@ def memorandos_empleados_lista(request):
 @empleado_required
 def memorandos_empleado(request):
     """Vista del empleado para ver sus propios memorandos."""
-    return render(request, 'empleado/memorandos/memorandos.html')
+    fecha = timezone.localdate(),
+    return render(request, 'empleado/memorandos/memorandos.html', {'fecha_hoy': fecha})
 
 
 @login_required

@@ -1,378 +1,336 @@
+/* ==============================================
+   MÓDULO DE ASISTENCIA Y HORARIOS 
+============================================== */
 
-
-/* CONTENIDO DINÁMICO */
-.dashboard-container {
-    padding: 2rem;
-}
-
-/* Cards de resumen */
-.stats-row {
-    margin-bottom: 2rem;
-}
-
-.stat-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-    border: 1px solid #EDF2F7;
-    transition: 0.2s;
-}
-
-.stat-card i {
-    font-size: 2rem;
-    color: #A40706;
-}
-
-/* Tarjeta de empleado */
+/* ── Tarjetas Grandes Contenedoras ── */
 .employee-card {
-    background: white;
-    border-radius: 24px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.8rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f2f5;
 }
 
-.employee-avatar {
-    width: 70px;
-    height: 70px;
-    background: #F0F2F5;
-    border-radius: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: #A40706;
+.employee-card .d-flex.justify-content-between {
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.badge-role {
-    background: #A40706;
-    color: white;
-    padding: 0.2rem 0.8rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
+.employee-card h3,
+.employee-card h4 {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  margin-bottom: 0;
 }
 
-/* Botones de acción */
-.action-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-}
-
-.btn-primary-corporate {
-    background: #A40706;
-    border: none;
-    padding: 0.7rem 1.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-.btn-primary-corporate:hover {
-    background: #8a0504;
-    transform: translateY(-2px);
-}
-
-.btn-outline-corporate {
-    border: 1.5px solid #A40706;
-    background: transparent;
-    color: #A40706;
-    padding: 0.7rem 1.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-}
-
-.btn-outline-corporate:hover {
-    background: #A40706;
-    color: white;
-}
-
-/* Tabla moderna */
-.table-custom {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.table-custom thead {
-    background: #F8F9FC;
-    color: #1E293B;
-}
-
-.table-custom th {
-    font-weight: 600;
-    border-bottom: 1px solid #E9ECF3;
-    padding: 1rem;
-}
-
-.table-custom td {
-    padding: 1rem;
-    vertical-align: middle;
-}
-
-.badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
-    font-weight: 500;
-}
-
-.badge-success {
-    background: #E0F2E9;
-    color: #1E7B48;
-}
-
-.badge-warning {
-    background: #FFF3E0;
-    color: #C77A00;
-}
-
-.badge-danger {
-    background: #FEF2F0;
-    color: #B91C1C;
-}
-
-.badge-info {
-    background: #E6F0FA;
-    color: #1A5D9C;
-}
-
-.horario-card {
-    border-radius: 16px;
-}
-
+/* ── Tarjetas Internas / Métricas / Cajas ── */
+.metric-card,
 .info-box {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 16px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #edf2f7;
+  height: 100%;
+}
+
+.info-box span.text-muted {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  display: block;
 }
 
 .info-box h5 {
-    margin: 8px 0 0;
-    font-weight: 700;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-weight: 700;
+  color: #000000;
 }
 
+/* ── Estilos de Calendario y Horarios ── */
 .dias-semana {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 10px;
-    text-align: center;
-    font-weight: 600;
-    color: #6c757d;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
 .calendario-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
 }
 
 .dia-card {
-    min-height: 70px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #f5f7fa;
-
-    border-radius: 12px;
-
-    font-weight: 600;
-
-    transition: .2s;
-}
-
-.dia-card:hover {
-    transform: translateY(-2px);
-}
-
-.dia-card.descanso {
-    background: #A40706;
-    color: white;
-}
-
-.dia-card small {
-    display: block;
-    font-size: .75rem;
-}
-
-/* ============================================================
-   BLOQUE: ASISTENCIA DEL DÍA
-============================================================ */
-
-.resumen-asistencia {
-  display: flex;
-  align-items: center;
-  gap: .9rem;
-  background: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  padding: 1rem 1.1rem;
-  height: 100%;
-}
-.resumen-asistencia .resumen-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
-  background: rgba(164, 7, 6, .08);
-  color: #A40706;
+  min-height: 65px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.dia-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+
+.dia-card.descanso {
+  background: #a40706;
+  border-color: #a40706;
+  color: #ffffff;
+}
+
+.dia-card small {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* ── Tarjetas de Resumen KPI (formato alternativo, no stat-card) ── */
+.resumen-asistencia {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  height: 100%;
+}
+
+.resumen-asistencia .resumen-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(164, 7, 6, 0.08);
+  color: #a40706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
   flex-shrink: 0;
 }
-.resumen-asistencia.resumen-success .resumen-icon { background: rgba(25,135,84,.1); color: #198754; }
-.resumen-asistencia.resumen-warning .resumen-icon { background: rgba(255,193,7,.15); color: #856404; }
-.resumen-asistencia.resumen-danger  .resumen-icon { background: rgba(164,7,6,.08);  color: #A40706; }
+
+.resumen-asistencia.resumen-success .resumen-icon {
+  background: #e0f2e9;
+  color: #1e7b48;
+}
+
+.resumen-asistencia.resumen-warning .resumen-icon {
+  background: #fff3e0;
+  color: #c77a00;
+}
+
+.resumen-asistencia.resumen-danger .resumen-icon {
+  background: rgba(164, 7, 6, 0.08);
+  color: #a40706;
+}
 
 .resumen-label {
-  font-size: .72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .06em;
-  color: #6c757d;
-  margin-bottom: .15rem;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 0.2rem;
 }
+
 .resumen-valor {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: #000;
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: #000000;
   line-height: 1;
 }
 
-/* Bloque por turno */
+/* ── Bloques de Asistencia por Turno ── */
 .turno-asistencia-bloque {
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  border: 1px solid #edf2f7;
+  border-radius: 20px;
   overflow: hidden;
+  background: #ffffff;
+  margin-top: 1rem;
 }
+
 .turno-asistencia-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: .85rem 1.1rem;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e8e8e8;
+  padding: 1rem 1.25rem;
+  background: #f8f9fc;
+  border-bottom: 1px solid #edf2f7;
 }
+
 .turno-asistencia-header h5 {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: .95rem;
-  margin: 0;
-  color: #000;
-}
-.badge-turno-conteo {
-  font-family: 'Open Sans', sans-serif;
-  font-size: .72rem;
   font-weight: 700;
-  color: #A40706;
-  background: rgba(164,7,6,.08);
-  padding: .25rem .65rem;
-  border-radius: 20px;
+  font-size: 1rem;
+  margin: 0;
+  color: #000000;
+}
+
+.badge-turno-conteo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a40706;
+  background: rgba(164, 7, 6, 0.08);
+  padding: 0.3rem 0.8rem;
+  border-radius: 40px;
 }
 
 .turno-asistencia-bloque .table {
   margin-bottom: 0;
 }
 
-/* La fila usa <form> dentro de <tr>; los <td> hijos del form
-   se muestran como table-cell para mantener la alineación. */
-.form-asistencia-fila {
-  display: table-row;
-}
-.form-asistencia-fila td {
-  display: table-cell;
-}
-
-.hora-marcada-input {
-  width: 110px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: .82rem;
-}
-
-/* Grupo de estado Presente / Tarde / Ausente */
+/* ── Botones de Selección de Estado (Radio Buttons) ── */
 .estado-asistencia-group {
   display: flex;
-  gap: .35rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
+
 .estado-asistencia-group .btn {
-  font-family: 'Open Sans', sans-serif;
-  font-size: .76rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  border-radius: 6px;
-  padding: .35rem .7rem;
-  border: 1.5px solid #e8e8e8;
-  background: #fff;
-  color: #6c757d;
+  border-radius: 40px;
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
+  gap: 0.4rem;
   white-space: nowrap;
   cursor: pointer;
-  transition: all .15s ease;
+  transition: all 0.2s ease;
 }
+
 .estado-asistencia-group .btn:hover {
-  border-color: #c9c9c9;
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
-.btn-check:checked + .btn-check-presente {
-  background: rgba(25,135,84,.1);
-  border-color: #198754;
-  color: #198754;
-}
-.btn-check:checked + .btn-check-tarde {
-  background: rgba(255,193,7,.15);
-  border-color: #c89200;
-  color: #856404;
-}
-.btn-check:checked + .btn-check-ausente {
-  background: rgba(164,7,6,.08);
-  border-color: #A40706;
-  color: #A40706;
+.btn-check:checked+.btn-check-presente {
+  background: #e0f2e9;
+  border-color: #1e7b48;
+  color: #1e7b48;
 }
 
-.btn-check:disabled + .btn {
-  opacity: .5;
+.btn-check:checked+.btn-check-tarde {
+  background: #fff3e0;
+  border-color: #c77a00;
+  color: #c77a00;
+}
+
+.btn-check:checked+.btn-check-ausente {
+  background: rgba(164, 7, 6, 0.08);
+  border-color: #a40706;
+  color: #a40706;
+}
+
+.btn-check:disabled+.btn {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* ==============================================
+   HISTORIAL RECIENTE Y TABLAS
+============================================== */
+
+/* ── Filtros tipo Pills ── */
+.historial-filter-bar {
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 40px;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.btn-filter {
+  border: none;
+  background: transparent;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-filter:hover {
+  color: #1e293b;
+}
+
+.btn-filter.active {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Badges de Registro e Historial ── */
+.badge-registro {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-registro.registrada {
+  color: #16a34a;
+}
+
+.badge-registro.no-registrada {
+  color: #94a3b8;
+}
+
+.badge-status {
+  padding: 0.35rem 0.85rem;
+  border-radius: 30px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.badge-presente {
+  background-color: #e0f2e9;
+  color: #1e7b48;
+}
+
+.badge-tarde {
+  background-color: #fff3e0;
+  color: #c77a00;
+}
+
+.badge-ausente {
+  background-color: rgba(164, 7, 6, 0.08);
+  color: #a40706;
+}
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
+  .employee-card {
+    padding: 1.25rem;
+    border-radius: 20px;
+  }
+
   .estado-asistencia-group {
     flex-direction: column;
     width: 100%;
   }
+
   .estado-asistencia-group .btn {
     width: 100%;
     justify-content: center;
   }
-}
-
-/* Sobrescribií icono-circular para panel de empleado - sin fondo circular  azul */
-.icono-circular {
-    background-color: transparent !important;
-}
-
-/* Botón primario corporativo - mismo estilo que en tareas- Para el botón ver mes completo */
-.btn-primary-corporate {
-    background: #A40706;
-    color: white;
-    border: 1px solid #A40706;
-    padding: 0.6rem 1.5rem;
-    border-radius: 40px;
-    font-weight: 600;
-    transition: 0.2s;
-}
-
-.btn-primary-corporate:hover {
-    background: #8a0504;
-    color: white;
-    transform: translateY(-2px);
 }

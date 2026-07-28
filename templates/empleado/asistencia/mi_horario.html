@@ -1,47 +1,46 @@
-<div class="card-modern horario-card mt-4 mb-4">
+<!-- TÍTULO LIMPIO (Igual a 'Asistencia de hoy') -->
+<div class="d-flex align-items-center gap-2 mb-3 mt-4">
+    <h3 class="mb-0 fs-4 fw-bold">
+        <i class="bi bi-calendar-week me-1"></i>
+        Mi horario de trabajo
+    </h3>
+</div>
 
-    <div class="card-header">
-        <h3>
-            <i class="bi bi-calendar-week me-2"></i>
-            Mi horario de trabajo
-        </h3>
-    </div>
+{% if horario %}
 
-    <div class="stat-card p-4">
-
-        {% if horario %}
-
-        <div class="row mb-4">
-
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="text-muted">Turno</span>
-                    <h5 class="mt-2">{{ horario.get_turno_display }}</h5>
-                </div>
+    <!-- 1. CAJAS DE INFORMACIÓN (Métricas libres igual que los KPIs superiores) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="text-muted">Turno</span>
+                <h5 class="mt-2 mb-0">{{ horario.get_turno_display }}</h5>
             </div>
-
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="text-muted">Horario</span>
-                    <h5 class="mt-2">{{ horario.hora_entrada }} - {{ horario.hora_salida }}</h5>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="info-box">
-                    <span class="text-muted">Próximo descanso</span>
-                    <h5 class="mt-2">
-                        {% if proximo_descanso %}
-                        {{ proximo_descanso.fecha|date:"d/m/Y" }}
-                        {% else %}
-                        Sin asignar
-                        {% endif %}
-                    </h5>
-                </div>
-            </div>
-
         </div>
 
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="text-muted">Horario</span>
+                <h5 class="mt-2 mb-0">{{ horario.hora_entrada }} - {{ horario.hora_salida }}</h5>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="text-muted">Próximo descanso</span>
+                <h5 class="mt-2 mb-0">
+                    {% if proximo_descanso %}
+                    {{ proximo_descanso.fecha|date:"d/m/Y" }}
+                    {% else %}
+                    Sin asignar
+                    {% endif %}
+                </h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. RECUADRO DEL CALENDARIO (Tarjeta blanca unificada solo para los días) -->
+    <div class="employee-card p-4">
+        <!-- Días de la semana -->
         <div class="dias-semana">
             <div>Lun</div>
             <div>Mar</div>
@@ -52,6 +51,7 @@
             <div>Dom</div>
         </div>
 
+        <!-- Rejilla del calendario -->
         <div class="calendario-grid">
             {% for dia in calendario %}
             {% if dia %}
@@ -70,15 +70,12 @@
             {% endif %}
             {% endfor %}
         </div>
-
-        {% else %}
-
-        <div class="alert alert-warning mb-0">
-            No tienes un horario asignado actualmente.
-        </div>
-
-        {% endif %}
-
     </div>
 
-</div>
+{% else %}
+
+    <div class="alert alert-warning mb-0">
+        No tienes un horario asignado actualmente.
+    </div>
+
+{% endif %}

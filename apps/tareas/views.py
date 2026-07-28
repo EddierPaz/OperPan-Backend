@@ -99,7 +99,7 @@ def admin_tareas_list(request):
         }
 
     context = {
-        'fecha_hoy': timezone.now().date(),
+        "fecha_hoy": timezone.localdate(),
         'tareas': tareas,
         'kpis': kpis,
         'filter_form': filter_form,
@@ -237,7 +237,7 @@ def empleado_tareas_list(request):
             pass
 
     context = {
-        'fecha_hoy': timezone.now().date(),
+        "fecha_hoy": timezone.localdate(),
         'tareas': tareas,
         'kpis': kpis,
         'estado_filtro': estado_filtro,

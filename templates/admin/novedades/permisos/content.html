@@ -1,30 +1,45 @@
 <!-- KPIs mensuales -->
 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <h3><i class="bi bi-calendar-check me-2"></i>Permisos este mes</h3>
+  <h3><i class="bi bi-calendar2-check-fill me-2"></i>Permisos este mes</h3>
 </div>
 <div class="row g-3 mb-4">
     <div class="col-md-4 col-6">
-        <div class="kpi-card">
-            <div class="text-muted">Pendientes</div>
-            <h3 id="permisosKpiPendientes">0</h3>
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Pendientes</span>
+                <h3 class="mt-1" id="permisosKpiPendientes">0</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+            </div>
         </div>
     </div>
     <div class="col-md-4 col-6">
-        <div class="kpi-card">
-            <div class="text-muted">Aprobadas</div>
-            <h3 id="permisosKpiAprobados">0</h3>
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Aprobadas</span>
+                <h3 class="mt-1" id="permisosKpiAprobados">0</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+            </div>
         </div>
     </div>
     <div class="col-md-4 col-6">
-        <div class="kpi-card">
-            <div class="text-muted">Rechazadas</div>
-            <h3 id="permisosKpiRechazados">0</h3>
+        <div class="stat-card d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Rechazadas</span>
+                <h3 class="mt-1" id="permisosKpiRechazados">0</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="card-header">
-    <h3 class="mb-0"><i class="bi bi-inbox me-2"></i> Permisos pendientes</h3>
+    <h3 class="mb-0"><i class="bi bi-inbox-fill me-2"></i> Bandeja de permisos pendientes</h3>
 </div>
 
 <div class="card-modern">
@@ -32,7 +47,7 @@
 </div>
 
 <div class="card-header">
-    <h3 class="mb-0"><i class="bi bi-table me-2"></i> Historial completo de permisos</h3>
+    <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial completo de permisos</h3>
 </div>
 <div class="card-modern">
     <div class="p-3 table-responsive-stack">

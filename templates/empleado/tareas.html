@@ -26,7 +26,9 @@
                     <span class="text-muted">Pendientes</span>
                     <h3 class="mt-1">{{ kpis.pendientes|default:0 }}</h3>
                 </div>
-                <i class="bi bi-clock-fill" style="color:#C77A00;"></i>
+                <div class="icono-circular">
+                    <i class="bi bi-clock-fill fs-2 text-warning"></i>
+                </div>
             </div>
         </div>
         <div class="col-md-3">
@@ -35,7 +37,9 @@
                     <span class="text-muted">En progreso</span>
                     <h3 class="mt-1">{{ kpis.en_progreso|default:0 }}</h3>
                 </div>
-                <i class="bi bi-arrow-repeat" style="color:#1A5D9C;"></i>
+                <div class="icono-circular">
+                    <i class="bi bi-arrow-repeat fs-2 text-primary"></i>
+                </div>
             </div>
         </div>
         <div class="col-md-3">
@@ -44,7 +48,9 @@
                     <span class="text-muted">Finalizadas</span>
                     <h3 class="mt-1">{{ kpis.finalizadas|default:0 }}</h3>
                 </div>
-                <i class="bi bi-check-circle-fill" style="color:#1E7B48;"></i>
+                <div class="icono-circular">
+                    <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+                </div>
             </div>
         </div>
         <div class="col-md-3">
@@ -53,7 +59,9 @@
                     <span class="text-muted">Vencidas</span>
                     <h3 class="mt-1">{{ kpis.vencidas|default:0 }}</h3>
                 </div>
-                <i class="bi bi-exclamation-triangle-fill" style="color:#B91C1C;"></i>
+                <div class="icono-circular">
+                    <i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -175,12 +183,12 @@
                         {% if tarea.estado == 'PENDIENTE' %}
                             <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="m-0">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                                    <i class="bi bi-play-fill me-1"></i> En progreso
+                                <button type="submit" class="btn btn-sm btn-corporate-sec rounded-pill px-3">
+                                    <i class="bi bi-play-fill me-1"></i> Iniciar
                                 </button>
                             </form>
 
-                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate rounded-pill px-3">
+                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-primary-corporate rounded-pill px-3">
                                 <i class="bi bi-eye me-1"></i> Detalle
                             </a>
 
@@ -188,18 +196,18 @@
                         {% elif tarea.estado == 'EN_PROGRESO' %}
                             <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="m-0">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">
+                                <button type="submit" class="btn btn-sm btn-corporate-thi rounded-pill px-3">
                                     <i class="bi bi-check-lg me-1"></i> Finalizar
                                 </button>
                             </form>
 
-                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate rounded-pill px-3">
+                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-primary-corporate rounded-pill px-3">
                                 <i class="bi bi-eye me-1"></i> Detalle
                             </a>
 
                         <!-- 3. CASO FINALIZADA -->
                         {% else %}
-                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-outline-corporate rounded-pill px-3 w-100 text-center">
+                            <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-primary-corporate rounded-pill px-3 w-100 text-center">
                                 <i class="bi bi-eye me-1"></i> Ver detalle
                             </a>
                         {% endif %}
@@ -268,10 +276,12 @@
                         <small class="text-muted"><i class="bi bi-info-circle"></i> Estado actual: </small>
                         {% if tarea_detalle.esta_vencida %}
                             <span class="badge badge-expired">Vencida</span>
-                        {% else %}
-                            <span class="badge badge-{{ tarea_detalle.estado|lower }}">
-                                {{ tarea_detalle.get_estado_display }}
-                            </span>
+                        {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                            <span class="badge badge-status badge-pendiente">{{ tarea_detalle.get_estado_display }}</span>
+                        {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                            <span class="badge badge-status badge-progreso">{{ tarea_detalle.get_estado_display }}</span>
+                        {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                            <span class="badge badge-status badge-finalizada">{{ tarea_detalle.get_estado_display }}</span>
                         {% endif %}
                     </div>
 
@@ -332,7 +342,7 @@
             </div>
 
             <div class="modal-footer border-0">
-                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate btn-cerrar-tarea">
+                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate ">
                     Cerrar
                 </a>
             </div>

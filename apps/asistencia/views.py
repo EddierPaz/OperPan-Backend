@@ -294,6 +294,7 @@ def asistencia_empleado(request):
         request,
         "empleado/asistencia/asistencia.html",
         {
+            "fecha_hoy": timezone.localdate(),
             "horario": horario,
             "proximo_descanso": proximo_descanso,
             "calendario": calendario,

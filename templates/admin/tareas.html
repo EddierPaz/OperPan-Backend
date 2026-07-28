@@ -1,9 +1,8 @@
 {% extends "admin/base/base.html" %}
 {% load static %}
 
-{% block title %}OperPan | Gestión de Tareas{% endblock %}
-
-{% block section_title %}Asigna, modifica y da seguimiento a las tareas del personal{% endblock %}
+{% block title %}OperPan | Tareas{% endblock %}
+{% block section_title %}Gestión de tareas del personal{% endblock %}
 {% block section_subtitle %}Panel Administrador{% endblock %}
 
 {% block active_tareas %}active{% endblock %}
@@ -171,17 +170,17 @@
                         <!-- Acción según el estado -->
                         {% if tarea.estado == 'PENDIENTE' %}
                             <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}" 
-                               class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                               class="btn btn-sm btn-corporate-sec rounded-pill px-3">
                                 <i class="bi bi-play-circle me-1"></i> Iniciar
                             </a>
                         {% elif tarea.estado == 'EN_PROGRESO' %}
                             <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}" 
-                               class="btn btn-sm btn-success rounded-pill px-3">
+                               class="btn btn-sm btn-corporate-thi rounded-pill px-3">
                                 <i class="bi bi-check-circle me-1"></i> Finalizar
                             </a>
                         {% else %}
                             <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}" 
-                               class="btn btn-sm btn-outline-corporate rounded-pill px-3">
+                               class="btn btn-sm btn-secondary-corporate rounded-pill px-3">
                                 <i class="bi bi-eye me-1"></i> Ver detalles
                             </a>
                         {% endif %}
@@ -352,7 +351,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-corporate">Limpiar</button>
+                    <button type="reset" class="btn btn-outline-corporate">Limpiar campos</button>
                     <button type="submit" class="btn btn-primary-corporate">
                         <i class="bi bi-save me-1"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
                     </button>
@@ -405,9 +404,13 @@
                         <span class="badge bg-secondary">Baja prioridad</span>
                     {% endif %}
 
-                    <span class="badge badge-{{ tarea_detalle.estado|lower }} ms-1">
-                        {{ tarea_detalle.get_estado_display }}
-                    </span>
+                    {% if tarea_detalle.estado == 'PENDIENTE' %}
+                        <span class="badge badge-status badge-pendiente ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                    {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                        <span class="badge badge-status badge-progreso ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                    {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                        <span class="badge badge-status badge-finalizada ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                    {% endif %}
                 </div>
 
                 <p class="text-secondary bg-light p-3 rounded">{{ tarea_detalle.descripcion }}</p>
@@ -442,7 +445,7 @@
                 {% endif %}
             </div>
             <div class="modal-footer border-0">
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn btn-secondary">Cerrar</a>
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn btn-outline-corporate">Cerrar</a>
             </div>
         </div>
     </div>

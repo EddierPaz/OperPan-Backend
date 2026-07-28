@@ -1,305 +1,176 @@
-/* DASHBOARD */
-.dashboard-container {
-    padding: 2rem;
-}   
+/* ==============================================
+   MÓDULO DE ASISTENCIA Y HORARIOS (ADMIN)
+============================================== */
 
-.stat-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem 0.8rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-    border: 1px solid #EDF2F7;
-    transition: 0.2s;
+/* ── Tarjetas Internas / Métricas / Cajas ── */
+.metric-card,
+.info-box {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid #edf2f7;
+  height: 100%;
 }
 
-.stat-card-one {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-    border: 1px solid #A40706;
-    transition: 0.2s;
+.info-box span.text-muted {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  display: block;
 }
 
-
-.card-modern {
-    background: white;
-    border-radius: 24px;
-    border: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-    margin-bottom: 1.5rem;
-    overflow: hidden;
+.info-box h5 {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-weight: 700;
+  color: #000000;
 }
 
-.card-header {
-    background: transparent;
-    border-bottom: 1px solid #EDF2F7;
-    padding: 1rem 0rem;
-    font-weight: 700;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #1E293B;
-    margin-bottom: 0.5rem;
-}
-
-.form-control,
-.form-select {
-    border-radius: 16px;
-    border: 1.5px solid #E2E8F0;
-    padding: 0.7rem 1rem;
-    font-family: 'Poppins', sans-serif;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: #A40706;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.2);
-}
-
-.btn-primary-corporate {
-    background: #A40706;
-    border: none;
-    padding: 0.6rem 1.5rem;
-    border-radius: 40px;
-    font-weight: 600;
-    transition: 0.2s;
-    color: white;
-}
-
-.btn-primary-corporate:hover {
-    background: #8a0504;
-    transform: translateY(-2px);
-    color: white;
-}
-
-.btn-outline-corporate {
-    border: 1.5px solid #A40706;
-    background: transparent;
-    color: #A40706;
-    padding: 0.6rem 1.5rem;
-    border-radius: 40px;
-    font-weight: 600;
-}
-
-.btn-outline-corporate:hover {
-    border: 1.5px solid #A40706;
-    background: #A40706;
-    transform: translateY(-2px);
-    color: white;
-}
-
-
-/* ── Tabla ── */
-.table-responsive {
-    background: #ffffff;
-    border-radius: 20px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    overflow-x: auto;
-}
-
-.table-custom {
-    width: 100% !important;
-    margin-bottom: 0;
-}
-
-.table-custom thead th {
-    background-color: #F8F9FC !important;
-    color: #64748b !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #e2e8f0;
-    padding: 1rem;
-    white-space: nowrap;
-}
-
-.table-custom tbody td {
-    padding: 0.9rem 1rem;
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-.table-custom tbody tr:hover {
-    background-color: #f8fafc !important;
-}
-
-.badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
-}
-
-.badge-active {
-    background: #E0F2E9;
-    color: #1E7B48;
-}
-
-.toast-message {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1100;
-}
-
-/* CALENDARIO DÍAS */
+/* ── CALENDARIO DÍAS ── */
 .dias-calendario {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .dia-btn {
-    width: 100%;
-    min-height: 56px;
-
-    border: none;
-    border-radius: 12px;
-
-    background: #f5f7fa;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-weight: 600;
-
-    transition: .2s;
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 12px;
+  background: #f5f7fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: .2s;
 }
 
 .dia-btn:hover {
-    border-color: #A40706;
-    color: #A40706;
+  border-color: #A40706;
+  color: #A40706;
+  transform: translateY(-2px);
 }
 
 .dia-btn.seleccionado {
-    background: #A40706;
-    border-color: #A40706;
-    color: white;
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: white;
 }
 
 .dia-btn--ultimo {
-    border-style: dashed;
-    border-color: #A40706;
-    color: #A40706;
+  border-style: dashed;
+  border-color: #A40706;
+  color: #A40706;
 }
 
 .dia-btn--ultimo:hover {
-    background: #A40706;
-    color: white;
-}
-
-/* Confirmación debajo del ciclo */
-#descansoLabel {
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-.calendario-wrapper {
-    width: 100%;
-}
-
-.dias-semana {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.dia-semana {
-    text-align: center;
-    font-weight: 700;
-    color: #6c757d;
-}
-
-.calendario-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    width: 100%;
-}
-
-.dia-vacio {
-    width: 100%;
-    min-height: 56px;
-}
-
-.dia-btn:hover {
-    transform: translateY(-2px);
+  background: #A40706;
+  color: white;
 }
 
 .dia-btn.selected {
-    background: #dc3545;
-    color: white;
+  background: #dc3545;
+  color: white;
 }
 
-.dia-btn.seleccionado {
-    background: #b91c1c;
-    color: white;
-    border-color: #b91c1c;
+#descansoLabel {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
 }
 
-.accordion-item{
-    border:none;
-    border-left:5px solid #A40706;
-    border-radius:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-    margin-bottom:18px;
+.calendario-wrapper {
+  width: 100%;
 }
 
-.accordion-button{
-    display:grid !important;
-    grid-template-columns: 1fr auto 30px;
-    align-items:center;
-    position: relative;
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
-.accordion-button{
-    position: relative;
+.dia-semana {
+  text-align: center;
+  font-weight: 700;
+  color: #6c757d;
 }
 
-.turno-badge{
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #A40706;
-    color: #fff;
-    padding: .35rem .9rem;
-    border-radius: 999px;
-    font-size: .85rem;
-    font-weight: 600;
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  width: 100%;
 }
 
-.turno-info{
-    display:flex;
-    align-items:center;
+.dia-vacio {
+  width: 100%;
+  min-height: 56px;
 }
 
-.accordion-button:not(.collapsed){
-    background:#fff;
-    color:#A40706;
-    box-shadow:none;
+/* ── ACORDEÓN DE TURNOS ── */
+.accordion-item {
+  border: none;
+  border-left: 5px solid #A40706;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+  margin-bottom: 18px;
 }
 
-.accordion-button:focus{
-    box-shadow:none;
-    border:none;
+.accordion-button {
+  display: grid !important;
+  grid-template-columns: 1fr auto 30px;
+  align-items: center;
+  position: relative;
 }
 
-.accordion-body{
-    border-top:1px solid #ececec;
+.turno-badge {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #A40706;
+  color: #fff;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.turno-info {
+  display: flex;
+  align-items: center;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #fff;
+  color: #A40706;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border: none;
+}
+
+.accordion-body {
+  border-top: 1px solid #ececec;
 }
 
 @media (max-width: 768px) {
-.accordion-button{
+  .accordion-button {
     grid-template-columns: 1fr auto;
-}
-.turno-badge{
+  }
+
+  .turno-badge {
     position: static;
     transform: none;
     margin-left: 10px;
-}
+  }
+
+  .estado-asistencia-group {
+    flex-direction: column;
+    width: 100%;
+  }
 }

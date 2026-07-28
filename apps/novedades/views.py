@@ -90,6 +90,7 @@ def solicitudes_empleado(request):
             return redirect('novedades:solicitudes_empleado')
 
         context = {
+            "fecha_hoy": timezone.localdate(),
             'permisos': permisos,
             'incapacidades': incapacidades,
             'certificados': certificados,
@@ -101,6 +102,7 @@ def solicitudes_empleado(request):
         return render(request, 'empleado/solicitudes/solicitudes.html', context)
 
     context = {
+        "fecha_hoy": timezone.localdate(),
         'permisos': permisos,
         'incapacidades': incapacidades,
         'certificados': certificados,
@@ -120,7 +122,7 @@ def solicitudes_empleado(request):
 def novedades_admin(request):
     """Panel de novedades para administradores."""
     context = {
-        'fecha_hoy': timezone.now().date(),
+        "fecha_hoy": timezone.localdate(),
     }
     return render(request, 'admin/novedades.html', context)
 

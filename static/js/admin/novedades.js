@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const tipoBadge = `<span class="badge badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
             // Botón de descarga (solo si tiene PDF)
             const btnDescarga = m.archivo_pdf 
-                ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-outline-corporate" target="_blank" title="Descargar PDF">
+                ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF">
                     <i class="bi bi-download"></i>
                   </a>`
                 : `<span class="text-muted"><i class="bi bi-file-earmark-pdf"></i> Sin PDF</span>`;
