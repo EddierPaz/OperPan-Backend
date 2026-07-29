@@ -18,6 +18,42 @@
 </head>
 
 <body>
+    <div id="notificationContainer">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="notification {{ message.tags }}">
+            <div class="notification-icon">
+
+                {% if message.tags == "success" %}
+                <i class="bi bi-check-circle-fill"></i>
+
+                {% elif message.tags == "error" %}
+                <i class="bi bi-x-circle-fill"></i>
+
+                {% elif message.tags == "warning" %}
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                {% else %}
+                <i class="bi bi-info-circle-fill"></i>
+
+                {% endif %}
+
+            </div>
+
+            <div class="notification-content">
+                <span>{{ message }}</span>
+            </div>
+
+            <button class="notification-close">
+                <i class="bi bi-x"></i>
+            </button>
+
+            <div class="notification-progress"></div>
+
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
 
     <main>
         <div class="login-card">
@@ -60,15 +96,6 @@
                     </button>
                 </form>
             </div>
-
-            {% if messages %}
-            <div id="globalMessage" class="message-area show mt-3"
-                style="display: block; background: #FEF2F0; color: #B91C1C; border-left: 4px solid #A40706;">
-                {% for message in messages %}
-                <i class="bi bi-exclamation-triangle-fill"></i> <span>{{ message }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
 
             <div class="forgot-link">
                 <a href="{% url 'password_reset_documento' %}">

@@ -273,25 +273,227 @@ label {
     text-decoration: underline;
 }
 
-/* Mensajes de error / alertas Django */
-.message-area {
-    margin: 1rem 0 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 0.6rem 1rem;
+/* ===================================================
+   NOTIFICACIONES OPERPAN
+=================================================== */
+
+#notificationContainer {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    width: 360px;
+    max-width: calc(100% - 30px);
+}
+
+.notification {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    background: #FFFFFF;
+
     border-radius: 18px;
-    background: #FEF2F0;
-    color: #B91C1C;
-    border-left: 4px solid #A40706;
-    display: none;
+
+    padding: 18px 18px;
+
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .12);
+
+    overflow: hidden;
+
+    animation: notificationIn .45s ease forwards;
+
+    border-left: 5px solid #A40706;
 }
 
-.message-area.show {
-    display: block;
+.notification-icon {
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    font-size: 1.3rem;
 }
 
-.message-area i {
-    margin-right: 8px;
+.notification-content {
+
+    flex: 1;
+}
+
+.notification-content span {
+
+    font-size: .92rem;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.notification-close {
+
+    background: none;
+    border: none;
+
+    font-size: 1.2rem;
+
+    color: #999;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.notification-close:hover {
+
+    color: #333;
+}
+
+.notification-progress {
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    height: 4px;
+
+    width: 100%;
+
+    animation: progress 4s linear forwards;
+}
+
+/* SUCCESS */
+
+.notification.success {
+
+    border-left-color: #16A34A;
+}
+
+.notification.success .notification-icon {
+
+    background: #DCFCE7;
+
+    color: #16A34A;
+}
+
+.notification.success .notification-progress {
+
+    background: #16A34A;
+}
+
+/* ERROR */
+
+.notification.error {
+
+    border-left-color: #A40706;
+}
+
+.notification.error .notification-icon {
+
+    background: #FEE2E2;
+
+    color: #A40706;
+}
+
+.notification.error .notification-progress {
+
+    background: #A40706;
+}
+
+/* WARNING */
+
+.notification.warning {
+
+    border-left-color: #F59E0B;
+}
+
+.notification.warning .notification-icon {
+
+    background: #FEF3C7;
+
+    color: #D97706;
+}
+
+.notification.warning .notification-progress {
+
+    background: #F59E0B;
+}
+
+/* INFO */
+
+.notification.info {
+
+    border-left-color: #a40607;
+}
+
+.notification.info .notification-icon {
+
+    background: #DBEAFE;
+
+    color: #a40607;
+}
+
+.notification.info .notification-progress {
+
+    background: #a40607;
+}
+
+/* ANIMACIONES */
+
+@keyframes notificationIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateX(120%);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateX(0);
+    }
+
+}
+
+@keyframes notificationOut {
+
+    to {
+
+        opacity: 0;
+
+        transform: translateX(120%);
+    }
+
+}
+
+@keyframes progress {
+
+    from {
+
+        width: 100%;
+    }
+
+    to {
+
+        width: 0%;
+    }
+
 }
 
 /* Footer sutil corporativo */
