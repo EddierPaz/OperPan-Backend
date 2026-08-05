@@ -1,3 +1,7 @@
+# Link documentación - Informe Final
+
+https://docs.google.com/document/d/1WeP7t5k3XXXj5kX-FdRHh_X6NUDrqqUk/edit?usp=drive_link&ouid=103494730822861967344&rtpof=true&sd=true
+
 # Django Starter
 
 Plantilla base para proyectos Django.
