@@ -1,6 +1,7 @@
 asgiref==3.11.1
 charset-normalizer==3.4.9
 Django==4.2.24
+Faker==40.36.0
 pillow==12.3.0
 PyMySQL==1.2.0
 reportlab==5.0.0
