@@ -49,9 +49,18 @@ def admin_tareas_list(request):
     if busqueda:
         tareas = tareas.filter(
             Q(titulo__icontains=busqueda) |
-            Q(empleado__perfil__primer_nombre__icontains=busqueda) |
-            Q(empleado__perfil__primer_apellido__icontains=busqueda) |
+            Q(empleado__primer_nombre__icontains=busqueda) |
+            Q(empleado__segundo_nombre__icontains=busqueda) |
+            Q(empleado__primer_apellido__icontains=busqueda) |
+            Q(empleado__segundo_apellido__icontains=busqueda) |
             Q(descripcion__icontains=busqueda)
+        )
+
+    if request.GET.get('vencidas') == 'true':
+        tareas = tareas.filter(
+            fecha_limite__lt=date.today()
+        ).exclude(
+            estado=EstadoTarea.FINALIZADA
         )
 
     tareas = tareas.order_by('-prioridad', 'fecha_limite')
