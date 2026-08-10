@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnClose.addEventListener('click', () => cerrarToast(toastEl));
 
         // Autocierre rápido (efecto "flash")
-        const timer = setTimeout(() => cerrarToast(toastEl), 2200);
+        const timer = setTimeout(() => cerrarToast(toastEl), 4000);
         toastEl.dataset.timerId = timer;
     }
 

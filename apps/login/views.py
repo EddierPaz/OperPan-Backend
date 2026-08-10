@@ -40,7 +40,7 @@ def logout_view(request):
 
 def password_reset_documento(request):
     if request.method == "POST":
-        documento = request.POST.get("documento")
+        documento = request.POST.get("documento", "").strip()
         try:
             perfil = PerfilEmpleado.objects.get(numero_documento=documento)
 
@@ -60,14 +60,15 @@ def password_reset_documento(request):
             email.attach_alternative(html_content, "text/html")
             email.send(fail_silently=False)
 
-        except PerfilEmpleado.DoesNotExist:
-            pass
+            messages.success(
+                request,
+                "Correo enviado correctamente. Revisa tu bandeja de entrada."
+            )
+            return redirect("login")
 
-        messages.success(
-            request,
-            "Si el documento existe, enviamos un correo con las instrucciones."
-        )
-        return redirect("password_reset_documento")   
+        except PerfilEmpleado.DoesNotExist:
+            messages.error(request, "El documento ingresado no existe.")
+            return redirect("password_reset_documento")
 
     return render(request, "login/password_reset.html")
 

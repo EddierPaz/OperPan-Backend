@@ -13,18 +13,4 @@ document.addEventListener("DOMContentLoaded", function () {
             this.classList.toggle('bi-eye-slash');
         });
     }
-
-    const message = document.getElementById("globalMessage");
-
-    if (message) {
-        setTimeout(() => {
-            message.classList.remove("show");
-            message.classList.add("hide");
-
-            setTimeout(() => {
-                message.remove();
-            }, 400);
-
-        }, 3000);
-    }
 });
