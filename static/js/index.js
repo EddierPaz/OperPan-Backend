@@ -130,4 +130,26 @@ document.addEventListener('DOMContentLoaded', () => {
         fadeElements.forEach(el => fadeObserver.observe(el));
     }
 
+    /* ----------------------------------------------------------------------
+   7. TARJETAS DE DESARROLLADORES: clic en toda la tarjeta
+   ---------------------------------------------------------------------- */
+    const teamCards = document.querySelectorAll('.team-card');
+    if (teamCards.length > 0) {
+        teamCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Si el clic fue en el botón, se propaga igual, pero evitamos doble toggle
+                // ya que solo usamos este listener.
+                const isActive = this.classList.contains('active');
+
+                // Cerrar todas las demás tarjetas (comportamiento acordeón)
+                document.querySelectorAll('.team-card.active').forEach(c => {
+                    if (c !== this) c.classList.remove('active');
+                });
+
+                // Alternar la actual
+                this.classList.toggle('active');
+            });
+        });
+    }
+
 });
