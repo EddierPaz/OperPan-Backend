@@ -1,0 +1,120 @@
+/* ============================================================
+   SISTEMA DE NOTIFICACIONES (TOAST) - OPERPAN
+   static/css/base/toasts.css
+   ============================================================ */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 380px;
+    width: calc(100% - 40px);
+    pointer-events: none; /* el contenedor no bloquea clics, los toasts sí */
+}
+
+.app-toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-left: 4px solid #6c757d;
+
+    /* Estado inicial: fuera de pantalla, invisible */
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+
+/* Entrada rápida */
+.app-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Salida rápida */
+.app-toast.hide {
+    opacity: 0;
+    transform: translateX(20px) scale(0.98);
+    transition: opacity 0.25s ease-in, transform 0.25s ease-in;
+}
+
+/* ── Variantes de color por tipo ─────────────────────────── */
+.app-toast-success { border-left-color: #198754; }
+.app-toast-danger   { border-left-color: #dc3545; }
+.app-toast-warning  { border-left-color: #ffc107; }
+.app-toast-info     { border-left-color: #0d6efd; }
+
+/* ── Icono circular ──────────────────────────────────────── */
+.app-toast-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.app-toast-success .app-toast-icon {
+    background: rgba(25, 135, 84, 0.12);
+    color: #198754;
+}
+.app-toast-danger .app-toast-icon {
+    background: rgba(220, 53, 69, 0.12);
+    color: #dc3545;
+}
+.app-toast-warning .app-toast-icon {
+    background: rgba(255, 193, 7, 0.15);
+    color: #997404;
+}
+.app-toast-info .app-toast-icon {
+    background: rgba(13, 110, 253, 0.12);
+    color: #0d6efd;
+}
+
+/* ── Texto del mensaje ───────────────────────────────────── */
+.app-toast-msg {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #212529;
+    padding-top: 4px;
+}
+
+/* ── Botón cerrar ────────────────────────────────────────── */
+.app-toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #adb5bd;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px;
+    margin-top: 2px;
+    transition: color 0.15s ease;
+}
+
+.app-toast-close:hover {
+    color: #495057;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .toast-container {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        max-width: none;
+        width: auto;
+    }
+}
