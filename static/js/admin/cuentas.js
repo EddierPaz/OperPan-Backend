@@ -160,3 +160,67 @@ document.addEventListener('DOMContentLoaded', () => {
         form.scrollIntoView({ behavior: 'smooth' });
     }
 });
+
+// ===============================
+// FILTROS DE BÚSQUEDA
+// ===============================
+document.addEventListener('DOMContentLoaded', function () {
+    const filas = document.querySelectorAll('table.table-custom tbody tr[data-id]');
+    const inputBuscar = document.getElementById('buscarCuenta');
+    const selectCargo = document.getElementById('filtroCargo');
+    const selectRol = document.getElementById('filtroRol');
+    const selectEstado = document.getElementById('filtroEstado');
+
+    if (!inputBuscar) return; // si no está el HTML del filtro en esta página, no hace nada
+
+    // Llenar el select de cargos con los valores reales que aparecen en la tabla
+    filas.forEach(fila => {
+        const cargoTexto = fila.querySelector('td:nth-child(4)').textContent.trim();
+        if (cargoTexto && ![...selectCargo.options].some(o => o.text === cargoTexto)) {
+            const opt = document.createElement('option');
+            opt.value = cargoTexto;
+            opt.textContent = cargoTexto;
+            selectCargo.appendChild(opt);
+        }
+    });
+
+    function aplicarFiltros() {
+        const texto = inputBuscar.value.trim().toLowerCase();
+        const cargo = selectCargo.value.toLowerCase();
+        const rol = selectRol.value.toLowerCase();
+        const estado = selectEstado.value.toLowerCase();
+
+        filas.forEach(fila => {
+            const d = fila.dataset;
+            const documento = (d.numeroDocumento || '').toLowerCase();
+            const usuario = (d.username || '').toLowerCase();
+            const nombre = `${d.primerNombre || ''} ${d.segundoNombre || ''} ${d.primerApellido || ''} ${d.segundoApellido || ''}`.toLowerCase();
+            const cargoFila = fila.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+            const rolFila = (d.rol || '').toLowerCase();
+            const estadoFila = (d.estado || '').toLowerCase();
+
+            const coincideTexto = !texto || documento.includes(texto) || usuario.includes(texto) || nombre.includes(texto);
+            const coincideCargo = !cargo || cargoFila === cargo;
+            const coincideRol = !rol || rolFila === rol;
+            const coincideEstado = !estado || estadoFila === estado;
+
+            fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstado) ? '' : 'none';
+        });
+    }
+
+    [inputBuscar, selectCargo, selectRol, selectEstado].forEach(el => {
+        el.addEventListener('input', aplicarFiltros);
+        el.addEventListener('change', aplicarFiltros);
+    });
+
+    const btnLimpiarFiltros = document.getElementById('limpiarFiltrosCuentas');
+    if (btnLimpiarFiltros) {
+        btnLimpiarFiltros.addEventListener('click', function () {
+            inputBuscar.value = '';
+            selectCargo.value = '';
+            selectRol.value = '';
+            selectEstado.value = '';
+            aplicarFiltros();
+        });
+    }
+});

@@ -8,6 +8,26 @@
     <i class="bi bi-plus-circle me-2"></i>Agregar horario
   </button>
 </div>
+<div class="filtros-toolbar">
+    <div class="filtro-buscar">
+        <i class="bi bi-search"></i>
+        <input type="text" id="buscarHorario" placeholder="Buscar por empleado...">
+    </div>
+    <select id="filtroTurno" class="filtro-select">
+        <option value="">Todos los turnos</option>
+        <option value="mañana">Mañana</option>
+        <option value="tarde">Tarde</option>
+        <option value="fijo">Fijo</option>
+    </select>
+    <select id="filtroEstadoHorario" class="filtro-select">
+        <option value="">Todos los estados</option>
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+    </select>
+    <button type="button" id="limpiarFiltrosHorarios" class="filtro-btn-limpiar">
+        Limpiar campos
+    </button>
+</div>
 <div class="table-responsive">
   <table class="table table-custom">
     <thead>

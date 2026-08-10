@@ -14,7 +14,7 @@
 {% block content %}
 <div class="dashboard-container">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas</h3>
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas mensual</h3>
         <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
     </div>
 
@@ -66,7 +66,137 @@
         </div>
     </div>
 
-    <!-- ==================== ENCABEZADO LISTADO Y BOTÓN ==================== -->
+    <!-- ==================== TAREAS DE HOY (acordeón por estado) ==================== -->
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Tareas para hoy</h3>
+    </div>
+
+    <div class="accordion mb-5" id="accordionTareasHoy">
+        {% for estado_codigo, lista_tareas in tareas_hoy_por_estado.items %}
+        <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingHoy{{ estado_codigo }}">
+                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#collapseHoy{{ estado_codigo }}"
+                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+                    <div class="d-flex align-items-center">
+                        <i class="bi
+                            {% if estado_codigo == 'PENDIENTE' %}bi-hourglass-split
+                            {% elif estado_codigo == 'EN_PROGRESO' %}bi-arrow-repeat
+                            {% else %}bi-check2-circle{% endif %}
+                            me-2"></i>
+                        <strong>
+                            {% if estado_codigo == 'PENDIENTE' %}Pendientes
+                            {% elif estado_codigo == 'EN_PROGRESO' %}En progreso
+                            {% else %}Finalizadas{% endif %}
+                        </strong>
+                    </div>
+                    <span class="estado-badge">{{ lista_tareas|length }} hoy</span>
+                </button>
+            </h2>
+            <div id="collapseHoy{{ estado_codigo }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                data-bs-parent="#accordionTareasHoy">
+                <div class="accordion-body">
+                    <div class="row g-4">
+                        {% for tarea in lista_tareas %}
+                        <div class="col-12 col-md-6 col-lg-4 d-flex">
+                            <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                        <div class="d-flex align-items-center gap-2 text-truncate">
+                                            {% if tarea.prioridad == 'ALTA' %}
+                                                <i class="bi bi-flag-fill text-danger fs-6" title="Alta prioridad"></i>
+                                            {% elif tarea.prioridad == 'MEDIA' %}
+                                                <i class="bi bi-flag-fill text-warning fs-6" title="Media prioridad"></i>
+                                            {% else %}
+                                                <i class="bi bi-flag-fill text-success fs-6" title="Baja prioridad"></i>
+                                            {% endif %}
+                                            <h5 class="text-title fw-bold m-0 text-truncate" title="{{ tarea.titulo }}">
+                                                {{ tarea.titulo }}
+                                            </h5>
+                                        </div>
+                                        {% if tarea.esta_vencida %}
+                                            <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">Vencida</span>
+                                        {% elif tarea.estado == 'PENDIENTE' %}
+                                            <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 small">Pendiente</span>
+                                        {% elif tarea.estado == 'EN_PROGRESO' %}
+                                            <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-2 py-1 small">En progreso</span>
+                                        {% elif tarea.estado == 'FINALIZADA' %}
+                                            <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2 py-1 small">Finalizada</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex flex-column gap-1 text-muted small mb-3">
+                                        <span><i class="bi bi-person me-1"></i> <strong>{{ tarea.empleado.nombre_completo }}</strong></span>
+                                        <span><i class="bi bi-calendar me-1"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
+                                    {% if tarea.estado == 'PENDIENTE' %}
+                                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
+                                           class="btn btn-sm btn-corporate-sec rounded-pill px-3">
+                                            <i class="bi bi-play-circle me-1"></i> Iniciar
+                                        </a>
+                                    {% elif tarea.estado == 'EN_PROGRESO' %}
+                                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
+                                           class="btn btn-sm btn-corporate-thi rounded-pill px-3">
+                                            <i class="bi bi-check-circle me-1"></i> Finalizar
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                                           class="btn btn-sm btn-secondary-corporate rounded-pill px-3">
+                                            <i class="bi bi-eye me-1"></i> Ver detalles
+                                        </a>
+                                    {% endif %}
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light rounded-circle shadow-none"
+                                                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                title="Opciones" style="width: 32px; height: 32px; padding: 0;">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                                            <li>
+                                                <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
+                                                    <i class="bi bi-eye text-secondary"></i> Ver detalles
+                                                </a>
+                                            </li>
+                                            {% if tarea.estado != 'FINALIZADA' %}
+                                            <li>
+                                                <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
+                                                    <i class="bi bi-pencil text-primary"></i> Editar
+                                                </a>
+                                            </li>
+                                            {% endif %}
+                                            <li><hr class="dropdown-divider my-1"></li>
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarTarea"
+                                                        data-id="{{ tarea.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-center text-muted py-3 mb-0">Sin tareas {% if estado_codigo == 'PENDIENTE' %}pendientes{% elif estado_codigo == 'EN_PROGRESO' %}en progreso{% else %}finalizadas{% endif %} para hoy.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
+            <i class="bi bi-calendar-x fs-3 d-block text-muted mb-2"></i>
+            No hay tareas con vencimiento hoy.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ==================== LISTADO COMPLETO DE TAREAS ==================== -->
     <div class="d-flex align-items-center mb-4">
         <h3 class="m-0"><i class="bi bi-table me-2"></i> Listado de tareas</h3>
         <button class="btn btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalTarea">
@@ -74,61 +204,52 @@
         </button>
     </div>
 
-    <!-- ==================== FILTROS Y BÚSQUEDA ==================== -->
-    <form method="GET" action="" class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 w-100">
-        <!-- Buscador -->
-        <div class="search-box-container flex-grow-1" style="max-width: 400px;">
-            <div class="search-input-group">
-                <input type="text" 
-                    class="search-input" 
-                    name="busqueda" 
-                    id="searchTask"
-                    placeholder="Buscar por título, empleado..."
-                    value="{{ busqueda|default:'' }}">
-                
-                <button class="btn-search-addon" type="submit" id="searchBtn" title="Buscar">
-                    <i class="bi bi-search"></i>
-                </button>
-            </div>
+    <!-- ==================== FILTROS Y BÚSQUEDA (todas las tareas) ==================== -->
+    <form method="GET" action="" class="filtros-toolbar">
+        <div class="filtro-buscar">
+            <i class="bi bi-search"></i>
+            <input type="text" name="busqueda" id="searchTask"
+                placeholder="Buscar por título, empleado..."
+                value="{{ busqueda|default:'' }}">
         </div>
 
-        <!-- Pestañas de Filtros -->
-        <div class="novedades-tabs ms-auto">
-            <a href="?{% if request.GET %}{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
-            class="novedades-tab {% if not request.GET.estado and not request.GET.vencidas %}active{% endif %}">
-                <i class="bi bi-grid"></i>Todas
-            </a>
-            
-            <a href="?estado=PENDIENTE{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
-            class="novedades-tab {% if request.GET.estado == 'PENDIENTE' %}active{% endif %}">
-                <i class="bi bi-hourglass-split"></i>Pendientes
-            </a>
-            
-            <a href="?estado=EN_PROGRESO{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
-            class="novedades-tab {% if request.GET.estado == 'EN_PROGRESO' %}active{% endif %}">
-                <i class="bi bi-clock-history"></i>En progreso
-            </a>
-            
-            <a href="?estado=FINALIZADA{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
-            class="novedades-tab {% if request.GET.estado == 'FINALIZADA' %}active{% endif %}">
-                <i class="bi bi-check-circle"></i>Finalizadas
-            </a>
-            
-            <a href="?vencidas=true{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
-            class="novedades-tab {% if request.GET.vencidas == 'true' %}active{% endif %}">
-                <i class="bi bi-exclamation-triangle"></i>Vencidas
-            </a>
-        </div>
+        <select name="estado" class="filtro-select">
+            <option value="">Todos los estados</option>
+            <option value="PENDIENTE" {% if request.GET.estado == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+            <option value="EN_PROGRESO" {% if request.GET.estado == 'EN_PROGRESO' %}selected{% endif %}>En progreso</option>
+            <option value="FINALIZADA" {% if request.GET.estado == 'FINALIZADA' %}selected{% endif %}>Finalizada</option>
+        </select>
+
+        <select name="prioridad" class="filtro-select">
+            <option value="">Todas las prioridades</option>
+            <option value="ALTA" {% if request.GET.prioridad == 'ALTA' %}selected{% endif %}>Alta</option>
+            <option value="MEDIA" {% if request.GET.prioridad == 'MEDIA' %}selected{% endif %}>Media</option>
+            <option value="BAJA" {% if request.GET.prioridad == 'BAJA' %}selected{% endif %}>Baja</option>
+        </select>
+
+        <label class="toggle-vencidas">
+            <input type="checkbox" name="vencidas" value="true"
+                {% if request.GET.vencidas == 'true' %}checked{% endif %}
+                onchange="this.form.submit()">
+            <span class="toggle-vencidas-pill">
+                <i class="bi bi-exclamation-triangle me-1"></i> Solo vencidas
+            </span>
+        </label>
+        <button type="submit" class="filtro-btn-limpiar" style="background:#A40706; border-color:#A40706;">
+            <i class="bi bi-search me-1"></i> Buscar
+        </button>
+        <a href="{% url 'tareas:admin_tareas_list' %}" class="filtro-btn-limpiar">
+            Limpiar campos
+        </a>
     </form>
 
-    <!-- ==================== LISTADO DE TAREAS REDISEÑADO ==================== -->
-    <div id="tasksContainer" class="row g-4">
+    <!-- ==================== GRID DE TODAS LAS TAREAS ==================== -->
+    <div id="tasksContainer" class="row g-4 mb-4">
         {% if tareas %}
             {% for tarea in tareas %}
             <div class="col-12 col-md-6 col-lg-4 d-flex">
                 <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative">
-                    
-                    <!-- Encabezado de la Tarjeta: Título + Bandera + Badge -->
+
                     <div>
                         <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                             <div class="d-flex align-items-center gap-2 text-truncate">
@@ -144,8 +265,7 @@
                                     {{ tarea.titulo }}
                                 </h5>
                             </div>
-                            
-                            <!-- Badge de Estado según el flujo -->
+
                             {% if tarea.esta_vencida %}
                                 <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">Vencida</span>
                             {% elif tarea.estado == 'PENDIENTE' %}
@@ -157,52 +277,43 @@
                             {% endif %}
                         </div>
 
-                        <!-- Información Secundaria -->
                         <div class="d-flex flex-column gap-1 text-muted small mb-3">
                             <span><i class="bi bi-person me-1"></i> <strong>{{ tarea.empleado.nombre_completo }}</strong></span>
                             <span><i class="bi bi-calendar me-1"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
                         </div>
                     </div>
 
-                    <!-- Footer de la Tarjeta: Flujo Dinámico + Menú de Opciones -->
                     <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                        
-                        <!-- Acción según el estado -->
                         {% if tarea.estado == 'PENDIENTE' %}
-                            <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}" 
+                            <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
                                class="btn btn-sm btn-corporate-sec rounded-pill px-3">
                                 <i class="bi bi-play-circle me-1"></i> Iniciar
                             </a>
                         {% elif tarea.estado == 'EN_PROGRESO' %}
-                            <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}" 
+                            <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
                                class="btn btn-sm btn-corporate-thi rounded-pill px-3">
                                 <i class="bi bi-check-circle me-1"></i> Finalizar
                             </a>
                         {% else %}
-                            <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}" 
+                            <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
                                class="btn btn-sm btn-secondary-corporate rounded-pill px-3">
                                 <i class="bi bi-eye me-1"></i> Ver detalles
                             </a>
                         {% endif %}
 
-                        <!-- Menú Desplegable Corregido (Despliega a la izquierda sin cortarse) -->
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-light rounded-circle shadow-none" 
-                                    type="button" 
-                                    data-bs-toggle="dropdown" 
-                                    aria-expanded="false" 
-                                    title="Opciones"
-                                    style="width: 32px; height: 32px; padding: 0;">
+                            <button class="btn btn-sm btn-light rounded-circle shadow-none"
+                                    type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                    title="Opciones" style="width: 32px; height: 32px; padding: 0;">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                                 <li>
-                                    <a class="dropdown-item  small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
+                                    <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
                                         <i class="bi bi-eye text-secondary"></i> Ver detalles
                                     </a>
                                 </li>
-                                
                                 {% if tarea.estado != 'FINALIZADA' %}
                                 <li>
                                     <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
@@ -210,21 +321,16 @@
                                     </a>
                                 </li>
                                 {% endif %}
-
                                 <li><hr class="dropdown-divider my-1"></li>
-
                                 <li>
-                                    <button type="button" 
-                                            class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarTarea" 
-                                            data-id="{{ tarea.pk }}" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#confirmModal">
+                                    <button type="button"
+                                            class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarTarea"
+                                            data-id="{{ tarea.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
                                         <i class="bi bi-trash"></i> Eliminar
                                     </button>
                                 </li>
                             </ul>
                         </div>
-
                     </div>
 
                 </div>
@@ -243,7 +349,6 @@
     <footer class="mt-4 text-muted small"><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
 </div>
 
-<!-- Scripts y Modales se mantienen igual -->
 {{ empleados_data|json_script:"empleados-data" }}
 {{ tareas_por_cargo|json_script:"tareas-por-cargo" }}
 {{ cargo_area_map|json_script:"cargo-area-map" }}
@@ -423,7 +528,7 @@
                     <div class="col-md-6">
                         <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite:</small>
                         <strong class="text-dark">
-                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }} 
+                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
                             {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
                         </strong>
                     </div>

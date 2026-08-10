@@ -23,7 +23,8 @@ from apps.asistencia.models import Horario
 def admin_tareas_list(request):
     """
     Vista principal del administrador.
-    Muestra: KPIs, formulario (crear/editar), listado con filtros y búsqueda.
+    Muestra: KPIs, formulario (crear/editar), tareas de hoy agrupadas por estado,
+    y listado completo con filtros y búsqueda.
     Template: admin/tareas.html
     """
     kpis = Task.get_kpis_administrador()
@@ -65,6 +66,16 @@ def admin_tareas_list(request):
 
     tareas = tareas.order_by('-prioridad', 'fecha_limite')
 
+    # --- Tareas de HOY, agrupadas por estado (respeta búsqueda/filtros ya aplicados) ---
+    hoy = date.today()
+    tareas_hoy = tareas.filter(fecha_limite=hoy)
+    tareas_hoy_por_estado = {
+        EstadoTarea.PENDIENTE: tareas_hoy.filter(estado=EstadoTarea.PENDIENTE),
+        EstadoTarea.EN_PROGRESO: tareas_hoy.filter(estado=EstadoTarea.EN_PROGRESO),
+        EstadoTarea.FINALIZADA: tareas_hoy.filter(estado=EstadoTarea.FINALIZADA),
+    }
+    total_hoy = tareas_hoy.count()
+
     editando = False
     tarea_actual = None
     form = TaskForm()
@@ -77,7 +88,7 @@ def admin_tareas_list(request):
             editando = True
         except Task.DoesNotExist:
             messages.error(request, "La tarea que intentas editar no existe.")
-            
+
     detalle_id = request.GET.get('detalle')
     tarea_detalle = None
     if detalle_id:
@@ -92,8 +103,6 @@ def admin_tareas_list(request):
     horarios_activos = {}
     for h in Horario.objects.filter(empleado__in=empleados_qs, estado=True).order_by('-fecha_creacion'):
         horarios_activos.setdefault(h.empleado_id, h)
-
-    # En views.py -> admin_tareas_list
 
     empleados_data = {}
     for emp in empleados_qs:
@@ -110,6 +119,8 @@ def admin_tareas_list(request):
     context = {
         "fecha_hoy": timezone.localdate(),
         'tareas': tareas,
+        'tareas_hoy_por_estado': tareas_hoy_por_estado,
+        'total_hoy': total_hoy,
         'kpis': kpis,
         'filter_form': filter_form,
         'busqueda': busqueda,
@@ -118,7 +129,7 @@ def admin_tareas_list(request):
         'editando': editando,
         'tarea_actual': tarea_actual,
         'tarea_detalle': tarea_detalle,
-        'empleados_data': empleados_data,  # <-- Pásalo como diccionario normal
+        'empleados_data': empleados_data,
         'tareas_por_cargo': TAREAS_POR_CARGO,
         'cargo_area_map': CARGO_AREA_MAP,
         'otra_value': OTRA_VALUE,

@@ -217,3 +217,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+// ===============================
+// FILTROS DE BÚSQUEDA — HORARIOS
+// ===============================
+document.addEventListener('DOMContentLoaded', function () {
+    const filas = document.querySelectorAll('table.table-custom tbody tr');
+    const inputBuscar = document.getElementById('buscarHorario');
+    const selectTurno = document.getElementById('filtroTurno');
+    const selectEstado = document.getElementById('filtroEstadoHorario');
+
+    if (!inputBuscar) return;
+
+    function aplicarFiltros() {
+        const texto = inputBuscar.value.trim().toLowerCase();
+        const turno = selectTurno.value.toLowerCase();
+        const estado = selectEstado.value.toLowerCase();
+
+        filas.forEach(fila => {
+            const celdas = fila.querySelectorAll('td');
+            if (celdas.length < 6) return; // salta la fila de "No hay horarios registrados"
+
+            const empleado = celdas[0].textContent.trim().toLowerCase();
+            const turnoFila = celdas[2].textContent.trim().toLowerCase();
+            const estadoFila = celdas[5].textContent.trim().toLowerCase();
+
+            const coincideTexto = !texto || empleado.includes(texto);
+            const coincideTurno = !turno || turnoFila === turno;
+            const coincideEstado = !estado || estadoFila === estado;
+
+            fila.style.display = (coincideTexto && coincideTurno && coincideEstado) ? '' : 'none';
+        });
+    }
+
+    [inputBuscar, selectTurno, selectEstado].forEach(el => {
+        el.addEventListener('input', aplicarFiltros);
+        el.addEventListener('change', aplicarFiltros);
+    });
+
+    const btnLimpiar = document.getElementById('limpiarFiltrosHorarios');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function () {
+            inputBuscar.value = '';
+            selectTurno.value = '';
+            selectEstado.value = '';
+            aplicarFiltros();
+        });
+    }
+});

@@ -1,3 +1,26 @@
+<div class="filtros-toolbar">
+    <div class="filtro-buscar">
+        <i class="bi bi-search"></i>
+        <input type="text" id="buscarCuenta" placeholder="Buscar por documento, usuario o nombre...">
+    </div>
+    <select id="filtroCargo" class="filtro-select">
+        <option value="">Todos los cargos</option>
+    </select>
+    <select id="filtroRol" class="filtro-select">
+        <option value="">Todos los roles</option>
+        <option value="admin">Administrador</option>
+        <option value="empleado">Empleado</option>
+    </select>
+    <select id="filtroEstado" class="filtro-select">
+        <option value="">Todos los estados</option>
+        <option value="activo">Activo</option>
+        <option value="suspendido">Suspendido</option>
+        <option value="retirado">Retirado</option>
+    </select>
+    <button type="button" id="limpiarFiltrosCuentas" class="filtro-btn-limpiar">
+        Limpiar campos
+    </button>
+</div>
 <div class="table-responsive mb-4">
     <table class="table table-custom">
         <thead>
@@ -14,8 +37,7 @@
         <tbody>
             {% for usuario in usuarios %}
             <tr data-id="{{ usuario.user.id }}" data-primer-nombre="{{ usuario.primer_nombre }}"
-                data-segundo-nombre="{{ usuario.segundo_nombre }}"
-                data-primer-apellido="{{ usuario.primer_apellido }}"
+                data-segundo-nombre="{{ usuario.segundo_nombre }}" data-primer-apellido="{{ usuario.primer_apellido }}"
                 data-segundo-apellido="{{ usuario.segundo_apellido }}"
                 data-tipo-documento="{{ usuario.tipo_documento }}"
                 data-numero-documento="{{ usuario.numero_documento }}"
@@ -25,11 +47,11 @@
                 data-ciudad="{{ usuario.ciudad }}" data-direccion="{{ usuario.direccion|default:'' }}"
                 data-contacto-emergencia="{{ usuario.contacto_emergencia|default:'' }}"
                 data-parentesco-emergencia="{{ usuario.parentesco_emergencia|default:'' }}"
-                data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}"
-                data-cargo="{{ usuario.cargo }}" data-fecha-ingreso="{{ usuario.fecha_ingreso|default:'' }}"
-                data-eps="{{ usuario.eps|default:'' }}" data-arl="{{ usuario.arl|default:'' }}"
-                data-fondo-pension="{{ usuario.fondo_pension|default:'' }}" data-estado="{{ usuario.estado }}"
-                data-username="{{ usuario.user.username }}" data-rol="{{ usuario.user.rol }}">
+                data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}" data-cargo="{{ usuario.cargo }}"
+                data-fecha-ingreso="{{ usuario.fecha_ingreso|default:'' }}" data-eps="{{ usuario.eps|default:'' }}"
+                data-arl="{{ usuario.arl|default:'' }}" data-fondo-pension="{{ usuario.fondo_pension|default:'' }}"
+                data-estado="{{ usuario.estado }}" data-username="{{ usuario.user.username }}"
+                data-rol="{{ usuario.user.rol }}">
                 <td>{{ usuario.numero_documento }}</td>
                 <td>{{ usuario.user.username }}</td>
                 <td>{{ usuario.nombre_completo }}</td>
@@ -57,8 +79,7 @@
                     <button type="button" class="action-btn" title="Editar" onclick="editarUsuario(this)">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <form method="POST" action="{% url 'user_delete' usuario.user.id %}"
-                        style="display:inline;"
+                    <form method="POST" action="{% url 'user_delete' usuario.user.id %}" style="display:inline;"
                         onsubmit="return confirm('¿Eliminar permanentemente a {{ usuario.primer_nombre }} {{ usuario.primer_apellido }}?')">
                         {% csrf_token %}
                         <button type="submit" class="action-btn" title="Eliminar">
