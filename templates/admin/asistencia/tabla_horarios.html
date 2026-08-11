@@ -1,5 +1,5 @@
-<div class="d-flex align-items-center mb-4">
-  <h3><i class="bi bi-table me-2"></i>Horarios asignados</h3>
+<div class="d-flex align-items-center mb-3">
+  <h3 class="mb-0"><i class="bi bi-table me-2"></i>Horarios asignados</h3>
   <button
     class="btn btn-primary-corporate ms-auto"
     data-bs-toggle="modal"
@@ -8,6 +8,7 @@
     <i class="bi bi-plus-circle me-2"></i>Agregar horario
   </button>
 </div>
+
 <div class="filtros-toolbar">
     <div class="filtro-buscar">
         <i class="bi bi-search"></i>
@@ -25,11 +26,12 @@
         <option value="inactivo">Inactivo</option>
     </select>
     <button type="button" id="limpiarFiltrosHorarios" class="filtro-btn-limpiar">
-        Limpiar campos
+        Limpiar filtros
     </button>
 </div>
+
 <div class="table-responsive">
-  <table class="table table-custom">
+  <table class="table table-custom align-middle mb-0" id="tablaHorarios">
     <thead>
       <tr>
         <th>Empleado</th>
@@ -44,20 +46,20 @@
     <tbody>
       {% for horario in horarios %}
       <tr>
-        <td>{{ horario.empleado.nombre_completo }}</td>
+        <td class="col-empleado">{{ horario.empleado.nombre_completo }}</td>
         <td>{{ horario.empleado.get_cargo_display }}</td>
-        <td>{{ horario.get_turno_display }}</td>
+        <td class="col-turno">{{ horario.get_turno_display }}</td>
         <td>{{ horario.hora_entrada }} - {{ horario.hora_salida }}</td>
         <td>
-              {% for descanso in horario.descansos.all %}
-                  {% if descanso.es_descanso %}
-                      {{ descanso.fecha|date:"d/m/Y" }}
-                  {% endif %}
-              {% empty %}
-                  Sin descanso asignado
-              {% endfor %}
-          </td>
-        <td>
+          {% for descanso in horario.descansos.all %}
+            {% if descanso.es_descanso %}
+              <span class="badge bg-light text-dark border">{{ descanso.fecha|date:"d/m/Y" }}</span>
+            {% endif %}
+          {% empty %}
+            <span class="text-muted small">Sin descanso asignado</span>
+          {% endfor %}
+        </td>
+        <td class="col-estado">
           {% if horario.estado %}
           <span class="badge bg-success">Activo</span>
           {% else %}
@@ -65,19 +67,17 @@
           {% endif %}
         </td>
         <td>
-          <button class="btn btn-sm btn-ver-horario" data-id="{{ horario.id }}">
+          <button class="btn btn-sm btn-outline-secondary btn-ver-horario" data-id="{{ horario.id }}" title="Ver detalle">
             <i class="bi bi-eye"></i>
           </button>
-          <button
-            class="btn btn-sm btn-editar-horario"
-            data-id="{{ horario.id }}"
-          >
+          <button class="btn btn-sm btn-outline-primary btn-editar-horario" data-id="{{ horario.id }}" title="Editar">
             <i class="bi bi-pencil"></i>
           </button>
           <a
             href="{% url 'asistencia:eliminar_horario' horario.id %}"
-            class="btn btn-sm"
+            class="btn btn-sm btn-outline-danger"
             onclick="return confirm('¿Desea eliminar este horario?');"
+            title="Eliminar"
           >
             <i class="bi bi-trash"></i>
           </a>
@@ -85,7 +85,7 @@
       </tr>
       {% empty %}
       <tr>
-        <td colspan="7" class="text-center">No hay horarios registrados</td>
+        <td colspan="7" class="text-center text-muted py-3">No hay horarios registrados.</td>
       </tr>
       {% endfor %}
     </tbody>

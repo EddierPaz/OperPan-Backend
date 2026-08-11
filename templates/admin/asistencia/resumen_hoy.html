@@ -1,96 +1,77 @@
-<!-- ============================================================
-    MÓDULO DE ASISTENCIA - ÍCONOS MEJORADOS
-    ============================================================ -->
-
 <!-- 1. HEADER -->
-<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <h3><i class="bi bi-calendar-check me-2"></i>Asistencia de hoy</h3>
-    <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h3><i class="bi bi-calendar-check me-2"></i>Asistencia de hoy</h3>
+  <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
 </div>
 
-<!-- 2. KPIs CON ÍCONOS Y COLORES DIFERENCIADOS -->
+<!-- 2. KPIs -->
 <div class="row g-3 mb-4">
-
-  <!-- Programados -->
   <div class="col-md-3">
     <div class="stat-card d-flex justify-content-between align-items-center">
       <div>
         <span class="text-muted">Programados</span>
-        <h3 class="mt-1">{{ resumen_asistencia.programados }}</h3>
+        <h3 class="mt-1 mb-0">{{ resumen_asistencia.programados }}</h3>
       </div>
       <div class="icono-circular">
-          <i class="bi bi-people-fill fs-2 text-primary"></i>
+        <i class="bi bi-people-fill fs-2 text-primary"></i>
       </div>
     </div>
   </div>
 
-<!-- Presentes -->
-<div class="col-md-3">
-  <div class="stat-card d-flex justify-content-between align-items-center">
-    <div>
-      <span class="text-muted">Presentes</span>
-      <h3 class="mt-1">{{ resumen_asistencia.presentes }}</h3>
-    </div>
-
-    <div class="icono-circular">
-      <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+  <div class="col-md-3">
+    <div class="stat-card d-flex justify-content-between align-items-center">
+      <div>
+        <span class="text-muted">Presentes</span>
+        <h3 class="mt-1 mb-0">{{ resumen_asistencia.presentes }}</h3>
+      </div>
+      <div class="icono-circular">
+        <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+      </div>
     </div>
   </div>
-</div>
 
-  <!-- Tardanzas -->
   <div class="col-md-3">
     <div class="stat-card d-flex justify-content-between align-items-center">
       <div>
         <span class="text-muted">Tardanzas</span>
-        <h3 class="mt-1">{{ resumen_asistencia.tardanzas }}</h3>
+        <h3 class="mt-1 mb-0">{{ resumen_asistencia.tardanzas }}</h3>
       </div>
-
       <div class="icono-circular">
         <i class="bi bi-hourglass-split fs-2 text-warning"></i>
       </div>
     </div>
   </div>
 
-  <!-- Ausentes -->
   <div class="col-md-3">
     <div class="stat-card d-flex justify-content-between align-items-center">
       <div>
-        <span class="text-muted">Ausentes </span>
-        <h3 class="mt-1">{{ resumen_asistencia.ausentes }}</h3>
+        <span class="text-muted">Ausentes</span>
+        <h3 class="mt-1 mb-0">{{ resumen_asistencia.ausentes }}</h3>
       </div>
-
       <div class="icono-circular">
         <i class="bi bi-x-circle-fill fs-2 text-danger"></i>
       </div>
     </div>
   </div>
-
 </div>
 
-<!-- 3. ACORDEÓN DE TURNOS CON ÍCONO DINÁMICO -->
-<div class="accordion mb-4" id="accordionTurnos" style="border-color: blue;">
+<!-- 3. ACORDEÓN DE TURNOS -->
+<div class="accordion mb-4" id="accordionTurnos">
   {% for turno_codigo, lista_horarios in turnos_hoy.items %}
-  <div class="accordion-item mb-3" style="border-color: #A40706;">
+  <div class="accordion-item mb-3">
     <h2 class="accordion-header" id="heading{{ turno_codigo }}">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-        data-bs-target="#collapse{{ turno_codigo }}" aria-expanded="false">
+        data-bs-target="#collapse{{ turno_codigo }}" aria-expanded="false" aria-controls="collapse{{ turno_codigo }}">
         <div class="d-flex align-items-center">
-
-
-
-          
-          <!-- Ícono dinámico por turno -->
           <i class="bi 
-            {% if turno_codigo == 'MANANA' %}bi-sun{% elif turno_codigo == 'TARDE' %}bi-moon{% else %}bi-clock-history{% endif %} 
-          me-2"></i>
+            {% if turno_codigo == 'MANANA' %}bi-sun-fill text-warning
+            {% elif turno_codigo == 'TARDE' %}bi-moon-stars-fill text-primary
+            {% else %}bi-clock-history text-secondary{% endif %} me-2"></i>
           <strong>
-              Turno 
-              {% if turno_codigo == 'MANANA' %}
-                  Mañana
-              {% else %}
-                  {{ turno_codigo|title }}
-              {% endif %}
+            Turno 
+            {% if turno_codigo == 'MANANA' %}Mañana
+            {% elif turno_codigo == 'TARDE' %}Tarde
+            {% else %}{{ turno_codigo|title }}{% endif %}
           </strong>
         </div>
         <span class="turno-badge">{{ lista_horarios|length }} programados</span>
@@ -99,7 +80,7 @@
     <div id="collapse{{ turno_codigo }}" class="accordion-collapse collapse" data-bs-parent="#accordionTurnos">
       <div class="accordion-body">
         <div class="table-responsive">
-          <table class="table table-custom align-middle">
+          <table class="table table-custom align-middle mb-0">
             <thead>
               <tr>
                 <th>Empleado</th>
@@ -126,9 +107,9 @@
                 <td>
                   {% if horario.asistencia %}
                     {% if horario.asistencia.estado == "PRESENTE" %}
-                    <span class="badge text-success">Presente</span>
+                    <span class="badge bg-success">Presente</span>
                     {% elif horario.asistencia.estado == "TARDE" %}
-                    <span class="badge text-warning">Tarde</span>
+                    <span class="badge bg-warning text-dark">Tarde</span>
                     {% elif horario.asistencia.estado == "AUSENTE" %}
                     <span class="badge bg-danger">Ausente</span>
                     {% endif %}
@@ -138,7 +119,7 @@
                 </td>
                 <td>
                   {% if horario.asistencia %}
-                  <span class="badge text-success">Registrado</span>
+                  <span class="badge bg-light text-success border border-success"><i class="bi bi-check2"></i> Registrado</span>
                   {% else %}
                   <form method="POST" action="{% url 'asistencia:registrar_asistencia' %}">
                     {% csrf_token %}
@@ -162,6 +143,6 @@
     </div>
   </div>
   {% empty %}
-  <p class="text-center text-muted">No hay horarios registrados para hoy.</p>
+  <p class="text-center text-muted py-3">No hay horarios registrados para el día de hoy.</p>
   {% endfor %}
 </div>

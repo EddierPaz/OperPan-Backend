@@ -1,8 +1,13 @@
-<!-- Bandeja de certificados pendientes de aprobación -->
+<!-- KPIs Mensuales -->
 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <h3><i class="bi bi-award-fill me-2"></i>Certificados este mes</h3>
+    <h3>
+        <i class="bi bi-award-fill me-2"></i>
+        Certificados este mes
+    </h3>
 </div>
+
 <div class="row g-3 mb-4">
+    <!-- Pendientes -->
     <div class="col-md-4 col-6">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -14,6 +19,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Aprobadas -->
     <div class="col-md-4 col-6">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -25,6 +32,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Rechazadas -->
     <div class="col-md-4 col-6">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -38,63 +47,80 @@
     </div>
 </div>
 
-<div class="card-header">
-    <h3 class="mb-0"><i class="bi bi-inbox-fill me-2"></i> Bandeja de certificados pendientes</h3>
-</div>
-<div class="card-modern">
-    <div class="p-3" id="certificadosSolicitudesContainer"></div>
-</div>
-
-
-<div class="card-header">
-    <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial completo de certificados</h3>
+<!-- Bandeja de Solicitudes Pendientes -->
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3 class="mb-0">
+        <i class="bi bi-inbox-fill me-2"></i>
+        Bandeja de certificados pendientes
+    </h3>
 </div>
 
-<div class="card-modern"> 
-    <div class="filter-card card-modern p-3">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-3 col-12">
-                <label class="form-label">Empleado</label>
-                <select id="certificadosFiltroEmpleado" class="form-select">
-                    <option value="">Todos</option>
-                    <!-- Se llenará con JS -->
-                </select>
-            </div>
-            <div class="col-md-3 col-12">
-                <label class="form-label">Tipo de Certificado</label>
-                <select id="certificadosFiltroTipo" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="laboral">Certificado laboral</option>
-                    <option value="ingresos">Certificado de ingresos</option>
-                    <option value="antiguedad">Certificado de antigüedad</option>
-                </select>
-            </div>
-            <div class="col-md-2 col-12">
-                <label class="form-label">Fecha desde</label>
-                <input type="date" id="certificadosFiltroDesde" class="form-control">
-            </div>
-            <div class="col-md-2 col-12">
-                <label class="form-label">Fecha hasta</label>
-                <input type="date" id="certificadosFiltroHasta" class="form-control">
-            </div>
-            <div class="col-md-2 col-12">
-                <button id="certificadosBtnLimpiar" class="btn btn-outline-corporate w-100"><i class="bi bi-eraser"></i> Limpiar</button>
-            </div>
-        </div>
-    </div>   
+<div class="card-modern mb-4">
+    <div class="p-3" id="certificadosSolicitudesContainer">
+        <!-- Renderizado dinámico vía JS -->
+    </div>
+</div>
+
+<!-- Historial de Certificados -->
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3 class="mb-0">
+        <i class="bi bi-clock-history me-2"></i>
+        Historial de certificados
+    </h3>
+</div>
+
+<!-- Filtros del Historial -->
+<div class="filtros-toolbar">
+    <div class="filtro-buscar">
+        <i class="bi bi-search"></i>
+        <input type="text" id="buscarCertificado" placeholder="Buscar por documento, usuario o nombre...">
+    </div>
+
+    <select id="certificadosFiltroTipo" class="filtro-select">
+        <option value="">Todos los tipos</option>
+        <option value="laboral">Certificado laboral</option>
+        <option value="ingresos">Certificado de ingresos</option>
+        <option value="antiguedad">Certificado de antigüedad</option>
+    </select>
+
+    <select id="certificadosFiltroEstado" class="filtro-select">
+        <option value="">Todos los estados</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="rechazado">Rechazado</option>
+    </select>
+
+    <button type="button" id="certificadosBtnBuscar" class="filtro-btn-buscar">
+        <i class="bi bi-search me-1"></i> Buscar
+    </button>
+
+    <button type="button" id="certificadosBtnLimpiar" class="filtro-btn-limpiar">
+        Limpiar campos
+    </button>
+</div>
+
+<!-- Tabla Historial de Certificados -->
+<div class="card-modern mb-5">
     <div class="p-3 table-responsive-stack">
-        <table class="table table-custom">
+        <table class="table table-custom align-middle">
             <thead>
                 <tr>
-                    <th>Empleado</th>
-                    <th>Cargo</th>
-                    <th>Tipo de certificado</th>
-                    <th>Fecha de emisión</th>
-                    <th>Estado</th>
+                    <th>EMPLEADO</th>
+                    <th>CARGO</th>
+                    <th>TIPO DE CERTIFICADO</th>
+                    <th>FECHA DE EMISIÓN / SOLICITUD</th>
+                    <th>ESTADO</th>
+                    <th>ACCIONES</th> 
                 </tr>
             </thead>
-            <tbody id="certificadosTablaBody"></tbody>
+            <tbody id="certificadosTablaBody">
+                <!-- Renderizado dinámico vía JS -->
+            </tbody>
         </table>
-        <div id="certificadosSinResultados" class="text-center text-muted py-4 d-none">No se encontraron certificados con los filtros seleccionados.</div>
+
+        <div id="certificadosSinResultados" class="text-center text-muted py-4 d-none">
+            <i class="bi bi-search fs-2 mb-2 d-block"></i>
+            No se encontraron certificados con los filtros seleccionados.
+        </div>
     </div>
 </div>

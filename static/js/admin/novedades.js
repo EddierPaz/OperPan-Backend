@@ -1,7 +1,5 @@
 // ============================================================
 // UTILIDADES COMPARTIDAS
-// Antes estaban duplicadas en Permisos, Incapacidades y Memorandos.
-// Ahora viven en un solo lugar y todos los módulos las reutilizan.
 // ============================================================
 function getCookie(name) {
     let cookieValue = null;
@@ -35,28 +33,31 @@ function showMessage(msg) {
 
 
 // ============================== MÓDULO PERMISOS ==============================
-(function(){
+(function () {
     let currentPermisoId = null;
 
     function updatePermisosKPIs() {
         fetch('/novedades/permisos/historial/?estado=pendiente')
             .then(r => r.json())
             .then(data => {
-                document.getElementById('permisosKpiPendientes').innerText = data.length;
+                const pendingEl = document.getElementById('permisosKpiPendientes');
+                if (pendingEl) pendingEl.innerText = data.length;
             })
             .catch(() => console.error('Error al obtener KPIs de permisos'));
 
-        // Aprobados y rechazados este mes (se calcula en el backend, pero podemos contar desde historial)
         fetch('/novedades/permisos/historial/')
             .then(r => r.json())
             .then(data => {
                 const now = new Date();
                 const mes = now.getMonth();
                 const año = now.getFullYear();
-                const aprobados = data.filter(p => p.estado === 'Aprobado' && new Date(p.fecha_solicitud).getMonth() === mes && new Date(p.fecha_solicitud).getFullYear() === año).length;
-                const rechazados = data.filter(p => p.estado === 'Rechazado' && new Date(p.fecha_solicitud).getMonth() === mes && new Date(p.fecha_solicitud).getFullYear() === año).length;
-                document.getElementById('permisosKpiAprobados').innerText = aprobados;
-                document.getElementById('permisosKpiRechazados').innerText = rechazados;
+                const aprobados = data.filter(p => (p.estado || '').toLowerCase() === 'aprobado' && new Date(p.fecha_solicitud).getMonth() === mes && new Date(p.fecha_solicitud).getFullYear() === año).length;
+                const rechazados = data.filter(p => (p.estado || '').toLowerCase() === 'rechazado' && new Date(p.fecha_solicitud).getMonth() === mes && new Date(p.fecha_solicitud).getFullYear() === año).length;
+                
+                const aprobadosEl = document.getElementById('permisosKpiAprobados');
+                const rechazadosEl = document.getElementById('permisosKpiRechazados');
+                if (aprobadosEl) aprobadosEl.innerText = aprobados;
+                if (rechazadosEl) rechazadosEl.innerText = rechazados;
             })
             .catch(() => console.error('Error al obtener KPIs de permisos'));
     }
@@ -66,26 +67,48 @@ function showMessage(msg) {
             .then(r => r.json())
             .then(data => {
                 const container = document.getElementById('permisosSolicitudesContainer');
+                if (!container) return;
+
                 if (!data.length) {
-                    container.innerHTML = '<div class="alert alert-light">No hay solicitudes pendientes.</div>';
+                    container.innerHTML = `
+                        <div class="solicitudes-vacio text-center text-muted py-3">
+                            <i class="bi bi-inbox fs-2 mb-2 d-block"></i>
+                            No hay permisos pendientes por revisar.
+                        </div>
+                    `;
                     return;
                 }
-                let html = '';
-                data.forEach(p => {
-                    html += `<div class="admin-request-card">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong>${p.empleado}</strong><br>
-                                <small>${p.tipo}</small>
-                                <p class="mt-1 small">${p.justificacion.substring(0,80)}</p>
-                                <div><small><i class="bi bi-calendar-range date-icon"></i> ${p.fecha_inicio} → ${p.fecha_fin}</small></div>
+                
+                let html = `
+                    <div class="solicitudes-grid">
+                        ${data.map(p => `
+                            <div class="solicitud-card">
+                                <div class="solicitud-header">
+                                    <div class="solicitud-titulo">
+                                        <i class="bi bi-calendar2-check-fill"></i>
+                                        <span>${p.tipo || 'Permiso'}</span>
+                                    </div>
+                                </div>
+                                <div class="solicitud-empleado">
+                                    <i class="bi bi-person me-1"></i>
+                                    <strong>${p.empleado || 'Empleado no disponible'}</strong>
+                                </div>
+                                <div class="solicitud-dato">
+                                    <i class="bi bi-calendar-range me-1"></i>
+                                    ${p.fecha_inicio || '—'} → ${p.fecha_fin || '—'}
+                                </div>
+                                <div class="solicitud-descripcion">
+                                    ${p.justificacion ? p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
+                                </div>
+                                <div class="solicitud-footer mt-3">
+                                    <button class="solicitud-btn-detalle verPermisoBtn" data-id="${p.id}">
+                                        <i class="bi bi-eye me-1"></i> Ver detalles
+                                    </button>
+                                </div>
                             </div>
-                            <div>
-                                <button class="btn btn-sm btn-primary-corporate verPermisoBtn" data-id="${p.id}"><i class="bi bi-eye"></i> Ver</button>
-                            </div>
-                        </div>
-                    </div>`;
-                });
+                        `).join('')}
+                    </div>
+                `;
                 container.innerHTML = html;
                 document.querySelectorAll('.verPermisoBtn').forEach(btn => {
                     btn.addEventListener('click', () => verDetallePermiso(btn.dataset.id));
@@ -95,30 +118,69 @@ function showMessage(msg) {
     }
 
     function renderPermisosHistorial() {
-        fetch('/novedades/permisos/historial/')
+        const estado = document.getElementById('permisosFiltroEstado')?.value || '';
+        const busqueda = (document.getElementById('buscarPermiso')?.value || '').trim();
+
+        const params = new URLSearchParams();
+        if (estado && estado !== 'todas') params.append('estado', estado);
+        if (busqueda) params.append('buscar', busqueda);
+
+        fetch(`/novedades/permisos/historial/?${params.toString()}`)
             .then(r => r.json())
             .then(data => {
                 const tbody = document.getElementById('permisosHistorialBody');
-                tbody.innerHTML = '';
-                data.forEach(p => {
-                    let badge = p.estado === 'Pendiente' ? '<span class="badge badge-pending">Pendiente</span>' :
-                                p.estado === 'Aprobado' ? '<span class="badge badge-approved">Aprobado</span>' :
-                                '<span class="badge badge-rejected">Rechazado</span>';
-                    tbody.innerHTML += `<tr>
-                        <td data-label="Fecha solicitud">${new Date(p.fecha_solicitud).toLocaleString()}</td>
-                        <td data-label="Empleado">${p.empleado}</td>
-                        <td data-label="Tipo">${p.tipo}</td>
-                        <td data-label="Fechas">${p.fecha_inicio} - ${p.fecha_fin}</td>
+                const sinResultados = document.getElementById('permisosSinResultados');
+                if (!tbody) return;
+
+                let historial = Array.isArray(data) ? data : [];
+
+                if (busqueda) {
+                    const term = busqueda.toLowerCase();
+                    historial = historial.filter(p => 
+                        (p.empleado || '').toLowerCase().includes(term) ||
+                        (p.tipo || '').toLowerCase().includes(term) ||
+                        (p.justificacion || '').toLowerCase().includes(term)
+                    );
+                }
+
+                if (!historial.length) {
+                    tbody.innerHTML = '';
+                    if (sinResultados) sinResultados.classList.remove('d-none');
+                    return;
+                }
+
+                if (sinResultados) sinResultados.classList.add('d-none');
+
+                tbody.innerHTML = historial.map(p => {
+                    const estadoVal = (p.estado || 'Pendiente').toString().trim().toLowerCase();
+                    let badge = '<span class="badge bg-warning text-dark">Pendiente</span>';
+                    
+                    if (estadoVal === 'aprobado' || estadoVal === 'aprobada') {
+                        badge = '<span class="badge bg-success">Aprobado</span>';
+                    } else if (estadoVal === 'rechazado' || estadoVal === 'rechazada') {
+                        badge = '<span class="badge bg-danger">Rechazado</span>';
+                    }
+
+                    return `<tr>
+                        <td data-label="Fecha solicitud">${p.fecha_solicitud ? new Date(p.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
+                        <td data-label="Empleado"><strong>${p.empleado || '—'}</strong></td>
+                        <td data-label="Tipo">${p.tipo || '—'}</td>
+                        <td data-label="Fechas">${p.fecha_inicio || '—'} → ${p.fecha_fin || '—'}</td>
                         <td data-label="Estado">${badge}</td>
-                        <td data-label="Aprobado por">${p.decision_por || '—'}</td>
-                        <td data-label="Acciones"><button class="btn btn-sm btn-outline-secondary verHistorialPermisoBtn" data-id="${p.id}"><i class="bi bi-eye"></i> Ver</button></td>
+                        <td data-label="Aprobado por">${p.decision_por || p.aprobado_por || '—'}</td>
+                        <td data-label="Acciones">
+                            <button class="btn btn-sm btn-primary-corporate verHistorialPermisoBtn" data-id="${p.id}" title="Ver detalles">
+                                <i class="bi bi-eye"></i> 
+                            </button>
+                        </td>
                     </tr>`;
-                });
+                }).join('');
+
                 document.querySelectorAll('.verHistorialPermisoBtn').forEach(btn => {
                     btn.addEventListener('click', () => verDetalleHistorialPermiso(btn.dataset.id));
                 });
             })
-            .catch(() => console.error('Error al cargar historial de permisos'));
+            .catch(error => console.error('Error al cargar historial de permisos:', error));
     }
 
     function verDetallePermiso(id) {
@@ -128,13 +190,19 @@ function showMessage(msg) {
             .then(p => {
                 const emp = p.empleado;
                 document.getElementById('permisosModalBody').innerHTML = `
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-6"><strong>Empleado:</strong><br>${emp}</div>
                         <div class="col-md-6"><strong>Tipo:</strong><br>${p.tipo}</div>
                         <div class="col-12"><strong>Justificación:</strong><br>${p.justificacion}</div>
                         <div class="col-6"><strong>Fechas:</strong><br><i class="bi bi-calendar3"></i> ${p.fecha_inicio} → ${p.fecha_fin}</div>
                     </div>
                 `;
+                // Mostrar botones para tomar decisión desde la bandeja
+                const aprobarBtn = document.getElementById('permisosAprobarBtn');
+                const rechazarBtn = document.getElementById('permisosRechazarBtn');
+                if (aprobarBtn) aprobarBtn.style.display = 'inline-block';
+                if (rechazarBtn) rechazarBtn.style.display = 'inline-block';
+
                 const modal = new bootstrap.Modal(document.getElementById('permisosDetalleModal'));
                 modal.show();
             })
@@ -146,22 +214,23 @@ function showMessage(msg) {
             .then(r => r.json())
             .then(p => {
                 document.getElementById('permisosModalBody').innerHTML = `
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-6"><strong>Empleado:</strong><br>${p.empleado}</div>
                         <div class="col-md-6"><strong>Tipo:</strong><br>${p.tipo}</div>
                         <div class="col-12"><strong>Justificación:</strong><br>${p.justificacion}</div>
                         <div class="col-6"><strong>Fechas:</strong><br><i class="bi bi-calendar3"></i> ${p.fecha_inicio} → ${p.fecha_fin}</div>
+                        <div class="col-6"><strong>Estado:</strong><br>${p.estado}</div>
                         ${p.motivo_rechazo ? `<div class="col-12 text-danger"><strong>Motivo rechazo:</strong><br>${p.motivo_rechazo}</div>` : ''}
                     </div>
                 `;
-                document.getElementById('permisosAprobarBtn').disabled = true;
-                document.getElementById('permisosRechazarBtn').disabled = true;
+                // MODO SOLO LECTURA: Ocultar botones de acción en el historial
+                const aprobarBtn = document.getElementById('permisosAprobarBtn');
+                const rechazarBtn = document.getElementById('permisosRechazarBtn');
+                if (aprobarBtn) aprobarBtn.style.display = 'none';
+                if (rechazarBtn) rechazarBtn.style.display = 'none';
+
                 const modal = new bootstrap.Modal(document.getElementById('permisosDetalleModal'));
                 modal.show();
-                modal._element.addEventListener('hidden.bs.modal', () => {
-                    document.getElementById('permisosAprobarBtn').disabled = false;
-                    document.getElementById('permisosRechazarBtn').disabled = false;
-                }, { once: true });
             })
             .catch(() => alert('Error al cargar detalle del permiso'));
     }
@@ -174,18 +243,18 @@ function showMessage(msg) {
                 'Content-Type': 'application/json'
             }
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                showMessage('Permiso aprobado correctamente.');
-                updatePermisosKPIs();
-                renderPermisosPendientes();
-                renderPermisosHistorial();
-            } else {
-                showMessage('Error: ' + (data.error || 'No se pudo aprobar'));
-            }
-        })
-        .catch(() => showMessage('Error de red al aprobar permiso'));
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showMessage('Permiso aprobado correctamente.');
+                    updatePermisosKPIs();
+                    renderPermisosPendientes();
+                    renderPermisosHistorial();
+                } else {
+                    showMessage('Error: ' + (data.error || 'No se pudo aprobar'));
+                }
+            })
+            .catch(() => showMessage('Error de red al aprobar permiso'));
     }
 
     function rechazarPermiso(id, motivo) {
@@ -197,36 +266,36 @@ function showMessage(msg) {
             },
             body: JSON.stringify({ motivo: motivo })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                showMessage('Permiso rechazado.');
-                updatePermisosKPIs();
-                renderPermisosPendientes();
-                renderPermisosHistorial();
-            } else {
-                showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
-            }
-        })
-        .catch(() => showMessage('Error de red al rechazar permiso'));
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showMessage('Permiso rechazado.');
+                    updatePermisosKPIs();
+                    renderPermisosPendientes();
+                    renderPermisosHistorial();
+                } else {
+                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
+                }
+            })
+            .catch(() => showMessage('Error de red al rechazar permiso'));
     }
 
-    // Eventos de permisos
+    // Eventos de modales de permisos
     document.getElementById('permisosAprobarBtn')?.addEventListener('click', () => {
         const modal = bootstrap.Modal.getInstance(document.getElementById('permisosDetalleModal'));
-        modal.hide();
+        modal?.hide();
         new bootstrap.Modal(document.getElementById('permisosConfirmApproveModal')).show();
     });
     document.getElementById('permisosConfirmApprove')?.addEventListener('click', () => {
         aprobarPermiso(currentPermisoId);
-        bootstrap.Modal.getInstance(document.getElementById('permisosConfirmApproveModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('permisosConfirmApproveModal'))?.hide();
     });
     document.getElementById('permisosRechazarBtn')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('permisosDetalleModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('permisosDetalleModal'))?.hide();
         new bootstrap.Modal(document.getElementById('permisosConfirmRejectFirstModal')).show();
     });
     document.getElementById('permisosConfirmRejectFirst')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('permisosConfirmRejectFirstModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('permisosConfirmRejectFirstModal'))?.hide();
         new bootstrap.Modal(document.getElementById('permisosRejectModal')).show();
     });
     document.getElementById('permisosConfirmReject')?.addEventListener('click', () => {
@@ -236,10 +305,23 @@ function showMessage(msg) {
             return;
         }
         rechazarPermiso(currentPermisoId, reason);
-        bootstrap.Modal.getInstance(document.getElementById('permisosRejectModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('permisosRejectModal'))?.hide();
     });
 
-    // Inicializar permisos
+    // Eventos de Filtro y Búsqueda
+    document.getElementById('permisosFiltroEstado')?.addEventListener('change', renderPermisosHistorial);
+    document.getElementById('permisosBtnBuscar')?.addEventListener('click', renderPermisosHistorial);
+    document.getElementById('buscarPermiso')?.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') renderPermisosHistorial();
+    });
+    document.getElementById('permisosBtnLimpiar')?.addEventListener('click', () => {
+        const inputBuscar = document.getElementById('buscarPermiso');
+        const selectEstado = document.getElementById('permisosFiltroEstado');
+        if (inputBuscar) inputBuscar.value = '';
+        if (selectEstado) selectEstado.value = '';
+        renderPermisosHistorial();
+    });
+
     updatePermisosKPIs();
     renderPermisosPendientes();
     renderPermisosHistorial();
@@ -247,14 +329,15 @@ function showMessage(msg) {
 
 
 // ============================== MÓDULO INCAPACIDADES ==============================
-(function(){
+(function () {
     let currentIncapId = null;
 
     function updateIncapKPIs() {
         fetch('/novedades/incapacidades/historial/?estado=pendiente')
             .then(r => r.json())
             .then(data => {
-                document.getElementById('incapacidadesKpiPendientes').innerText = data.length;
+                const pendingEl = document.getElementById('incapacidadesKpiPendientes');
+                if (pendingEl) pendingEl.innerText = data.length;
             })
             .catch(() => console.error('Error al obtener KPIs de incapacidades'));
 
@@ -264,89 +347,136 @@ function showMessage(msg) {
                 const now = new Date();
                 const mes = now.getMonth();
                 const año = now.getFullYear();
-                const aprobadas = data.filter(i => i.estado === 'Aprobado' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
-                const rechazadas = data.filter(i => i.estado === 'Rechazado' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
-                document.getElementById('incapacidadesKpiAprobadas').innerText = aprobadas;
-                document.getElementById('incapacidadesKpiRechazadas').innerText = rechazadas;
+                const aprobadas = data.filter(i => (i.estado || '').toLowerCase() === 'aprobado' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
+                const rechazadas = data.filter(i => (i.estado || '').toLowerCase() === 'rechazado' && new Date(i.fecha_solicitud).getMonth() === mes && new Date(i.fecha_solicitud).getFullYear() === año).length;
+                
+                const aprobadasEl = document.getElementById('incapacidadesKpiAprobadas');
+                const rechazadasEl = document.getElementById('incapacidadesKpiRechazadas');
+                if (aprobadasEl) aprobadasEl.innerText = aprobadas;
+                if (rechazadasEl) rechazadasEl.innerText = rechazadas;
             })
             .catch(() => console.error('Error al obtener KPIs de incapacidades'));
     }
 
     function renderIncapacidadesLista() {
-        const estado = document.getElementById('incapacidadesFiltroEstado').value;
-        const busqueda = document.getElementById('incapacidadesBuscarEmpleado').value.toLowerCase();
-        let url = '/novedades/incapacidades/pendientes/';
-        if (estado !== 'todas') {
-            url = `/novedades/incapacidades/historial/?estado=${estado}`;
-        }
-        fetch(url)
-            .then(r => r.json())
+        fetch('/novedades/incapacidades/pendientes/')
+            .then(r => {
+                if (!r.ok) throw new Error('Error al consultar incapacidades pendientes');
+                return r.json();
+            })
             .then(data => {
-                let filtradas = data;
-                if (busqueda) {
-                    filtradas = filtradas.filter(i => i.empleado.toLowerCase().includes(busqueda));
-                }
                 const container = document.getElementById('incapacidadesListaContainer');
-                if (!filtradas.length) {
-                    container.innerHTML = '<div class="alert alert-light">No hay incapacidades con esos filtros.</div>';
+                if (!container) return;
+
+                const pendientes = Array.isArray(data) ? data : [];
+
+                if (!pendientes.length) {
+                    container.innerHTML = `
+                        <div class="solicitudes-vacio text-center text-muted py-3">
+                            <i class="bi bi-clipboard2-check fs-2 mb-2 d-block"></i>
+                            No hay incapacidades pendientes por revisar.
+                        </div>
+                    `;
                     return;
                 }
-                let html = '';
-                filtradas.forEach(i => {
-                    let badgeClass = i.estado === 'Pendiente' ? 'badge-pending' :
-                                    i.estado === 'Aprobado' ? 'badge-approved' :
-                                    'badge-rejected';
-                    html += `<div class="incapacidad-card">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <strong>${i.empleado}</strong><br>
-                                <small>${i.titulo}</small>
-                                <p class="mt-1 small">${i.descripcion}</p>
-                                <div>
-                                    <small><i class="bi bi-calendar-range"></i> ${i.fecha_inicio} → ${i.fecha_fin}</small>
-                                    <span class="badge ${badgeClass}">${i.estado}</span>
+
+                container.innerHTML = `
+                    <div class="solicitudes-grid">
+                        ${pendientes.map(i => `
+                            <div class="solicitud-card">
+                                <div class="solicitud-header">
+                                    <div class="solicitud-titulo">
+                                        <i class="bi bi-clipboard2-pulse"></i>
+                                        <span>${i.titulo || 'Incapacidad'}</span>
+                                    </div>
+                                </div>
+                                <div class="solicitud-empleado">
+                                    <i class="bi bi-person me-1"></i>
+                                    <strong>${i.empleado || 'Empleado no disponible'}</strong>
+                                </div>
+                                <div class="solicitud-dato">
+                                    <i class="bi bi-calendar-range me-1"></i>
+                                    ${i.fecha_inicio || '—'} → ${i.fecha_fin || '—'}
+                                </div>
+                                <div class="solicitud-descripcion">
+                                    ${i.descripcion || 'Sin descripción.'}
+                                </div>
+                                <div class="solicitud-footer mt-3">
+                                    <button type="button" class="solicitud-btn-detalle" onclick="verDetalleIncapacidad(${i.id})">
+                                        <i class="bi bi-eye me-1"></i> Ver detalles
+                                    </button>
                                 </div>
                             </div>
-                            <div>
-                                <button class="btn btn-sm btn-primary-corporate verIncapBtn" data-id="${i.id}"><i class="bi bi-eye"></i> Ver</button>
-                            </div>
-                        </div>
-                        ${i.motivo_rechazo ? `<div class="alert alert-danger mt-2 small">Motivo: ${i.motivo_rechazo}</div>` : ''}
-                    </div>`;
-                });
-                container.innerHTML = html;
-                document.querySelectorAll('.verIncapBtn').forEach(btn => {
-                    btn.addEventListener('click', () => verDetalleIncapacidad(btn.dataset.id));
-                });
+                        `).join('')}
+                    </div>
+                `;
             })
-            .catch(() => console.error('Error al cargar incapacidades'));
+            .catch(error => console.error('Error al cargar la bandeja de incapacidades:', error));
     }
 
     function renderHistorialIncapacidades() {
-        fetch('/novedades/incapacidades/historial/')
-            .then(r => r.json())
+        const estado = document.getElementById('incapacidadesFiltroEstado')?.value || '';
+        const busqueda = (document.getElementById('buscarIncapacidad')?.value || document.getElementById('incapacidadesBuscarEmpleado')?.value || '').trim();
+
+        const params = new URLSearchParams();
+        if (estado && estado !== 'todas') params.append('estado', estado);
+        if (busqueda) params.append('buscar', busqueda);
+
+        fetch(`/novedades/incapacidades/historial/?${params.toString()}`)
+            .then(r => {
+                if (!r.ok) throw new Error('Error al consultar historial de incapacidades');
+                return r.json();
+            })
             .then(data => {
                 const tbody = document.getElementById('incapacidadesHistorialBody');
-                tbody.innerHTML = '';
-                data.forEach(i => {
-                    let badge = i.estado === 'Pendiente' ? '<span class="badge badge-pending">Pendiente</span>' :
-                                i.estado === 'Aprobado' ? '<span class="badge badge-approved">Aprobado</span>' :
-                                '<span class="badge badge-rejected">Rechazado</span>';
-                    tbody.innerHTML += `<tr>
-                        <td data-label="Fecha solicitud">${new Date(i.fecha_solicitud).toLocaleString()}</td>
-                        <td data-label="Empleado">${i.empleado}</td>
-                        <td data-label="Diagnóstico">${i.titulo}</td>
-                        <td data-label="Período">${i.fecha_inicio} → ${i.fecha_fin}</td>
+                const sinResultados = document.getElementById('incapacidadesSinResultados');
+                if (!tbody) return;
+
+                let historial = Array.isArray(data) ? data : [];
+
+                if (busqueda) {
+                    const term = busqueda.toLowerCase();
+                    historial = historial.filter(i =>
+                        (i.empleado || '').toLowerCase().includes(term) ||
+                        (i.titulo || '').toLowerCase().includes(term) ||
+                        (i.descripcion || '').toLowerCase().includes(term)
+                    );
+                }
+
+                if (!historial.length) {
+                    tbody.innerHTML = '';
+                    if (sinResultados) sinResultados.classList.remove('d-none');
+                    return;
+                }
+
+                if (sinResultados) sinResultados.classList.add('d-none');
+
+                tbody.innerHTML = historial.map(i => {
+                    const estadoVal = (i.estado || 'Pendiente').toString().trim().toLowerCase();
+                    let badge = '<span class="badge bg-warning text-dark">Pendiente</span>';
+
+                    if (estadoVal === 'aprobado' || estadoVal === 'aprobada') {
+                        badge = '<span class="badge bg-success">Aprobado</span>';
+                    } else if (estadoVal === 'rechazado' || estadoVal === 'rechazada') {
+                        badge = '<span class="badge bg-danger">Rechazado</span>';
+                    }
+
+                    return `<tr>
+                        <td data-label="Fecha solicitud">${i.fecha_solicitud ? new Date(i.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
+                        <td data-label="Empleado"><strong>${i.empleado || '—'}</strong></td>
+                        <td data-label="Diagnóstico">${i.titulo || i.descripcion || '—'}</td>
+                        <td data-label="Período">${i.fecha_inicio || '—'} → ${i.fecha_fin || '—'}</td>
                         <td data-label="Estado">${badge}</td>
-                        <td data-label="Aprobado por">${i.decision_por || '—'}</td>
-                        <td data-label="Acciones"><button class="btn btn-sm btn-outline-secondary verHistorialIncapacidadBtn" data-id="${i.id}"><i class="bi bi-eye"></i> Ver</button></td>
+                        <td data-label="Aprobado por">${i.decision_por || i.aprobado_por || '—'}</td>
+                        <td data-label="Acciones">
+                            <button class="btn btn-sm btn-primary-corporate verHistorialIncapacidadBtn" onclick="verDetalleHistorialIncapacidad(${i.id})" title="Ver detalles">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
                     </tr>`;
-                });
-                document.querySelectorAll('.verHistorialIncapacidadBtn').forEach(btn => {
-                    btn.addEventListener('click', () => verDetalleHistorialIncapacidad(btn.dataset.id));
-                });
+                }).join('');
             })
-            .catch(() => console.error('Error al cargar historial de incapacidades'));
+            .catch(error => console.error('Error al cargar historial de incapacidades:', error));
     }
 
     function verDetalleIncapacidad(id) {
@@ -365,17 +495,14 @@ function showMessage(msg) {
                 const modal = new bootstrap.Modal(document.getElementById('incapacidadesDetalleModal'));
                 const aprobarBtn = document.getElementById('incapacidadesAprobarBtn');
                 const rechazarBtn = document.getElementById('incapacidadesRechazarBtn');
-                if (i.estado !== 'Pendiente') {
-                    aprobarBtn.disabled = true;
-                    rechazarBtn.disabled = true;
-                } else {
-                    aprobarBtn.disabled = false;
-                    rechazarBtn.disabled = false;
-                }
+                if (aprobarBtn) aprobarBtn.style.display = 'inline-block';
+                if (rechazarBtn) rechazarBtn.style.display = 'inline-block';
                 modal.show();
             })
             .catch(() => alert('Error al cargar detalle de incapacidad'));
     }
+
+    window.verDetalleIncapacidad = verDetalleIncapacidad;
 
     function verDetalleHistorialIncapacidad(id) {
         fetch(`/novedades/incapacidades/${id}/`)
@@ -389,13 +516,19 @@ function showMessage(msg) {
                     <p><strong>Estado:</strong> ${i.estado}</p>
                     ${i.motivo_rechazo ? `<p class="text-danger"><strong>Motivo rechazo:</strong> ${i.motivo_rechazo}</p>` : ''}
                 `;
-                document.getElementById('incapacidadesAprobarBtn').disabled = true;
-                document.getElementById('incapacidadesRechazarBtn').disabled = true;
+                // MODO SOLO LECTURA
+                const aprobarBtn = document.getElementById('incapacidadesAprobarBtn');
+                const rechazarBtn = document.getElementById('incapacidadesRechazarBtn');
+                if (aprobarBtn) aprobarBtn.style.display = 'none';
+                if (rechazarBtn) rechazarBtn.style.display = 'none';
+
                 const modal = new bootstrap.Modal(document.getElementById('incapacidadesDetalleModal'));
                 modal.show();
             })
             .catch(() => alert('Error al cargar detalle de incapacidad'));
     }
+
+    window.verDetalleHistorialIncapacidad = verDetalleHistorialIncapacidad;
 
     function aprobarIncapacidad(id) {
         fetch(`/novedades/incapacidades/${id}/aprobar/`, {
@@ -405,18 +538,18 @@ function showMessage(msg) {
                 'Content-Type': 'application/json'
             }
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                showMessage('Incapacidad aprobada.');
-                updateIncapKPIs();
-                renderIncapacidadesLista();
-                renderHistorialIncapacidades();
-            } else {
-                showMessage('Error: ' + (data.error || 'No se pudo aprobar'));
-            }
-        })
-        .catch(() => showMessage('Error de red al aprobar incapacidad'));
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showMessage('Incapacidad aprobada.');
+                    updateIncapKPIs();
+                    renderIncapacidadesLista();
+                    renderHistorialIncapacidades();
+                } else {
+                    showMessage('Error: ' + (data.error || 'No se pudo aprobar'));
+                }
+            })
+            .catch(() => showMessage('Error de red al aprobar incapacidad'));
     }
 
     function rechazarIncapacidad(id, motivo) {
@@ -428,35 +561,34 @@ function showMessage(msg) {
             },
             body: JSON.stringify({ motivo: motivo })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                showMessage('Incapacidad rechazada.');
-                updateIncapKPIs();
-                renderIncapacidadesLista();
-                renderHistorialIncapacidades();
-            } else {
-                showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
-            }
-        })
-        .catch(() => showMessage('Error de red al rechazar incapacidad'));
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    showMessage('Incapacidad rechazada.');
+                    updateIncapKPIs();
+                    renderIncapacidadesLista();
+                    renderHistorialIncapacidades();
+                } else {
+                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
+                }
+            })
+            .catch(() => showMessage('Error de red al rechazar incapacidad'));
     }
 
-    // Eventos de incapacidades
     document.getElementById('incapacidadesAprobarBtn')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal'))?.hide();
         new bootstrap.Modal(document.getElementById('incapacidadesConfirmApproveModal')).show();
     });
     document.getElementById('incapacidadesConfirmApprove')?.addEventListener('click', () => {
         aprobarIncapacidad(currentIncapId);
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesConfirmApproveModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesConfirmApproveModal'))?.hide();
     });
     document.getElementById('incapacidadesRechazarBtn')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal'))?.hide();
         new bootstrap.Modal(document.getElementById('incapacidadesConfirmRejectFirstModal')).show();
     });
     document.getElementById('incapacidadesConfirmRejectFirst')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesConfirmRejectFirstModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesConfirmRejectFirstModal'))?.hide();
         new bootstrap.Modal(document.getElementById('incapacidadesRejectModal')).show();
     });
     document.getElementById('incapacidadesConfirmReject')?.addEventListener('click', () => {
@@ -466,17 +598,23 @@ function showMessage(msg) {
             return;
         }
         rechazarIncapacidad(currentIncapId, reason);
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesRejectModal')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesRejectModal'))?.hide();
     });
 
-    document.getElementById('incapacidadesFiltroEstado')?.addEventListener('change', () => {
-        renderIncapacidadesLista();
+    document.getElementById('incapacidadesFiltroEstado')?.addEventListener('change', renderHistorialIncapacidades);
+    document.getElementById('incapacidadesBuscarEmpleado')?.addEventListener('input', renderHistorialIncapacidades);
+    document.getElementById('buscarIncapacidad')?.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') renderHistorialIncapacidades();
     });
-    document.getElementById('incapacidadesBuscarEmpleado')?.addEventListener('input', () => {
-        renderIncapacidadesLista();
+    document.getElementById('incapacidadesBtnBuscar')?.addEventListener('click', renderHistorialIncapacidades);
+    document.getElementById('incapacidadesBtnLimpiar')?.addEventListener('click', () => {
+        const inputBuscar = document.getElementById('buscarIncapacidad') || document.getElementById('incapacidadesBuscarEmpleado');
+        const selectEstado = document.getElementById('incapacidadesFiltroEstado');
+        if (inputBuscar) inputBuscar.value = '';
+        if (selectEstado) selectEstado.value = '';
+        renderHistorialIncapacidades();
     });
 
-    // Inicializar incapacidades
     updateIncapKPIs();
     renderIncapacidadesLista();
     renderHistorialIncapacidades();
@@ -484,92 +622,148 @@ function showMessage(msg) {
 
 
 // ============================== MÓDULO CERTIFICADOS ==============================
-(function(){
+(function () {
+
     function actualizarKPICertificados() {
         fetch('/novedades/certificados/')
             .then(r => r.json())
             .then(data => {
-                const hoy = new Date();
-                const mes = hoy.getMonth();
-                const año = hoy.getFullYear();
-                let emitidosMes = 0, emitidosHoy = 0;
-                data.forEach(c => {
-                    const f = new Date(c.fecha_emision);
-                    if (f.getMonth() === mes && f.getFullYear() === año) emitidosMes++;
-                    if (f.toDateString() === hoy.toDateString()) emitidosHoy++;
-                });
-                document.getElementById('certificadosKpiMes').innerText = emitidosMes;
-                document.getElementById('certificadosKpiHoy').innerText = emitidosHoy;
-            })
-            .catch(() => console.error('Error al obtener KPIs de certificados'));
-    }
+                const ahora = new Date();
+                const mesActual = ahora.getMonth();
+                const añoActual = ahora.getFullYear();
+                const pendientes = data.filter(c => (c.estado || '').toLowerCase() === 'pendiente').length;
+                const aprobados = data.filter(c => (c.estado || '').toLowerCase() === 'aprobado').filter(c => {
+                    const fecha = new Date(c.fecha_emision || c.fecha_solicitud);
+                    return (fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual);
+                }).length;
 
-    function cargarEmpleadosSelect() {
-        // Obtener lista de empleados desde el backend (se puede hacer desde el endpoint de certificados)
-        fetch('/novedades/certificados/')
-            .then(r => r.json())
-            .then(data => {
-                const empleados = [...new Set(data.map(c => c.empleado))];
-                const select = document.getElementById('certificadosFiltroEmpleado');
-                select.innerHTML = '<option value="">Todos</option>';
-                empleados.forEach(emp => {
-                    select.innerHTML += `<option value="${emp}">${emp}</option>`;
-                });
+                const rechazados = data.filter(c => (c.estado || '').toLowerCase() === 'rechazado').filter(c => {
+                    const fecha = new Date(c.fecha_emision || c.fecha_solicitud);
+                    return (fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual);
+                }).length;
+
+                const kpiPendientes = document.getElementById('certificadosKpiPendientes');
+                const kpiAprobadas = document.getElementById('certificadosKpiAprobadas');
+                const kpiRechazadas = document.getElementById('certificadosKpiRechazadas');
+                if (kpiPendientes) kpiPendientes.innerText = pendientes;
+                if (kpiAprobadas) kpiAprobadas.innerText = aprobados;
+                if (kpiRechazadas) kpiRechazadas.innerText = rechazados;
             })
-            .catch(() => console.error('Error al cargar empleados para filtro'));
+            .catch(error => console.error('Error al obtener KPIs de certificados:', error));
     }
 
     function renderCertificados() {
-        const emp = document.getElementById('certificadosFiltroEmpleado').value;
-        const tipo = document.getElementById('certificadosFiltroTipo').value;
-        const desde = document.getElementById('certificadosFiltroDesde').value;
-        const hasta = document.getElementById('certificadosFiltroHasta').value;
+        const tipoFiltro = (document.getElementById('certificadosFiltroTipo')?.value || '').toLowerCase().trim();
+        const estadoFiltro = (document.getElementById('certificadosFiltroEstado')?.value || '').toLowerCase().trim();
+        const busqueda = (document.getElementById('buscarCertificado')?.value || '').toLowerCase().trim();
 
-        let url = '/novedades/certificados/?';
-        if (emp) url += `empleado=${encodeURIComponent(emp)}&`;
-        if (tipo) url += `tipo=${encodeURIComponent(tipo)}&`;
-        if (desde) url += `desde=${desde}&`;
-        if (hasta) url += `hasta=${hasta}&`;
-        url = url.slice(0, -1); // quitar último & o ?
-
-        fetch(url)
-            .then(r => r.json())
+        fetch('/novedades/certificados/')
+            .then(response => {
+                if (!response.ok) throw new Error('Error al consultar certificados');
+                return response.json();
+            })
             .then(data => {
+                let certificados = Array.isArray(data) ? data : [];
+
+                if (busqueda) {
+                    certificados = certificados.filter(certificado => {
+                        const textoBusqueda = [
+                            certificado.empleado,
+                            certificado.documento,
+                            certificado.usuario,
+                            certificado.nombre,
+                            certificado.cargo,
+                            certificado.tipo
+                        ].filter(valor => valor !== null && valor !== undefined).join(' ').toLowerCase();
+
+                        return textoBusqueda.includes(busqueda);
+                    });
+                }
+
+                if (tipoFiltro) {
+                    certificados = certificados.filter(certificado => (certificado.tipo || '').toLowerCase().trim() === tipoFiltro);
+                }
+
+                if (estadoFiltro) {
+                    certificados = certificados.filter(certificado => (certificado.estado || '').toLowerCase().trim() === estadoFiltro);
+                }
+
                 const tbody = document.getElementById('certificadosTablaBody');
-                const sinRes = document.getElementById('certificadosSinResultados');
-                if (!data.length) {
+                const sinResultados = document.getElementById('certificadosSinResultados');
+
+                if (!tbody) return;
+
+                if (certificados.length === 0) {
                     tbody.innerHTML = '';
-                    sinRes.classList.remove('d-none');
+                    if (sinResultados) sinResultados.classList.remove('d-none');
                     return;
                 }
-                sinRes.classList.add('d-none');
-                tbody.innerHTML = data.map(c => `<tr>
-                    <td data-label="Empleado"><strong>${c.empleado}</strong></td>
-                    <td data-label="Cargo">${c.cargo}</td>
-                    <td data-label="Tipo de certificado"><span class="badge badge-approved">${c.tipo}</span></td>
-                    <td data-label="Fecha de emisión">${new Date(c.fecha_emision).toLocaleString()}</td>
-                    <td data-label="Estado"><span class="badge bg-success bg-opacity-10 text-success">Emitido</span></td>
-                </tr>`).join('');
+
+                if (sinResultados) sinResultados.classList.add('d-none');
+
+                tbody.innerHTML = certificados.map(certificado => {
+                    const empleado = certificado.empleado || '—';
+                    const cargo = certificado.cargo || '—';
+                    const tipo = certificado.tipo || '—';
+                    const estadoVal = (certificado.estado || 'Pendiente').toString().trim().toLowerCase();
+
+                    let badgeEstado = '<span class="badge bg-warning text-dark">Pendiente</span>';
+                    if (estadoVal === 'aprobado' || estadoVal === 'aprobada') {
+                        badgeEstado = `<span class="badge bg-success">Aprobado</span>`;
+                    } else if (estadoVal === 'rechazado' || estadoVal === 'rechazada') {
+                        badgeEstado = `<span class="badge bg-danger">Rechazado</span>`;
+                    }
+
+                    const fechaMostrar = (estadoVal === 'aprobado' || estadoVal === 'aprobada')
+                        ? (certificado.fecha_emision || certificado.fecha_decision)
+                        : certificado.fecha_solicitud;
+
+                    const fechaFormateada = fechaMostrar
+                        ? new Date(fechaMostrar).toLocaleString('es-CO')
+                        : '—';
+
+                    return `
+                    <tr>
+                        <td data-label="Empleado"><strong>${empleado}</strong></td>
+                        <td data-label="Cargo">${cargo}</td>
+                        <td data-label="Tipo de certificado">${tipo}</td>
+                        <td data-label="Fecha de emisión">${fechaFormateada}</td>
+                        <td data-label="Estado">${badgeEstado}</td>
+                        <td data-label="Acciones">
+                            <button class="btn btn-sm btn-primary-corporate" onclick="verDetalleHistorialCertificado(${certificado.id})" title="Ver detalles">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
             })
-            .catch(() => console.error('Error al cargar certificados'));
+            .catch(error => console.error('Error al cargar certificados:', error));
     }
 
-    // Eventos de certificados
-    document.getElementById('certificadosFiltroEmpleado')?.addEventListener('change', renderCertificados);
+    document.getElementById('certificadosBtnBuscar')?.addEventListener('click', renderCertificados);
+
+    document.getElementById('buscarCertificado')?.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            renderCertificados();
+        }
+    });
+
     document.getElementById('certificadosFiltroTipo')?.addEventListener('change', renderCertificados);
-    document.getElementById('certificadosFiltroDesde')?.addEventListener('change', renderCertificados);
-    document.getElementById('certificadosFiltroHasta')?.addEventListener('change', renderCertificados);
+    document.getElementById('certificadosFiltroEstado')?.addEventListener('change', renderCertificados);
+
     document.getElementById('certificadosBtnLimpiar')?.addEventListener('click', () => {
-        document.getElementById('certificadosFiltroEmpleado').value = '';
-        document.getElementById('certificadosFiltroTipo').value = '';
-        document.getElementById('certificadosFiltroDesde').value = '';
-        document.getElementById('certificadosFiltroHasta').value = '';
+        const buscar = document.getElementById('buscarCertificado');
+        const tipo = document.getElementById('certificadosFiltroTipo');
+        const estado = document.getElementById('certificadosFiltroEstado');
+        if (buscar) buscar.value = '';
+        if (tipo) tipo.value = '';
+        if (estado) estado.value = '';
         renderCertificados();
     });
 
-    // Inicializar certificados
     actualizarKPICertificados();
-    cargarEmpleadosSelect();
     renderCertificados();
 })();
 
@@ -581,12 +775,13 @@ document.querySelectorAll('.novedades-tab').forEach(tab => {
         tab.classList.add('active');
         const target = tab.dataset.tab;
         document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
-        document.getElementById(`tab${target.charAt(0).toUpperCase()+target.slice(1)}`).classList.add('active');
+        document.getElementById(`tab${target.charAt(0).toUpperCase() + target.slice(1)}`).classList.add('active');
     });
 });
 
+
 // ============================================================
-// CERTIFICADOS - Bandeja de pendientes y aprobación
+// CERTIFICADOS - BANDEJA DE PENDIENTES Y MODALES
 // ============================================================
 let certificadoSeleccionadoId = null;
 
@@ -596,35 +791,63 @@ async function cargarCertificadosPendientes() {
 
     try {
         const resp = await fetch('/novedades/certificados/pendientes/');
+        if (!resp.ok) throw new Error(`Error HTTP: ${resp.status}`);
+
         const data = await resp.json();
 
         if (data.length === 0) {
-            container.innerHTML = '<div class="text-center text-muted py-3">No hay certificados pendientes.</div>';
+            container.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    No hay certificados pendientes.
+                </div>
+            `;
             return;
         }
 
-        container.innerHTML = data.map(c => `
-            <div class="request-card request-pending mb-2">
-                <div class="d-flex justify-content-between align-items-start flex-wrap">
-                    <div>
-                        <h5 class="mb-1">${c.empleado}</h5>
-                        <small class="text-muted">${c.tipo} · Solicitado: ${new Date(c.fecha_solicitud).toLocaleString('es-CO')}</small>
-                        <p class="mb-0 mt-2">${c.proposito || ''}</p>
+        container.innerHTML = `
+            <div class="solicitudes-grid">
+                ${data.map(c => `
+                    <div class="solicitud-card">
+                        <div class="solicitud-header">
+                            <div class="solicitud-titulo">
+                                <i class="bi bi-flag-fill"></i>
+                                <span>${c.tipo}</span>
+                            </div>
+                        </div>
+                        <div class="solicitud-empleado">
+                            <i class="bi bi-person me-1"></i>
+                            <strong>${c.empleado}</strong>
+                        </div>
+                        <div class="solicitud-dato">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            Solicitado: ${new Date(c.fecha_solicitud).toLocaleString('es-CO')}
+                        </div>
+                        <div class="solicitud-descripcion">
+                            ${c.proposito || 'Sin propósito especificado.'}
+                        </div>
+                        <div class="solicitud-footer mt-3">
+                            <button type="button" class="solicitud-btn-detalle" onclick="verDetalleCertificado(${c.id})">
+                                <i class="bi bi-eye me-1"></i> Ver detalles
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-corporate" onclick="verDetalleCertificado(${c.id})">
-                            <i class="bi bi-eye"></i> Ver detalle
-                        </button>
-                    </div>
-                </div>
+                `).join('')}
             </div>
-        `).join('');
+        `;
+
     } catch (err) {
         console.error('Error cargando certificados pendientes:', err);
-        container.innerHTML = '<div class="text-center text-danger py-3">Error al cargar certificados pendientes.</div>';
+        container.innerHTML = `
+            <div class="text-center text-danger py-4">
+                <i class="bi bi-exclamation-circle fs-1 d-block mb-2"></i>
+                Error al cargar certificados pendientes.
+            </div>
+        `;
     }
 }
 
+// Ver detalle desde BANDEJA (Con opción de aprobar/rechazar)
 async function verDetalleCertificado(id) {
     certificadoSeleccionadoId = id;
     try {
@@ -642,6 +865,12 @@ async function verDetalleCertificado(id) {
             <p><strong>Fecha de solicitud:</strong> ${new Date(c.fecha_solicitud).toLocaleString('es-CO')}</p>
         `;
 
+        // Mostrar botones de acción
+        const aprobarBtn = document.getElementById('certificadosAprobarBtn');
+        const rechazarBtn = document.getElementById('certificadosRechazarBtn');
+        if (aprobarBtn) aprobarBtn.style.display = 'inline-block';
+        if (rechazarBtn) rechazarBtn.style.display = 'inline-block';
+
         const modal = new bootstrap.Modal(document.getElementById('certificadosDetalleModal'));
         modal.show();
     } catch (err) {
@@ -649,7 +878,40 @@ async function verDetalleCertificado(id) {
     }
 }
 
-// Botón "Aprobar" dentro del modal de detalle -> abre modal de confirmación
+// Ver detalle desde HISTORIAL (Solo Observar)
+async function verDetalleHistorialCertificado(id) {
+    try {
+        const resp = await fetch(`/novedades/certificados/${id}/`);
+        const c = await resp.json();
+        if (!c) return;
+
+        document.getElementById('certificadosModalBody').innerHTML = `
+            <p><strong>Empleado:</strong> ${c.empleado}</p>
+            <p><strong>Tipo:</strong> ${c.tipo}</p>
+            <p><strong>Propósito:</strong> ${c.proposito || '-'}</p>
+            <p><strong>Dirigido a:</strong> ${c.dirigido_a || '-'}</p>
+            <p><strong>Periodo:</strong> ${c.periodo || '-'}</p>
+            <p><strong>Estado:</strong> ${c.estado}</p>
+            <p><strong>Fecha:</strong> ${new Date(c.fecha_emision || c.fecha_solicitud).toLocaleString('es-CO')}</p>
+            ${c.motivo_rechazo ? `<p class="text-danger"><strong>Motivo rechazo:</strong> ${c.motivo_rechazo}</p>` : ''}
+        `;
+
+        // MODO SOLO LECTURA: Ocultar botones de acción
+        const aprobarBtn = document.getElementById('certificadosAprobarBtn');
+        const rechazarBtn = document.getElementById('certificadosRechazarBtn');
+        if (aprobarBtn) aprobarBtn.style.display = 'none';
+        if (rechazarBtn) rechazarBtn.style.display = 'none';
+
+        const modal = new bootstrap.Modal(document.getElementById('certificadosDetalleModal'));
+        modal.show();
+    } catch (err) {
+        console.error('Error obteniendo detalle del certificado:', err);
+    }
+}
+
+window.verDetalleCertificado = verDetalleCertificado;
+window.verDetalleHistorialCertificado = verDetalleHistorialCertificado;
+
 document.getElementById('certificadosAprobarBtn')?.addEventListener('click', () => {
     const modalDetalle = bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal'));
     modalDetalle?.hide();
@@ -657,7 +919,6 @@ document.getElementById('certificadosAprobarBtn')?.addEventListener('click', () 
     modalConfirm.show();
 });
 
-// Confirmar aprobación
 document.getElementById('certificadosConfirmApprove')?.addEventListener('click', async () => {
     if (!certificadoSeleccionadoId) return;
     try {
@@ -671,7 +932,7 @@ document.getElementById('certificadosConfirmApprove')?.addEventListener('click',
 
         if (resp.ok) {
             cargarCertificadosPendientes();
-            if (typeof cargarCertificadosHistorial === 'function') cargarCertificadosHistorial();
+            if (typeof renderCertificados === 'function') renderCertificados();
         } else {
             alert(data.error || 'Error al aprobar el certificado');
         }
@@ -680,7 +941,6 @@ document.getElementById('certificadosConfirmApprove')?.addEventListener('click',
     }
 });
 
-// Botón "Rechazar" dentro del modal de detalle -> abre modal de motivo
 document.getElementById('certificadosRechazarBtn')?.addEventListener('click', () => {
     const modalDetalle = bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal'));
     modalDetalle?.hide();
@@ -688,7 +948,6 @@ document.getElementById('certificadosRechazarBtn')?.addEventListener('click', ()
     modalReject.show();
 });
 
-// Confirmar rechazo
 document.getElementById('certificadosConfirmReject')?.addEventListener('click', async () => {
     if (!certificadoSeleccionadoId) return;
     const motivo = document.getElementById('certificadosRejectReason').value.trim();
@@ -713,7 +972,7 @@ document.getElementById('certificadosConfirmReject')?.addEventListener('click', 
 
         if (resp.ok) {
             cargarCertificadosPendientes();
-            if (typeof cargarCertificadosHistorial === 'function') cargarCertificadosHistorial();
+            if (typeof renderCertificados === 'function') renderCertificados();
         } else {
             alert(data.error || 'Error al rechazar el certificado');
         }
@@ -722,22 +981,16 @@ document.getElementById('certificadosConfirmReject')?.addEventListener('click', 
     }
 });
 
-// Cargar al iniciar
 document.addEventListener('DOMContentLoaded', () => {
     cargarCertificadosPendientes();
 });
 
 
-
 // ============================== MÓDULO MEMORANDOS ==============================
-(function() {
-    // Variables de estado
+(function () {
     let memorandosData = [];
     let empleadosData = [];
 
-    // ============================================================
-    // 1. CARGAR LISTA DE EMPLEADOS PARA EL DROPDOWN
-    // ============================================================
     async function cargarEmpleados() {
         try {
             const resp = await fetch('/memorandos/empleados/');
@@ -753,9 +1006,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ============================================================
-    // 2. CARGAR HISTORIAL DE MEMORANDOS
-    // ============================================================
     async function cargarMemorandosHistorial() {
         try {
             const resp = await fetch('/memorandos/');
@@ -764,30 +1014,27 @@ document.addEventListener('DOMContentLoaded', () => {
             actualizarKPIsMemorandos(memorandosData);
         } catch (err) {
             console.error('Error al cargar historial de memorandos:', err);
-            document.getElementById('memorandosTablaBody').innerHTML = 
-                '<tr><td colspan="7" class="text-center text-danger">Error al cargar los memorandos.</td></tr>';
+            const tbody = document.getElementById('memorandosTablaBody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error al cargar los memorandos.</td></tr>';
         }
     }
 
-    // ============================================================
-    // 3. RENDERIZAR TABLA DE MEMORANDOS
-    // ============================================================
     function renderizarTablaMemorandos(data) {
         const tbody = document.getElementById('memorandosTablaBody');
         const sinResultados = document.getElementById('memorandosSinResultados');
 
+        if (!tbody) return;
+
         if (!data || data.length === 0) {
             tbody.innerHTML = '';
-            sinResultados.classList.remove('d-none');
+            if (sinResultados) sinResultados.classList.remove('d-none');
             return;
         }
-        sinResultados.classList.add('d-none');
+        if (sinResultados) sinResultados.classList.add('d-none');
 
         tbody.innerHTML = data.map(m => {
-            // Badge de tipo con clase específica
             const tipoBadge = `<span class="badge badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
-            // Botón de descarga (solo si tiene PDF)
-            const btnDescarga = m.archivo_pdf 
+            const btnDescarga = m.archivo_pdf
                 ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF">
                     <i class="bi bi-download"></i>
                   </a>`
@@ -805,9 +1052,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    // ============================================================
-    // 4. ACTUALIZAR KPIs DE MEMORANDOS
-    // ============================================================
     function actualizarKPIsMemorandos(data) {
         const ahora = new Date();
         const mes = ahora.getMonth();
@@ -824,19 +1068,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return f.toDateString() === hoy;
         }).length;
 
-        document.getElementById('memorandosKpiTotal').innerText = total;
-        document.getElementById('memorandosKpiMes').innerText = esteMes;
-        document.getElementById('memorandosKpiHoy').innerText = hoyCount;
+        const elTotal = document.getElementById('memorandosKpiTotal');
+        const elMes = document.getElementById('memorandosKpiMes');
+        const elHoy = document.getElementById('memorandosKpiHoy');
+
+        if (elTotal) elTotal.innerText = total;
+        if (elMes) elMes.innerText = esteMes;
+        if (elHoy) elHoy.innerText = hoyCount;
     }
 
-    // ============================================================
-    // 5. ENVIAR FORMULARIO DE CREACIÓN (AJAX)
-    // ============================================================
     function configurarFormularioMemorando() {
         const form = document.getElementById('memorandoForm');
         if (!form) return;
 
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const empleadoId = document.getElementById('memorandoEmpleado').value;
@@ -845,7 +1090,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const contenido = document.getElementById('memorandoContenido').value.trim();
             const mensajeDiv = document.getElementById('memorandoMensaje');
 
-            // Validaciones básicas
             if (!empleadoId) {
                 mensajeDiv.innerHTML = `<div class="alert alert-warning">⚠️ Debes seleccionar un empleado.</div>`;
                 return;
@@ -863,7 +1107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Deshabilitar botón para evitar doble envío
             const btn = document.getElementById('memorandoBtnGenerar');
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generando...';
@@ -896,9 +1139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                     `;
-                    // Limpiar formulario
                     form.reset();
-                    // Recargar historial y KPIs
                     await cargarMemorandosHistorial();
                 } else {
                     mensajeDiv.innerHTML = `
@@ -924,11 +1165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ============================================================
-    // 6. INICIALIZAR MÓDULO
-    // ============================================================
     async function initMemorandos() {
-        // Esperar a que el DOM esté listo
         await new Promise(resolve => {
             if (document.readyState === 'complete') {
                 resolve();
@@ -937,7 +1174,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Solo ejecutar si estamos en la pestaña de memorandos (o si el contenedor existe)
         const container = document.getElementById('memorandosTablaBody');
         if (!container) return;
 
@@ -946,7 +1182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         configurarFormularioMemorando();
     }
 
-    // Iniciar cuando el DOM esté listo
     if (document.readyState === 'complete') {
         initMemorandos();
     } else {

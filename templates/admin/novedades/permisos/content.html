@@ -1,8 +1,13 @@
-<!-- KPIs mensuales -->
+<!-- KPIs Mensuales -->
 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <h3><i class="bi bi-calendar2-check-fill me-2"></i>Permisos este mes</h3>
+    <h3>
+        <i class="bi bi-calendar2-check-fill me-2"></i>
+        Permisos este mes
+    </h3>
 </div>
+
 <div class="row g-3 mb-4">
+    <!-- Pendientes -->
     <div class="col-md-4 col-6">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -14,6 +19,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Aprobadas -->
     <div class="col-md-4 col-6">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -25,6 +32,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Rechazadas -->
     <div class="col-md-4 col-6">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -38,32 +47,74 @@
     </div>
 </div>
 
-<div class="card-header">
-    <h3 class="mb-0"><i class="bi bi-inbox-fill me-2"></i> Bandeja de permisos pendientes</h3>
+<!-- Bandeja de Permisos Pendientes -->
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3 class="mb-0">
+        <i class="bi bi-inbox-fill me-2"></i>
+        Bandeja de permisos pendientes
+    </h3>
 </div>
 
-<div class="card-modern">
-    <div class="p-3" id="permisosSolicitudesContainer"></div>
+<div class="card-modern mb-4">
+    <div class="p-3" id="permisosSolicitudesContainer">
+        <!-- Renderizado dinámico vía JS -->
+    </div>
 </div>
 
-<div class="card-header">
-    <h3 class="mb-0"><i class="bi bi-clock-history me-2"></i> Historial completo de permisos</h3>
+<!-- Historial de Permisos -->
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3 class="mb-0">
+        <i class="bi bi-clock-history me-2"></i>
+        Historial completo de permisos
+    </h3>
 </div>
+
+<!-- Filtros del Historial -->
+<div class="filtros-toolbar">
+    <div class="filtro-buscar">
+        <i class="bi bi-search"></i>
+        <input type="text" id="buscarPermiso" placeholder="Buscar por documento, usuario o nombre...">
+    </div>
+
+    <select id="permisosFiltroEstado" class="filtro-select">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="aprobado">Aprobado</option>
+        <option value="rechazado">Rechazado</option>
+    </select>
+
+    <button type="button" id="permisosBtnBuscar" class="filtro-btn-buscar">
+        <i class="bi bi-search me-1"></i> Buscar
+    </button>
+
+    <button type="button" id="permisosBtnLimpiar" class="filtro-btn-limpiar">
+        Limpiar
+    </button>
+</div>
+
+<!-- Tabla Historial -->
 <div class="card-modern">
     <div class="p-3 table-responsive-stack">
-        <table class="table table-custom">
+        <table class="table table-custom align-middle">
             <thead>
                 <tr>
-                    <th>Fecha solicitud</th>
-                    <th>Empleado</th>
-                    <th>Tipo</th>
-                    <th>Fechas</th>
-                    <th>Estado</th>
-                    <th>Aprobado por</th>
-                    <th>Acciones</th>
+                    <th>FECHA SOLICITUD</th>
+                    <th>EMPLEADO</th>
+                    <th>TIPO</th>
+                    <th>FECHAS</th>
+                    <th>ESTADO</th>
+                    <th>APROBADO POR</th>
+                    <th>ACCIONES</th>
                 </tr>
             </thead>
-            <tbody id="permisosHistorialBody"></tbody>
+            <tbody id="permisosHistorialBody">
+                <!-- Renderizado dinámico vía JS -->
+            </tbody>
         </table>
+
+        <div id="permisosSinResultados" class="text-center text-muted py-4 d-none">
+            <i class="bi bi-search fs-2 mb-2 d-block"></i>
+            No se encontraron permisos que coincidan con la búsqueda.
+        </div>
     </div>
 </div>

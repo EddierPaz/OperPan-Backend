@@ -1,11 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ==========================
-    // HELPER: mostrar/ocultar días
-    // según el turno (7 días para
-    // FIJO, 15 para MANANA/TARDE)
-    // ==========================
-
+    // ==========================================
+    // 1. HELPER: MOSTRAR / OCLUTAR DÍAS CALENDARIO
+    // ==========================================
     function diasVisibles(turno) {
         return turno === "FIJO" ? 7 : 15;
     }
@@ -21,8 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (indice < maxDias) {
                 btn.style.display = "";
             } else {
-                // Si el día que se estaba mostrando queda fuera del nuevo
-                // rango, se oculta y se limpia su selección
+                // Si el día que se mostraba queda fuera del rango, se oculta y limpia
                 btn.style.display = "none";
                 if (btn.classList.contains("seleccionado")) {
                     btn.classList.remove("seleccionado");
@@ -34,10 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ==========================
-    // CARGAR CARGO EMPLEADO
-    // ==========================
-
+    // ==========================================
+    // 2. AUTOCOMPLETA CARGO DEL EMPLEADO
+    // ==========================================
     const empleadoSelect = document.getElementById("empleadoSelect");
     const cargoInput = document.getElementById("cargoInput");
 
@@ -48,17 +43,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ==========================
-    // AUTOCOMPLETAR HORARIOS
-    // ==========================
-
+    // ==========================================
+    // 3. CALENDARIO Y HORARIOS — CREAR
+    // ==========================================
     const turnoSelect = document.getElementById("turnoSelect");
     const horaEntrada = document.getElementById("horaEntrada");
     const horaSalida = document.getElementById("horaSalida");
-
-    // ==========================
-    // CALENDARIO — CREAR
-    // ==========================
 
     const cicloCrear = document.getElementById("ciclo14x1");
     const inputCrear = document.getElementById("fechaDescansoInput");
@@ -68,17 +58,27 @@ document.addEventListener("DOMContentLoaded", function () {
     if (turnoSelect) {
         turnoSelect.addEventListener("change", function () {
             switch (this.value) {
-                case "MANANA": horaEntrada.value = "05:00"; horaSalida.value = "13:00"; break;
-                case "TARDE": horaEntrada.value = "13:00"; horaSalida.value = "22:00"; break;
-                case "FIJO": horaEntrada.value = "08:00"; horaSalida.value = "17:00"; break;
-                default: horaEntrada.value = ""; horaSalida.value = "";
+                case "MANANA":
+                    horaEntrada.value = "05:00";
+                    horaSalida.value = "13:00";
+                    break;
+                case "TARDE":
+                    horaEntrada.value = "13:00";
+                    horaSalida.value = "22:00";
+                    break;
+                case "FIJO":
+                    horaEntrada.value = "08:00";
+                    horaSalida.value = "17:00";
+                    break;
+                default:
+                    horaEntrada.value = "";
+                    horaSalida.value = "";
             }
 
-            // Ajustar cuántos días del calendario se muestran
             actualizarDiasCalendario(cicloCrear, this.value, inputCrear, labelCrear, textoCrear);
         });
 
-        // Estado inicial (por si el select ya trae un valor precargado)
+        // Estado inicial
         actualizarDiasCalendario(cicloCrear, turnoSelect.value, inputCrear, labelCrear, textoCrear);
     }
 
@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
         cicloCrear.addEventListener("click", function (e) {
             const btn = e.target.closest(".dia-btn");
             if (!btn || btn.style.display === "none") return;
+
             cicloCrear.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
             btn.classList.add("seleccionado");
             inputCrear.value = btn.dataset.fecha;
@@ -94,10 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ==========================
-    // LIMPIAR FORMULARIO
-    // ==========================
-
+    // ==========================================
+    // 4. LIMPIAR FORMULARIO CREAR
+    // ==========================================
     const btnLimpiar = document.getElementById("btnLimpiarHorario");
 
     if (btnLimpiar) {
@@ -107,20 +107,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (inputCrear) inputCrear.value = "";
                 if (labelCrear) labelCrear.style.display = "none";
                 if (textoCrear) textoCrear.textContent = "";
+
                 document.querySelectorAll("#ciclo14x1 .dia-btn").forEach(function (b) {
                     b.classList.remove("seleccionado");
                     b.blur();
                 });
-                // Al limpiar también se resetea la vista del calendario a 15 días
+
                 actualizarDiasCalendario(cicloCrear, "", inputCrear, labelCrear, textoCrear);
             }, 10);
         });
     }
 
-    // ==========================
-    // CALENDARIO — EDITAR
-    // ==========================
-
+    // ==========================================
+    // 5. CALENDARIO — EDITAR
+    // ==========================================
     const cicloEditar = document.getElementById("ciclo14x1Editar");
     const inputEditar = document.getElementById("fechaDescansoEditarInput");
     const labelEditar = document.getElementById("descansoEditarLabel");
@@ -137,6 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
         cicloEditar.addEventListener("click", function (e) {
             const btn = e.target.closest(".dia-btn");
             if (!btn || btn.style.display === "none") return;
+
             cicloEditar.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
             btn.classList.add("seleccionado");
             inputEditar.value = btn.dataset.fecha;
@@ -145,20 +146,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ==========================
-    // VER Y EDITAR — delegación
-    // en document para que funcione
-    // aunque la tabla cargue tarde
-    // ==========================
-
+    // ==========================================
+    // 6. DELEGACIÓN DE EVENTOS (VER Y EDITAR MODALES)
+    // ==========================================
     document.addEventListener("click", function (e) {
 
-        // Botón VER
+        // BOTÓN VER HORARIO
         const btnVer = e.target.closest(".btn-ver-horario");
         if (btnVer) {
             const id = btnVer.dataset.id;
             fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) { return res.json(); })
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                    return res.json();
+                })
                 .then(function (data) {
                     document.getElementById("ver-empleado").value = data.empleado;
                     document.getElementById("ver-cargo").value = data.cargo;
@@ -167,17 +168,25 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("ver-salida").value = data.hora_salida;
                     document.getElementById("ver-descanso").value = data.descanso || "Sin asignar";
                     document.getElementById("ver-estado").value = data.estado ? "Activo" : "Inactivo";
-                    new bootstrap.Modal(document.getElementById("modalVerHorario")).show();
+
+                    const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
+                    modalVer.show();
                 })
-                .catch(function () { alert("No se pudo cargar el horario."); });
+                .catch(function (err) {
+                    console.error(err);
+                    alert("No se pudo cargar la información del horario.");
+                });
         }
 
-        // Botón EDITAR
+        // BOTÓN EDITAR HORARIO
         const btnEditar = e.target.closest(".btn-editar-horario");
         if (btnEditar) {
             const id = btnEditar.dataset.id;
             fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) { return res.json(); })
+                .then(function (res) {
+                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                    return res.json();
+                })
                 .then(function (data) {
                     document.getElementById("editar-empleado").value = data.empleado;
                     document.getElementById("editar-cargo").value = data.cargo;
@@ -185,17 +194,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("editar-entrada").value = data.hora_entrada;
                     document.getElementById("editar-salida").value = data.hora_salida;
 
-                    document.getElementById("formEditar").action =
-                        "/asistencia/horarios/" + id + "/editar/";
+                    document.getElementById("formEditar").action = "/asistencia/horarios/" + id + "/editar/";
 
                     const labelActual = document.getElementById("descanso-actual-label");
                     if (labelActual) {
                         labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
                     }
 
-                    // Ajustar el calendario (7 o 15 días) según el turno actual del horario
+                    // Ajusta días según turno
                     actualizarDiasCalendario(cicloEditar, data.turno_valor, inputEditar, labelEditar, textoEditar);
 
+                    // Marcar en el calendario la fecha previamente guardada
                     if (cicloEditar) {
                         cicloEditar.querySelectorAll(".dia-btn").forEach(function (b) {
                             b.classList.remove("seleccionado");
@@ -209,59 +218,62 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (labelEditar) labelEditar.style.display = "none";
                     if (textoEditar) textoEditar.textContent = "";
 
-                    new bootstrap.Modal(document.getElementById("modalEditarHorario")).show();
+                    const modalEditar = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEditarHorario"));
+                    modalEditar.show();
                 })
-                .catch(function () { alert("No se pudo cargar el horario."); });
+                .catch(function (err) {
+                    console.error(err);
+                    alert("No se pudo cargar la información para editar el horario.");
+                });
+        }
+    });
+
+    // ==========================================
+    // 7. FILTROS DE BÚSQUEDA Y SELECCIÓN EN TABLA
+    // ==========================================
+    const filas = document.querySelectorAll("table.table-custom tbody tr");
+    const inputBuscar = document.getElementById("buscarHorario");
+    const selectTurno = document.getElementById("filtroTurno");
+    const selectEstado = document.getElementById("filtroEstadoHorario");
+
+    if (inputBuscar) {
+        function aplicarFiltros() {
+            const texto = inputBuscar.value.trim().toLowerCase();
+            const turno = selectTurno.value.toLowerCase();
+            const estado = selectEstado.value.toLowerCase();
+
+            filas.forEach(fila => {
+                const celdas = fila.querySelectorAll("td");
+                if (celdas.length < 6) return; // Salta la fila de vacíos
+
+                const empleado = celdas[0].textContent.trim().toLowerCase();
+                const turnoFila = celdas[2].textContent.trim().toLowerCase();
+                const estadoFila = celdas[5].textContent.trim().toLowerCase();
+
+                const coincideTexto = !texto || empleado.includes(texto);
+                const coincideTurno = !turno || turnoFila === turno;
+                const coincideEstado = !estado || estadoFila === estado;
+
+                fila.style.display = (coincideTexto && coincideTurno && coincideEstado) ? "" : "none";
+            });
         }
 
-    });
-
-});
-
-// ===============================
-// FILTROS DE BÚSQUEDA — HORARIOS
-// ===============================
-document.addEventListener('DOMContentLoaded', function () {
-    const filas = document.querySelectorAll('table.table-custom tbody tr');
-    const inputBuscar = document.getElementById('buscarHorario');
-    const selectTurno = document.getElementById('filtroTurno');
-    const selectEstado = document.getElementById('filtroEstadoHorario');
-
-    if (!inputBuscar) return;
-
-    function aplicarFiltros() {
-        const texto = inputBuscar.value.trim().toLowerCase();
-        const turno = selectTurno.value.toLowerCase();
-        const estado = selectEstado.value.toLowerCase();
-
-        filas.forEach(fila => {
-            const celdas = fila.querySelectorAll('td');
-            if (celdas.length < 6) return; // salta la fila de "No hay horarios registrados"
-
-            const empleado = celdas[0].textContent.trim().toLowerCase();
-            const turnoFila = celdas[2].textContent.trim().toLowerCase();
-            const estadoFila = celdas[5].textContent.trim().toLowerCase();
-
-            const coincideTexto = !texto || empleado.includes(texto);
-            const coincideTurno = !turno || turnoFila === turno;
-            const coincideEstado = !estado || estadoFila === estado;
-
-            fila.style.display = (coincideTexto && coincideTurno && coincideEstado) ? '' : 'none';
+        [inputBuscar, selectTurno, selectEstado].forEach(el => {
+            if (el) {
+                el.addEventListener("input", aplicarFiltros);
+                el.addEventListener("change", aplicarFiltros);
+            }
         });
+
+        const btnLimpiarFiltros = document.getElementById("limpiarFiltrosHorarios");
+        if (btnLimpiarFiltros) {
+            btnLimpiarFiltros.addEventListener("click", function () {
+                inputBuscar.value = "";
+                if (selectTurno) selectTurno.value = "";
+                if (selectEstado) selectEstado.value = "";
+                aplicarFiltros();
+            });
+        }
     }
 
-    [inputBuscar, selectTurno, selectEstado].forEach(el => {
-        el.addEventListener('input', aplicarFiltros);
-        el.addEventListener('change', aplicarFiltros);
-    });
-
-    const btnLimpiar = document.getElementById('limpiarFiltrosHorarios');
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function () {
-            inputBuscar.value = '';
-            selectTurno.value = '';
-            selectEstado.value = '';
-            aplicarFiltros();
-        });
-    }
 });

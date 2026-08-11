@@ -18,13 +18,13 @@
         <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
     </div>
 
-    <!-- ==================== KPIs ==================== -->
+    <!-- ==================== KPIs (Utilizando las clases globales .stat-card de base.css) ==================== -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
+            <div class="stat-card">
                 <div>
-                    <span class="text-muted small d-block">Pendientes</span>
-                    <h3 class="m-0 fw-bold">{{ kpis.pendientes|default:0 }}</h3>
+                    <span class="text-muted">Pendientes</span>
+                    <h3>{{ kpis.pendientes|default:0 }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-hourglass-split fs-2 text-warning"></i>
@@ -32,10 +32,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
+            <div class="stat-card">
                 <div>
-                    <span class="text-muted small d-block">En progreso</span>
-                    <h3 class="m-0 fw-bold">{{ kpis.en_progreso|default:0 }}</h3>
+                    <span class="text-muted">En progreso</span>
+                    <h3>{{ kpis.en_progreso|default:0 }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-arrow-repeat fs-2 text-primary"></i>
@@ -43,10 +43,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
+            <div class="stat-card">
                 <div>
-                    <span class="text-muted small d-block">Finalizadas</span>
-                    <h3 class="m-0 fw-bold">{{ kpis.finalizadas|default:0 }}</h3>
+                    <span class="text-muted">Finalizadas</span>
+                    <h3>{{ kpis.finalizadas|default:0 }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-check2-circle fs-2 text-success"></i>
@@ -54,10 +54,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card d-flex justify-content-between align-items-center">
+            <div class="stat-card">
                 <div>
-                    <span class="text-muted small d-block">Total asignadas</span>
-                    <h3 class="m-0 fw-bold">{{ kpis.total|default:0 }}</h3>
+                    <span class="text-muted">Total asignadas</span>
+                    <h3>{{ kpis.total|default:0 }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-list-task fs-2 text-primary"></i>
@@ -66,7 +66,7 @@
         </div>
     </div>
 
-    <!-- ==================== TAREAS DE HOY (acordeón por estado) ==================== -->
+    <!-- ==================== TAREAS DE HOY (Acordeón) ==================== -->
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Tareas para hoy</h3>
     </div>
@@ -75,9 +75,10 @@
         {% for estado_codigo, lista_tareas in tareas_hoy_por_estado.items %}
         <div class="accordion-item mb-3">
             <h2 class="accordion-header" id="headingHoy{{ estado_codigo }}">
-                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                <!-- Botón estático cerrado -->
+                <button class="accordion-button collapsed" type="button"
                     data-bs-toggle="collapse" data-bs-target="#collapseHoy{{ estado_codigo }}"
-                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+                    aria-expanded="false">
                     <div class="d-flex align-items-center">
                         <i class="bi
                             {% if estado_codigo == 'PENDIENTE' %}bi-hourglass-split
@@ -93,7 +94,8 @@
                     <span class="estado-badge">{{ lista_tareas|length }} hoy</span>
                 </button>
             </h2>
-            <div id="collapseHoy{{ estado_codigo }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+            <!-- Contenedor colapsado sin la clase 'show' -->
+            <div id="collapseHoy{{ estado_codigo }}" class="accordion-collapse collapse"
                 data-bs-parent="#accordionTareasHoy">
                 <div class="accordion-body">
                     <div class="row g-4">
@@ -115,13 +117,13 @@
                                             </h5>
                                         </div>
                                         {% if tarea.esta_vencida %}
-                                            <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">Vencida</span>
+                                            <span class="badge priority-high">Vencida</span>
                                         {% elif tarea.estado == 'PENDIENTE' %}
-                                            <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 small">Pendiente</span>
+                                            <span class="badge badge-status badge-pendiente">Pendiente</span>
                                         {% elif tarea.estado == 'EN_PROGRESO' %}
-                                            <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-2 py-1 small">En progreso</span>
+                                            <span class="badge badge-status badge-progreso">En progreso</span>
                                         {% elif tarea.estado == 'FINALIZADA' %}
-                                            <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2 py-1 small">Finalizada</span>
+                                            <span class="badge badge-status badge-finalizada">Finalizada</span>
                                         {% endif %}
                                     </div>
                                     <div class="d-flex flex-column gap-1 text-muted small mb-3">
@@ -132,25 +134,23 @@
                                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
                                     {% if tarea.estado == 'PENDIENTE' %}
                                         <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
-                                           class="btn btn-sm btn-corporate-sec rounded-pill px-3">
-                                            <i class="bi bi-play-circle me-1"></i> Iniciar
+                                        class="btn-action btn-corporate-sec">
+                                            <i class="bi bi-play-circle"></i> Iniciar
                                         </a>
                                     {% elif tarea.estado == 'EN_PROGRESO' %}
                                         <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
-                                           class="btn btn-sm btn-corporate-thi rounded-pill px-3">
-                                            <i class="bi bi-check-circle me-1"></i> Finalizar
+                                        class="btn-action btn-corporate-thi">
+                                            <i class="bi bi-check-circle"></i> Finalizar
                                         </a>
                                     {% else %}
                                         <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
-                                           class="btn btn-sm btn-secondary-corporate rounded-pill px-3">
-                                            <i class="bi bi-eye me-1"></i> Ver detalles
+                                        class="btn-action btn-action-view">
+                                            <i class="bi bi-eye"></i> Ver detalles
                                         </a>
                                     {% endif %}
 
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-light rounded-circle shadow-none"
-                                                type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                                title="Opciones" style="width: 32px; height: 32px; padding: 0;">
+                                        <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
                                             <i class="bi bi-three-dots-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
@@ -199,49 +199,36 @@
     <!-- ==================== LISTADO COMPLETO DE TAREAS ==================== -->
     <div class="d-flex align-items-center mb-4">
         <h3 class="m-0"><i class="bi bi-table me-2"></i> Listado de tareas</h3>
-        <button class="btn btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalTarea">
+        <button class="btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalTarea">
             <i class="bi bi-plus-circle me-2"></i>Agregar tarea
         </button>
     </div>
 
-    <!-- ==================== FILTROS Y BÚSQUEDA (todas las tareas) ==================== -->
-    <form method="GET" action="" class="filtros-toolbar">
+    <!-- ==================== FILTROS Y BÚSQUEDA (Usando .filtros-toolbar de base.css) ==================== -->
+    <div class="filtros-toolbar mb-4">
         <div class="filtro-buscar">
             <i class="bi bi-search"></i>
-            <input type="text" name="busqueda" id="searchTask"
-                placeholder="Buscar por título, empleado..."
-                value="{{ busqueda|default:'' }}">
+            <input type="text" id="buscarTarea" placeholder="Buscar por título o empleado..." autocomplete="off">
         </div>
 
-        <select name="estado" class="filtro-select">
+        <select id="filtroEstadoTarea" class="filtro-select">
             <option value="">Todos los estados</option>
-            <option value="PENDIENTE" {% if request.GET.estado == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
-            <option value="EN_PROGRESO" {% if request.GET.estado == 'EN_PROGRESO' %}selected{% endif %}>En progreso</option>
-            <option value="FINALIZADA" {% if request.GET.estado == 'FINALIZADA' %}selected{% endif %}>Finalizada</option>
+            <option value="PENDIENTE">Pendientes</option>
+            <option value="EN_PROGRESO">En progreso</option>
+            <option value="FINALIZADA">Finalizadas</option>
         </select>
 
-        <select name="prioridad" class="filtro-select">
+        <select id="filtroPrioridadTarea" class="filtro-select">
             <option value="">Todas las prioridades</option>
-            <option value="ALTA" {% if request.GET.prioridad == 'ALTA' %}selected{% endif %}>Alta</option>
-            <option value="MEDIA" {% if request.GET.prioridad == 'MEDIA' %}selected{% endif %}>Media</option>
-            <option value="BAJA" {% if request.GET.prioridad == 'BAJA' %}selected{% endif %}>Baja</option>
+            <option value="ALTA">Alta</option>
+            <option value="MEDIA">Media</option>
+            <option value="BAJA">Baja</option>
         </select>
 
-        <label class="toggle-vencidas">
-            <input type="checkbox" name="vencidas" value="true"
-                {% if request.GET.vencidas == 'true' %}checked{% endif %}
-                onchange="this.form.submit()">
-            <span class="toggle-vencidas-pill">
-                <i class="bi bi-exclamation-triangle me-1"></i> Solo vencidas
-            </span>
-        </label>
-        <button type="submit" class="filtro-btn-limpiar" style="background:#A40706; border-color:#A40706;">
-            <i class="bi bi-search me-1"></i> Buscar
-        </button>
-        <a href="{% url 'tareas:admin_tareas_list' %}" class="filtro-btn-limpiar">
+        <button type="button" id="limpiarFiltrosTareas" class="filtro-btn-limpiar">
             Limpiar campos
-        </a>
-    </form>
+        </button>
+    </div>
 
     <!-- ==================== GRID DE TODAS LAS TAREAS ==================== -->
     <div id="tasksContainer" class="row g-4 mb-4">
@@ -267,13 +254,13 @@
                             </div>
 
                             {% if tarea.esta_vencida %}
-                                <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">Vencida</span>
+                                <span class="badge priority-high">Vencida</span>
                             {% elif tarea.estado == 'PENDIENTE' %}
-                                <span class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-2 py-1 small">Pendiente</span>
+                                <span class="badge badge-status badge-pendiente">Pendiente</span>
                             {% elif tarea.estado == 'EN_PROGRESO' %}
-                                <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-2 py-1 small">En progreso</span>
+                                <span class="badge badge-status badge-progreso">En progreso</span>
                             {% elif tarea.estado == 'FINALIZADA' %}
-                                <span class="badge bg-success-subtle text-success-emphasis rounded-pill px-2 py-1 small">Finalizada</span>
+                                <span class="badge badge-status badge-finalizada">Finalizada</span>
                             {% endif %}
                         </div>
 
@@ -286,25 +273,23 @@
                     <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
                         {% if tarea.estado == 'PENDIENTE' %}
                             <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
-                               class="btn btn-sm btn-corporate-sec rounded-pill px-3">
-                                <i class="bi bi-play-circle me-1"></i> Iniciar
+                               class="btn-action btn-corporate-sec">
+                                <i class="bi bi-play-circle"></i> Iniciar
                             </a>
                         {% elif tarea.estado == 'EN_PROGRESO' %}
                             <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
-                               class="btn btn-sm btn-corporate-thi rounded-pill px-3">
-                                <i class="bi bi-check-circle me-1"></i> Finalizar
+                               class="btn-action btn-corporate-thi">
+                                <i class="bi bi-check-circle"></i> Finalizar
                             </a>
                         {% else %}
                             <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
-                               class="btn btn-sm btn-secondary-corporate rounded-pill px-3">
-                                <i class="bi bi-eye me-1"></i> Ver detalles
+                               class="btn-action btn-action-view">
+                                <i class="bi bi-eye"></i> Ver detalles
                             </a>
                         {% endif %}
 
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-light rounded-circle shadow-none"
-                                    type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                    title="Opciones" style="width: 32px; height: 32px; padding: 0;">
+                            <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
 
@@ -346,7 +331,7 @@
         {% endif %}
     </div>
 
-    <footer class="mt-4 text-muted small"><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
+    <footer><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
 </div>
 
 {{ empleados_data|json_script:"empleados-data" }}
@@ -356,10 +341,10 @@
 <!-- Modal Crear/Editar Tarea -->
 <div class="modal fade" id="modalTarea" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTareaLabel">
-                    <i class="bi bi-plus-circle-fill me-2"></i>
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold" id="modalTareaLabel">
+                    <i class="bi bi-plus-circle-fill me-2 text-danger"></i>
                     {% if editando %}Editar tarea{% else %}Asignar nueva tarea{% endif %}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -373,7 +358,7 @@
                   data-titulo-actual="{{ form.titulo.value|default:'' }}">
                 {% csrf_token %}
 
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Empleado *</label>
@@ -392,7 +377,7 @@
 
                         <div class="col-md-3">
                             <label class="form-label">Cargo</label>
-                            <input type="text" class="form-control" id="id_cargo_display" readonly disabled placeholder="—">
+                            <input type="text" class="form-control bg-light" id="id_cargo_display" readonly disabled placeholder="—">
                         </div>
 
                         <div class="col-md-3">
@@ -455,9 +440,9 @@
                     </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="reset" class="btn btn-outline-corporate">Limpiar campos</button>
-                    <button type="submit" class="btn btn-primary-corporate">
+                <div class="modal-footer border-top p-3">
+                    <button type="reset" class="btn-outline-corporate">Limpiar campos</button>
+                    <button type="submit" class="btn-primary-corporate">
                         <i class="bi bi-save me-1"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
                     </button>
                 </div>
@@ -469,19 +454,19 @@
 <!-- Modal Eliminar -->
 <div class="modal fade" id="confirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar acción</h5>
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold">Confirmar acción</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="modalBodyText">
+            <div class="modal-body p-4" id="modalBodyText">
                 ¿Eliminar permanentemente la tarea? Esta acción se registrará en auditoría.
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
                 <form method="POST" id="deleteForm" action="">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                    <button type="submit" class="btn-action btn-action-delete">Confirmar</button>
                 </form>
             </div>
         </div>
@@ -492,21 +477,21 @@
 {% if tarea_detalle %}
 <div class="modal fade show" id="adminTaskDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Detalle de Tarea</h5>
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2 text-danger"></i>Detalle de Tarea</h5>
                 <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
             </div>
-            <div class="modal-body pt-0 mt-3">
+            <div class="modal-body p-4">
                 <h4 class="mb-2 fw-bold text-dark">{{ tarea_detalle.titulo }}</h4>
 
                 <div class="mb-3">
                     {% if tarea_detalle.prioridad == 'ALTA' %}
-                        <span class="badge bg-danger">Alta prioridad</span>
+                        <span class="badge priority-high">Alta prioridad</span>
                     {% elif tarea_detalle.prioridad == 'MEDIA' %}
-                        <span class="badge bg-warning text-dark">Media prioridad</span>
+                        <span class="badge priority-medium">Media prioridad</span>
                     {% else %}
-                        <span class="badge bg-secondary">Baja prioridad</span>
+                        <span class="badge priority-low">Baja prioridad</span>
                     {% endif %}
 
                     {% if tarea_detalle.estado == 'PENDIENTE' %}
@@ -518,7 +503,7 @@
                     {% endif %}
                 </div>
 
-                <p class="text-secondary bg-light p-3 rounded">{{ tarea_detalle.descripcion }}</p>
+                <p class="text-secondary bg-light p-3 rounded-3">{{ tarea_detalle.descripcion }}</p>
 
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
@@ -536,12 +521,12 @@
 
                 {% if tarea_detalle.estado == 'FINALIZADA' %}
                     <hr class="my-3"/>
-                    <div class="alert alert-success mb-0">
+                    <div class="alert alert-success mb-0 rounded-3">
                         <i class="bi bi-check-circle-fill me-1"></i> <strong>Tarea Finalizada</strong>
                         {% if tarea_detalle.evidencia %}
                             <br>
-                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline mt-2 d-inline-block">
-                                <i class="bi bi-paperclip"></i> Ver evidencia subida por el empleado
+                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download mt-2">
+                                <i class="bi bi-paperclip"></i> Ver evidencia
                             </a>
                         {% else %}
                             <br><small class="text-muted">El empleado no adjuntó archivo de evidencia.</small>
@@ -549,8 +534,8 @@
                     </div>
                 {% endif %}
             </div>
-            <div class="modal-footer border-0">
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn btn-outline-corporate">Cerrar</a>
+            <div class="modal-footer border-top">
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-outline-corporate">Cerrar</a>
             </div>
         </div>
     </div>

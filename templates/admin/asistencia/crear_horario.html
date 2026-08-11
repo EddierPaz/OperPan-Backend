@@ -1,37 +1,18 @@
-<!-- BLOQUE DE ALERTAS Y MENSAJES (Colocar en el cuerpo principal de la vista) -->
-{% if messages %}
-  <div class="row mb-3">
-    <div class="col-12">
-      {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
-          {% if message.tags == 'error' %}
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-          {% else %}
-            <i class="bi bi-check-circle-fill me-2"></i>
-          {% endif %}
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-{% endif %}
-
 <!-- MODAL: Crear horario -->
 <div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Asignar nuevo horario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <form method="POST" action="{% url 'asistencia:horarios' %}">
-          {% csrf_token %}
+      <form method="POST" action="{% url 'asistencia:horarios' %}" id="formCrearHorario">
+        {% csrf_token %}
+        <div class="modal-body">
           <div class="row g-3">
 
             <div class="col-md-4">
-              <label class="form-label">Empleado *</label>
+              <label class="form-label" for="empleadoSelect">Empleado *</label>
               <select name="empleado" id="empleadoSelect" class="form-select" required>
                 <option value="">Seleccione empleado</option>
                 {% for empleado in empleados %}
@@ -43,12 +24,12 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Cargo</label>
-              <input type="text" id="cargoInput" class="form-control" readonly>
+              <label class="form-label" for="cargoInput">Cargo</label>
+              <input type="text" id="cargoInput" class="form-control" readonly placeholder="Se autocompleta">
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Jornada *</label>
+              <label class="form-label" for="turnoSelect">Jornada *</label>
               <select name="turno" id="turnoSelect" class="form-select" required>
                 <option value="">Seleccione jornada</option>
                 <option value="MANANA">Mañana</option>
@@ -58,17 +39,17 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Hora entrada *</label>
+              <label class="form-label" for="horaEntrada">Hora entrada *</label>
               <input type="time" id="horaEntrada" name="hora_entrada" class="form-control" required>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Hora salida *</label>
+              <label class="form-label" for="horaSalida">Hora salida *</label>
               <input type="time" id="horaSalida" name="hora_salida" class="form-control" required>
             </div>
 
             <div class="col-12">
-              <label class="form-label">Seleccione el día de descanso</label>
+              <label class="form-label">Seleccione el día de descanso *</label>
               <div class="calendario-wrapper" id="ciclo14x1">
                 <div class="dias-semana">
                   {% for nombre in dias_semana %}
@@ -94,19 +75,18 @@
                   Descanso asignado para el día <strong id="descansoFechaTexto"></strong>
                 </p>
               </div>
-              <div class="d-flex mt-3 gap-2">
-                <button type="submit" class="btn btn-primary-corporate">
-                  <i class="bi bi-save"></i> Guardar horario
-                </button>
-                <button type="reset" id="btnLimpiarHorario" class="btn btn-outline-corporate">
-                  Limpiar campos
-                </button>
-              </div>
             </div>
 
           </div>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
+          <button type="reset" id="btnLimpiarHorario" class="btn btn-outline-secondary">Limpiar campos</button>
+          <button type="submit" class="btn btn-primary-corporate">
+            <i class="bi bi-save me-1"></i> Guardar horario
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

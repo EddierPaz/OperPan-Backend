@@ -1,28 +1,27 @@
 <!-- MODAL: Editar horario -->
-<!-- Los campos se llenan por JS con fetch, no necesitan contexto de Django -->
 <div class="modal fade" id="modalEditarHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar horario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <form method="POST" id="formEditar" action="">
-          {% csrf_token %}
+      <form method="POST" id="formEditar" action="">
+        {% csrf_token %}
+        <div class="modal-body">
           <div class="row g-3">
 
             <div class="col-md-6">
-              <label class="form-label">Empleado</label>
+              <label class="form-label" for="editar-empleado">Empleado</label>
               <input id="editar-empleado" class="form-control" type="text" readonly>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Cargo</label>
+              <label class="form-label" for="editar-cargo">Cargo</label>
               <input id="editar-cargo" class="form-control" type="text" readonly>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Jornada *</label>
+              <label class="form-label" for="editar-turno">Jornada *</label>
               <select id="editar-turno" name="turno" class="form-select" required>
                 <option value="MANANA">Mañana</option>
                 <option value="TARDE">Tarde</option>
@@ -31,19 +30,19 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Hora entrada</label>
+              <label class="form-label" for="editar-entrada">Hora entrada *</label>
               <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" required>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Hora salida</label>
+              <label class="form-label" for="editar-salida">Hora salida *</label>
               <input id="editar-salida" type="time" name="hora_salida" class="form-control" required>
             </div>
 
             <div class="col-12">
               <label class="form-label">
                 Cambiar día de descanso
-                <span id="descanso-actual-label" class="text-muted fw-normal"></span>
+                <span id="descanso-actual-label" class="text-muted fw-normal ms-1"></span>
               </label>
               <div class="calendario-wrapper" id="ciclo14x1Editar">
                 <div class="dias-semana">
@@ -73,17 +72,14 @@
             </div>
 
           </div>
-
-          <div class="d-flex mt-4 gap-2">
-            <button type="submit" class="btn btn-primary-corporate">
-              <i class="bi bi-save"></i> Guardar cambios
-            </button>
-            <button type="button" class="btn btn-outline-corporate" data-bs-dismiss="modal">
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary-corporate">
+            <i class="bi bi-save me-1"></i> Guardar cambios
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -1,0 +1,581 @@
+/* ============================================================
+   NOVEDADES.CSS
+   ESTILOS GENERALES Y COMPONENTES COMPARTIDOS - OPERPAN
+============================================================ */
+
+/* ============================================================
+   PESTAÑAS DE NOVEDADES
+============================================================ */
+.novedades-tabs {
+    background: #ffffff;
+    border-radius: 60px;
+    padding: 0.4rem 0.6rem;
+    display: inline-flex;
+    gap: 0.3rem;
+    border: 1px solid #EDF2F7;
+}
+
+.novedades-tab {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 40px;
+    transition: all 0.2s ease;
+    color: #475569;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.novedades-tab i {
+    margin-right: 6px;
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.novedades-tab:hover:not(.active) {
+    background-color: #f8f9fa;
+    color: #1e293b;
+}
+
+.novedades-tab.active {
+    background: #A40706;
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   PANELES DE LAS PESTAÑAS
+============================================================ */
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* ============================================================
+   GRID DE TARJETAS DE SOLICITUD
+============================================================ */
+.solicitudes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.solicitud-card {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 18px;
+    padding: 1rem;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.solicitud-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+}
+
+.solicitud-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.solicitud-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #A40706;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.solicitud-titulo i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.solicitud-empleado {
+    margin-top: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.solicitud-empleado i {
+    color: #64748b;
+}
+
+.solicitud-dato {
+    margin-top: 0.4rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.solicitud-dato i {
+    color: #94a3b8;
+}
+
+.solicitud-descripcion {
+    margin-top: 0.75rem;
+    color: #334155;
+    line-height: 1.5;
+    min-height: 42px;
+}
+
+.solicitud-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.solicitud-btn-detalle {
+    border: none;
+    background: #A40706;
+    color: #ffffff;
+    border-radius: 25px;
+    padding: 0.55rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+}
+
+.solicitud-btn-detalle:hover {
+    background: #870504;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.solicitud-btn-opciones {
+    width: 38px;
+    height: 38px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.solicitud-btn-opciones:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #cbd5e1;
+}
+
+/* ============================================================
+   ESTADOS DE SOLICITUD (BADGES)
+============================================================ */
+.solicitud-estado,
+.novedad-detalle-estado {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.solicitud-estado-pendiente,
+.novedad-estado-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.solicitud-estado-aprobado,
+.novedad-estado-aprobado {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.solicitud-estado-rechazado,
+.novedad-estado-rechazado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ============================================================
+   MODALES COMPARTIDOS DE NOVEDADES
+============================================================ */
+.novedad-modal {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+/* Header Detalle */
+.novedad-detalle-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #edf2f7;
+    background: #ffffff;
+}
+
+.novedad-detalle-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #A40706;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.novedad-detalle-titulo i {
+    font-size: 1.25rem;
+}
+
+.novedad-detalle-subtitulo {
+    margin-top: 0.25rem;
+    margin-left: 1.85rem;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+/* Cuerpo Detalle */
+.novedad-detalle-body {
+    padding: 1.5rem;
+    background: #ffffff;
+}
+
+.novedad-detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.novedad-detalle-item {
+    padding: 0.9rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+}
+
+.novedad-detalle-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.novedad-detalle-value {
+    display: block;
+    color: #1e293b;
+    font-size: 0.92rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.novedad-detalle-bloque-largo {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+}
+
+.novedad-detalle-bloque-largo-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.novedad-detalle-bloque-largo-texto {
+    margin: 0;
+    color: #334155;
+    line-height: 1.6;
+}
+
+/* Footer Detalle */
+.novedad-detalle-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #edf2f7;
+    background: #ffffff;
+    gap: 0.6rem;
+}
+
+/* Botones Modales General */
+.novedad-modal-btn {
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.novedad-modal-btn-aprobar {
+    background: #198754;
+    color: #ffffff;
+}
+
+.novedad-modal-btn-aprobar:hover {
+    background: #157347;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.novedad-modal-btn-rechazar {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.novedad-modal-btn-rechazar:hover {
+    background: #bb2d3b;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.novedad-modal-btn-cerrar {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.novedad-modal-btn-cerrar:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+/* Modal de Confirmación */
+.novedad-confirm-modal .modal-header {
+    border: none;
+    padding: 1.25rem 1.5rem 0;
+}
+
+.novedad-confirm-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.novedad-confirm-icon-success {
+    background: #dcfce7;
+    color: #198754;
+}
+
+.novedad-confirm-modal .modal-body {
+    padding: 0.75rem 1.5rem 1.25rem;
+}
+
+.novedad-confirm-modal .modal-body h5 {
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.novedad-confirm-modal .modal-body p {
+    margin-bottom: 0;
+    color: #64748b;
+}
+
+.novedad-confirm-modal .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #edf2f7;
+}
+
+/* Modal de Rechazo */
+.novedad-rechazo-modal .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.novedad-rechazo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #dc3545;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.novedad-rechazo-titulo i {
+    font-size: 1.2rem;
+}
+
+.novedad-rechazo-modal .modal-body {
+    padding: 1.25rem 1.5rem;
+}
+
+.novedad-rechazo-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #334155;
+    font-weight: 600;
+}
+
+.novedad-rechazo-label span {
+    color: #dc3545;
+}
+
+.novedad-rechazo-textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 0.75rem;
+    border: 1px solid #dbe3ee;
+    border-radius: 12px;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.novedad-rechazo-textarea:focus {
+    outline: none;
+    border-color: #A40706;
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
+}
+
+.novedad-rechazo-modal .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #edf2f7;
+}
+
+/* Motivo / Caja de Rechazo en Tarjeta o Detalle */
+.novedad-motivo-rechazo {
+    margin-top: 0.75rem;
+    padding: 0.7rem 0.85rem;
+    background: #fff7f7;
+    border-left: 3px solid #dc3545;
+    border-radius: 8px;
+    color: #7f1d1d;
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+.novedad-detalle-rechazo {
+    grid-column: 1 / -1;
+    padding: 0.9rem 1rem;
+    background: #fff7f7;
+    border-left: 3px solid #dc3545;
+    border-radius: 8px;
+    color: #7f1d1d;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   ESTADO VACÍO Y RESPONSIVE GENERAL
+============================================================ */
+.solicitudes-vacio {
+    text-align: center;
+    color: #64748b;
+    padding: 2rem 1rem;
+}
+
+.solicitudes-vacio i {
+    display: block;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #cbd5e1;
+}
+
+@media (max-width: 992px) {
+    .solicitudes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        justify-content: center !important;
+        text-align: center;
+    }
+    .novedades-tabs-container {
+        display: flex;
+        justify-content: center;
+    }
+    .novedades-tabs {
+        justify-content: center;
+        width: 100%;
+        border-radius: 20px;
+    }
+    .novedades-tab {
+        flex: 1 1 auto;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    .solicitudes-grid {
+        grid-template-columns: 1fr;
+    }
+    .solicitud-card {
+        border-radius: 16px;
+    }
+    .novedad-detalle-grid {
+        grid-template-columns: 1fr;
+    }
+    .novedad-detalle-bloque-largo,
+    .novedad-detalle-rechazo {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .novedad-detalle-header,
+    .novedad-detalle-body,
+    .novedad-detalle-footer {
+        padding: 1rem;
+    }
+    .novedad-detalle-footer {
+        flex-direction: column;
+    }
+    .novedad-detalle-footer .novedad-modal-btn {
+        width: 100%;
+    }
+    .novedad-detalle-subtitulo {
+        margin-left: 0;
+    }
+    .novedad-rechazo-modal .modal-footer {
+        flex-direction: column;
+    }
+    .novedad-rechazo-modal .modal-footer .novedad-modal-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .novedades-tab {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    .novedades-tab i {
+        margin-right: 4px;
+    }
+    .solicitud-footer {
+        gap: 0.5rem;
+    }
+    .solicitud-btn-detalle {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    .solicitud-btn-opciones {
+        width: 36px;
+        height: 36px;
+    }
+}

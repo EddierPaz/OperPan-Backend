@@ -1,66 +1,117 @@
-<div class="modal fade" id="permisosDetalleModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Detalle del permiso</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- =========================================================
+     MODALES: PERMISOS
+========================================================= -->
+
+<!-- Modal Detalle Permiso -->
+<div class="modal fade" id="permisosDetalleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content novedad-modal">
+            
+            <div class="modal-header novedad-detalle-header">
+                <div>
+                    <div class="novedad-detalle-titulo">
+                        <i class="bi bi-file-earmark-person"></i>
+                        <span>Detalle del permiso</span>
+                    </div>
+                    <div class="novedad-detalle-subtitulo">
+                        Información detallada de la solicitud de permiso
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="permisosModalBody"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="permisosAprobarBtn">Aprobar</button>
-                <button type="button" class="btn btn-danger" id="permisosRechazarBtn">Rechazar</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+
+            <div class="modal-body novedad-detalle-body" id="permisosModalBody">
+                <!-- Se renderiza mediante JS -->
+            </div>
+
+            <div class="modal-footer novedad-detalle-footer">
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="permisosRechazarBtn">
+                    <i class="bi bi-x-circle"></i>
+                    Rechazar
+                </button>
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-aprobar" id="permisosAprobarBtn">
+                    <i class="bi bi-check-circle"></i>
+                    Aprobar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmar Aprobación Permiso -->
+<div class="modal fade" id="permisosConfirmApproveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content novedad-modal novedad-confirm-modal">
+            <div class="modal-header">
+                <div class="novedad-confirm-icon novedad-confirm-icon-success">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h5>¿Aprobar permiso?</h5>
+                <p class="text-muted mb-0">Esta acción registrará la solicitud de permiso como aprobada.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-aprobar" id="permisosConfirmApprove">
+                    <i class="bi bi-check-circle me-1"></i> Sí, aprobar
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="permisosConfirmApproveModal" tabindex="-1">
+<!-- Modal Confirmación Previa de Rechazo Permiso -->
+<div class="modal fade" id="permisosConfirmRejectFirstModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content novedad-modal novedad-confirm-modal">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-check-circle-fill me-2 text-success"></i>Confirmar aprobación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="novedad-confirm-icon" style="background:#fee2e2; color:#dc3545;">
+                    <i class="bi bi-exclamation-lg"></i>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">¿Está seguro de aprobar este permiso?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success" id="permisosConfirmApprove">Confirmar aprobación</button>
+            <div class="modal-body text-center">
+                <h5>¿Rechazar permiso?</h5>
+                <p class="text-muted mb-0">Antes de rechazar la solicitud deberás indicar el motivo.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="permisosConfirmRejectFirst">
+                    Continuar
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="permisosConfirmRejectFirstModal" tabindex="-1">
+<!-- Modal Motivo de Rechazo Permiso -->
+<div class="modal fade" id="permisosRejectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content novedad-modal novedad-rechazo-modal">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Confirmar rechazo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">¿Está seguro de rechazar este permiso?</div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="permisosConfirmRejectFirst">Confirmar rechazo</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="permisosRejectModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-x-circle-fill me-2 text-danger"></i>Rechazar solicitud</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="novedad-rechazo-titulo">
+                    <i class="bi bi-x-circle"></i> Motivo del rechazo
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <label class="form-label">Motivo del rechazo *</label>
-                <textarea class="form-control" id="permisosRejectReason" rows="3" placeholder="Explique al empleado por qué se rechaza la solicitud de permiso..."></textarea>
+                <label for="permisosRejectReason" class="novedad-rechazo-label">
+                    Indica el motivo <span>*</span>
+                </label>
+                <textarea id="permisosRejectReason" class="novedad-rechazo-textarea" placeholder="Explique al empleado por qué se rechaza la solicitud de permiso..."></textarea>
+                <small class="text-muted">Este motivo será visible para el empleado.</small>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="permisosConfirmReject">Confirmar rechazo</button>
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="permisosConfirmReject">
+                    <i class="bi bi-x-circle me-1"></i> Rechazar permiso
+                </button>
             </div>
         </div>
     </div>

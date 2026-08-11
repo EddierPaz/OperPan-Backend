@@ -402,6 +402,7 @@ def certificados_lista(request):
             'estado': c.get_estado_display(),
             'fecha_solicitud': c.fecha_solicitud.isoformat(),
             'fecha_emision': c.fecha_emision.isoformat() if c.fecha_emision else None,
+            'fecha_decision': c.decision_fecha.isoformat() if c.decision_fecha else None,
             'proposito': c.proposito,
             'generado_por': c.generado_por.username if c.generado_por else None,
             'descargas': c.descargas,
@@ -586,7 +587,9 @@ def certificado_rechazar(request, pk):
     try:
         c = Certificado.objects.get(pk=pk, estado='pendiente')
     except Certificado.DoesNotExist:
-        return JsonResponse({'error': 'Certificado no encontrado o ya procesado'}, status=404)
+        return JsonResponse({
+            'error': 'Certificado no encontrado o ya procesado'
+        }, status=404)
 
     try:
         data = json.loads(request.body)
@@ -594,15 +597,25 @@ def certificado_rechazar(request, pk):
         return JsonResponse({'error': 'JSON inválido'}, status=400)
 
     form = RechazoForm(data)
+
     if not form.is_valid():
-        return JsonResponse({'error': 'Motivo requerido', 'detalles': form.errors}, status=400)
+        return JsonResponse({
+            'error': 'Motivo requerido',
+            'detalles': form.errors
+        }, status=400)
 
     c.estado = 'rechazado'
     c.motivo_rechazo = form.cleaned_data['motivo']
     c.decision_por = request.user
     c.decision_fecha = timezone.now()
+
     c.save()
-    return JsonResponse({'status': 'ok', 'mensaje': 'Certificado rechazado'})
+
+    return JsonResponse({
+        'status': 'ok',
+        'mensaje': 'Certificado rechazado',
+        'fecha_decision': c.decision_fecha.isoformat()
+    })
 
 
 @login_required

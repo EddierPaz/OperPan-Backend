@@ -1,397 +1,161 @@
-/* ==============================================
-   MÓDULO DE TAREAS 
-============================================== */
+/* ============================================================
+   TAREAS.CSS - OPERPAN
+   Módulo de Gestión y Asignación de Tareas
+   ============================================================ */
 
-/* Formulario moderno */
-.form-section {
-    background: white;
-    border-radius: 28px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    border: 1px solid #EDF2F7;
-}
-
-/* ── Botones corporativos adicionales ── */
+/* ── BOTONES DE ACCIÓN ESPECÍFICOS DE TAREA ── */
 .btn-corporate-sec {
-    background: rgb(54, 144, 166);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 40px;
-    font-weight: 500;
-    transition: 0.2s;
-    cursor: pointer;
+  background: #3690A6;
+  color: #ffffff;
 }
 
 .btn-corporate-sec:hover {
-    background: rgb(42, 112, 130);
-    color: white;
+  background: #2A7082;
+  color: #ffffff;
 }
 
 .btn-corporate-thi {
-    background: rgb(0, 128, 0);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 40px;
-    font-weight: 500;
-    transition: 0.2s;
-    cursor: pointer;
+  background: #008000;
+  color: #ffffff;
 }
 
 .btn-corporate-thi:hover {
-    background: rgb(0, 100, 0);
-    color: white;
+  background: #006400;
+  color: #ffffff;
 }
 
-/* Tarjetas de tareas */
+/* ── TARJETAS DE TAREAS (TASK CARDS) ── */
 .task-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid #EDF2F7;
-    overflow: visible !important;
-    position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #EDF2F7;
+  overflow: visible !important;
+  position: relative;
 }
 
 .task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
 }
 
 .task-card:has(.dropdown-menu.show) {
-    z-index: 100;
-}
-
-/* Menú de Opciones Tres Puntos */
-.dropdown-menu {
-    border-radius: 14px !important;
-    border: 1px solid #EDF2F7 !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-    padding: 0.5rem 0 !important;
-    min-width: 155px;
-}
-
-.dropdown-item {
-    padding: 0.55rem 1rem !important;
-    font-weight: 500;
-    transition: background-color 0.15s ease;
-}
-
-.dropdown-item:hover {
-    background-color: #F8FAFC;
-}
-
-/* ── Prioridades ── */
-.priority-high {
-    color: #B91C1C;
-    background: #FEF2F0;
-    padding: 0.2rem 0.6rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-.priority-medium {
-    color: #C77A00;
-    background: #FFF3E0;
-    padding: 0.2rem 0.6rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-.priority-low {
-    color: #1E7B48;
-    background: #E0F2E9;
-    padding: 0.2rem 0.6rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-/* ── Estados de tarea ── */
-.badge-status {
-    padding: 0.3rem 0.8rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-.badge-pendiente {
-    background: #FFF3E0;
-    color: #C77A00;
-}
-
-.badge-progreso {
-    background: #E6F0FA;
-    color: #1A5D9C;
-}
-
-.badge-finalizada {
-    background: #E0F2E9;
-    color: #1E7B48;
-}
-
-/* ── Buscador (barra vieja, se mantiene por compatibilidad si se usa en otro lado) ── */
-.search-input-group {
-    background: white;
-    border-radius: 40px;
-    border: 1px solid #E9ECF3;
-    padding: 0.25rem 0.5rem 0.25rem 1rem;
-    display: flex;
-    align-items: center;
-    transition: 0.2s;
-}
-
-.search-input-group:focus-within {
-    border-color: #A40706;
-    box-shadow: 0 0 0 0.25rem rgba(164, 7, 6, 0.15);
-}
-
-.search-input-group .search-input {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent;
-    font-size: 0.9rem;
-    color: #475569;
-    outline: none;
-    width: 100%;
-}
-
-.search-input-group .btn-search-addon {
-    border: none;
-    background: transparent;
-    color: #475569;
-    padding: 0.4rem 0.8rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.search-input-group .btn-search-addon:hover {
-    background-color: #F1F5F9;
-    color: #A40706;
+  z-index: 100;
 }
 
 .text-title {
-    font-weight: bold;
-    font-size: 1.25rem;
-    color: #a40706;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #A40706;
 }
 
-/* Quita el borde del card-header suelto en el resumen de tareas */
-.dashboard-container>.card-header {
-    border-bottom: none;
+/* ── PRIORIDADES Y BADGES ── */
+.priority-high {
+  color: #B91C1C;
+  background: #FEF2F0;
+  padding: 0.25rem 0.65rem;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-/* ==============================================
-   ACORDEÓN DE TAREAS DE HOY (por estado)
-============================================== */
+.priority-medium {
+  color: #C77A00;
+  background: #FFF3E0;
+  padding: 0.25rem 0.65rem;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
 
+.priority-low {
+  color: #1E7B48;
+  background: #E0F2E9;
+  padding: 0.25rem 0.65rem;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-status {
+  padding: 0.25rem 0.65rem;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-pendiente {
+  background: #FFF3E0;
+  color: #C77A00;
+}
+
+.badge-progreso {
+  background: #E6F0FA;
+  color: #1A5D9C;
+}
+
+.badge-finalizada {
+  background: #E0F2E9;
+  color: #1E7B48;
+}
+
+/* ── ACORDEÓN DE TAREAS DE HOY ── */
 .accordion-item {
-    border: none;
-    border-left: 5px solid #A40706;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+  border: none;
+  border-left: 5px solid #A40706;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 .accordion-button {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
 }
 
 .accordion-button:not(.collapsed) {
-    background: #fff;
-    color: #A40706;
-    box-shadow: none;
+  background: #ffffff;
+  color: #A40706;
+  box-shadow: none;
 }
 
 .accordion-button:focus {
-    box-shadow: none;
-    border: none;
+  box-shadow: none;
+  border: none;
 }
 
 .accordion-body {
-    border-top: 1px solid #ececec;
-    background: #FAFBFC;
+  border-top: 1px solid #ECECEC;
+  background: #FAFBFC;
+  padding: 1.25rem;
 }
 
 .estado-badge {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #A40706;
-    color: #fff;
-    padding: .35rem .9rem;
-    border-radius: 999px;
-    font-size: .85rem;
-    font-weight: 600;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #A40706;
+  color: #ffffff;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
-    .accordion-button {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-}
-
-/* ==============================================
-   BARRA DE FILTROS (listado completo, GET server-side)
-============================================== */
-
-.filtros-toolbar {
-    background: #ffffff;
-    border: 1px solid #edf2f7;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    padding: 0.85rem 1rem;
-    margin-bottom: 1.5rem;
-    display: flex;
+  .accordion-button {
     flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: center;
-}
+    gap: 0.5rem;
+  }
 
-.filtro-buscar {
-    position: relative;
-    flex: 1 1 260px;
-}
-
-.filtro-buscar i {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    font-size: 0.9rem;
-    pointer-events: none;
-}
-
-.filtro-buscar input {
-    width: 100%;
-    border: 1px solid #edf2f7;
-    background: #f8fafc;
-    border-radius: 999px;
-    padding: 0.55rem 1rem 0.55rem 2.25rem;
-    font-size: 0.9rem;
-    color: #1f2937;
-    transition: 0.2s;
-}
-
-.filtro-buscar input::placeholder {
-    color: #94a3b8;
-}
-
-.filtro-buscar input:focus {
-    outline: none;
-    border-color: #A40706;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-.filtro-select {
-    flex: 0 1 190px;
-    border: 1px solid #edf2f7;
-    background: #f8fafc;
-    border-radius: 999px;
-    padding: 0.55rem 2rem 0.55rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #1f2937;
-    transition: 0.2s;
-}
-
-.filtro-select:focus {
-    outline: none;
-    border-color: #A40706;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-.filtro-btn-limpiar {
-    flex: 0 0 auto;
-    background: #555;
-    border: 1.5px solid #555;
-    color: #ffffff;
-    padding: 0.55rem 1.5rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-}
-
-.filtro-btn-limpiar:hover {
-    background: #444444;
-    border-color: #444444;
-    color: white;
-}
-
-/* ── Toggle "Solo vencidas" ── */
-.toggle-vencidas {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.toggle-vencidas input {
-    display: none;
-}
-
-.toggle-vencidas-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.55rem 1rem;
-    border-radius: 999px;
-    border: 1px solid #E9ECF3;
-    background: #ffffff;
-    color: #64748b;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: 0.2s;
-    white-space: nowrap;
-}
-
-.toggle-vencidas input:checked+.toggle-vencidas-pill {
-    background: #FEF2F0;
-    border-color: #FEF2F0;
-    color: #B91C1C;
-}
-
-.toggle-vencidas:hover .toggle-vencidas-pill {
-    border-color: #A40706;
-}
-
-@media (max-width: 768px) {
-    .filtros-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .filtro-buscar,
-    .filtro-select,
-    .filtro-btn-limpiar,
-    .toggle-vencidas {
-        flex: 1 1 auto;
-        width: 100%;
-    }
-
-    .toggle-vencidas-pill {
-        justify-content: center;
-    }
-
-    .estado-badge {
-        position: static;
-        transform: none;
-        margin-left: 10px;
-    }
+  .estado-badge {
+    position: static;
+    transform: none;
+    margin-left: 10px;
+  }
 }
