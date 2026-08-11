@@ -1,22 +1,32 @@
 <div class="employee-card">
 
-    <!-- ==================== HEADER: AVATAR + NOMBRE + ROL ==================== -->
+    <!-- ==================== TÍTULO (SOLO) ==================== -->
+    <h3 class="mb-3">Información personal</h3>
+
+    <!-- ==================== AVATAR + NOMBRE + CARGO + BOTÓN ==================== -->
     <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
         <div class="employee-avatar-large" id="avatarIniciales">
             {{ perfil.nombre_completo|slice:":1" }}
         </div>
-        <div class="flex-grow-1">
-            <h4 class="mb-1">{{ perfil.nombre_completo }}</h4>
-            <span class="badge-role">
-                <i class="bi bi-briefcase-fill me-1"></i>{{ perfil.get_cargo_display }}
-            </span>
+
+        <div class="flex-grow-1 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h4 class="mb-1">{{ perfil.nombre_completo }}</h4>
+                <span class="badge-role">
+                    <i class="bi bi-briefcase-fill me-1"></i>{{ perfil.get_cargo_display }}
+                </span>
+            </div>
+            <button type="button" id="btnEditar" class="btn btn-sm btn-primary-corporate" form="formPerfil">
+                <i class="bi bi-pencil-square"></i>
+                <span id="btnEditarTexto">Editar</span>
+            </button>
         </div>
-        <button type="button" id="btnEditar" class="btn btn-primary-corporate" form="formPerfil">
-            <i class="bi bi-pencil-square"></i>
-            Editar
-        </button>
     </div>
 
+    <!-- ==================== PESTAÑAS ==================== -->
+    <div class="custom-tabs">
+        ...
+    </div>
     <!-- ==================== PESTAÑAS ==================== -->
     <div class="custom-tabs">
         <button type="button" class="tab-btn-custom active" data-tab="personal">
