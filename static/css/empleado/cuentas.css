@@ -139,6 +139,14 @@
 #btnEditar {
     flex-shrink: 0;      /* Evita que se encoja */
     white-space: nowrap;  /* Evita que el texto se parta */
+    margin-left: auto;   /* Alinea el botón a la derecha en desktop */
+    transition: all 0.2s ease;
+}
+
+#btnEditar.active {
+    background: #048a08;  /* Color más oscuro cuando está activo */
+    opacity: 0.8;
+    cursor: not-allowed;
 }
 
 @media (max-width: 576px) {
@@ -155,9 +163,20 @@
     #btnEditar {
         width: 100%;
         justify-content: center;
+        margin-left: 0;  /* Resetear margen en móvil */
     }
 
     .employee-card .flex-grow-1.d-flex .badge-role {
         display: inline-block;
+    }
+
+    /* Botones Guardar/Cancelar en móvil */
+    #accionesEdicion .d-flex {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #accionesEdicion button {
+        width: 100%;
     }
 }

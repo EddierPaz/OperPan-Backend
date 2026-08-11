@@ -25,10 +25,6 @@
 
     <!-- ==================== PESTAÑAS ==================== -->
     <div class="custom-tabs">
-        ...
-    </div>
-    <!-- ==================== PESTAÑAS ==================== -->
-    <div class="custom-tabs">
         <button type="button" class="tab-btn-custom active" data-tab="personal">
             <i class="bi bi-person-vcard"></i>Personal
         </button>
@@ -205,11 +201,17 @@
             </div>
         </div>
 
-        <div class="mt-4 d-none" id="accionesEdicion">
-            <button type="submit" class="btn btn-primary-corporate fw-bold">
-                <i class="bi bi-check-circle"></i>
-                Guardar cambios
-            </button>
+        <div class="mt-4 d-none" id="accionesEdicion">  
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" id="btnCancelar" class="btn btn-outline-corporate">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar cambios
+                </button>
+                <button type="submit" class="btn btn-primary-corporate fw-bold">
+                    <i class="bi bi-check-circle"></i>
+                    Guardar cambios
+                </button>
+            </div>
         </div>
 
     </form>
