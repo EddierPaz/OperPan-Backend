@@ -39,7 +39,9 @@
     <form method="POST" action="{% url 'employee_profile_update' %}" id="formPerfil">
         {% csrf_token %}
 
-        <!-- ========= TAB: PERSONAL ========= -->
+        <!-- ============================================================ -->
+        <!-- TAB: PERSONAL (CON BOTONES GUARDAR/CANCELAR)                  -->
+        <!-- ============================================================ -->
         <div class="tab-pane active" id="personal">
             <div class="row g-4">
 
@@ -127,10 +129,27 @@
                     <input type="text" name="telefono_emergencia" class="form-control edit-mode d-none" value="{{ perfil.telefono_emergencia }}">
                 </div>
 
-            </div>
-        </div>
+            </div><!-- /row -->
 
-        <!-- ========= TAB: LABORAL ========= -->
+            <!-- ===== ACCIONES SOLO EN PERSONAL ===== -->
+            <div class="mt-4 d-none" id="accionesEdicionPersonal">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="btnCancelarPersonal btn btn-outline-corporate">
+                        <i class="bi bi-x-circle"></i>
+                        Cancelar cambios
+                    </button>
+                    <button type="submit" class="btn btn-primary-corporate fw-bold">
+                        <i class="bi bi-check-circle"></i>
+                        Guardar cambios
+                    </button>
+                </div>
+            </div>
+        </div><!-- /tab personal -->
+
+
+        <!-- ============================================================ -->
+        <!-- TAB: LABORAL (SIN BOTONES GUARDAR/CANCELAR)                   -->
+        <!-- ============================================================ -->
         <div class="tab-pane" id="laboral">
             <div class="row g-4">
 
@@ -175,10 +194,14 @@
                     <div class="fw-semibold">{{ perfil.tipo_sangre }}</div>
                 </div>
 
-            </div>
-        </div>
+            </div><!-- /row -->
+            <!-- ⚠️ NO HAY BOTONES GUARDAR/CANCELAR EN LABORAL -->
+        </div><!-- /tab laboral -->
 
-        <!-- ========= TAB: SEGURIDAD ========= -->
+
+        <!-- ============================================================ -->
+        <!-- TAB: SEGURIDAD (CON BOTONES GUARDAR/CANCELAR)                 -->
+        <!-- ============================================================ -->
         <div class="tab-pane" id="seguridad">
             <div class="row g-4">
 
@@ -198,21 +221,22 @@
                     <input type="password" name="confirmar_password" class="form-control edit-mode d-none" placeholder="Confirmar contraseña">
                 </div>
 
-            </div>
-        </div>
+            </div><!-- /row -->
 
-        <div class="mt-4 d-none" id="accionesEdicion">  
-            <div class="d-flex gap-2 flex-wrap">
-                <button type="button" id="btnCancelar" class="btn btn-outline-corporate">
-                    <i class="bi bi-x-circle"></i>
-                    Cancelar cambios
-                </button>
-                <button type="submit" class="btn btn-primary-corporate fw-bold">
-                    <i class="bi bi-check-circle"></i>
-                    Guardar cambios
-                </button>
+            <!-- ===== ACCIONES SOLO EN SEGURIDAD ===== -->
+            <div class="mt-4 d-none" id="accionesEdicionSeguridad">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="btnCancelarSeguridad btn btn-outline-corporate">
+                        <i class="bi bi-x-circle"></i>
+                        Cancelar cambios
+                    </button>
+                    <button type="submit" class="btn btn-primary-corporate fw-bold">
+                        <i class="bi bi-check-circle"></i>
+                        Guardar cambios
+                    </button>
+                </div>
             </div>
-        </div>
+        </div><!-- /tab seguridad -->
 
     </form>
 
