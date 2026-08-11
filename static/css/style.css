@@ -705,131 +705,189 @@ html body .navbar .btn-nav-login:hover,
     line-height: 1.4;
 }
 
+
 /* ==========================================================================
-   6. ACCEDE A OPERPAN
+   SECCIÓN ACCEDE (50/50 - ALTURA FIJA)
    ========================================================================== */
 #accede {
-  position: relative;
-  padding: 96px 0 !important;
-  background: transparent;
-  overflow: visible;
+    padding: 0 !important;
+    background-color: var(--blanco);
+    overflow: hidden;
 }
 
-.accede-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  z-index: 0;
-  pointer-events: none;
+#accede .container-fluid {
+    padding: 0;
 }
 
-.accede-image {
-  flex: 0 0 60%;
-  height: 100%;
-  overflow: hidden;
+/* Fila con altura fija para que ambas columnas sean iguales */
+.accede-row {
+    height: 700px;
+    min-height: 700px;  
+    display: flex;
+    align-items: stretch;
 }
 
-.accede-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+/* Columna izquierda: fondo gris, centrado vertical */
+.accede-left {
+    background-color: var(--gris-fondo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    height: 100%;
 }
 
-.accede-gris {
-  flex: 1;
-  background-color: var(--gris-fondo);
+/* Tarjeta blanca centrada */
+.accede-card-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.accede-container {
-  position: relative;
-  z-index: 1;
+.accede-card-content {
+    background: var(--blanco);
+    padding: 35px 30px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s;
+    max-height: 100%;
+    overflow-y: auto;
 }
 
-.accede-card {
-  background: var(--blanco);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-  padding: 40px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  transition: box-shadow 0.3s;
+.accede-card-content:hover {
+    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.12);
 }
 
-.accede-card:hover {
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.16);
-}
-
-.accede-info {
-  padding: 20px 30px 20px 20px;
-}
-
-.accede-info h3 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--negro);
-  margin-bottom: 0.5rem;
+.accede-card-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--negro);
+    margin-bottom: 0.5rem;
 }
 
 .accede-desc {
-  font-size: 1rem;
-  color: var(--gris-medio);
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+    font-size: 1rem;
+    color: var(--gris-medio);
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
 }
 
 .accede-contact {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1.5rem 0;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.2rem 0;
 }
 
 .accede-contact li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-  color: var(--gris-oscuro);
-  padding: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--gris-oscuro);
+    padding: 5px 0;
 }
 
 .accede-contact li i {
-  color: var(--rojo);
-  font-size: 1rem;
-  width: 20px;
-  text-align: center;
+    color: var(--rojo);
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
 }
 
-.accede-institucional {
-  font-size: 0.95rem;
-  color: var(--gris-oscuro);
-  background: #F9F9F9;
-  padding: 16px 20px;
-  border-radius: 8px;
-  border-left: 4px solid var(--rojo);
-  margin-top: 1rem;
+.accede-mapa-wrapper {
+    width: 100%;
+    height: 180px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
 
-.accede-institucional strong {
-  color: var(--rojo);
+.accede-mapa-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
 }
 
-.accede-mapa {
-  padding: 20px;
-  min-height: 300px;
+/* Columna derecha: carrusel con altura fija */
+.accede-right {
+    height: 100%;
+    background-color: #2B2B2B;
+    overflow: hidden;
 }
 
-.accede-mapa iframe {
-  width: 100%;
-  height: 100%;
-  min-height: 340px;
-  border-radius: 8px;
-  border: 0;
+/* El carrusel ocupa el 100% de la columna */
+.accede-carousel {
+    height: 100%;
+    width: 100%;
 }
+
+.accede-carousel .carousel-inner,
+.accede-carousel .carousel-item {
+    height: 100%;
+}
+
+.accede-carousel .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* recorta para llenar sin deformar */
+    display: block;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 991px) {
+    .accede-row {
+        height: auto;
+        min-height: auto;
+        flex-direction: column;
+    }
+
+    .accede-left {
+        height: auto;
+        padding: 30px 20px;
+        min-height: 400px;
+    }
+
+    .accede-card-content {
+        padding: 25px 20px;
+    }
+
+    .accede-mapa-wrapper {
+        height: 180px;
+    }
+
+    .accede-right {
+        height: 350px;   /* altura fija para tablet */
+        min-height: 350px;
+    }
+
+    .accede-carousel {
+        height: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .accede-left {
+        padding: 20px 16px;
+        min-height: 350px;
+    }
+
+    .accede-card-content h3 {
+        font-size: 1.6rem;
+    }
+
+    .accede-mapa-wrapper {
+        height: 150px;
+    }
+
+    .accede-right {
+        height: 280px;
+        min-height: 280px;
+    }
+}
+
 /* ==========================================================================
    7. DESARROLLADORES (ALTURA FIJA, SOLO ANCHO VARIABLE)
    ========================================================================== */
