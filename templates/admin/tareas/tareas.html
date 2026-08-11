@@ -1,0 +1,80 @@
+{% extends "admin/base/base.html" %}
+{% load static %}
+
+{% block title %}OperPan | Tareas{% endblock %}
+{% block section_title %}Gestión de tareas del personal{% endblock %}
+{% block section_subtitle %}Panel Administrador{% endblock %}
+
+{% block active_tareas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/tareas.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas mensual</h3>
+        <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
+    </div>
+
+    {% include "admin/tareas/stats.html" %}
+
+    {% include "admin/tareas/resumen_hoy.html" %}
+
+    {% include "admin/tareas/tabla_tareas.html" %}
+
+    <footer><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
+</div>
+
+{{ empleados_data|json_script:"empleados-data" }}
+{{ tareas_por_cargo|json_script:"tareas-por-cargo" }}
+{{ cargo_area_map|json_script:"cargo-area-map" }}
+
+{% include "admin/tareas/form_tareas.html" %}
+{% include "admin/tareas/ver_tarea.html" %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/tareas.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if editando or form.errors %}
+            var modalTareaElement = document.getElementById('modalTarea');
+            if (modalTareaElement) {
+                var modalTarea = new bootstrap.Modal(modalTareaElement);
+                modalTarea.show();
+            }
+        {% endif %}
+
+        {% if tarea_detalle %}
+            var adminDetailModalElement = document.getElementById('adminTaskDetailModal');
+            if (adminDetailModalElement) {
+                var adminDetailModal = new bootstrap.Modal(adminDetailModalElement);
+                adminDetailModal.show();
+            }
+        {% endif %}
+
+        const confirmModal = document.getElementById('confirmModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const modalBody = document.getElementById('modalBodyText');
+
+        if (confirmModal) {
+            confirmModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                if (!button) return;
+                const id = button.getAttribute('data-id');
+                const url = "{% url 'tareas:admin_tarea_delete' 0 %}".replace('0', id);
+                if (deleteForm) deleteForm.action = url;
+
+                const card = button.closest('.task-card');
+                if (card && modalBody) {
+                    const titulo = card.querySelector('h5') ? card.querySelector('h5').innerText : 'esta tarea';
+                    modalBody.innerText = `¿Eliminar permanentemente la tarea "${titulo}"? Esta acción se registrará en auditoría.`;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -31,6 +31,16 @@ function showMessage(msg) {
     }
 }
 
+// Debounce: evita disparar una petición al backend por cada tecla.
+// Espera `delay` ms desde la última llamada antes de ejecutar `fn`.
+function debounce(fn, delay = 300) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
 
 // ============================== MÓDULO PERMISOS ==============================
 (function () {
@@ -308,12 +318,9 @@ function showMessage(msg) {
         bootstrap.Modal.getInstance(document.getElementById('permisosRejectModal'))?.hide();
     });
 
-    // Eventos de Filtro y Búsqueda
+    // Eventos de Filtro y Búsqueda — instantáneo, sin botón "Buscar"
     document.getElementById('permisosFiltroEstado')?.addEventListener('change', renderPermisosHistorial);
-    document.getElementById('permisosBtnBuscar')?.addEventListener('click', renderPermisosHistorial);
-    document.getElementById('buscarPermiso')?.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') renderPermisosHistorial();
-    });
+    document.getElementById('buscarPermiso')?.addEventListener('input', debounce(renderPermisosHistorial, 300));
     document.getElementById('permisosBtnLimpiar')?.addEventListener('click', () => {
         const inputBuscar = document.getElementById('buscarPermiso');
         const selectEstado = document.getElementById('permisosFiltroEstado');
@@ -601,12 +608,10 @@ function showMessage(msg) {
         bootstrap.Modal.getInstance(document.getElementById('incapacidadesRejectModal'))?.hide();
     });
 
+    // Filtro instantáneo — sin botón "Buscar"
     document.getElementById('incapacidadesFiltroEstado')?.addEventListener('change', renderHistorialIncapacidades);
-    document.getElementById('incapacidadesBuscarEmpleado')?.addEventListener('input', renderHistorialIncapacidades);
-    document.getElementById('buscarIncapacidad')?.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') renderHistorialIncapacidades();
-    });
-    document.getElementById('incapacidadesBtnBuscar')?.addEventListener('click', renderHistorialIncapacidades);
+    document.getElementById('incapacidadesBuscarEmpleado')?.addEventListener('input', debounce(renderHistorialIncapacidades, 300));
+    document.getElementById('buscarIncapacidad')?.addEventListener('input', debounce(renderHistorialIncapacidades, 300));
     document.getElementById('incapacidadesBtnLimpiar')?.addEventListener('click', () => {
         const inputBuscar = document.getElementById('buscarIncapacidad') || document.getElementById('incapacidadesBuscarEmpleado');
         const selectEstado = document.getElementById('incapacidadesFiltroEstado');
@@ -741,15 +746,8 @@ function showMessage(msg) {
             .catch(error => console.error('Error al cargar certificados:', error));
     }
 
-    document.getElementById('certificadosBtnBuscar')?.addEventListener('click', renderCertificados);
-
-    document.getElementById('buscarCertificado')?.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            renderCertificados();
-        }
-    });
-
+    // Filtro instantáneo — sin botón "Buscar"
+    document.getElementById('buscarCertificado')?.addEventListener('input', debounce(renderCertificados, 300));
     document.getElementById('certificadosFiltroTipo')?.addEventListener('change', renderCertificados);
     document.getElementById('certificadosFiltroEstado')?.addEventListener('change', renderCertificados);
 

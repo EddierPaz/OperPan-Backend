@@ -1,0 +1,51 @@
+{% comment %}
+Parcial: KPIs del resumen mensual de tareas.
+Requiere del contexto: kpis
+{% endcomment %}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">Pendientes</span>
+                <h3>{{ kpis.pendientes|default:0 }}</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">En progreso</span>
+                <h3>{{ kpis.en_progreso|default:0 }}</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-arrow-repeat fs-2 text-primary"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">Finalizadas</span>
+                <h3>{{ kpis.finalizadas|default:0 }}</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-check2-circle fs-2 text-success"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">Total asignadas</span>
+                <h3>{{ kpis.total|default:0 }}</h3>
+            </div>
+            <div class="icono-circular">
+                <i class="bi bi-list-task fs-2 text-primary"></i>
+            </div>
+        </div>
+    </div>
+</div>

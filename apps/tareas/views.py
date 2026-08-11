@@ -1,11 +1,12 @@
 import json
+from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
 from django.urls import reverse
-from datetime import date
+
 from .models import Task, EstadoTarea
 from .forms import TaskForm, TaskFilterForm
 from .constants import TAREAS_POR_CARGO, CARGO_AREA_MAP, OTRA_VALUE
@@ -25,7 +26,7 @@ def admin_tareas_list(request):
     Vista principal del administrador.
     Muestra: KPIs, formulario (crear/editar), tareas de hoy agrupadas por estado,
     y listado completo con filtros y búsqueda.
-    Template: admin/tareas.html
+    Template: admin/tareas/tareas.html
     """
     kpis = Task.get_kpis_administrador()
 
@@ -129,12 +130,13 @@ def admin_tareas_list(request):
         'editando': editando,
         'tarea_actual': tarea_actual,
         'tarea_detalle': tarea_detalle,
-        'empleados_data': empleados_data,
-        'tareas_por_cargo': TAREAS_POR_CARGO,
-        'cargo_area_map': CARGO_AREA_MAP,
+        # Serialización segura a JSON string para que el script JavaScript lo lea limpio
+        'empleados_data': json.dumps(empleados_data),
+        'tareas_por_cargo': json.dumps(TAREAS_POR_CARGO),
+        'cargo_area_map': json.dumps(CARGO_AREA_MAP),
         'otra_value': OTRA_VALUE,
     }
-    return render(request, 'admin/tareas.html', context)
+    return render(request, 'admin/tareas/tareas.html', context)
 
 
 @login_required
@@ -216,7 +218,7 @@ def admin_tareas_vencidas(request):
         'tareas': tareas,
         'total_vencidas': tareas.count(),
     }
-    return render(request, 'admin/tareas_vencidas.html', context)
+    return render(request, 'admin/tareas/tareas_vencidas.html', context)
 
 
 # ==========================================

@@ -1,0 +1,72 @@
+{% comment %}
+Parcial: modal de detalle de una tarea (se abre vía ?detalle=<pk>).
+Requiere del contexto: tarea_detalle
+{% endcomment %}
+
+{% if tarea_detalle %}
+<div class="modal fade show" id="adminTaskDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2 text-danger"></i>Detalle de Tarea</h5>
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
+            </div>
+            <div class="modal-body p-4">
+                <h4 class="mb-2 fw-bold text-dark">{{ tarea_detalle.titulo }}</h4>
+
+                <div class="mb-3">
+                    {% if tarea_detalle.prioridad == 'ALTA' %}
+                        <span class="badge priority-high">Alta prioridad</span>
+                    {% elif tarea_detalle.prioridad == 'MEDIA' %}
+                        <span class="badge priority-medium">Media prioridad</span>
+                    {% else %}
+                        <span class="badge priority-low">Baja prioridad</span>
+                    {% endif %}
+
+                    {% if tarea_detalle.estado == 'PENDIENTE' %}
+                        <span class="badge badge-status badge-pendiente ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                    {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                        <span class="badge badge-status badge-progreso ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                    {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                        <span class="badge badge-status badge-finalizada ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="text-secondary bg-light p-3 rounded-3">{{ tarea_detalle.descripcion }}</p>
+
+                <div class="row g-3 mt-1">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block"><i class="bi bi-person-badge me-1"></i> Asignado a:</small>
+                        <strong class="text-dark">{{ tarea_detalle.empleado.nombre_completo }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite:</small>
+                        <strong class="text-dark">
+                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
+                            {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
+                        </strong>
+                    </div>
+                </div>
+
+                {% if tarea_detalle.estado == 'FINALIZADA' %}
+                    <hr class="my-3"/>
+                    <div class="alert alert-success mb-0 rounded-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> <strong>Tarea Finalizada</strong>
+                        {% if tarea_detalle.evidencia %}
+                            <br>
+                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download mt-2">
+                                <i class="bi bi-paperclip"></i> Ver evidencia
+                            </a>
+                        {% else %}
+                            <br><small class="text-muted">El empleado no adjuntó archivo de evidencia.</small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer border-top">
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-outline-corporate">Cerrar</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
