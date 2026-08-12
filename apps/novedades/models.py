@@ -25,6 +25,7 @@ class Permiso(models.Model):
     fecha_fin = models.DateField()
     justificacion = models.TextField()
     nuevo_horario = models.CharField(max_length=100, blank=True, null=True)
+    archivo = models.FileField(upload_to='permisos/', blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     decision_fecha = models.DateTimeField(null=True, blank=True)
@@ -77,6 +78,7 @@ class Certificado(models.Model):
     proposito = models.CharField(max_length=200)
     dirigido_a = models.CharField(max_length=200, blank=True, null=True)
     periodo = models.CharField(max_length=100, blank=True, null=True)
+    archivo = models.FileField(upload_to='certificados/', blank=True, null=True)
 
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)

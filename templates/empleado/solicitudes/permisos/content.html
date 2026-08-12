@@ -1,0 +1,69 @@
+{% for p in permisos_historial %}
+<div class="request-card
+        {% if p.estado == 'aprobado' %}
+            request-approved
+        {% elif p.estado == 'rechazado' %}
+            request-rejected
+        {% else %}
+            request-pending
+        {% endif %}"
+        data-tipo="permiso"
+        data-estado="{{ p.estado }}">
+
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        
+        <!-- INFORMACIÓN DE LA SOLICITUD -->
+        <div class="flex-grow-1">
+            <h5 class="mb-1">
+                <i class="bi bi-calendar-event me-1"></i>
+                Permiso
+            </h5>
+
+            <small class="text-muted">
+                {{ p.get_tipo_display }} · {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}
+            </small>
+
+            {% if p.justificacion %}
+                <p class="mb-2 mt-2">{{ p.justificacion }}</p>
+            {% endif %}
+
+            <div class="small text-muted mt-2">
+                <i class="bi bi-calendar3 me-1"></i>
+                Creada: {{ p.fecha_solicitud|date:"d/m/Y H:i" }}
+            </div>
+
+            {% if p.archivo %}
+                <div class="mt-2">
+                    <span class="badge bg-light text-dark">
+                        <i class="bi bi-paperclip me-1"></i>
+                        {{ p.archivo.name }}
+                    </span>
+                </div>
+            {% endif %}
+
+            {% if p.motivo_rechazo %}
+                <div class="small text-danger mt-2">
+                    <i class="bi bi-chat-dots me-1"></i>
+                    <strong>Motivo del rechazo:</strong> {{ p.motivo_rechazo }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- ESTADO -->
+        <div>
+            <span class="badge {% if p.estado == 'aprobado' %}badge-approved{% elif p.estado == 'rechazado' %}badge-rejected{% endif %}">
+                {{ p.get_estado_display }}
+            </span>
+        </div>
+    </div>
+</div>
+
+{% empty %}
+<div class="empty-history">
+    <div class="empty-history-icon">
+        <i class="bi bi-folder2-open"></i>
+    </div>
+    <h5>No hay permisos en el historial</h5>
+    <p class="text-muted mb-0">Los permisos aprobados o rechazados aparecerán aquí.</p>
+</div>
+{% endfor %}

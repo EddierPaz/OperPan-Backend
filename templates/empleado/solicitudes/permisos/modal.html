@@ -1,0 +1,57 @@
+<div id="formPermiso" class="dynamic-form" style="display: none;">
+    <div class="row g-3 mt-2">
+        <div class="col-md-6">
+            <label class="form-label">Tipo de permiso *</label>
+            <select class="form-select" id="permisoTipo" name="permiso-tipo">
+                <option value="personal" {% if permiso_form.tipo.value == 'personal' %}selected{% endif %}>Personal</option>
+                <option value="medico" {% if permiso_form.tipo.value == 'medico' %}selected{% endif %}>Médico</option>
+                <option value="academico" {% if permiso_form.tipo.value == 'academico' %}selected{% endif %}>Académico</option>
+                <option value="calamidad" {% if permiso_form.tipo.value == 'calamidad' %}selected{% endif %}>Calamidad doméstica</option>
+                <option value="otro" {% if permiso_form.tipo.value == 'otro' %}selected{% endif %}>Otro</option>
+            </select>
+            {% if permiso_form.tipo.errors %}
+                <div class="text-danger small">{{ permiso_form.tipo.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Fecha inicio *</label>
+            <input type="date" class="form-control" id="permisoFechaInicio" name="permiso-fecha_inicio" value="{{ permiso_form.fecha_inicio.value|default:'' }}">
+            {% if permiso_form.fecha_inicio.errors %}
+                <div class="text-danger small">{{ permiso_form.fecha_inicio.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Fecha fin *</label>
+            <input type="date" class="form-control" id="permisoFechaFin" name="permiso-fecha_fin" value="{{ permiso_form.fecha_fin.value|default:'' }}">
+            {% if permiso_form.fecha_fin.errors %}
+                <div class="text-danger small">{{ permiso_form.fecha_fin.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6" id="nuevoHorarioGroup" style="display: none;">
+            <label class="form-label">Nuevo horario *</label>
+            <select class="form-select" id="cambioTurnoSolicitado" name="permiso-nuevo_horario">
+                <option value="Mañana" {% if permiso_form.nuevo_horario.value == 'Mañana' %}selected{% endif %}>Mañana (6:00 - 14:00)</option>
+                <option value="Tarde" {% if permiso_form.nuevo_horario.value == 'Tarde' %}selected{% endif %}>Tarde (14:00 - 22:00)</option>
+                <option value="Noche" {% if permiso_form.nuevo_horario.value == 'Noche' %}selected{% endif %}>Noche (22:00 - 6:00)</option>
+            </select>
+            {% if permiso_form.nuevo_horario.errors %}
+                <div class="text-danger small">{{ permiso_form.nuevo_horario.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-12">
+            <label class="form-label">Motivo</label>
+            <textarea class="form-control" rows="2" id="permisoMotivo" name="permiso-justificacion" placeholder="Explique el motivo del permiso">{{ permiso_form.justificacion.value|default:'' }}</textarea>
+            {% if permiso_form.justificacion.errors %}
+                <div class="text-danger small">{{ permiso_form.justificacion.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-12">
+            <label class="form-label">Adjuntar soporte (opcional)</label>
+            <input type="file" class="form-control" id="permisoAdjunto" name="permiso-archivo" accept=".pdf,.jpg,.png,.jpeg">
+            <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB).</small>
+            {% if permiso_form.archivo.errors %}
+                <div class="text-danger small">{{ permiso_form.archivo.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<div id="formCertificado" class="dynamic-form" style="display: none;">
+    <div class="row g-3 mt-2">
+        <div class="col-md-6">
+            <label class="form-label">Tipo de certificado *</label>
+            <select class="form-select" id="certificadoTipo" name="certificado-tipo">
+                <option value="laboral" {% if certificado_form.tipo.value == 'laboral' %}selected{% endif %}>Certificado laboral</option>
+                <option value="ingresos" {% if certificado_form.tipo.value == 'ingresos' %}selected{% endif %}>Certificado de ingresos</option>
+                <option value="antiguedad" {% if certificado_form.tipo.value == 'antiguedad' %}selected{% endif %}>Certificado de antigüedad</option>
+            </select>
+            {% if certificado_form.tipo.errors %}
+                <div class="text-danger small">{{ certificado_form.tipo.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Dirigido a *</label>
+            <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" placeholder="Nombre de la entidad o persona" value="{{ certificado_form.dirigido_a.value|default:'' }}">
+            {% if certificado_form.dirigido_a.errors %}
+                <div class="text-danger small">{{ certificado_form.dirigido_a.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-12" id="certificadoFinalidadGroup" style="display: none;">
+            <label class="form-label">Finalidad (opcional)</label>
+            <input type="text" class="form-control" id="certificadoFinalidad" name="certificado-proposito" placeholder="Ej: trámite bancario, estudios" value="{{ certificado_form.proposito.value|default:'' }}">
+            {% if certificado_form.proposito.errors %}
+                <div class="text-danger small">{{ certificado_form.proposito.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-12" id="certificadoPeriodoGroup" style="display: none;">
+            <label class="form-label">Periodo solicitado</label>
+            <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" placeholder="Ej: Enero 2025 - Marzo 2025" value="{{ certificado_form.periodo.value|default:'' }}">
+            {% if certificado_form.periodo.errors %}
+                <div class="text-danger small">{{ certificado_form.periodo.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-12">
+            <label class="form-label">Adjuntar soporte (opcional)</label>
+            <input type="file" class="form-control" id="certificadoAdjunto" name="certificado-archivo" accept=".pdf,.jpg,.png,.jpeg">
+            <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB).</small>
+            {% if certificado_form.archivo.errors %}
+                <div class="text-danger small">{{ certificado_form.archivo.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

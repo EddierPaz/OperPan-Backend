@@ -1,121 +1,651 @@
-/* ==============================================
-    ESTILOS DEL MÓDULO DE SOLICITUDES (EMPLEADO)
-============================================== */
+/* ============================================================
+   ESTILOS DEL MÓDULO DE SOLICITUDES - EMPLEADO
+   OperPan
+   ============================================================ */
 
-/* Cards de resumen */
+/* ============================================================
+   1. CARDS DE RESUMEN / KPIs
+   ============================================================ */
+
 .stats-row {
     margin-bottom: 2rem;
 }
 
+.stat-card {
+    background: #FFFFFF;
+    border: 1px solid #F0F2F5;
+    border-radius: 18px;
+    padding: 1.25rem 1.4rem;
+    min-height: 105px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+.stat-card span {
+    font-size: 0.85rem;
+}
+
+.stat-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2C3E50;
+}
+
 .stat-card i {
-    font-size: 2rem;
-    color: #A40706;
+    font-size: 1.8rem;
+}
+
+.icono-circular {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #FEF2F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ============================================================
+   2. TARJETAS DE SOLICITUD Y HISTORIAL
+   ============================================================ */
+
+#solicitudesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
 }
 
 .request-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: 0.2s;
-    border: 1px solid #F0F2F5;
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #E9ECEF;
+    border-radius: 16px;
+    padding: 1.15rem 1.25rem;
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
+    transition: all 0.2s ease;
+    overflow: hidden;
 }
 
 .request-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+    border-color: #DEE2E6;
 }
 
-/* Solicitud pendiente */
-.request-pending {
-    border-left: 6px solid #FFC107;
+.request-card .d-flex {
+    gap: 1rem;
 }
 
-/* Solicitud aprobada */
-.request-approved {
-    border-left: 6px solid #198754;
+.request-card h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: .3rem !important;
 }
 
-/* Solicitud rechazada */
-.request-rejected {
-    border-left: 6px solid #DC3545;
+.request-card small.text-muted {
+    display: block;
+    font-size: .82rem;
+    color: #6C757D !important;
+    line-height: 1.5;
 }
 
-.file-info {
-    font-size: 0.8rem;
+.request-card p {
+    font-size: .88rem;
+    color: #495057;
+    line-height: 1.55;
+    margin-bottom: .65rem !important;
+}
+
+.request-card > .d-flex > div:last-child {
+    min-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: .45rem;
+}
+
+#solicitudesContainer .request-card:last-child {
+    margin-bottom: 0;
+}
+
+.historial-solicitudes {
+    scroll-margin-top: 100px;
+}
+
+.historial-filtros {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+.filtro-label {
+    font-size: 0.85rem;
+    font-weight: 600;
     color: #2C3E50;
+    min-width: 65px;
 }
 
-.dynamic-form {
+
+/* ============================================================
+   3. ESTADOS DE SOLICITUD (BORDES Y BADGES)
+   ============================================================ */
+
+.request-card.request-pendiente, 
+.request-card.request-pendientes { 
+    border-left: 6px solid #FFC107 !important; 
+}
+
+.request-card.request-aprobado, 
+.request-card.request-aprobadas { 
+    border-left: 6px solid #198754 !important; 
+}
+
+.request-card.request-rechazado, 
+.request-card.request-rechazadas { 
+    border-left: 6px solid #DC3545 !important; 
+}
+
+.request-card .badge {
+    border-radius: 30px;
+    padding: .42rem .75rem;
+    font-size: .72rem;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.badge-pendiente, .badge-pendientes { 
+    background: #FFF3E0; 
+    color: #C77A00; 
+    border: 1px solid #FFE0A3; 
+    padding: 0.45rem 0.7rem;
+    font-weight: 600;
+}
+
+.badge-aprobado, .badge-aprobadas { 
+    background: #E0F2E9; 
+    color: #1E7B48; 
+    border: 1px solid #B9E2CC; 
+    padding: 0.45rem 0.7rem;
+    font-weight: 600;
+}
+
+.badge-rechazado, .badge-rechazadas { 
+    background: #FEF2F0; 
+    color: #B91C1C; 
+    border: 1px solid #F5C2C0; 
+    padding: 0.45rem 0.7rem;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   4. ENCABEZADOS DE SECCIÓN
+   ============================================================ */
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.section-heading h4,
+.historial-solicitudes h4 {
+    color: #2C3E50;
+    font-weight: 600;
+}
+
+.section-heading h4 i,
+.historial-solicitudes h4 i {
+    color: #A40706;
+}
+
+
+/* ============================================================
+   5. CARDS DE SOLICITUDES PENDIENTES
+   ============================================================ */
+
+.pending-category-card {
+    background: #FFFFFF;
+    border: 1px solid #F0F2F5;
+    border-radius: 18px;
+    overflow: hidden;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     transition: all 0.2s ease;
 }
 
-.card-modern .card-header {
-    padding: 1.2rem 1.5rem;
+.pending-category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-.btn-outline-action {
-    border-color: #A40706;
-    color: #A40706;
-    border-radius: 40px;
+.pending-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid #F0F2F5;
 }
 
-.btn-outline-action:hover {
-    background-color: #A40706;
-    color: aliceblue;
-    border-radius: 40px;
+.pending-card-header h5 {
+    color: #2C3E50;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
-/* Estilos para badges */
-.badge-pending {
-    background: #FFF3E0;
+.pending-card-header span {
+    display: block;
+    color: #7B8794;
+    font-size: 0.78rem;
+    margin-top: 2px;
+}
+
+.pending-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.pending-permisos .pending-icon {
+    background: #FFF8E1;
     color: #C77A00;
 }
 
-.badge-approved {
-    background: #E0F2E9;
-    color: #1E7B48;
-}
-
-.badge-rejected {
+.pending-incapacidades .pending-icon {
     background: #FEF2F0;
     color: #B91C1C;
 }
 
-.btn-corporate {
-    background: white;
-    color: #555;
-    border: 1px solid #ddd;
-    padding: .55rem 1rem;
-    transition: .25s;
+.pending-certificados .pending-icon {
+    background: #E0F2E9;
+    color: #1E7B48;
 }
 
-.btn-corporate:hover {
-    background: #A40706;
-    color: white;
+.pending-card-body {
+    padding: 0.75rem 1rem;
+    min-height: 130px;
+}
+
+.pending-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.pending-item:last-child {
+    border-bottom: none;
+}
+
+.pending-item-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 9px;
+    background: #F8F9FA;
+    color: #A40706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pending-item-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.pending-item-info strong {
+    display: block;
+    color: #2C3E50;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pending-item-info small {
+    display: block;
+    color: #7B8794;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.pending-dot {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    border-radius: 50%;
+    background: #FFC107;
+}
+
+.pending-card-footer {
+    border-top: 1px solid #F0F2F5;
+    padding: 0.7rem 1rem;
+}
+
+.btn-view-pending {
+    border: none;
+    background: transparent;
+    color: #A40706;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-view-pending:hover {
+    color: #7D0504;
+    transform: translateX(2px);
+}
+
+.btn-view-pending i {
+    margin-left: 3px;
+}
+
+
+/* ============================================================
+   6. ESTADOS VACÍOS (PENDIENTES E HISTORIAL)
+   ============================================================ */
+
+.empty-pending {
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #7B8794;
+    gap: 0.4rem;
+}
+
+.empty-pending i {
+    font-size: 1.6rem;
+    color: #198754;
+}
+
+.empty-pending span {
+    font-size: 0.8rem;
+}
+
+.empty-history {
+    background: #FFFFFF;
+    border: 1px dashed #DDE1E6;
+    border-radius: 18px;
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.empty-history-icon {
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background: #F8F9FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #A40706;
+    font-size: 1.7rem;
+}
+
+.empty-history h5 {
+    color: #2C3E50;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   7. FILTROS / PESTAÑAS (NOVEDADES TABS)
+   ============================================================ */
+
+.novedades-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    background: #FFFFFF;
+    padding: 0.3rem;
+    border: 1px solid #E9ECEF;
+    border-radius: 12px;
+}
+
+.novedades-tab {
+    border: none !important;
+    background: transparent;
+    color: #6C757D;
+    border-radius: 9px !important;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.novedades-tab:hover {
+    background: #F8F9FA;
+    color: #A40706;
+}
+
+.novedades-tab.active {
+    background: #A40706 !important;
+    color: #FFFFFF !important;
+}
+
+
+/* ============================================================
+   8. MODAL DE NUEVA SOLICITUD
+   ============================================================ */
+
+#modalSolicitud .modal-content {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+#modalSolicitud .modal-header {
+    background: #FFFFFF;
+    border-bottom: 1px solid #F0F2F5;
+    padding: 1.2rem 1.5rem;
+}
+
+#modalSolicitud .modal-title {
+    color: #2C3E50;
+    font-weight: 600;
+}
+
+#modalSolicitud .modal-body {
+    padding: 1.5rem;
+}
+
+#modalSolicitud .form-label {
+    color: #2C3E50;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+#modalSolicitud .form-control,
+#modalSolicitud .form-select {
+    border-radius: 10px;
+    border: 1px solid #DEE2E6;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+#modalSolicitud .form-control:focus,
+#modalSolicitud .form-select:focus {
     border-color: #A40706;
+    box-shadow: 0 0 0 0.2rem rgba(164, 7, 6, 0.08);
 }
 
-.btn-corporate.active {
-    background: #A40706;
-    color: white;
-    border-color: #A40706;
+
+/* ============================================================
+   9. ALERTAS Y FOOTER
+   ============================================================ */
+
+.alert {
+    border-radius: 12px;
+    border: none;
+    font-size: 0.85rem;
 }
 
-/* Responsive */
+.alert-success { border-left: 4px solid #198754; }
+.alert-danger { border-left: 4px solid #DC3545; }
+.alert-warning { border-left: 4px solid #FFC107; }
+.alert-info { border-left: 4px solid #0D6EFD; }
+
+main.dashboard-container footer {
+    margin-top: 2.5rem;
+    padding: 1.2rem;
+    text-align: center;
+    color: #7B8794;
+    font-size: 0.8rem;
+    border-top: 1px solid #E9ECEF;
+}
+
+main.dashboard-container footer i {
+    color: #198754;
+    margin-right: 0.3rem;
+}
+
+
+/* ============================================================
+   10. RESPONSIVE DESIGN
+   ============================================================ */
+
+@media (max-width: 991.98px) {
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .pending-card-body {
+        min-height: auto;
+    }
+}
+
 @media (max-width: 767.98px) {
+    .stats-row {
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        min-height: 90px;
+        padding: 1rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .icono-circular {
+        width: 45px;
+        height: 45px;
+    }
+
     .request-card {
-        padding: 0.75rem;
+        padding: 1rem;
+        border-radius: 14px;
     }
 
-    .btn-group {
+    .request-card > .d-flex {
+        flex-direction: column;
+        gap: .8rem;
+    }
+
+    .request-card > .d-flex > div:last-child {
+        width: 100%;
+        min-width: 0;
+        align-items: flex-start;
+        flex-direction: row;
         flex-wrap: wrap;
-        gap: 0.25rem;
     }
 
-    .btn-group .btn {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+    .request-card h5 {
+        font-size: .95rem;
+    }
+
+    .request-card small.text-muted {
+        font-size: .78rem;
+    }
+
+    .request-card p {
+        font-size: .84rem;
+    }
+
+    .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .novedades-tabs {
+        width: 100%;
+    }
+
+    .novedades-tab {
+        flex: 1;
+    }
+
+    #modalSolicitud .modal-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .stat-card {
+        padding: 0.85rem;
+    }
+
+    .stat-card span {
+        font-size: 0.78rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.35rem;
+    }
+
+    .pending-card-header {
+        padding: 0.9rem;
+    }
+
+    .pending-card-body {
+        padding: 0.6rem 0.8rem;
+    }
+
+    .pending-item-info strong {
+        font-size: 0.8rem;
+    }
+
+    .pending-item-info small {
+        font-size: 0.7rem;
+    }
+
+    .novedades-tabs {
+        overflow-x: auto;
+    }
+
+    .novedades-tab {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .request-card .d-flex {
+        gap: 0.8rem;
     }
 }

@@ -25,9 +25,11 @@ class CertificadoFiltroForm(forms.Form):
 
 
 class PermisoCrearForm(forms.ModelForm):
+    archivo = forms.FileField(required=False)
+
     class Meta:
         model = Permiso
-        fields = ['tipo', 'fecha_inicio', 'fecha_fin', 'justificacion', 'nuevo_horario']
+        fields = ['tipo', 'fecha_inicio', 'fecha_fin', 'justificacion', 'nuevo_horario', 'archivo']
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
@@ -46,6 +48,15 @@ class PermisoCrearForm(forms.ModelForm):
             raise forms.ValidationError("El nuevo horario es obligatorio para solicitudes de cambio de turno.")
 
         return cleaned_data
+
+    def clean_archivo(self):
+        archivo = self.cleaned_data.get('archivo')
+        if archivo:
+            if archivo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("El archivo no debe superar los 5MB.")
+            if not archivo.name.lower().endswith(('.pdf', '.jpg', '.jpeg', '.png')):
+                raise forms.ValidationError("Solo se permiten archivos PDF, JPG o PNG.")
+        return archivo
 
 
 class IncapacidadCrearForm(forms.ModelForm):
@@ -70,6 +81,17 @@ class IncapacidadCrearForm(forms.ModelForm):
 
 
 class CertificadoCrearForm(forms.ModelForm):
+    archivo = forms.FileField(required=False)
+
     class Meta:
         model = Certificado
-        fields = ['tipo', 'proposito', 'dirigido_a', 'periodo']
+        fields = ['tipo', 'proposito', 'dirigido_a', 'periodo', 'archivo']
+
+    def clean_archivo(self):
+        archivo = self.cleaned_data.get('archivo')
+        if archivo:
+            if archivo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("El archivo no debe superar los 5MB.")
+            if not archivo.name.lower().endswith(('.pdf', '.jpg', '.jpeg', '.png')):
+                raise forms.ValidationError("Solo se permiten archivos PDF, JPG o PNG.")
+        return archivo

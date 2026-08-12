@@ -15,37 +15,43 @@
     <div class="row stats-row g-3">
         <div class="col-12">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <h3><i class="bi bi-calendar-check me-2"></i>Asistencia de hoy</h3>
+                <h3>
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    Resumen de solicitudes
+                </h3>
                 <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
                     <span class="text-muted">Solicitudes enviadas</span>
-                    <h3 class="mt-1" id="asistenciasCompletas">0</h3>
+                    <h3 class="mt-1">{{ total_solicitudes }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-send-fill fs-2 text-primary"></i>
                 </div>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
                     <span class="text-muted">Solicitudes pendientes</span>
-                    <h3 class="mt-1" id="totalHorasMes">0</h3>
+                    <h3 class="mt-1">{{ total_pendientes }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-hourglass-split fs-2 text-warning"></i>
                 </div>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
                     <span class="text-muted">Solicitudes con respuesta</span>
-                    <h3 class="mt-1" id="totalRetardos">0</h3>
+                    <h3 class="mt-1">{{ total_respondidas }}</h3>
                 </div>
                 <div class="icono-circular">
                     <i class="bi bi-check-circle-fill fs-2 text-success"></i>
@@ -54,7 +60,6 @@
         </div>
     </div>
 
-    <!-- Mensajes de Django -->
     {% if messages %}
         {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -64,138 +69,243 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Listado de solicitudes recientes -->
-     
-
-    <div class="d-flex align-items-center mb-4">
+    <div class="d-flex align-items-center mb-4 flex-wrap gap-3">
         <h3 class="mb-0">
             <i class="bi bi-file-earmark-text me-2"></i>
             Mis solicitudes
         </h3>
-
         <button class="btn btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalSolicitud">
-            <i class="bi bi-plus-circle me-2"></i>Nueva solicitud
+            <i class="bi bi-plus-circle me-2"></i>
+            Nueva solicitud
         </button>
     </div>
-    <div class="d-flex align-items-center mb-4">
 
-        <div class="novedades-tabs ms-auto">
+    <div class="solicitudes-pendientes-section">
+        <div class="row g-3">
+            <!-- Permisos -->
+            <div class="col-lg-4 col-md-6">
+                <div class="pending-category-card pending-permisos">
+                    <div class="pending-card-header">
+                        <div class="pending-icon"><i class="bi bi-calendar-event"></i></div>
+                        <div>
+                            <h5 class="mb-0">Permisos</h5>
+                            <span>{{ permisos_pendientes|length }} pendiente{{ permisos_pendientes|length|pluralize }}</span>
+                        </div>
+                    </div>
+                    <div class="pending-card-body">
+                        {% if permisos_pendientes %}
+                            {% for p in permisos_pendientes|slice:":3" %}
+                                <div class="pending-item">
+                                    <div class="pending-item-icon"><i class="bi bi-file-earmark-text"></i></div>
+                                    <div class="pending-item-info">
+                                        <strong>{{ p.get_tipo_display }}</strong>
+                                        <small>{{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <span class="pending-dot"></span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-pending"><i class="bi bi-check-circle"></i> <span>No tienes permisos pendientes.</span></div>
+                        {% endif %}
+                    </div>
+                    {% if permisos_pendientes %}
+                        <div class="pending-card-footer">
+                            <button type="button" class="btn-view-pending" data-scroll-to="historial" data-tipo="permiso">
+                                Ver todas <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
 
-            <button class="btn btn-sm novedades-tab"
-                    data-filter="todas">
-                <i class="bi bi-grid me-1"></i>
-                Todas
-            </button>
+            <!-- Incapacidades -->
+            <div class="col-lg-4 col-md-6">
+                <div class="pending-category-card pending-incapacidades">
+                    <div class="pending-card-header">
+                        <div class="pending-icon"><i class="bi bi-heart-pulse"></i></div>
+                        <div>
+                            <h5 class="mb-0">Incapacidad</h5>
+                            <span>{{ incapacidades_pendientes|length }} pendiente{{ incapacidades_pendientes|length|pluralize }}</span>
+                        </div>
+                    </div>
+                    <div class="pending-card-body">
+                        {% if incapacidades_pendientes %}
+                            {% for i in incapacidades_pendientes|slice:":3" %}
+                                <div class="pending-item">
+                                    <div class="pending-item-icon"><i class="bi bi-file-medical"></i></div>
+                                    <div class="pending-item-info">
+                                        <strong>{{ i.titulo }}</strong>
+                                        <small>{{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <span class="pending-dot"></span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-pending"><i class="bi bi-check-circle"></i> <span>No tienes incapacidades pendientes.</span></div>
+                        {% endif %}
+                    </div>
+                    {% if incapacidades_pendientes %}
+                        <div class="pending-card-footer">
+                            <button type="button" class="btn-view-pending" data-scroll-to="historial" data-tipo="incapacidad">
+                                Ver todas <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
 
-            <button class="btn btn-sm novedades-tab"
-                    data-filter="pendiente">
-                <i class="bi bi-hourglass-split me-1"></i>
-                Pendientes
-            </button>
-
-            <button class="btn btn-sm novedades-tab"
-                    data-filter="aprobado">
-                <i class="bi bi-check-circle me-1"></i>
-                Aprobadas
-            </button>
-
-            <button class="btn btn-sm novedades-tab"
-                    data-filter="rechazado">
-                <i class="bi bi-x-circle me-1"></i>
-                Rechazadas
-            </button>
-
+            <!-- Certificados -->
+            <div class="col-lg-4 col-md-6">
+                <div class="pending-category-card pending-certificados">
+                    <div class="pending-card-header">
+                        <div class="pending-icon"><i class="bi bi-award"></i></div>
+                        <div>
+                            <h5 class="mb-0">Certificados</h5>
+                            <span>{{ certificados_pendientes|length }} pendiente{{ certificados_pendientes|length|pluralize }}</span>
+                        </div>
+                    </div>
+                    <div class="pending-card-body">
+                        {% if certificados_pendientes %}
+                            {% for c in certificados_pendientes|slice:":3" %}
+                                <div class="pending-item">
+                                    <div class="pending-item-icon"><i class="bi bi-file-earmark-check"></i></div>
+                                    <div class="pending-item-info">
+                                        <strong>{{ c.get_tipo_display }}</strong>
+                                        <small>Solicitado {{ c.fecha_solicitud|date:"d/m/Y" }}</small>
+                                    </div>
+                                    <span class="pending-dot"></span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-pending"><i class="bi bi-check-circle"></i> <span>No tienes certificados pendientes.</span></div>
+                        {% endif %}
+                    </div>
+                    {% if certificados_pendientes %}
+                        <div class="pending-card-footer">
+                            <button type="button" class="btn-view-pending" data-scroll-to="historial" data-tipo="certificado">
+                                Ver todas <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-
     </div>
 
-    <div id="solicitudesContainer">
-        {% if permisos or incapacidades or certificados %}
-            <!-- PERMISOS -->
-            {% for p in permisos %}
-                <div class="request-card
-                        {% if p.estado == 'aprobado' %}
-                            request-approved
-                        {% elif p.estado == 'rechazado' %}
-                            request-rejected
-                        {% else %}
-                            request-pending
-                        {% endif %}"
-                        data-estado="{{ p.estado }}">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap">
-                        <div>
-                            <h5 class="mb-1">Permiso</h5>
-                            <small class="text-muted">{{ p.get_tipo_display }} · {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
-                            <p class="mb-2 mt-2">{{ p.justificacion }}</p>
-                            <div class="small text-muted mt-2">Creada: {{ p.fecha_solicitud|date:"d/m/Y H:i" }}</div>
-                            {% if p.motivo_rechazo %}
-                                <div class="small text-danger mt-1"><i class="bi bi-chat-dots"></i> Rechazo: {{ p.motivo_rechazo }}</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <span class="badge {% if p.estado == 'pendiente' %}badge-pending{% elif p.estado == 'aprobado' %}badge-approved{% else %}badge-rejected{% endif %}">
-                                {{ p.get_estado_display }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+    <div class="col-12 mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h3>
+                <i class="bi bi-clock-history"></i>
+                Historial de solicitudes
+            </h3>
+        </div>
+    </div>
 
-            <!-- INCAPACIDADES -->
-            {% for i in incapacidades %}
-                <div class="request-card" data-estado="{{ i.estado }}">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap">
-                        <div>
-                            <h5 class="mb-1">Incapacidad</h5>
-                            <small class="text-muted">{{ i.titulo }} · {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</small>
-                            <p class="mb-2 mt-2">{{ i.descripcion }}</p>
-                            {% if i.archivo %}
-                                <span class="badge bg-light text-dark"><i class="bi bi-paperclip"></i> {{ i.archivo.name }}</span>
-                            {% endif %}
-                            <div class="small text-muted mt-2">Creada: {{ i.fecha_solicitud|date:"d/m/Y H:i" }}</div>
-                            {% if i.motivo_rechazo %}
-                                <div class="small text-danger mt-1"><i class="bi bi-chat-dots"></i> Rechazo: {{ i.motivo_rechazo }}</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <span class="badge {% if i.estado == 'pendiente' %}badge-pending{% elif i.estado == 'aprobado' %}badge-approved{% else %}badge-rejected{% endif %}">
-                                {{ i.get_estado_display }}
-                            </span>
-                        </div>
-                    </div>
+    <div class="historial-solicitudes" id="historial">
+        <div class="historial-filtros d-flex flex-column gap-3 mb-4">
+            <!-- Filtro por Tipo -->
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <span class="filtro-label mb-0">
+                    <i class="bi bi-filter"></i> Tipo:
+                </span>
+                <div class="novedades-tabs" id="tipoFiltroTabs">
+                    <button type="button" class="btn btn-sm novedades-tab active" data-tipo="permiso">
+                        <i class="bi bi-calendar-event me-1"></i> Permisos
+                    </button>
+                    <button type="button" class="btn btn-sm novedades-tab" data-tipo="incapacidad">
+                        <i class="bi bi-heart-pulse me-1"></i> Incapacidades
+                    </button>
+                    <button type="button" class="btn btn-sm novedades-tab" data-tipo="certificado">
+                        <i class="bi bi-award me-1"></i> Certificados
+                    </button>
                 </div>
-            {% endfor %}
+            </div>
 
-            <!-- CERTIFICADOS -->
-            {% for c in certificados %}
-                <div class="request-card" data-estado="{{ c.estado }}">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap">
-                        <div>
-                            <h5 class="mb-1">Certificado</h5>
-                            <small class="text-muted">{{ c.get_tipo_display }}</small>
-                            <p class="mb-2 mt-2">{{ c.proposito }}</p>
-                            <div class="small text-muted mt-2">Solicitado: {{ c.fecha_solicitud|date:"d/m/Y H:i" }}</div>
-                            {% if c.motivo_rechazo %}
-                                <div class="small text-danger mt-1"><i class="bi bi-chat-dots"></i> Rechazo: {{ c.motivo_rechazo }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="text-end">
-                            <span class="badge {% if c.estado == 'pendiente' %}badge-pending{% elif c.estado == 'aprobado' %}badge-approved{% else %}badge-rejected{% endif %}">
-                                {{ c.get_estado_display }}
-                            </span>
-                            {% if c.estado == 'aprobado' %}
-                                <br>
-                                <a href="{% url 'novedades:certificado_pdf' c.id %}" class="btn btn-sm btn-primary-corporate mt-2" target="_blank">
-                                    <i class="bi bi-download"></i> Descargar PDF
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
+            <!-- Filtro por Estado -->
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <span class="filtro-label mb-0">
+                    <i class="bi bi-clipboard-check"></i> Estado:
+                </span>
+                <div class="novedades-tabs" id="estadoFiltroTabs">
+                    <button type="button" class="btn btn-sm novedades-tab active" data-estado="todas">
+                        Todas
+                    </button>
+                    <button type="button" class="btn btn-sm novedades-tab" data-estado="aprobado">
+                        <i class="bi bi-check-circle me-1"></i> Aprobadas
+                    </button>
+                    <button type="button" class="btn btn-sm novedades-tab" data-estado="rechazado">
+                        <i class="bi bi-x-circle me-1"></i> Rechazadas
+                    </button>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="text-center text-muted py-4">No hay solicitudes.</div>
-        {% endif %}
+            </div>
+        </div>
+
+        <div id="solicitudesContainer">
+            {% if permisos_historial or incapacidades_historial or certificados_historial %}
+                <div class="solicitudes-lista d-flex flex-column gap-3">
+                    
+                    <!-- Permisos del Historial -->
+                    {% for p in permisos_historial %}
+                        <div class="request-card request-{{ p.estado|slugify }}" data-tipo="permiso" data-estado="{{ p.estado|slugify }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5>Permiso</h5>
+                                    <small class="text-muted">{{ p.get_tipo_solicitud_display|default:"Permiso general" }} · {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
+                                    <p class="mb-1">{{ p.motivo }}</p>
+                                    <small class="text-muted"><i class="bi bi-calendar"></i> Creada: {{ p.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <div class="request-side-info">
+                                    <span class="badge badge-{{ p.estado|slugify }}">{{ p.get_estado_display|default:p.estado }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Incapacidades del Historial -->
+                    {% for i in incapacidades_historial %}
+                        <div class="request-card request-{{ i.estado|slugify }}" data-tipo="incapacidad" data-estado="{{ i.estado|slugify }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5>Incapacidad</h5>
+                                    <small class="text-muted">{{ i.titulo|default:"Médica" }} · {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</small>
+                                    <p class="mb-1">{{ i.diagnostico }}</p>
+                                    <small class="text-muted"><i class="bi bi-calendar"></i> Creada: {{ i.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <div class="request-side-info">
+                                    <span class="badge badge-{{ i.estado|slugify }}">{{ i.get_estado_display|default:i.estado }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Certificados del Historial -->
+                    {% for c in certificados_historial %}
+                        <div class="request-card request-{{ c.estado|slugify }}" data-tipo="certificado" data-estado="{{ c.estado|slugify }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5>Certificado</h5>
+                                    <small class="text-muted">{{ c.get_tipo_display|default:"Laboral" }} · Solicitado el {{ c.fecha_solicitud|date:"d/m/Y" }}</small>
+                                    <p class="mb-1">{{ c.comentarios|default:"Solicitud de certificado corporativo" }}</p>
+                                    <small class="text-muted"><i class="bi bi-calendar"></i> Creada: {{ c.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <div class="request-side-info">
+                                    <span class="badge badge-{{ c.estado|slugify }}">{{ c.get_estado_display|default:c.estado }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            {% else %}
+                <div class="empty-history">
+                    <div class="empty-history-icon">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+                    <h5>Aún no tienes solicitudes con respuesta</h5>
+                    <p class="text-muted mb-0">Cuando una solicitud sea aprobada o rechazada, aparecerá aquí.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
     <footer>
@@ -203,7 +313,7 @@
     </footer>
 </main>
 
-<!-- ==================== MODAL: NUEVA SOLICITUD ==================== -->
+<!-- Modal: Nueva Solicitud -->
 <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
@@ -228,169 +338,14 @@
                         </div>
                     </div>
 
-                    <!-- ========= SECCIÓN PERMISO (Usado para Permiso, Cambio de turno, Vacaciones) ========= -->
-                    <div id="formPermiso" class="dynamic-form" style="display: none;">
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Tipo de permiso *</label>
-                                <select class="form-select" id="permisoTipo" name="permiso-tipo">
-                                    <option value="personal" {% if permiso_form.tipo.value == 'personal' %}selected{% endif %}>Personal</option>
-                                    <option value="medico" {% if permiso_form.tipo.value == 'medico' %}selected{% endif %}>Médico</option>
-                                    <option value="academico" {% if permiso_form.tipo.value == 'academico' %}selected{% endif %}>Académico</option>
-                                    <option value="calamidad" {% if permiso_form.tipo.value == 'calamidad' %}selected{% endif %}>Calamidad doméstica</option>
-                                    <option value="otro" {% if permiso_form.tipo.value == 'otro' %}selected{% endif %}>Otro</option>
-                                </select>
-                                {% if permiso_form.tipo.errors %}
-                                    <div class="text-danger small">{{ permiso_form.tipo.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Fecha inicio *</label>
-                                <input type="date" class="form-control" id="permisoFechaInicio" name="permiso-fecha_inicio" value="{{ permiso_form.fecha_inicio.value|default:'' }}">
-                                {% if permiso_form.fecha_inicio.errors %}
-                                    <div class="text-danger small">{{ permiso_form.fecha_inicio.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Fecha fin *</label>
-                                <input type="date" class="form-control" id="permisoFechaFin" name="permiso-fecha_fin" value="{{ permiso_form.fecha_fin.value|default:'' }}">
-                                {% if permiso_form.fecha_fin.errors %}
-                                    <div class="text-danger small">{{ permiso_form.fecha_fin.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <!-- Nuevo horario (solo para cambio de turno) -->
-                            <div class="col-md-6" id="nuevoHorarioGroup" style="display: none;">
-                                <label class="form-label">Nuevo horario *</label>
-                                <select class="form-select" id="cambioTurnoSolicitado" name="permiso-nuevo_horario">
-                                    <option value="Mañana" {% if permiso_form.nuevo_horario.value == 'Mañana' %}selected{% endif %}>Mañana (6:00 - 14:00)</option>
-                                    <option value="Tarde" {% if permiso_form.nuevo_horario.value == 'Tarde' %}selected{% endif %}>Tarde (14:00 - 22:00)</option>
-                                    <option value="Noche" {% if permiso_form.nuevo_horario.value == 'Noche' %}selected{% endif %}>Noche (22:00 - 6:00)</option>
-                                </select>
-                                {% if permiso_form.nuevo_horario.errors %}
-                                    <div class="text-danger small">{{ permiso_form.nuevo_horario.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Motivo</label>
-                                <textarea class="form-control" rows="2" id="permisoMotivo" name="permiso-justificacion" placeholder="Explique el motivo del permiso">{{ permiso_form.justificacion.value|default:'' }}</textarea>
-                                {% if permiso_form.justificacion.errors %}
-                                    <div class="text-danger small">{{ permiso_form.justificacion.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                    {% include 'empleado/solicitudes/permisos/modal.html' %}
+                    {% include 'empleado/solicitudes/incapacidades/modal.html' %}
+                    {% include 'empleado/solicitudes/certificados/modal.html' %}
 
-                    <!-- ========= SECCIÓN INCAPACIDAD ========= -->
-                    <div id="formIncapacidad" class="dynamic-form" style="display: none;">
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Título *</label>
-                                <input type="text" class="form-control" id="incapacidadTitulo" name="incapacidad-titulo" placeholder="Ej. Incapacidad por cirugía" value="{{ incapacidad_form.titulo.value|default:'' }}">
-                                {% if incapacidad_form.titulo.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.titulo.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Fecha inicio *</label>
-                                <input type="date" class="form-control" id="incapacidadFechaInicio" name="incapacidad-fecha_inicio" value="{{ incapacidad_form.fecha_inicio.value|default:'' }}">
-                                {% if incapacidad_form.fecha_inicio.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.fecha_inicio.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Fecha fin *</label>
-                                <input type="date" class="form-control" id="incapacidadFechaFin" name="incapacidad-fecha_fin" value="{{ incapacidad_form.fecha_fin.value|default:'' }}">
-                                {% if incapacidad_form.fecha_fin.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.fecha_fin.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Días</label>
-                                <input type="text" class="form-control" id="incapacidadDias" readonly>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Entidad emisora *</label>
-                                <input type="text" class="form-control" id="incapacidadEntidad" name="incapacidad-entidad_emisora" placeholder="EPS o clínica" value="{{ incapacidad_form.entidad_emisora.value|default:'' }}">
-                                {% if incapacidad_form.entidad_emisora.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.entidad_emisora.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Número de incapacidad *</label>
-                                <input type="text" class="form-control" id="incapacidadNumero" name="incapacidad-numero_incapacidad" placeholder="Número de certificado" value="{{ incapacidad_form.numero_incapacidad.value|default:'' }}">
-                                {% if incapacidad_form.numero_incapacidad.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.numero_incapacidad.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Observaciones</label>
-                                <textarea class="form-control" rows="2" id="incapacidadObservaciones" name="incapacidad-descripcion" placeholder="Detalles adicionales">{{ incapacidad_form.descripcion.value|default:'' }}</textarea>
-                                {% if incapacidad_form.descripcion.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.descripcion.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Adjuntar soporte (obligatorio) *</label>
-                                <input type="file" class="form-control" id="incapacidadAdjunto" name="incapacidad-archivo" accept=".pdf,.jpg,.png,.jpeg">
-                                <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB). Obligatorio para incapacidades.</small>
-                                {% if incapacidad_form.archivo.errors %}
-                                    <div class="text-danger small">{{ incapacidad_form.archivo.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ========= SECCIÓN CERTIFICADO ========= -->
-                    <div id="formCertificado" class="dynamic-form" style="display: none;">
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <label class="form-label">Tipo de certificado *</label>
-                                <select class="form-select" id="certificadoTipo" name="certificado-tipo">
-                                    <option value="laboral" {% if certificado_form.tipo.value == 'laboral' %}selected{% endif %}>Certificado laboral</option>
-                                    <option value="ingresos" {% if certificado_form.tipo.value == 'ingresos' %}selected{% endif %}>Certificado de ingresos</option>
-                                    <option value="antiguedad" {% if certificado_form.tipo.value == 'antiguedad' %}selected{% endif %}>Certificado de antigüedad</option>
-                                </select>
-                                {% if certificado_form.tipo.errors %}
-                                    <div class="text-danger small">{{ certificado_form.tipo.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Dirigido a *</label>
-                                <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" placeholder="Nombre de la entidad o persona" value="{{ certificado_form.dirigido_a.value|default:'' }}">
-                                {% if certificado_form.dirigido_a.errors %}
-                                    <div class="text-danger small">{{ certificado_form.dirigido_a.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12" id="certificadoFinalidadGroup" style="display: none;">
-                                <label class="form-label">Finalidad (opcional)</label>
-                                <input type="text" class="form-control" id="certificadoFinalidad" name="certificado-proposito" placeholder="Ej: trámite bancario, estudios" value="{{ certificado_form.proposito.value|default:'' }}">
-                                {% if certificado_form.proposito.errors %}
-                                    <div class="text-danger small">{{ certificado_form.proposito.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-12" id="certificadoPeriodoGroup" style="display: none;">
-                                <label class="form-label">Periodo solicitado</label>
-                                <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" placeholder="Ej: Enero 2025 - Marzo 2025" value="{{ certificado_form.periodo.value|default:'' }}">
-                                {% if certificado_form.periodo.errors %}
-                                    <div class="text-danger small">{{ certificado_form.periodo.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Mostrar errores no relacionados con campos -->
-                    {% if permiso_form.non_field_errors %}
+                    {% if permiso_form.non_field_errors or incapacidad_form.non_field_errors or certificado_form.non_field_errors %}
                         <div class="alert alert-danger mt-3">
                             {{ permiso_form.non_field_errors }}
-                        </div>
-                    {% endif %}
-                    {% if incapacidad_form.non_field_errors %}
-                        <div class="alert alert-danger mt-3">
                             {{ incapacidad_form.non_field_errors }}
-                        </div>
-                    {% endif %}
-                    {% if certificado_form.non_field_errors %}
-                        <div class="alert alert-danger mt-3">
                             {{ certificado_form.non_field_errors }}
                         </div>
                     {% endif %}
@@ -404,22 +359,12 @@
         </div>
     </div>
 </div>
-
-<!-- Toast para notificaciones (opcional) -->
-<div class="toast-message" id="liveToast" style="display: none;">
-    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
-        <div class="d-flex gap-2 align-items-center">
-            <i class="bi bi-info-circle-fill text-danger fs-5"></i>
-            <span id="toastMsg">Mensaje</span>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'js/empleado/solicitudes.js' %}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         {% if permiso_form.errors or incapacidad_form.errors or certificado_form.errors %}
             var modalSolicitudElement = document.getElementById('modalSolicitud');
             if (modalSolicitudElement) {

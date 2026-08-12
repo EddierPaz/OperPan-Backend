@@ -33,84 +33,306 @@ from apps.usuarios.decorators import empleado_required
 def solicitudes_empleado(request):
     """
     Vista principal del empleado para gestionar sus solicitudes.
-    Maneja GET (muestra el formulario y el listado) y POST (crea una nueva solicitud).
+    Las solicitudes pendientes se muestran separadas del historial.
     """
+
     perfil = request.user.perfil
 
-    permisos = Permiso.objects.filter(empleado=perfil).order_by('-fecha_solicitud')
-    incapacidades = Incapacidad.objects.filter(empleado=perfil).order_by('-fecha_solicitud')
-    certificados = Certificado.objects.filter(empleado=perfil).order_by('-fecha_emision')
+    # ============================================================
+    # SOLICITUDES DEL EMPLEADO
+    # ============================================================
+
+    permisos = Permiso.objects.filter(
+        empleado=perfil
+    ).order_by('-fecha_solicitud')
+
+    incapacidades = Incapacidad.objects.filter(
+        empleado=perfil
+    ).order_by('-fecha_solicitud')
+
+    certificados = Certificado.objects.filter(
+        empleado=perfil
+    ).order_by('-fecha_solicitud')
+
+    # ============================================================
+    # PENDIENTES
+    # Se utilizarán en las tarjetas superiores
+    # ============================================================
+
+    permisos_pendientes = permisos.filter(
+        estado='pendiente'
+    )
+
+    incapacidades_pendientes = incapacidades.filter(
+        estado='pendiente'
+    )
+
+    certificados_pendientes = certificados.filter(
+        estado='pendiente'
+    )
+
+    # ============================================================
+    # HISTORIAL
+    # Solo solicitudes que ya tuvieron una respuesta
+    # ============================================================
+
+    permisos_historial = permisos.filter(
+        estado__in=['aprobado', 'rechazado']
+    )
+
+    incapacidades_historial = incapacidades.filter(
+        estado__in=['aprobado', 'rechazado']
+    )
+
+    certificados_historial = certificados.filter(
+        estado__in=['aprobado', 'rechazado']
+    )
+
+    # ============================================================
+    # KPIs
+    # ============================================================
+
+    total_solicitudes = (
+        permisos.count()
+        + incapacidades.count()
+        + certificados.count()
+    )
+
+    total_pendientes = (
+        permisos_pendientes.count()
+        + incapacidades_pendientes.count()
+        + certificados_pendientes.count()
+    )
+
+    total_respondidas = (
+        permisos_historial.count()
+        + incapacidades_historial.count()
+        + certificados_historial.count()
+    )
+
+    # ============================================================
+    # FORMULARIOS
+    # ============================================================
 
     permiso_form = PermisoCrearForm(prefix='permiso')
     incapacidad_form = IncapacidadCrearForm(prefix='incapacidad')
     certificado_form = CertificadoCrearForm(prefix='certificado')
 
+    # ============================================================
+    # PROCESAMIENTO DEL FORMULARIO
+    # ============================================================
+
     if request.method == 'POST':
+
         tipo_solicitud = request.POST.get('tipo_solicitud')
 
+        # --------------------------------------------------------
+        # PERMISO
+        # --------------------------------------------------------
+
         if tipo_solicitud == 'permiso':
-            permiso_form = PermisoCrearForm(request.POST, prefix='permiso')
+
+            permiso_form = PermisoCrearForm(
+                request.POST,
+                request.FILES,
+                prefix='permiso'
+            )
+
             if permiso_form.is_valid():
+
                 permiso = permiso_form.save(commit=False)
                 permiso.empleado = perfil
                 permiso.save()
-                messages.success(request, '✅ Permiso creado correctamente.')
+
+                messages.success(
+                    request,
+                    '✅ Permiso creado correctamente.'
+                )
+
                 return redirect('novedades:solicitudes_empleado')
 
+        # --------------------------------------------------------
+        # INCAPACIDAD
+        # --------------------------------------------------------
+
         elif tipo_solicitud == 'incapacidad':
-            incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad')
+
+            incapacidad_form = IncapacidadCrearForm(
+                request.POST,
+                request.FILES,
+                prefix='incapacidad'
+            )
+
             if incapacidad_form.is_valid():
+
                 incapacidad = incapacidad_form.save(commit=False)
                 incapacidad.empleado = perfil
                 incapacidad.save()
-                messages.success(request, '✅ Incapacidad creada correctamente.')
+
+                messages.success(
+                    request,
+                    '✅ Incapacidad creada correctamente.'
+                )
+
                 return redirect('novedades:solicitudes_empleado')
 
+        # --------------------------------------------------------
+        # CERTIFICADO
+        # --------------------------------------------------------
+
         elif tipo_solicitud == 'certificado':
-            certificado_form = CertificadoCrearForm(request.POST, prefix='certificado')
+
+            certificado_form = CertificadoCrearForm(
+                request.POST,
+                request.FILES,
+                prefix='certificado'
+            )
+
             if certificado_form.is_valid():
+
                 certificado = certificado_form.save(commit=False)
                 certificado.empleado = perfil
                 certificado.save()
-                messages.success(request, '✅ Certificado creado correctamente.')
+
+                messages.success(
+                    request,
+                    '✅ Certificado creado correctamente.'
+                )
+
                 return redirect('novedades:solicitudes_empleado')
+
+        # --------------------------------------------------------
+        # CAMBIO DE TURNO / VACACIONES
+        # Ambos utilizan el formulario de permisos
+        # --------------------------------------------------------
 
         elif tipo_solicitud in ('cambio_turno', 'vacaciones'):
-            permiso_form = PermisoCrearForm(request.POST, prefix='permiso')
+
+            permiso_form = PermisoCrearForm(
+                request.POST,
+                request.FILES,
+                prefix='permiso'
+            )
+
             if permiso_form.is_valid():
+
                 permiso = permiso_form.save(commit=False)
+
                 permiso.empleado = perfil
-                permiso.tipo = 'cambio_turno' if tipo_solicitud == 'cambio_turno' else 'vacaciones'
+
+                permiso.tipo = (
+                    'cambio_turno'
+                    if tipo_solicitud == 'cambio_turno'
+                    else 'vacaciones'
+                )
+
                 permiso.save()
-                messages.success(request, f'✅ Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.')
+
+                messages.success(
+                    request,
+                    f'✅ Solicitud de '
+                    f'{tipo_solicitud.replace("_", " ")} '
+                    f'creada correctamente.'
+                )
+
                 return redirect('novedades:solicitudes_empleado')
 
+        # --------------------------------------------------------
+        # TIPO NO VÁLIDO
+        # --------------------------------------------------------
+
         else:
-            messages.error(request, '❌ Tipo de solicitud no válido.')
+
+            messages.error(
+                request,
+                '❌ Tipo de solicitud no válido.'
+            )
+
             return redirect('novedades:solicitudes_empleado')
+
+        # ========================================================
+        # SI EL FORMULARIO TIENE ERRORES
+        # ========================================================
 
         context = {
             "fecha_hoy": timezone.localdate(),
-            'permisos': permisos,
-            'incapacidades': incapacidades,
-            'certificados': certificados,
-            'permiso_form': permiso_form,
-            'incapacidad_form': incapacidad_form,
-            'certificado_form': certificado_form,
+
+            # Solicitudes generales
+            "permisos": permisos,
+            "incapacidades": incapacidades,
+            "certificados": certificados,
+
+            # Pendientes
+            "permisos_pendientes": permisos_pendientes,
+            "incapacidades_pendientes": incapacidades_pendientes,
+            "certificados_pendientes": certificados_pendientes,
+
+            # Historial
+            "permisos_historial": permisos_historial,
+            "incapacidades_historial": incapacidades_historial,
+            "certificados_historial": certificados_historial,
+
+            #kpis
+            "total_solicitudes": total_solicitudes,
+            "total_pendientes": total_pendientes,
+            "total_respondidas": total_respondidas,
+
+            # Formularios
+            "permiso_form": permiso_form,
+            "incapacidad_form": incapacidad_form,
+            "certificado_form": certificado_form,
         }
-        messages.error(request, '❌ Por favor, corrige los errores en el formulario.')
-        return render(request, 'empleado/solicitudes/solicitudes.html', context)
+
+        messages.error(
+            request,
+            '❌ Por favor, corrige los errores en el formulario.'
+        )
+
+        return render(
+            request,
+            'empleado/solicitudes/solicitudes.html',
+            context
+        )
+
+    # ============================================================
+    # GET NORMAL
+    # ============================================================
 
     context = {
         "fecha_hoy": timezone.localdate(),
-        'permisos': permisos,
-        'incapacidades': incapacidades,
-        'certificados': certificados,
-        'permiso_form': permiso_form,
-        'incapacidad_form': incapacidad_form,
-        'certificado_form': certificado_form,
+
+        # Solicitudes generales
+        "permisos": permisos,
+        "incapacidades": incapacidades,
+        "certificados": certificados,
+
+        # Pendientes
+        "permisos_pendientes": permisos_pendientes,
+        "incapacidades_pendientes": incapacidades_pendientes,
+        "certificados_pendientes": certificados_pendientes,
+
+        # Historial
+        "permisos_historial": permisos_historial,
+        "incapacidades_historial": incapacidades_historial,
+        "certificados_historial": certificados_historial,
+
+        #kpis
+        "total_solicitudes": total_solicitudes,
+        "total_pendientes": total_pendientes,
+        "total_respondidas": total_respondidas,
+
+
+        # Formularios
+        "permiso_form": permiso_form,
+        "incapacidad_form": incapacidad_form,
+        "certificado_form": certificado_form,
     }
-    return render(request, 'empleado/solicitudes/solicitudes.html', context)
+
+    return render(
+        request,
+        'empleado/solicitudes/solicitudes.html',
+        context
+    )
 
 
 # ============================================================
