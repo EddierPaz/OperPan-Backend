@@ -37,16 +37,33 @@ body {
   background-color: #8a0605;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   color: #000000;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2.0rem; }
-h3 { font-size: 1.5rem; }
+h1 {
+  font-size: 2.5rem;
+}
 
-p, span, a, li, button {
+h2 {
+  font-size: 2.0rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+p,
+span,
+a,
+li,
+button {
   font-size: 1rem;
 }
 
@@ -317,6 +334,7 @@ p, span, a, li, button {
   background: #A40706;
   color: #ffffff;
 }
+
 .btn-action-view:hover {
   background: #870504;
   color: #ffffff;
@@ -327,6 +345,7 @@ p, span, a, li, button {
   background: #198754;
   color: #ffffff;
 }
+
 .btn-action-approve:hover {
   background: #157347;
   color: #ffffff;
@@ -337,6 +356,7 @@ p, span, a, li, button {
   background: #DC3545;
   color: #ffffff;
 }
+
 .btn-action-reject:hover {
   background: #BB2D3B;
   color: #ffffff;
@@ -347,6 +367,7 @@ p, span, a, li, button {
   background: #0284C7;
   color: #ffffff;
 }
+
 .btn-action-edit:hover {
   background: #0369A1;
   color: #ffffff;
@@ -357,6 +378,7 @@ p, span, a, li, button {
   background: #EF4444;
   color: #ffffff;
 }
+
 .btn-action-delete:hover {
   background: #B91C1C;
   color: #ffffff;
@@ -367,6 +389,7 @@ p, span, a, li, button {
   background: #0D9488;
   color: #ffffff;
 }
+
 .btn-action-download:hover {
   background: #0F766E;
   color: #ffffff;
@@ -465,7 +488,7 @@ p, span, a, li, button {
 
 .card-header {
   background: transparent;
-  padding: 1.2rem 1.5rem;
+  padding: 1.2rem 0rem;
   font-weight: 700;
 }
 
@@ -537,6 +560,16 @@ p, span, a, li, button {
 .badge-active {
   background: #E0F2E9;
   color: #1E7B48;
+}
+
+.badge-pendiente {
+  background: #FFF3E0;
+  color: #C77A00;
+}
+
+.badge-rechazado {
+  background: #FEE2E2;
+  color: #B91C1C;
 }
 
 /* ============================================================

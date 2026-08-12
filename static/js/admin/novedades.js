@@ -163,12 +163,12 @@ function debounce(fn, delay = 300) {
 
                 tbody.innerHTML = historial.map(p => {
                     const estadoVal = (p.estado || 'Pendiente').toString().trim().toLowerCase();
-                    let badge = '<span class="badge bg-warning text-dark">Pendiente</span>';
+                    let badge = '<span class="badge badge-pendiente">Pendiente</span>';
                     
                     if (estadoVal === 'aprobado' || estadoVal === 'aprobada') {
-                        badge = '<span class="badge bg-success">Aprobado</span>';
+                        badge = '<span class="badge badge-active">Aprobado</span>';
                     } else if (estadoVal === 'rechazado' || estadoVal === 'rechazada') {
-                        badge = '<span class="badge bg-danger">Rechazado</span>';
+                        badge = '<span class="badge badge-rechazado">Rechazado</span>';
                     }
 
                     return `<tr>
@@ -460,12 +460,12 @@ function debounce(fn, delay = 300) {
 
                 tbody.innerHTML = historial.map(i => {
                     const estadoVal = (i.estado || 'Pendiente').toString().trim().toLowerCase();
-                    let badge = '<span class="badge bg-warning text-dark">Pendiente</span>';
+                    let badge = '<span class="badge badge-pendiente">Pendiente</span>';
 
                     if (estadoVal === 'aprobado' || estadoVal === 'aprobada') {
-                        badge = '<span class="badge bg-success">Aprobado</span>';
+                        badge = '<span class="badge badge-active">Aprobado</span>';
                     } else if (estadoVal === 'rechazado' || estadoVal === 'rechazada') {
-                        badge = '<span class="badge bg-danger">Rechazado</span>';
+                        badge = '<span class="badge badge-rechazado">Rechazado</span>';
                     }
 
                     return `<tr>
@@ -712,11 +712,11 @@ function debounce(fn, delay = 300) {
                     const tipo = certificado.tipo || '—';
                     const estadoVal = (certificado.estado || 'Pendiente').toString().trim().toLowerCase();
 
-                    let badgeEstado = '<span class="badge bg-warning text-dark">Pendiente</span>';
+                    let badgeEstado = '<span class="badge badge-pendiente">Pendiente</span>';
                     if (estadoVal === 'aprobado' || estadoVal === 'aprobada') {
-                        badgeEstado = `<span class="badge bg-success">Aprobado</span>`;
+                        badgeEstado = `<span class="badge badge-active">Aprobado</span>`;
                     } else if (estadoVal === 'rechazado' || estadoVal === 'rechazada') {
-                        badgeEstado = `<span class="badge bg-danger">Rechazado</span>`;
+                        badgeEstado = `<span class="badge badge-rechazado">Rechazado</span>`;
                     }
 
                     const fechaMostrar = (estadoVal === 'aprobado' || estadoVal === 'aprobada')
@@ -1031,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (sinResultados) sinResultados.classList.add('d-none');
 
         tbody.innerHTML = data.map(m => {
-            const tipoBadge = `<span class="badge badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
+            const tipoBadge = `<span class="badge text-dark badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
             const btnDescarga = m.archivo_pdf
                 ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF">
                     <i class="bi bi-download"></i>
