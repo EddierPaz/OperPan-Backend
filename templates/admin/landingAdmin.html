@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block title %}OperPan | Dashboard{% endblock %}
-{% block section_title %}Bienvenido a Estación Paisa{% endblock %}
-{% block section_subtitle %}Panel de Administración{% endblock %}
+{% block section_title %}Panel de Administración{% endblock %}
+{% block section_subtitle %}Centro de Operaciones{% endblock %}
 {% block active_inicio %}active{% endblock %}
 
 {% block extra_css %}
@@ -11,120 +11,291 @@
 {% endblock %}
 
 {% block content %}
-<main class="dashboard-container">
-  <!-- Tarjeta de bienvenida -->
-  <div class="welcome-card">
-    <div class="row align-items-center g-3">
-      <div class="col">
-        <h2 class="mb-1 text-white">
-          ¡Bienvenido, {{ perfil.primer_nombre }} {{ perfil.primer_apellido }}!
-        </h2>
-        <p class="mb-0">Hoy es <strong id="fechaActual"></strong></p>
-      </div>
+<div class="dashboard-container">
+
+  <!-- Tarjeta de bienvenida con botón refrescar -->
+  <div class="welcome-card d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="mb-1 text-white">
+        ¡Bienvenido, {{ perfil.primer_nombre }} {{ perfil.primer_apellido }}!
+      </h2>
+      <p class="mb-0 text-white-50">Hoy es <strong id="fechaActual"></strong></p>
     </div>
+    <button class="btn btn-light btn-sm" onclick="location.reload();">
+      <i class="bi bi-arrow-clockwise"></i> Refrescar
+    </button>
   </div>
 
-  <!-- KPIs (datos reales desde localStorage) -->
+  <!-- KPIs principales -->
   <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6">
       <div class="stat-card d-flex justify-content-between align-items-center">
         <div>
-          <span class="text-muted">Empleados en turno hoy</span>
-          <h3 class="mt-1">{{ resumen_asistencia.programados }}</h3>
+          <span class="text-muted">Empleados activos</span>
+          <h3 class="mt-1">{{ total_empleados_activos }}</h3>
         </div>
-        <div class="icono-circular">
-          <i class="bi bi-people-fill fs-2 text-primary"></i>
+        <i class="bi bi-people-fill fs-2" style="color:#A40706;"></i>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Asistencia hoy</span>
+          <h3 class="mt-1">{{ resumen_asistencia.presentes }} / {{ resumen_asistencia.programados }}</h3>
+          <small class="text-muted">{{ resumen_asistencia.ausentes }} ausentes</small>
+        </div>
+        <i class="bi bi-calendar-check fs-2" style="color:#A40706;"></i>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Tareas pendientes</span>
+          <h3 class="mt-1">{{ kpis_tareas.pendientes }}</h3>
+          <small class="text-muted">{{ kpis_tareas.vencidas }} vencidas</small>
+        </div>
+        <i class="bi bi-list-check fs-2" style="color:#A40706;"></i>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex justify-content-between align-items-center">
+        <div>
+          <span class="text-muted">Solicitudes pendientes</span>
+          <h3 class="mt-1">{{ total_solicitudes_pendientes }}</h3>
+          <small class="text-muted">
+            Permisos {{ permisos_pendientes }} · Incap. {{ incapacidades_pendientes }} · Cert. {{ certificados_pendientes }}
+          </small>
+        </div>
+        <i class="bi bi-envelope-paper fs-2" style="color:#A40706;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIMERA FILA: Asistencia + Tareas + Novedades (3 columnas en desktop) -->
+  <div class="row g-3 mb-4 fila-principal">
+    <!-- Asistencia -->
+    <div class="col-lg-4 col-md-6">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-clock-history me-2" style="color:#A40706;"></i> Asistencia del día</span>
+          <a href="{% url 'asistencia:horarios' %}" class="btn-ver-todo">
+            Ver todo <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tablaAsistencia">
+              {% for item in lista_asistencia %}
+                <tr class="asistencia-item {% if forloop.counter > 8 %}d-none{% endif %}">
+                  <td>
+                    <a href="{% url 'asistencia:horarios' %}" class="text-decoration-none">
+                      {{ item.empleado.nombre_completo }}
+                    </a>
+                  </td>
+                  <td>
+                    <span class="badge {{ badge_asistencia_color }}">{{ estado_asistencia_label }}</span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="2" class="text-muted">Todos los empleados han llegado puntualmente.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if ausentes_hoy|length > 8 %}
+          <button class="btn-ver-mas" id="btnVerMasAsistencia" data-visible="8" data-total="{{ ausentes_hoy|length }}">
+            Ver más <i class="bi bi-chevron-down"></i>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tareas -->
+    <div class="col-lg-4 col-md-6">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-list-task me-2" style="color:#A40706;"></i> Tareas pendientes</span>
+          <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-ver-todo">
+            Ver todo <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        <ul class="list-group list-group-flush" id="listaTareas">
+          {% for tarea in tareas_pendientes_mostrar %}
+            <li class="list-group-item d-flex justify-content-between align-items-center tarea-item {% if forloop.counter > 8 %}d-none{% endif %}">
+              <div>
+                <span class="badge 
+                  {% if tarea.prioridad == 'ALTA' %}bg-danger
+                  {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
+                  {% else %}bg-secondary{% endif %} me-1">
+                  {{ tarea.get_prioridad_display }}
+                </span>
+                <a href="{% url 'tareas:admin_tarea_edit' tarea.id %}" class="text-decoration-none">
+                  {{ tarea.titulo }}
+                </a>
+                <br>
+                <small class="text-muted">
+                  {{ tarea.empleado.nombre_completo }} · 
+                  {% if tarea.fecha_limite < today %}
+                    <span class="text-danger">Vencida: {{ tarea.fecha_limite|date:"d/m/Y" }}</span>
+                  {% else %}
+                    Límite: {{ tarea.fecha_limite|date:"d/m/Y" }}
+                  {% endif %}
+                </small>
+              </div>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted">No hay tareas pendientes.</li>
+          {% endfor %}
+        </ul>
+        {% if tareas_pendientes_mostrar|length > 8 %}
+          <button class="btn-ver-mas" id="btnVerMasTareas" data-visible="8" data-total="{{ tareas_pendientes_mostrar|length }}">
+            Ver más <i class="bi bi-chevron-down"></i>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Novedades -->
+    <div class="col-lg-4 col-md-12">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Novedades pendientes</span>
+          <a href="{% url 'novedades:novedades_admin' %}" class="btn-ver-todo">
+            Ver todo <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        <ul class="list-group list-group-flush" id="listaNovedades">
+          {% for item in novedades_pendientes_mostrar %}
+            <li class="list-group-item d-flex justify-content-between align-items-center novedad-item {% if forloop.counter > 8 %}d-none{% endif %}">
+              <div>
+                <i class="bi 
+                  {% if item.tipo == 'permiso' %}bi-file-earmark-text text-primary
+                  {% elif item.tipo == 'incapacidad' %}bi-heart-pulse text-danger
+                  {% else %}bi-award text-success{% endif %} me-1">
+                </i>
+                <a href="{{ item.url }}" class="text-decoration-none">
+                  {{ item.empleado.nombre_completo }}
+                </a>
+                <br>
+                <small class="text-muted">
+                  {{ item.detalle }} · {{ item.fecha|date:"d/m/Y" }}
+                </small>
+              </div>
+              <span class="badge bg-warning text-dark">Pendiente</span>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted">No hay novedades pendientes.</li>
+          {% endfor %}
+        </ul>
+        {% if novedades_pendientes_mostrar|length > 8 %}
+          <button class="btn-ver-mas" id="btnVerMasNovedades" data-visible="8" data-total="{{ novedades_pendientes_mostrar|length }}">
+            Ver más <i class="bi bi-chevron-down"></i>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- SEGUNDA FILA: Gráficas (3 columnas en desktop, 2 en tablet, 1 en móvil) -->
+  <div class="row g-3 mb-4 fila-graficas">
+    <div class="col-lg-4 col-md-6">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-graph-up-arrow me-2" style="color:#A40706;"></i> Estado de tareas</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="chartTareas" width="200" height="180"></canvas>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="stat-card d-flex justify-content-between align-items-center">
-        <div><span class="text-muted">Tareas operativas pendientes</span>
-          <h3 class="mt-1" id="tareasPendientes">0</h3>
+    <div class="col-lg-4 col-md-6">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-graph-up-arrow me-2" style="color:#A40706;"></i> Asistencia hoy</span>
         </div>
-        <div class="icono-circular">
-          <i class="bi bi-gear-wide-connected fs-2" style="color:#e7af07;"></i>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card d-flex justify-content-between align-items-center">
-        <div><span class="text-muted">Solicitudes por revisar</span>
-          <h3 class="mt-1" id="permisosPendientes">0</h3>
-        </div>
-        <div class="icono-circular">
-          <i class="bi bi-file-earmark-check fs-2" style="color:#e7af07;"></i>
+        <div class="chart-container">
+          <canvas id="chartAsistencia" width="200" height="180"></canvas>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="stat-card d-flex justify-content-between align-items-center">
-        <div><span class="text-muted">Novedades sin leer</span>
-          <h3 class="mt-1" id="reportesPendientes">0</h3>
+    <div class="col-lg-4 col-md-12">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-graph-up-arrow me-2" style="color:#A40706;"></i> Novedades pendientes</span>
         </div>
-        <div class="icono-circular">
-          <i class="bi bi-envelope-paper fs-2" style="color:#A40706;"></i>
+        <div class="chart-container">
+          <canvas id="chartNovedades" width="200" height="180"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Actividad reciente (recordatorios del sistema) -->
+  <!-- Feed de actividad (al final) -->
   <div class="row">
-    <div class="col-md-6">
-      <h4><i class="bi bi-bell-fill me-2"></i> Notificaciones recientes</h4>
-      <div class="reminder-card">
-        <i class="bi bi-calendar-check text-danger me-2"></i>
-        <strong>Nuevas solicitudes de permiso:</strong> 2 solicitudes pendientes de revisión.
-      </div>
-      <div class="reminder-card">
-        <i class="bi bi-chat-dots text-danger me-2"></i>
-        <strong>Reportes sin leer:</strong> 1 nuevo reporte de incidente en producción.
-      </div>
-      <div class="reminder-card">
-        <i class="bi bi-file-text text-danger me-2"></i>
-        <strong>Certificados solicitados:</strong> 3 empleados han solicitado certificados esta semana.
-      </div>
-    </div>
-    <div class="col-md-6">
-      <h4><i class="bi bi-calendar-week me-2"></i> Próximas acciones</h4>
-      <div class="table-responsive">
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Acción</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Hoy</td>
-              <td>Revisar incapacidades pendientes</td>
-              <td><span class="badge bg-warning">Pendiente</span></td>
-            </tr>
-            <tr>
-              <td>Mañana</td>
-              <td>Generar reporte mensual de asistencia</td>
-              <td><span class="badge bg-secondary">Programado</span></td>
-            </tr>
-            <tr>
-              <td>15/04</td>
-              <td>Reunión de personal</td>
-              <td><span class="badge bg-info">Recordatorio</span></td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="col-12">
+      <div class="card-block">
+        <div class="card-title">
+          <span><i class="bi bi-clock me-2" style="color:#A40706;"></i> Actividad reciente</span>
+        </div>
+        {% if actividad_reciente %}
+          <div class="actividad-feed">
+            {% for item in actividad_reciente %}
+            <div class="actividad-item d-flex align-items-start border-bottom py-2">
+              <div class="actividad-icon me-2">
+                {% if item.tipo == 'permiso' %}
+                  <i class="bi bi-file-earmark-text text-primary"></i>
+                {% elif item.tipo == 'incapacidad' %}
+                  <i class="bi bi-heart-pulse text-danger"></i>
+                {% elif item.tipo == 'certificado' %}
+                  <i class="bi bi-award text-success"></i>
+                {% else %}
+                  <i class="bi bi-check2-square text-info"></i>
+                {% endif %}
+              </div>
+              <div class="flex-grow-1">
+                <div>
+                  <strong>{{ item.empleado }}</strong>
+                  <span class="text-muted">–</span>
+                  <a href="{{ item.url }}" class="text-decoration-none">
+                    {{ item.detalle }}
+                  </a>
+                </div>
+                <small class="text-muted">
+                  {{ item.fecha|date:"d/m/Y H:i" }}
+                  <span class="badge bg-light text-dark ms-2">{{ item.estado }}</span>
+                </small>
+              </div>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted">No hay actividad reciente.</p>
+        {% endif %}
       </div>
     </div>
   </div>
 
-  <footer>
+  <!-- Footer -->
+  <footer class="mt-4 pt-3 border-top text-center text-muted">
     <i class="bi bi-shield-check"></i> Sistema de gestión de personal - OperPan &copy; 2025
   </footer>
-</main>
+
 </div>
-</div>
+
+<!-- Variables para Chart.js (datos desde el backend) -->
+<script>
+  window.asistenciaChartData = {{ asistencia_chart_data|safe }};
+  window.tareasChartData = {{ tareas_chart_data|safe }};
+  window.novedadesChartData = {{ novedades_chart_data|safe }};
+</script>
 
 <!-- Toast -->
 <div class="toast-message" id="liveToast" style="display: none;">
@@ -137,6 +308,13 @@
 </div>
 
 {% endblock %}
+
 {% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/admin/dashboard.js' %}"></script>
 {% endblock %}
+
+<!-- ojito -->
+
+<!--  -->
