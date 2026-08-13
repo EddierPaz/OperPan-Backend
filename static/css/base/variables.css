@@ -18,10 +18,11 @@
   --color-pastel: #E6B1B0;
 
   /* ── Colores de estado (badges, botones de acción, toasts) ── */
-  --color-success: #198754;
-  --color-success-hover: #157347;
-  --color-success-bg: #E0F2E9;
-  --color-success-text: #1E7B48;
+  --color-success: #06A45A;
+  --color-success-hover: #05884B;
+  --color-success-bg: #E1FAF0;
+  --color-success-text: #047A43;
+
 
   --color-danger: #DC3545;
   --color-danger-hover: #BB2D3B;

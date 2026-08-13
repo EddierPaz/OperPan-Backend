@@ -53,6 +53,29 @@
   transform: translateY(-1px);
 }
 
+.btn-success-corporate {
+  background: var(--color-success);
+  color: white;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.btn-success-corporate:hover {
+  background: var(--color-success-hover);
+  color: white;
+  transform: translateY(-1px);
+}
+
+
 /* ── Botones de acción rápida (Ver, Aprobar, Rechazar, Editar, Eliminar, Descargar) ── */
 .btn-action {
   border: none;

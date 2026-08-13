@@ -545,16 +545,6 @@
     transition: all 0.2s ease;
 }
 
-.novedad-modal-btn-cerrar {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.novedad-modal-btn-cerrar:hover {
-    background: #e2e8f0;
-    color: #1e293b;
-}
-
 .novedad-modal-btn-editar {
     background: #0d6efd;
     color: #ffffff;

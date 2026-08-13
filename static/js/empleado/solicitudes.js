@@ -687,3 +687,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('✅ OperPan - Solicitudes.js cargado correctamente');
 });
+

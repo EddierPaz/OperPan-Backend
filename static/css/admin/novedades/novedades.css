@@ -340,27 +340,6 @@
     transform: translateY(-1px);
 }
 
-.novedad-modal-btn-rechazar {
-    background: #dc3545;
-    color: #ffffff;
-}
-
-.novedad-modal-btn-rechazar:hover {
-    background: #bb2d3b;
-    color: #ffffff;
-    transform: translateY(-1px);
-}
-
-.novedad-modal-btn-cerrar {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.novedad-modal-btn-cerrar:hover {
-    background: #e2e8f0;
-    color: #1e293b;
-}
-
 /* ============================================================
    MODAL DE CONFIRMACIÓN - CORREGIDO
 ============================================================ */
@@ -439,19 +418,14 @@
     justify-content: center;
 }
 
-#certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar,
-#incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar,
-#permisosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar {
-    background: #f1f5f9;
+#certificadosConfirmApproveModal .modal-footer ,
+#incapacidadesConfirmApproveModal .modal-footer ,
+#permisosConfirmApproveModal .modal-footer { 
     color: #475569;
     padding: 0.6rem 1.5rem;
 }
 
-#certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar:hover,
-#incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar:hover,
-#permisosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar:hover {
-    background: #e2e8f0;
-}
+
 
 #certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar,
 #incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar,
