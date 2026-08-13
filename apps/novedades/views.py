@@ -749,6 +749,7 @@ def permiso_detalle(request, pk):
         'decision_por': p.decision_por.username if p.decision_por else None,
         'decision_fecha': p.decision_fecha.isoformat() if p.decision_fecha else None,
         'motivo_rechazo': p.motivo_rechazo,
+        'archivo': p.archivo.url if p.archivo else None,
     }
     return JsonResponse(data)
 
@@ -979,6 +980,51 @@ def certificados_pendientes(request):
     return JsonResponse(data, safe=False)
 
 
+# ============================================================
+# CERTIFICADO DETALLE - NUEVA VISTA
+# ============================================================
+@login_required
+def certificado_detalle(request, pk):
+    try:
+        c = Certificado.objects.select_related('empleado__user', 'decision_por', 'generado_por').get(pk=pk)
+    except Certificado.DoesNotExist:
+        return JsonResponse({'error': 'Certificado no encontrado'}, status=404)
+
+    # ============================================================
+    # VERIFICAR PERMISOS - USANDO ROL
+    # ============================================================
+    user = request.user
+    es_admin = user.rol == 'admin'
+    es_dueño = False
+    if hasattr(user, 'perfil'):
+        es_dueño = c.empleado_id == user.perfil.id
+
+    if not (es_dueño or es_admin):
+        return JsonResponse({'error': 'No tienes permiso para ver este certificado.'}, status=403)
+
+    data = {
+        'id': c.id,
+        'empleado': c.empleado.nombre_completo(),
+        'empleado_id': c.empleado.id,
+        'cargo': c.empleado.cargo,
+        'tipo': c.get_tipo_display(),
+        'proposito': c.proposito,
+        'dirigido_a': c.dirigido_a,
+        'periodo': c.periodo,
+        'archivo': c.archivo.url if c.archivo else None,
+        'estado': c.get_estado_display(),
+        'fecha_solicitud': c.fecha_solicitud.isoformat(),
+        'fecha_emision': c.fecha_emision.isoformat() if c.fecha_emision else None,
+        'decision_por': c.decision_por.username if c.decision_por else None,
+        'decision_fecha': c.decision_fecha.isoformat() if c.decision_fecha else None,
+        'motivo_rechazo': c.motivo_rechazo,
+        'descargas': c.descargas,
+        'generado_por': c.generado_por.username if c.generado_por else None,
+        'url_descarga': f'/novedades/certificados/{c.id}/descargar/',
+    }
+    return JsonResponse(data)
+
+
 @csrf_exempt
 @login_required
 @admin_required
@@ -1047,10 +1093,20 @@ def certificado_descargar(request, pk):
     except Certificado.DoesNotExist:
         raise Http404('Certificado no encontrado')
 
-    perfil = getattr(request.user, 'perfil', None)
-    es_dueño = perfil is not None and c.empleado_id == perfil.id
-    es_admin = request.user.is_staff or request.user.is_superuser
+    # ============================================================
+    # VERIFICAR PERMISOS - USANDO ROL DEL USUARIO
+    # ============================================================
+    user = request.user
+    
+    # Verificar si es administrador por el campo 'rol'
+    es_admin = user.rol == 'admin'
+    
+    # Verificar si es el dueño del certificado
+    es_dueño = False
+    if hasattr(user, 'perfil'):
+        es_dueño = c.empleado_id == user.perfil.id
 
+    # PERMITIR ADMINISTRADORES Y DUEÑOS
     if not (es_dueño or es_admin):
         return HttpResponseForbidden('No tienes permiso para descargar este certificado.')
 

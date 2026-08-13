@@ -361,25 +361,12 @@
     color: #1e293b;
 }
 
-/* Modal de Confirmación */
+/* ============================================================
+   MODAL DE CONFIRMACIÓN - CORREGIDO
+============================================================ */
 .novedad-confirm-modal .modal-header {
     border: none;
     padding: 1.25rem 1.5rem 0;
-}
-
-.novedad-confirm-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-.novedad-confirm-icon-success {
-    background: #dcfce7;
-    color: #198754;
 }
 
 .novedad-confirm-modal .modal-body {
@@ -402,7 +389,87 @@
     border-top: 1px solid #edf2f7;
 }
 
-/* Modal de Rechazo */
+/* Ocultar header en modales de confirmación */
+#certificadosConfirmApproveModal .modal-header,
+#incapacidadesConfirmApproveModal .modal-header,
+#permisosConfirmApproveModal .modal-header {
+    display: none;
+}
+
+/* Ajustar body en modales de confirmación */
+#certificadosConfirmApproveModal .modal-body,
+#incapacidadesConfirmApproveModal .modal-body,
+#permisosConfirmApproveModal .modal-body {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+}
+
+/* Icono de confirmación */
+.novedad-confirm-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1rem auto;
+}
+
+.novedad-confirm-icon-success {
+    background: #dcfce7;
+    color: #198754;
+}
+
+.novedad-confirm-icon-danger {
+    background: #fee2e2;
+    color: #dc3545;
+}
+
+.novedad-confirm-icon-warning {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* Footer de confirmación */
+#certificadosConfirmApproveModal .modal-footer,
+#incapacidadesConfirmApproveModal .modal-footer,
+#permisosConfirmApproveModal .modal-footer {
+    border-top: none;
+    padding: 0.5rem 1.5rem 2rem 1.5rem;
+    justify-content: center;
+}
+
+#certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar,
+#incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar,
+#permisosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.6rem 1.5rem;
+}
+
+#certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar:hover,
+#incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar:hover,
+#permisosConfirmApproveModal .modal-footer .novedad-modal-btn-cerrar:hover {
+    background: #e2e8f0;
+}
+
+#certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar,
+#incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar,
+#permisosConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar {
+    background: #198754;
+    color: #ffffff;
+    padding: 0.6rem 1.5rem;
+}
+
+#certificadosConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar:hover,
+#incapacidadesConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar:hover,
+#permisosConfirmApproveModal .modal-footer .novedad-modal-btn-aprobar:hover {
+    background: #157347;
+}
+
+/* ============================================================
+   MODAL DE RECHAZO
+============================================================ */
 .novedad-rechazo-modal .modal-header {
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid #edf2f7;
@@ -478,6 +545,30 @@
     color: #7f1d1d;
     font-size: 0.85rem;
     line-height: 1.5;
+}
+
+/* ============================================================
+   BOTÓN DE DESCARGA PARA CERTIFICADOS
+============================================================ */
+.certificado-btn-descargar {
+    border: none;
+    background: #A40706;
+    color: #ffffff;
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.certificado-btn-descargar:hover {
+    background: #870504;
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
 /* ============================================================

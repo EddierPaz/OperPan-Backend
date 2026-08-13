@@ -55,6 +55,7 @@ urlpatterns = [
     # ============================================================
     path('certificados/', views.certificados_lista, name='certificados_lista'),
     path('certificados/pendientes/', views.certificados_pendientes, name='certificados_pendientes'),
+    path('certificados/<int:pk>/', views.certificado_detalle, name='certificado_detalle'),  # <--- NUEVA
     path('certificados/<int:pk>/aprobar/', views.certificado_aprobar, name='certificado_aprobar'),
     path('certificados/<int:pk>/rechazar/', views.certificado_rechazar, name='certificado_rechazar'),
     path('certificados/<int:pk>/descargar/', views.certificado_descargar, name='certificado_descargar'),

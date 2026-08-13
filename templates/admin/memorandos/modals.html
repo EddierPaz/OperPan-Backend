@@ -1,201 +1,81 @@
+<!-- =========================================================
+     MODALES: MEMORANDOS (CON ESTILO NOVEDAD)
+========================================================= -->
+
 <!-- Modal Generar Memorando -->
 <div class="modal fade" id="modalMemorando" tabindex="-1" aria-hidden="true">
-
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content novedad-modal">
 
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-                    <i class="bi bi-file-earmark-text me-2"></i>
-                    Generar memorando
-                </h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                </button>
-
+            <div class="modal-header novedad-detalle-header">
+                <div>
+                    <div class="novedad-detalle-titulo">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Generar memorando</span>
+                    </div>
+                    <p class="novedad-detalle-subtitulo mb-0">
+                        Redacta y genera un memorando para un empleado
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body">
-
+            <div class="modal-body novedad-detalle-body">
                 <form id="memorandoForm">
-
                     {% csrf_token %}
 
-                    <div class="row g-3">
-
-                        <div class="col-md-6">
-
-                            <label class="form-label">
-                                Empleado *
-                            </label>
-
-                            <select class="form-select"
-                                    id="memorandoEmpleado"
-                                    required>
-
-                                <option value="">
-                                    Seleccionar empleado
-                                </option>
-
-                            </select>
-
+                    <div class="novedad-detalle-grid">
+                        <div class="novedad-detalle-item">
+                            <span class="novedad-detalle-label">Empleado <span class="text-danger">*</span></span>
+                            <span class="novedad-detalle-value">
+                                <select class="form-select" id="memorandoEmpleado" required>
+                                    <option value="">Seleccionar empleado</option>
+                                </select>
+                            </span>
                         </div>
 
-                        <div class="col-md-6">
-
-                            <label class="form-label">
-                                Tipo de memorando *
-                            </label>
-
-                            <select class="form-select"
-                                    id="memorandoTipo"
-                                    required>
-
-                                <option value="">
-                                    Seleccionar tipo
-                                </option>
-
-                                <option value="llamado_atencion">
-                                    Llamado de atención
-                                </option>
-
-                                <option value="amonestacion">
-                                    Amonestación escrita
-                                </option>
-
-                                <option value="reconocimiento">
-                                    Reconocimiento
-                                </option>
-
-                                <option value="informacion">
-                                    Información general
-                                </option>
-
-                                <option value="advertencia">
-                                    Advertencia
-                                </option>
-
-                                <option value="cambio_funciones">
-                                    Cambio de funciones
-                                </option>
-
-                                <option value="otro">
-                                    Otro
-                                </option>
-
-                            </select>
-
+                        <div class="novedad-detalle-item">
+                            <span class="novedad-detalle-label">Tipo de memorando <span class="text-danger">*</span></span>
+                            <span class="novedad-detalle-value">
+                                <select class="form-select" id="memorandoTipo" required>
+                                    <option value="">Seleccionar tipo</option>
+                                    <option value="llamado_atencion">Llamado de atención</option>
+                                    <option value="amonestacion">Amonestación escrita</option>
+                                    <option value="reconocimiento">Reconocimiento</option>
+                                    <option value="informacion">Información general</option>
+                                    <option value="advertencia">Advertencia</option>
+                                    <option value="cambio_funciones">Cambio de funciones</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </span>
                         </div>
 
-                        <div class="col-12">
-
-                            <label class="form-label">
-                                Asunto *
-                            </label>
-
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="memorandoAsunto"
-                                placeholder="Escriba el asunto del memorando"
-                                required>
-
+                        <div class="novedad-detalle-item novedad-detalle-item-full">
+                            <span class="novedad-detalle-label">Asunto <span class="text-danger">*</span></span>
+                            <span class="novedad-detalle-value">
+                                <input type="text" class="form-control" id="memorandoAsunto" placeholder="Escriba el asunto del memorando" required>
+                            </span>
                         </div>
 
-                        <div class="col-12">
-
-                            <label class="form-label">
-                                Contenido *
-                            </label>
-
-                            <textarea
-                                class="form-control"
-                                id="memorandoContenido"
-                                rows="8"
-                                placeholder="Redacte el contenido completo del memorando..."
-                                required></textarea>
-
+                        <div class="novedad-detalle-bloque-largo">
+                            <span class="novedad-detalle-bloque-largo-label">Contenido <span class="text-danger">*</span></span>
+                            <textarea class="form-control" id="memorandoContenido" rows="8" placeholder="Redacte el contenido completo del memorando..." required></textarea>
                         </div>
-
                     </div>
 
                     <div id="memorandoMensaje" class="mt-3"></div>
-
                 </form>
-
             </div>
 
-            <div class="modal-footer">
-                <button type="reset" class="btn btn-outline-corporate">Limpiar campos</button>
-
-                <button type="submit"
-                        form="memorandoForm"
-                        class="btn btn-primary-corporate"
-                        id="memorandoBtnGenerar">
-
-                    <i class="bi bi-file-earmark-pdf me-2"></i>
-                    Generar memorando
-
+            <div class="modal-footer novedad-detalle-footer">
+                <button type="reset" class="novedad-modal-btn btn-outline-corporate">
+                    <i class="bi bi-eraser"></i> Limpiar campos
                 </button>
-
+                <button type="submit" form="memorandoForm" class="novedad-modal-btn btn btn-primary-corporate" id="memorandoBtnGenerar">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Generar memorando
+                </button>
             </div>
 
         </div>
-
     </div>
-
-</div>
-
-<!-- Modal de confirmación (por si se requiere en el futuro) -->
-<div class="modal fade" id="memorandoConfirmModal" tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-                    Confirmar
-                </h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                </button>
-
-            </div>
-
-            <div class="modal-body"
-                 id="memorandoConfirmBody">
-            </div>
-
-            <div class="modal-footer">
-
-                <button type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-
-                    Cancelar
-
-                </button>
-
-                <button type="button"
-                        class="btn btn-primary"
-                        id="memorandoConfirmAction">
-
-                    Confirmar
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
 </div>
