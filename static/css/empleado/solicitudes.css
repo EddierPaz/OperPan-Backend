@@ -1,234 +1,35 @@
 /* ============================================================
-   ESTILOS DEL MÓDULO DE SOLICITUDES - EMPLEADO
-   OperPan
+   SOLICITUDES.CSS - OPERPAN
+   Estilos específicos del módulo de solicitudes (empleado)
+   Todo lo reutilizable (botones, badges, tabs, request-card)
+   ya está en components.css y variables.css.
    ============================================================ */
 
 /* ============================================================
-   1. CARDS DE RESUMEN / KPIs
+   1. KPIs / STATS - SOLO OVERRIDES
    ============================================================ */
 
 .stats-row {
     margin-bottom: 2rem;
 }
 
-.stat-card {
-    background: #FFFFFF;
-    border: 1px solid #F0F2F5;
-    border-radius: 18px;
-    padding: 1.25rem 1.4rem;
-    min-height: 105px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
-}
-
-.stat-card span {
-    font-size: 0.85rem;
-}
-
-.stat-card h3 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #2C3E50;
-}
-
-.stat-card i {
-    font-size: 1.8rem;
-}
-
-.icono-circular {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: #FEF2F0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
 /* ============================================================
-   2. TARJETAS DE SOLICITUD Y HISTORIAL
-   ============================================================ */
-
-#solicitudesContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-}
-
-.request-card {
-    position: relative;
-    background: #FFFFFF;
-    border: 1px solid #E9ECEF;
-    border-radius: 16px;
-    padding: 1.15rem 1.25rem;
-    margin: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
-    transition: all 0.2s ease;
-    overflow: hidden;
-}
-
-.request-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
-    border-color: #DEE2E6;
-}
-
-.request-card .d-flex {
-    gap: 1rem;
-}
-
-.request-card h5 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #212529;
-    margin-bottom: .3rem !important;
-}
-
-.request-card small.text-muted {
-    display: block;
-    font-size: .82rem;
-    color: #6C757D !important;
-    line-height: 1.5;
-}
-
-.request-card p {
-    font-size: .88rem;
-    color: #495057;
-    line-height: 1.55;
-    margin-bottom: .65rem !important;
-}
-
-.request-card > .d-flex > div:last-child {
-    min-width: 110px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: .45rem;
-}
-
-#solicitudesContainer .request-card:last-child {
-    margin-bottom: 0;
-}
-
-.historial-solicitudes {
-    scroll-margin-top: 100px;
-}
-
-.historial-filtros {
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-}
-
-.filtro-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #2C3E50;
-    min-width: 65px;
-}
-
-
-/* ============================================================
-   3. ESTADOS DE SOLICITUD (BORDES Y BADGES)
-   ============================================================ */
-
-.request-card.request-pendiente, 
-.request-card.request-pendientes { 
-    border-left: 6px solid #FFC107 !important; 
-}
-
-.request-card.request-aprobado, 
-.request-card.request-aprobadas { 
-    border-left: 6px solid #198754 !important; 
-}
-
-.request-card.request-rechazado, 
-.request-card.request-rechazadas { 
-    border-left: 6px solid #DC3545 !important; 
-}
-
-.request-card .badge {
-    border-radius: 30px;
-    padding: .42rem .75rem;
-    font-size: .72rem;
-    white-space: nowrap;
-    font-weight: 600;
-}
-
-.badge-pendiente, .badge-pendientes { 
-    background: #FFF3E0; 
-    color: #C77A00; 
-    border: 1px solid #FFE0A3; 
-    padding: 0.45rem 0.7rem;
-    font-weight: 600;
-}
-
-.badge-aprobado, .badge-aprobadas { 
-    background: #E0F2E9; 
-    color: #1E7B48; 
-    border: 1px solid #B9E2CC; 
-    padding: 0.45rem 0.7rem;
-    font-weight: 600;
-}
-
-.badge-rechazado, .badge-rechazadas { 
-    background: #FEF2F0; 
-    color: #B91C1C; 
-    border: 1px solid #F5C2C0; 
-    padding: 0.45rem 0.7rem;
-    font-weight: 600;
-}
-
-
-/* ============================================================
-   4. ENCABEZADOS DE SECCIÓN
-   ============================================================ */
-
-.section-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.section-heading h4,
-.historial-solicitudes h4 {
-    color: #2C3E50;
-    font-weight: 600;
-}
-
-.section-heading h4 i,
-.historial-solicitudes h4 i {
-    color: #A40706;
-}
-
-
-/* ============================================================
-   5. CARDS DE SOLICITUDES PENDIENTES
+   2. CARDS DE SOLICITUDES PENDIENTES
    ============================================================ */
 
 .pending-category-card {
     background: #FFFFFF;
-    border: 1px solid #F0F2F5;
-    border-radius: 18px;
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     height: 100%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .pending-category-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-md);
 }
 
 .pending-card-header {
@@ -236,18 +37,19 @@
     align-items: center;
     gap: 0.85rem;
     padding: 1rem 1.1rem;
-    border-bottom: 1px solid #F0F2F5;
+    border-bottom: 1px solid var(--color-border-soft);
 }
 
 .pending-card-header h5 {
-    color: #2C3E50;
+    color: var(--color-text);
     font-size: 1rem;
     font-weight: 600;
+    margin: 0;
 }
 
 .pending-card-header span {
     display: block;
-    color: #7B8794;
+    color: var(--color-text-muted);
     font-size: 0.78rem;
     margin-top: 2px;
 }
@@ -255,7 +57,7 @@
 .pending-icon {
     width: 42px;
     height: 42px;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -263,18 +65,18 @@
 }
 
 .pending-permisos .pending-icon {
-    background: #FFF8E1;
-    color: #C77A00;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
 }
 
 .pending-incapacidades .pending-icon {
-    background: #FEF2F0;
-    color: #B91C1C;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
 }
 
 .pending-certificados .pending-icon {
-    background: #E0F2E9;
-    color: #1E7B48;
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
 }
 
 .pending-card-body {
@@ -287,7 +89,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.65rem 0;
-    border-bottom: 1px solid #F5F5F5;
+    border-bottom: 1px solid var(--color-border-soft);
 }
 
 .pending-item:last-child {
@@ -299,8 +101,8 @@
     height: 34px;
     min-width: 34px;
     border-radius: 9px;
-    background: #F8F9FA;
-    color: #A40706;
+    background: var(--color-bg);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -313,7 +115,7 @@
 
 .pending-item-info strong {
     display: block;
-    color: #2C3E50;
+    color: var(--color-text);
     font-size: 0.85rem;
     white-space: nowrap;
     overflow: hidden;
@@ -322,28 +124,20 @@
 
 .pending-item-info small {
     display: block;
-    color: #7B8794;
+    color: var(--color-text-muted);
     font-size: 0.75rem;
     margin-top: 2px;
 }
 
-.pending-dot {
-    width: 8px;
-    height: 8px;
-    min-width: 8px;
-    border-radius: 50%;
-    background: #FFC107;
-}
-
 .pending-card-footer {
-    border-top: 1px solid #F0F2F5;
+    border-top: 1px solid var(--color-border-soft);
     padding: 0.7rem 1rem;
 }
 
 .btn-view-pending {
     border: none;
     background: transparent;
-    color: #A40706;
+    color: var(--color-primary);
     font-size: 0.8rem;
     font-weight: 600;
     padding: 0;
@@ -352,7 +146,7 @@
 }
 
 .btn-view-pending:hover {
-    color: #7D0504;
+    color: var(--color-primary-hover);
     transform: translateX(2px);
 }
 
@@ -360,9 +154,8 @@
     margin-left: 3px;
 }
 
-
 /* ============================================================
-   6. ESTADOS VACÍOS (PENDIENTES E HISTORIAL)
+   3. ESTADOS VACÍOS (PENDIENTES E HISTORIAL)
    ============================================================ */
 
 .empty-pending {
@@ -372,13 +165,13 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: #7B8794;
+    color: var(--color-text-muted);
     gap: 0.4rem;
 }
 
 .empty-pending i {
     font-size: 1.6rem;
-    color: #198754;
+    color: var(--color-success);
 }
 
 .empty-pending span {
@@ -387,8 +180,8 @@
 
 .empty-history {
     background: #FFFFFF;
-    border: 1px dashed #DDE1E6;
-    border-radius: 18px;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
     padding: 3rem 1.5rem;
     text-align: center;
 }
@@ -397,136 +190,482 @@
     width: 65px;
     height: 65px;
     margin: 0 auto 1rem;
-    border-radius: 50%;
-    background: #F8F9FA;
+    border-radius: var(--radius-circle);
+    background: var(--color-bg);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #A40706;
+    color: var(--color-primary);
     font-size: 1.7rem;
 }
 
 .empty-history h5 {
-    color: #2C3E50;
+    color: var(--color-text);
     font-weight: 600;
 }
 
-
 /* ============================================================
-   7. FILTROS / PESTAÑAS (NOVEDADES TABS)
+   4. FILTROS - OVERRIDE DE COMPONENTS
    ============================================================ */
 
-.novedades-tabs {
+.historial-filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.historial-filtros .filtros-row {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-    background: #FFFFFF;
-    padding: 0.3rem;
-    border: 1px solid #E9ECEF;
-    border-radius: 12px;
+    flex-wrap: nowrap !important;
+    gap: 0.75rem;
 }
 
-.novedades-tab {
-    border: none !important;
+.historial-filtros .filtro-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+    min-width: 65px;
+    margin-bottom: 0 !important;
+}
+
+.historial-filtros .filtro-label i {
+    margin-right: 0.2rem;
+    color: var(--color-text-muted);
+}
+
+/* ============================================================
+   5. GRID DE TARJETAS DE HISTORIAL
+   ============================================================ */
+
+.solicitudes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* ===== TARJETA INDIVIDUAL (override de request-card base) ===== */
+.request-card.request-card-grid {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    border-left-width: 4px;
+}
+
+.request-card.request-card-grid:hover {
+    border-color: var(--color-border);
+    transform: translateY(-2px);
+}
+
+/* ===== HEADER ===== */
+.card-grid-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.card-grid-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--color-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-soft);
+    font-size: 0.9rem;
+}
+
+/* ===== INDICADOR DE ARCHIVO ===== */
+.card-grid-file {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: var(--color-primary-soft-2);
+    color: var(--color-primary);
+    font-size: 0.7rem;
+    margin-left: auto;
+    cursor: default;
+}
+
+.card-grid-file i {
+    font-size: 0.7rem;
+}
+
+/* ===== TÍTULO ===== */
+.card-grid-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 0.4rem 0;
+}
+
+/* ===== METADATOS ===== */
+.card-grid-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 0.4rem;
+    flex: 1;
+}
+
+.card-grid-meta span {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+}
+
+.card-grid-meta span i {
+    margin-right: 0.2rem;
+    font-size: 0.65rem;
+}
+
+/* ===== FOOTER ===== */
+.card-grid-footer {
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border-soft);
+    margin-top: auto;
+}
+
+.card-grid-btn {
+    border: none;
     background: transparent;
-    color: #6C757D;
-    border-radius: 9px !important;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
     transition: all 0.2s ease;
-}
-
-.novedades-tab:hover {
-    background: #F8F9FA;
-    color: #A40706;
-}
-
-.novedades-tab.active {
-    background: #A40706 !important;
-    color: #FFFFFF !important;
-}
-
-
-/* ============================================================
-   8. MODAL DE NUEVA SOLICITUD
-   ============================================================ */
-
-#modalSolicitud .modal-content {
-    border: none;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-}
-
-#modalSolicitud .modal-header {
-    background: #FFFFFF;
-    border-bottom: 1px solid #F0F2F5;
-    padding: 1.2rem 1.5rem;
-}
-
-#modalSolicitud .modal-title {
-    color: #2C3E50;
-    font-weight: 600;
-}
-
-#modalSolicitud .modal-body {
-    padding: 1.5rem;
-}
-
-#modalSolicitud .form-label {
-    color: #2C3E50;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-#modalSolicitud .form-control,
-#modalSolicitud .form-select {
-    border-radius: 10px;
-    border: 1px solid #DEE2E6;
-    padding: 0.65rem 0.8rem;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
-}
-
-#modalSolicitud .form-control:focus,
-#modalSolicitud .form-select:focus {
-    border-color: #A40706;
-    box-shadow: 0 0 0 0.2rem rgba(164, 7, 6, 0.08);
-}
-
-
-/* ============================================================
-   9. ALERTAS Y FOOTER
-   ============================================================ */
-
-.alert {
-    border-radius: 12px;
-    border: none;
-    font-size: 0.85rem;
-}
-
-.alert-success { border-left: 4px solid #198754; }
-.alert-danger { border-left: 4px solid #DC3545; }
-.alert-warning { border-left: 4px solid #FFC107; }
-.alert-info { border-left: 4px solid #0D6EFD; }
-
-main.dashboard-container footer {
-    margin-top: 2.5rem;
-    padding: 1.2rem;
+    cursor: pointer;
+    width: 100%;
     text-align: center;
-    color: #7B8794;
-    font-size: 0.8rem;
-    border-top: 1px solid #E9ECEF;
 }
 
-main.dashboard-container footer i {
-    color: #198754;
-    margin-right: 0.3rem;
+.card-grid-btn:hover {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.card-grid-btn i {
+    margin-right: 0.2rem;
 }
 
 /* ============================================================
-   ACCIONES - SOLICITUDES PENDIENTES
+   6. MODALES DE SOLICITUDES
+   ============================================================ */
+
+/* ===== MODAL BASE ===== */
+.novedad-modal {
+    border: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-toast);
+}
+
+/* ===== HEADER ===== */
+.novedad-detalle-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border-soft);
+    background: var(--color-white);
+}
+
+.novedad-detalle-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--color-primary);
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.novedad-detalle-titulo i {
+    font-size: 1.25rem;
+}
+
+.novedad-detalle-subtitulo {
+    margin-top: 0.25rem;
+    margin-left: 1.85rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+/* ===== BODY ===== */
+.novedad-detalle-body {
+    padding: 1.5rem;
+    background: var(--color-white);
+}
+
+.novedad-detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.novedad-detalle-item {
+    padding: 0.9rem 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+}
+
+.novedad-detalle-item-full {
+    grid-column: 1 / -1;
+}
+
+.novedad-detalle-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.novedad-detalle-value {
+    display: block;
+    color: var(--color-text);
+    font-size: 0.92rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* ===== BLOQUE LARGO ===== */
+.novedad-detalle-bloque-largo {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: var(--color-white);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+}
+
+.novedad-detalle-bloque-largo-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.novedad-detalle-bloque-largo-texto {
+    margin: 0;
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+/* ===== ESTADO BADGE ===== */
+.novedad-detalle-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.novedad-estado-pendiente {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.novedad-estado-aprobado {
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
+}
+
+.novedad-estado-rechazado {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+}
+
+/* ===== FOOTER ===== */
+.novedad-detalle-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--color-border-soft);
+    background: var(--color-white);
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.novedad-modal-btn {
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.novedad-modal-btn-cerrar {
+    background: var(--color-bg);
+    color: var(--color-text-soft);
+}
+
+.novedad-modal-btn-cerrar:hover {
+    background: var(--color-border);
+    color: var(--color-text);
+}
+
+.novedad-modal-btn-editar {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.novedad-modal-btn-editar:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-white);
+    transform: translateY(-1px);
+}
+
+.novedad-modal-btn-editar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.novedad-modal-btn-eliminar {
+    background: var(--color-danger);
+    color: var(--color-white);
+}
+
+.novedad-modal-btn-eliminar:hover {
+    background: var(--color-danger-hover);
+    color: var(--color-white);
+    transform: translateY(-1px);
+}
+
+.novedad-modal-btn-descargar {
+    background: var(--color-teal);
+    color: var(--color-white);
+}
+
+.novedad-modal-btn-descargar:hover {
+    background: var(--color-teal-hover);
+    color: var(--color-white);
+    transform: translateY(-1px);
+}
+
+/* ============================================================
+   7. MODAL DE EDICIÓN - OVERRIDES
+   ============================================================ */
+
+#modalEditarSolicitud .novedad-detalle-item .form-control,
+#modalEditarSolicitud .novedad-detalle-bloque-largo .form-control {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.92rem;
+    background: var(--color-white);
+    transition: all 0.2s ease;
+}
+
+#modalEditarSolicitud .novedad-detalle-item .form-control:focus,
+#modalEditarSolicitud .novedad-detalle-bloque-largo .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus-soft);
+}
+
+#modalEditarSolicitud .novedad-detalle-item .form-control:disabled {
+    background-color: var(--color-bg);
+    cursor: not-allowed;
+    border: none;
+    padding-left: 0;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* ============================================================
+   8. FORMULARIOS DINÁMICOS EN MODAL DE CREACIÓN
+   ============================================================ */
+
+.dynamic-form {
+    margin-top: 0.5rem;
+}
+
+.dynamic-form .novedad-detalle-grid {
+    margin-top: 0;
+}
+
+.dynamic-form .novedad-detalle-item {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+}
+
+.dynamic-form .novedad-detalle-item .form-control,
+.dynamic-form .novedad-detalle-item .form-select {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.92rem;
+    background: var(--color-white);
+    transition: all 0.2s ease;
+}
+
+.dynamic-form .novedad-detalle-item .form-control:focus,
+.dynamic-form .novedad-detalle-item .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus-soft);
+}
+
+.dynamic-form .novedad-detalle-item .form-control:read-only {
+    background-color: var(--color-bg);
+    cursor: not-allowed;
+}
+
+.dynamic-form .novedad-detalle-bloque-largo {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+}
+
+.dynamic-form .novedad-detalle-bloque-largo .form-control {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.92rem;
+    background: var(--color-white);
+    transition: all 0.2s ease;
+}
+
+.dynamic-form .novedad-detalle-bloque-largo .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-focus-soft);
+}
+
+.dynamic-form .file-info {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.dynamic-form .text-danger.small {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* ============================================================
+   9. ACCIONES - DROPDOWN DE SOLICITUDES PENDIENTES
    ============================================================ */
 
 .pending-actions {
@@ -555,17 +694,17 @@ main.dashboard-container footer i {
 
 .pending-actions-btn:hover,
 .pending-actions-btn:focus {
-    background: #f5f5f5;
-    color: #A40706;
+    background: var(--color-bg);
+    color: var(--color-primary);
     box-shadow: none;
 }
 
 .pending-dropdown {
     min-width: 165px;
     padding: 6px;
-    border: 1px solid #eeeeee;
+    border: 1px solid var(--color-border-soft);
     border-radius: 10px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+    box-shadow: var(--shadow-md);
     animation: pendingDropdownShow 0.15s ease;
 }
 
@@ -577,7 +716,7 @@ main.dashboard-container footer i {
     border-radius: 7px;
     font-size: 0.88rem;
     font-weight: 500;
-    color: #333;
+    color: var(--color-text);
     transition: all 0.15s ease;
 }
 
@@ -587,13 +726,13 @@ main.dashboard-container footer i {
 }
 
 .pending-dropdown .dropdown-item:hover {
-    background: #f8f8f8;
-    color: #A40706;
+    background: var(--color-bg);
+    color: var(--color-primary);
 }
 
 .pending-dropdown .dropdown-item.text-danger:hover {
-    background: #fff1f1;
-    color: #dc3545;
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
 }
 
 .pending-dropdown .dropdown-divider {
@@ -605,207 +744,110 @@ main.dashboard-container footer i {
         opacity: 0;
         transform: translateY(-4px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-
 /* ============================================================
-   11. MODAL DETALLE - NUEVO DISEÑO ESTILO ADMIN
+   10. ALERTAS - OVERRIDES
    ============================================================ */
 
-.novedad-modal {
+.alert {
+    border-radius: var(--radius-sm);
     border: none;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
-}
-
-.novedad-detalle-header {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid #edf2f7;
-    background: #ffffff;
-}
-
-.novedad-detalle-titulo {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: #A40706;
-    font-size: 1.15rem;
-    font-weight: 700;
-}
-
-.novedad-detalle-titulo i {
-    font-size: 1.25rem;
-}
-
-.novedad-detalle-subtitulo {
-    margin-top: 0.25rem;
-    margin-left: 1.85rem;
-    color: #64748b;
     font-size: 0.85rem;
 }
 
-.novedad-detalle-body {
-    padding: 1.5rem;
-    background: #ffffff;
-}
-
-.novedad-detalle-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-}
-
-.novedad-detalle-item {
-    padding: 0.9rem 1rem;
-    background: #f8fafc;
-    border: 1px solid #edf2f7;
-    border-radius: 12px;
-}
-
-.novedad-detalle-item-full {
-    grid-column: 1 / -1;
-}
-
-.novedad-detalle-label {
-    display: block;
-    margin-bottom: 0.25rem;
-    color: #64748b;
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.novedad-detalle-value {
-    display: block;
-    color: #1e293b;
-    font-size: 0.92rem;
-    font-weight: 600;
-    word-break: break-word;
-}
-
-.novedad-detalle-bloque-largo {
-    grid-column: 1 / -1;
-    padding: 1rem;
-    background: #ffffff;
-    border: 1px solid #edf2f7;
-    border-radius: 12px;
-}
-
-.novedad-detalle-bloque-largo-label {
-    display: block;
-    margin-bottom: 0.4rem;
-    color: #64748b;
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.novedad-detalle-bloque-largo-texto {
-    margin: 0;
-    color: #334155;
-    line-height: 1.6;
-}
-
-.novedad-detalle-estado {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 700;
-}
-
-.novedad-estado-pendiente {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.novedad-estado-aprobado {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.novedad-estado-rechazado {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.novedad-detalle-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #edf2f7;
-    background: #ffffff;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-}
-
-.novedad-modal-btn {
-    border: none;
-    border-radius: 25px;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.novedad-modal-btn-cerrar {
-    background: #f1f5f9;
-    color: #475569;
-}
-
-.novedad-modal-btn-cerrar:hover {
-    background: #e2e8f0;
-    color: #1e293b;
-}
-
-.novedad-modal-btn-editar {
-    background: #0d6efd;
-    color: #ffffff;
-}
-
-.novedad-modal-btn-editar:hover {
-    background: #0b5ed7;
-    transform: translateY(-1px);
-}
-
-.novedad-modal-btn-eliminar {
-    background: #dc3545;
-    color: #ffffff;
-}
-
-.novedad-modal-btn-eliminar:hover {
-    background: #bb2d3b;
-    transform: translateY(-1px);
-}
-
-.novedad-modal-btn-descargar {
-    background: #198754;
-    color: #ffffff;
-}
-
-.novedad-modal-btn-descargar:hover {
-    background: #157347;
-    transform: translateY(-1px);
-}
-
+.alert-success { border-left: 4px solid var(--color-success); }
+.alert-danger { border-left: 4px solid var(--color-danger); }
+.alert-warning { border-left: 4px solid var(--color-warning); }
+.alert-info { border-left: 4px solid var(--color-info); }
 
 /* ============================================================
-   12. RESPONSIVE DESIGN PARA MODALES
+   11. FOOTER
    ============================================================ */
 
+main.dashboard-container footer {
+    margin-top: 2.5rem;
+    padding: 1.2rem;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--color-border-soft);
+}
+
+main.dashboard-container footer i {
+    color: var(--color-success);
+    margin-right: 0.3rem;
+}
+
+/* ============================================================
+   12. RESPONSIVE - SOLO LO ESPECÍFICO DE SOLICITUDES
+   ============================================================ */
+
+/* Filtros siempre en línea */
+@media (max-width: 768px) {
+    .historial-filtros .filtros-row {
+        flex-wrap: nowrap !important;
+        gap: 0.5rem;
+    }
+
+    .historial-filtros .filtro-label {
+        font-size: 0.7rem;
+        min-width: 50px;
+    }
+
+    .historial-filtros .novedades-tab {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.5rem;
+    }
+
+    .historial-filtros .novedades-tab i {
+        margin-right: 0.15rem;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .historial-filtros {
+        gap: 0.5rem;
+    }
+
+    .historial-filtros .filtros-row {
+        gap: 0.35rem;
+    }
+
+    .historial-filtros .filtro-label {
+        font-size: 0.65rem;
+        min-width: 40px;
+    }
+
+    .historial-filtros .novedades-tab {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.4rem;
+    }
+
+    .historial-filtros .novedades-tab i {
+        display: none;
+    }
+}
+
+/* Grid de tarjetas */
+@media (max-width: 992px) {
+    .solicitudes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .solicitudes-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Modales responsive */
 @media (max-width: 768px) {
     .novedad-detalle-grid {
         grid-template-columns: 1fr;
@@ -825,10 +867,15 @@ main.dashboard-container footer i {
     
     .novedad-detalle-footer .novedad-modal-btn {
         width: 100%;
+        justify-content: center;
     }
     
     .novedad-detalle-subtitulo {
         margin-left: 0;
+    }
+
+    .dynamic-form .novedad-detalle-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -838,129 +885,17 @@ main.dashboard-container footer i {
     .novedad-detalle-footer {
         padding: 1rem;
     }
-}
 
-
-/* ============================================================
-   10. RESPONSIVE DESIGN (ya existente)
-   ============================================================ */
-
-@media (max-width: 991.98px) {
-    .section-heading {
-        align-items: flex-start;
+    .novedad-detalle-titulo {
+        font-size: 1rem;
     }
 
-    .pending-card-body {
-        min-height: auto;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .stats-row {
-        margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-        min-height: 90px;
-        padding: 1rem;
-    }
-
-    .stat-card h3 {
-        font-size: 1.5rem;
-    }
-
-    .icono-circular {
-        width: 45px;
-        height: 45px;
-    }
-
-    .request-card {
-        padding: 1rem;
-        border-radius: 14px;
-    }
-
-    .request-card > .d-flex {
-        flex-direction: column;
-        gap: .8rem;
-    }
-
-    .request-card > .d-flex > div:last-child {
-        width: 100%;
-        min-width: 0;
-        align-items: flex-start;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .request-card h5 {
-        font-size: .95rem;
-    }
-
-    .request-card small.text-muted {
-        font-size: .78rem;
-    }
-
-    .request-card p {
-        font-size: .84rem;
-    }
-
-    .section-heading {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .novedades-tabs {
-        width: 100%;
-    }
-
-    .novedades-tab {
-        flex: 1;
-    }
-
-    #modalSolicitud .modal-body {
-        padding: 1rem;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .stat-card {
-        padding: 0.85rem;
-    }
-
-    .stat-card span {
+    .novedad-detalle-subtitulo {
         font-size: 0.78rem;
     }
 
-    .stat-card h3 {
-        font-size: 1.35rem;
-    }
-
-    .pending-card-header {
-        padding: 0.9rem;
-    }
-
-    .pending-card-body {
-        padding: 0.6rem 0.8rem;
-    }
-
-    .pending-item-info strong {
-        font-size: 0.8rem;
-    }
-
-    .pending-item-info small {
-        font-size: 0.7rem;
-    }
-
-    .novedades-tabs {
-        overflow-x: auto;
-    }
-
-    .novedades-tab {
-        flex: 0 0 auto;
-        white-space: nowrap;
-    }
-
-    .request-card .d-flex {
-        gap: 0.8rem;
+    .novedad-modal-btn {
+        font-size: 0.82rem;
+        padding: 0.5rem 1rem;
     }
 }

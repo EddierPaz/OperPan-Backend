@@ -50,7 +50,7 @@
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-muted">Solicitudes respuesta</span>
+                    <span class="text-muted">Solicitudes contestadas</span>
                     <h3 class="mt-1">{{ total_respondidas }}</h3>
                 </div>
                 <div class="icono-circular">
@@ -292,10 +292,10 @@
     </div>
 
     <div class="historial-solicitudes" id="historial">
-        <div class="historial-filtros d-flex flex-column gap-3 mb-4">
+        <div class="historial-filtros">
             <!-- Filtro por Tipo -->
-            <div class="d-flex align-items-center flex-wrap gap-3">
-                <span class="filtro-label mb-0">
+            <div class="filtros-row">
+                <span class="filtro-label">
                     <i class="bi bi-filter"></i> Tipo:
                 </span>
                 <div class="novedades-tabs" id="tipoFiltroTabs">
@@ -312,8 +312,8 @@
             </div>
 
             <!-- Filtro por Estado -->
-            <div class="d-flex align-items-center flex-wrap gap-3">
-                <span class="filtro-label mb-0">
+            <div class="filtros-row">
+                <span class="filtro-label">
                     <i class="bi bi-clipboard-check"></i> Estado:
                 </span>
                 <div class="novedades-tabs" id="estadoFiltroTabs">
@@ -332,58 +332,64 @@
 
         <div id="solicitudesContainer">
             {% if permisos_historial or incapacidades_historial or certificados_historial %}
-                <div class="solicitudes-lista d-flex flex-column gap-3">
-                    <!-- Permisos del Historial -->
+                <div class="solicitudes-grid">
+                    
+                    <!-- PERMISOS DEL HISTORIAL -->
                     {% for p in permisos_historial %}
-                        <div class="request-card request-{{ p.estado|slugify }}"
-                            data-tipo="permiso" data-estado="{{ p.estado|slugify }}">
-                            <div class="request-icon"><i class="bi bi-calendar-event"></i></div>
-                            <div class="request-info">
-                                <div class="request-info-top">
-                                    <h5>{{ p.get_tipo_display }} <span class="request-subtype">· Permiso</span></h5>
-                                    <span class="badge badge-{{ p.estado|slugify }}">{{ p.get_estado_display|default:p.estado }}</span>
-                                </div>
-                                <div class="request-meta">
-                                    <span><i class="bi bi-calendar-range"></i> {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</span>
-                                    <span><i class="bi bi-clock-history"></i> Solicitado: {{ p.fecha_solicitud|date:"d/m/Y" }}</span>
-                                </div>
-                                <p class="request-motivo">{{ p.justificacion|truncatechars:90 }}</p>
+                        <div class="request-card request-card-grid request-{{ p.estado|slugify }}"
+                            data-tipo="permiso" 
+                            data-estado="{{ p.estado|slugify }}">
+                            
+                            <h6 class="card-grid-title">{{ p.get_tipo_display }}</h6>
+                            
+                            <div class="card-grid-meta">
+                                <span>
+                                    <i class="bi bi-calendar3"></i>
+                                    {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}
+                                </span>
+                                <span>
+                                    <i class="bi bi-clock"></i>
+                                    {{ p.fecha_solicitud|date:"d/m/Y" }}
+                                </span>
                             </div>
-                            <div class="request-actions">
-                                <button type="button" class="btn-action-icon btn-ver-detalle"
+                            
+                            <div class="card-grid-footer">
+                                <button type="button" class="card-grid-btn btn-ver-detalle"
                                         data-titulo="{{ p.get_tipo_display }}"
                                         data-subtitulo="Permiso · {{ p.fecha_inicio|date:'d/m/Y' }} → {{ p.fecha_fin|date:'d/m/Y' }}"
                                         data-motivo="{{ p.justificacion|escapejs }}"
                                         data-estado="{{ p.get_estado_display|default:p.estado }}"
                                         data-estado-slug="{{ p.estado|slugify }}"
                                         data-motivo-rechazo="{{ p.motivo_rechazo|default:''|escapejs }}"
-                                        data-archivo=""
-                                        data-tipo="permiso"
-                                        title="Ver detalle">
-                                    <i class="bi bi-eye"></i>
+                                        data-archivo="{% if p.archivo %}{{ p.archivo.url }}{% endif %}"
+                                        data-tipo="permiso">
+                                    <i class="bi bi-eye"></i> Ver detalles
                                 </button>
                             </div>
                         </div>
                     {% endfor %}
 
-                    <!-- Incapacidades del Historial -->
+                    <!-- INCAPACIDADES DEL HISTORIAL -->
                     {% for i in incapacidades_historial %}
-                        <div class="request-card request-{{ i.estado|slugify }}"
-                            data-tipo="incapacidad" data-estado="{{ i.estado|slugify }}">
-                            <div class="request-icon"><i class="bi bi-heart-pulse"></i></div>
-                            <div class="request-info">
-                                <div class="request-info-top">
-                                    <h5>{{ i.titulo|default:"Incapacidad médica" }} <span class="request-subtype">· Incapacidad</span></h5>
-                                    <span class="badge badge-{{ i.estado|slugify }}">{{ i.get_estado_display|default:i.estado }}</span>
-                                </div>
-                                <div class="request-meta">
-                                    <span><i class="bi bi-calendar-range"></i> {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</span>
-                                    <span><i class="bi bi-clock-history"></i> Solicitado: {{ i.fecha_solicitud|date:"d/m/Y" }}</span>
-                                </div>
-                                <p class="request-motivo">{{ i.descripcion|truncatechars:90 }}</p>
+                        <div class="request-card request-card-grid request-{{ i.estado|slugify }}"
+                            data-tipo="incapacidad" 
+                            data-estado="{{ i.estado|slugify }}">
+                            
+                            <h6 class="card-grid-title">{{ i.titulo|default:"Incapacidad médica"|truncatechars:25 }}</h6>
+                            
+                            <div class="card-grid-meta">
+                                <span>
+                                    <i class="bi bi-calendar3"></i>
+                                    {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}
+                                </span>
+                                <span>
+                                    <i class="bi bi-clock"></i>
+                                    {{ i.fecha_solicitud|date:"d/m/Y" }}
+                                </span>
                             </div>
-                            <div class="request-actions">
-                                <button type="button" class="btn-action-icon btn-ver-detalle"
+                            
+                            <div class="card-grid-footer">
+                                <button type="button" class="card-grid-btn btn-ver-detalle"
                                         data-titulo="{{ i.titulo|default:'Incapacidad médica' }}"
                                         data-subtitulo="Incapacidad · {{ i.fecha_inicio|date:'d/m/Y' }} → {{ i.fecha_fin|date:'d/m/Y' }}"
                                         data-motivo="{{ i.descripcion|escapejs }}"
@@ -391,41 +397,45 @@
                                         data-estado-slug="{{ i.estado|slugify }}"
                                         data-motivo-rechazo="{{ i.motivo_rechazo|default:''|escapejs }}"
                                         data-archivo="{% if i.archivo %}{{ i.archivo.url }}{% endif %}"
-                                        data-tipo="incapacidad"
-                                        title="Ver detalle">
-                                    <i class="bi bi-eye"></i>
+                                        data-tipo="incapacidad">
+                                    <i class="bi bi-eye"></i> Ver detalles
                                 </button>
                             </div>
                         </div>
                     {% endfor %}
 
-                    <!-- Certificados del Historial -->
+                    <!-- CERTIFICADOS DEL HISTORIAL -->
                     {% for c in certificados_historial %}
-                        <div class="request-card request-{{ c.estado|slugify }}"
-                            data-tipo="certificado" data-estado="{{ c.estado|slugify }}">
-                            <div class="request-icon"><i class="bi bi-award"></i></div>
-                            <div class="request-info">
-                                <div class="request-info-top">
-                                    <h5>{{ c.get_tipo_display|default:"Laboral" }} <span class="request-subtype">· Certificado</span></h5>
-                                    <span class="badge badge-{{ c.estado|slugify }}">{{ c.get_estado_display|default:c.estado }}</span>
-                                </div>
-                                <div class="request-meta">
-                                    <span><i class="bi bi-clock-history"></i> Solicitado: {{ c.fecha_solicitud|date:"d/m/Y" }}</span>
-                                </div>
-                                <p class="request-motivo">{{ c.proposito|default:"Solicitud de certificado"|truncatechars:90 }}</p>
+                        <div class="request-card request-card-grid request-{{ c.estado|slugify }}"
+                            data-tipo="certificado" 
+                            data-estado="{{ c.estado|slugify }}">
+                            
+                            <h6 class="card-grid-title">{{ c.get_tipo_display|default:"Certificado"|truncatechars:25 }}</h6>
+                            
+                            <div class="card-grid-meta">
+                                <span>
+                                    <i class="bi bi-calendar3"></i>
+                                    {{ c.fecha_solicitud|date:"d/m/Y" }}
+                                </span>
+                                {% if c.fecha_emision %}
+                                    <span>
+                                        <i class="bi bi-check-circle"></i>
+                                        {{ c.fecha_emision|date:"d/m/Y" }}
+                                    </span>
+                                {% endif %}
                             </div>
-                            <div class="request-actions">
-                                <button type="button" class="btn-action-icon btn-ver-detalle"
-                                        data-titulo="{{ c.get_tipo_display|default:'Laboral' }}"
+                            
+                            <div class="card-grid-footer">
+                                <button type="button" class="card-grid-btn btn-ver-detalle"
+                                        data-titulo="{{ c.get_tipo_display|default:'Certificado' }}"
                                         data-subtitulo="Certificado · Solicitado el {{ c.fecha_solicitud|date:'d/m/Y' }}"
                                         data-motivo="{{ c.proposito|default:'Solicitud de certificado'|escapejs }}"
                                         data-estado="{{ c.get_estado_display|default:c.estado }}"
                                         data-estado-slug="{{ c.estado|slugify }}"
                                         data-motivo-rechazo="{{ c.motivo_rechazo|default:''|escapejs }}"
                                         data-archivo="{% if c.estado == 'aprobado' %}{% url 'novedades:certificado_descargar' c.id %}{% endif %}"
-                                        data-tipo="certificado"
-                                        title="Ver detalle">
-                                    <i class="bi bi-eye"></i>
+                                        data-tipo="certificado">
+                                    <i class="bi bi-eye"></i> Ver detalles
                                 </button>
                             </div>
                         </div>
@@ -452,17 +462,28 @@
 <!-- Modal: Nueva Solicitud -->
 <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2" style="color: var(--color-primary);"></i> Nueva solicitud</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content novedad-modal">
+            
+            <div class="modal-header novedad-detalle-header">
+                <div>
+                    <div class="novedad-detalle-titulo">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        <span>Nueva Solicitud</span>
+                    </div>
+                    <p class="novedad-detalle-subtitulo mb-0">
+                        Crea una nueva solicitud de permiso, incapacidad o certificado
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body">
-                <form method="post" enctype="multipart/form-data" id="solicitudForm" action="{% url 'novedades:solicitudes_empleado' %}">
-                    {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Tipo de solicitud <span class="text-danger">*</span></label>
+
+            <form method="post" enctype="multipart/form-data" id="solicitudForm" action="{% url 'novedades:solicitudes_empleado' %}">
+                {% csrf_token %}
+                <div class="modal-body novedad-detalle-body">
+                    
+                    <div class="novedad-detalle-item mb-3">
+                        <span class="novedad-detalle-label">Tipo de solicitud <span class="text-danger">*</span></span>
+                        <span class="novedad-detalle-value">
                             <select class="form-select" id="tipoSolicitud" name="tipo_solicitud" required>
                                 <option value="">Seleccionar tipo</option>
                                 <option value="permiso" {% if request.POST.tipo_solicitud == 'permiso' %}selected{% endif %}>Permiso</option>
@@ -471,7 +492,7 @@
                                 <option value="vacaciones" {% if request.POST.tipo_solicitud == 'vacaciones' %}selected{% endif %}>Solicitud de vacaciones</option>
                                 <option value="certificado" {% if request.POST.tipo_solicitud == 'certificado' %}selected{% endif %}>Certificado</option>
                             </select>
-                        </div>
+                        </span>
                     </div>
 
                     {% include 'empleado/solicitudes/permisos/modal.html' %}
@@ -486,19 +507,23 @@
                         </div>
                     {% endif %}
 
-                    <div class="d-flex flex-wrap mt-3 gap-2">
-                        <button type="submit" class="btn btn-primary-corporate"><i class="bi bi-send"></i> Enviar solicitud</button>
-                        <button type="reset" class="btn btn-outline-corporate">Limpiar campos</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="modal-footer novedad-detalle-footer">
+                    <button type="reset" class="novedad-modal-btn novedad-modal-btn-cerrar">
+                        <i class="bi bi-eraser"></i> Limpiar campos
+                    </button>
+                    <button type="submit" class="novedad-modal-btn novedad-modal-btn-editar">
+                        <i class="bi bi-send"></i> Enviar solicitud
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>
 
-<!-- =========================================================
-     MODAL: DETALLE DE SOLICITUD (EMPLEADO) - NUEVO DISEÑO
-========================================================= -->
+<!-- Modal: Detalle de Solicitud -->
 <div class="modal fade" id="modalDetalleSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content novedad-modal">
@@ -536,14 +561,14 @@
                         <span class="novedad-detalle-bloque-largo-label">Motivo / Descripción</span>
                         <p class="novedad-detalle-bloque-largo-texto" id="detalleMotivo">—</p>
                     </div>
-                    <div class="novedad-detalle-bloque-largo" id="detalleRechazoContainer" style="display:none; border-left: 3px solid #dc3545; background: #fff7f7;">
-                        <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
-                        <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;" id="detalleMotivoRechazo">—</p>
+                    <div class="novedad-detalle-bloque-largo" id="detalleRechazoContainer" style="display:none;">
+                        <span class="novedad-detalle-bloque-largo-label" style="color: var(--color-danger);">Motivo del rechazo</span>
+                        <p class="novedad-detalle-bloque-largo-texto" style="color: var(--color-danger-text);" id="detalleMotivoRechazo">—</p>
                     </div>
                     <div class="novedad-detalle-bloque-largo" id="detalleArchivoContainer" style="display:none;">
                         <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                         <p class="novedad-detalle-bloque-largo-texto">
-                            <a href="#" id="detalleArchivoLink" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <a href="#" id="detalleArchivoLink" target="_blank" class="btn btn-sm btn-primary-corporate">
                                 <i class="bi bi-paperclip me-1"></i> Ver archivo
                             </a>
                         </p>
@@ -575,7 +600,7 @@
 <!-- Modal: Confirmar Eliminación -->
 <div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: var(--radius-lg);">
+        <div class="modal-content">
             <div class="modal-header border-0">
                 <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> Confirmar eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -600,60 +625,79 @@
 <!-- Modal: Editar Solicitud -->
 <div class="modal fade" id="modalEditarSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="border-radius: var(--radius-lg);">
-            <div class="modal-header border-0">
-                <h5 class="modal-title">
-                    <i class="bi bi-pencil-square me-2" style="color: var(--color-primary);"></i>
-                    Editar Solicitud
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content novedad-modal">
+            
+            <div class="modal-header novedad-detalle-header">
+                <div>
+                    <div class="novedad-detalle-titulo">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Editar Solicitud</span>
+                    </div>
+                    <p class="novedad-detalle-subtitulo mb-0">
+                        Modifica los campos permitidos de tu solicitud
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <form id="formEditarSolicitud" enctype="multipart/form-data">
-                <div class="modal-body py-3">
-                    <!-- ELIMINAR EL CAMPO 'tipo' COMPLETAMENTE -->
-                    <input type="hidden" id="editarId" name="id">
-                    <!-- NO ENVIAR 'tipo_original' ni ningún campo relacionado con tipo -->
 
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de Solicitud</label>
-                        <input type="text" class="form-control" id="editarTipoDisplay" disabled style="background-color: #f8f9fa; cursor: not-allowed;">
+            <form id="formEditarSolicitud" enctype="multipart/form-data">
+                <div class="modal-body novedad-detalle-body">
+                    <input type="hidden" id="editarId" name="id">
+
+                    <div class="novedad-detalle-item mb-3">
+                        <span class="novedad-detalle-label">Tipo de Solicitud</span>
+                        <span class="novedad-detalle-value">
+                            <input type="text" class="form-control" id="editarTipoDisplay" disabled>
+                        </span>
                         <small class="text-muted">El tipo de solicitud no se puede modificar.</small>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="editarFechaInicio" class="form-label">Fecha de Inicio <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="editarFechaInicio" name="fecha_inicio" required>
+                    <div class="novedad-detalle-grid">
+                        <div class="novedad-detalle-item">
+                            <span class="novedad-detalle-label">Fecha de Inicio <span class="text-danger">*</span></span>
+                            <span class="novedad-detalle-value">
+                                <input type="date" class="form-control" id="editarFechaInicio" name="fecha_inicio" required>
+                            </span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="editarFechaFin" class="form-label">Fecha de Fin <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" id="editarFechaFin" name="fecha_fin" required>
+                        <div class="novedad-detalle-item">
+                            <span class="novedad-detalle-label">Fecha de Fin <span class="text-danger">*</span></span>
+                            <span class="novedad-detalle-value">
+                                <input type="date" class="form-control" id="editarFechaFin" name="fecha_fin" required>
+                            </span>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="editarMotivo" class="form-label">Motivo o Descripción <span class="text-danger">*</span></label>
+                    <div class="novedad-detalle-bloque-largo mt-3">
+                        <span class="novedad-detalle-bloque-largo-label">Motivo o Descripción <span class="text-danger">*</span></span>
                         <textarea class="form-control" id="editarMotivo" name="motivo" rows="3" required></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Archivo Adjunto</label>
+                    <div class="novedad-detalle-bloque-largo mt-3">
+                        <span class="novedad-detalle-bloque-largo-label">Archivo Adjunto</span>
+                        
                         <div id="contenedorArchivoActual" class="mb-2" style="display: none;">
                             <span class="text-muted small d-block">Archivo actual cargado:</span>
-                            <a href="#" id="verArchivoActual" target="_blank" class="btn btn-sm btn-outline-secondary mt-1">
-                                <i class="bi bi-file-earmark-text me-1"></i> Ver archivo actual
+                            <a href="#" id="verArchivoActual" target="_blank" class="btn btn-sm btn-outline-primary mt-1">
+                                <i class="bi bi-paperclip me-1"></i> Ver archivo actual
                             </a>
                         </div>
+                        
                         <label for="editarArchivo" class="form-label small text-muted">Subir nuevo archivo (Opcional, reemplazará al anterior):</label>
                         <input type="file" class="form-control" id="editarArchivo" name="archivo">
                     </div>
 
                 </div>
-                <div class="modal-footer border-0 pb-4">
-                    <button type="button" class="btn-outline-corporate px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn-primary-corporate px-4" id="btnGuardarEdicion">Guardar cambios</button>
+
+                <div class="modal-footer novedad-detalle-footer">
+                    <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg"></i> Cancelar
+                    </button>
+                    <button type="submit" class="novedad-modal-btn novedad-modal-btn-editar" id="btnGuardarEdicion">
+                        <i class="bi bi-check-lg"></i> Guardar cambios
+                    </button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>

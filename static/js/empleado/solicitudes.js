@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (incapDias) incapDias.value = '';
             return;
         }
-
+        
         const inicio = new Date(`${incapInicio.value}T00:00:00`);
         const fin = new Date(`${incapFin.value}T00:00:00`);
 
@@ -162,11 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 7. Modal de detalle (NUEVO DISEÑO) ---
+    // --- 7. Modal de detalle ---
     const modalDetalleEl = document.getElementById('modalDetalleSolicitud');
     const modalDetalle = modalDetalleEl ? new bootstrap.Modal(modalDetalleEl) : null;
 
-    // Función para obtener el icono según el tipo
     function getTipoIcon(tipo) {
         const icons = {
             'permiso': 'bi-calendar-event-fill',
@@ -178,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return icons[tipo] || 'bi-file-earmark-text-fill';
     }
 
-    // Función para el badge de estado
     function getEstadoBadge(estado) {
         const badges = {
             'pendiente': 'novedad-estado-pendiente',
@@ -200,27 +198,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-ver-detalle').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const d = e.currentTarget.dataset;
-
+            
             const tipo = d.tipo || 'solicitud';
             const estado = d.estadoSlug || 'pendiente';
-
+            
             // Icono
             document.getElementById('detalleIcono').className = `bi ${getTipoIcon(tipo)}`;
-
+            
             // Título
             document.getElementById('detalleTitulo').textContent = d.titulo || 'Detalle de solicitud';
-
+            
             // Subtítulo
             document.getElementById('detalleSubtitulo').textContent = d.subtitulo || 'Información completa de la solicitud';
-
+            
             // Estado
             const badge = document.getElementById('detalleEstadoBadge');
             badge.textContent = getEstadoLabel(estado);
             badge.className = `novedad-detalle-estado ${getEstadoBadge(estado)}`;
-
+            
             // Tipo
             document.getElementById('detalleTipo').textContent = d.titulo || '—';
-
+            
             // Fechas
             const fechasContainer = document.getElementById('detalleFechasContainer');
             const fechasEl = document.getElementById('detalleFechas');
@@ -231,10 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 fechasContainer.style.display = 'none';
             }
-
+            
             // Motivo
             document.getElementById('detalleMotivo').textContent = d.motivo || 'Sin información adicional.';
-
+            
             // Motivo de rechazo
             const rechazoContainer = document.getElementById('detalleRechazoContainer');
             const motivoRechazoEl = document.getElementById('detalleMotivoRechazo');
@@ -244,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 rechazoContainer.style.display = 'none';
             }
-
+            
             // Archivo
             const archivoContainer = document.getElementById('detalleArchivoContainer');
             const archivoLink = document.getElementById('detalleArchivoLink');
@@ -254,26 +252,26 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 archivoContainer.style.display = 'none';
             }
-
+            
             // Botones de acción
             const editarBtn = document.getElementById('detalleEditarBtn');
             const eliminarBtn = document.getElementById('detalleEliminarBtn');
             const descargarBtn = document.getElementById('detalleDescargarBtn');
-
+            
             editarBtn.style.display = 'none';
             eliminarBtn.style.display = 'none';
             descargarBtn.style.display = 'none';
-
+            
             // Si está pendiente, mostrar botones de editar/eliminar
             if (estado === 'pendiente') {
                 const pendingItem = btn.closest('.pending-item');
                 if (pendingItem) {
                     const editarOriginal = pendingItem.querySelector('.btn-editar-solicitud');
                     const eliminarOriginal = pendingItem.querySelector('.btn-eliminar-solicitud');
-
+                    
                     if (editarOriginal) {
                         editarBtn.style.display = 'inline-flex';
-                        editarBtn.onclick = function (e) {
+                        editarBtn.onclick = function(e) {
                             e.stopPropagation();
                             modalDetalle?.hide();
                             setTimeout(() => {
@@ -281,10 +279,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             }, 300);
                         };
                     }
-
+                    
                     if (eliminarOriginal) {
                         eliminarBtn.style.display = 'inline-flex';
-                        eliminarBtn.onclick = function (e) {
+                        eliminarBtn.onclick = function(e) {
                             e.stopPropagation();
                             modalDetalle?.hide();
                             setTimeout(() => {
@@ -294,27 +292,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            // Si está aprobado y tiene archivo, mostrar descargar
-            else if (estado === 'aprobado' && d.archivo && d.archivo !== '') {
+            
+            // ============================================================
+            // SOLO PARA CERTIFICADO APROBADO - mostrar botón descargar
+            // ============================================================
+            if (estado === 'aprobado' && tipo === 'certificado') {
                 descargarBtn.style.display = 'inline-flex';
-                descargarBtn.onclick = function () {
-                    window.open(d.archivo, '_blank');
-                };
-            }
-            // Si es certificado aprobado, buscar enlace de descarga
-            else if (estado === 'aprobado' && tipo === 'certificado') {
-                const card = btn.closest('.request-card');
+                
+                // Buscar la URL de descarga
+                const card = btn.closest('.request-card') || btn.closest('.request-card-grid');
                 if (card) {
                     const link = card.querySelector('a[href*="certificado"]');
                     if (link) {
-                        descargarBtn.style.display = 'inline-flex';
-                        descargarBtn.onclick = function () {
+                        descargarBtn.onclick = function() {
                             window.open(link.href, '_blank');
                         };
+                    } else if (d.archivo && d.archivo !== '') {
+                        descargarBtn.onclick = function() {
+                            window.open(d.archivo, '_blank');
+                        };
                     }
+                } else if (d.archivo && d.archivo !== '') {
+                    descargarBtn.onclick = function() {
+                        window.open(d.archivo, '_blank');
+                    };
                 }
             }
-
+            // ============================================================
+            // PERMISO E INCAPACIDAD: NO se muestra el botón descargar
+            // ============================================================
+            
             // Mostrar el modal
             if (modalDetalle) modalDetalle.show();
         });
@@ -421,7 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const idInput = document.getElementById('editarId');
             if (idInput) idInput.value = idVal;
 
-            // SOLO MOSTRAR EL TIPO (no se envía al backend)
             const tipoDisplay = document.getElementById('editarTipoDisplay');
             if (tipoDisplay) {
                 const tipos = {
@@ -433,8 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 tipoDisplay.value = tipos[tipoVal] || tipoVal;
             }
-
-            // NO HAY input hidden para 'tipo_original'
 
             const inputInicio = document.getElementById('editarFechaInicio');
             if (inputInicio) inputInicio.value = inicioVal;
@@ -489,25 +493,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // CREAR FORM DATA CON SOLO LOS CAMPOS NECESARIOS
                 const formData = new FormData();
-
-                // SOLO AGREGAR LOS CAMPOS QUE REALMENTE SE VAN A ACTUALIZAR
+                
                 const fechaInicio = document.getElementById('editarFechaInicio')?.value || '';
                 const fechaFin = document.getElementById('editarFechaFin')?.value || '';
                 const motivo = document.getElementById('editarMotivo')?.value || '';
-
+                
                 formData.append('fecha_inicio', fechaInicio);
                 formData.append('fecha_fin', fechaFin);
                 formData.append('motivo', motivo);
-
-                // AGREGAR EL ARCHIVO SI SE SELECCIONÓ UNO NUEVO
+                
                 const archivoInput = document.getElementById('editarArchivo');
                 if (archivoInput && archivoInput.files && archivoInput.files.length > 0) {
                     formData.append('archivo', archivoInput.files[0]);
                 }
-
-                // NO AGREGAMOS NINGÚN CAMPO 'tipo' NI 'tipo_original'
 
                 const response = await fetch(urlParaEditar, {
                     method: 'POST',
@@ -518,26 +517,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: formData
                 });
 
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('El servidor no devolvió JSON. Posible error de redirección.');
+                }
+
                 const data = await response.json();
+
+                if (btnGuardarEdicion) {
+                    btnGuardarEdicion.disabled = false;
+                    btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
+                }
 
                 if (response.ok && data.status === 'ok') {
                     if (modalEditar) modalEditar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al intentar actualizar la solicitud.');
-                    if (btnGuardarEdicion) {
-                        btnGuardarEdicion.disabled = false;
-                        btnGuardarEdicion.innerHTML = 'Guardar cambios';
-                    }
+                    alert(data.error || 'Ocurrió un error al actualizar la solicitud.');
                 }
+
             } catch (error) {
                 console.error('Error en la petición:', error);
-                alert('Error de red al intentar conectar con el servidor.');
-                if (modalEditar) modalEditar.hide();
                 if (btnGuardarEdicion) {
                     btnGuardarEdicion.disabled = false;
-                    btnGuardarEdicion.innerHTML = 'Guardar cambios';
+                    btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                 }
+                alert('Error de red al intentar conectar con el servidor.');
             }
         });
 
@@ -545,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalEditarEl.addEventListener('hidden.bs.modal', () => {
                 if (btnGuardarEdicion) {
                     btnGuardarEdicion.disabled = false;
-                    btnGuardarEdicion.innerHTML = 'Guardar cambios';
+                    btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                 }
                 urlParaEditar = '';
             });
@@ -580,31 +585,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 11. Ejecutar filtro inicial ---
     filtrarHistorial();
 
-    // ============================================================
-    // --- 12. VALIDACIÓN DEL FORMULARIO DE NUEVA SOLICITUD ---
-    // ============================================================
-
+    // --- 12. Validación del formulario de nueva solicitud ---
     const formNuevaSolicitud = document.getElementById('solicitudForm');
-
+    
     if (formNuevaSolicitud) {
-        formNuevaSolicitud.addEventListener('submit', function (e) {
+        formNuevaSolicitud.addEventListener('submit', function(e) {
             const tipoSelect = document.getElementById('tipoSolicitud');
             const tipo = tipoSelect?.value;
-
+            
             if (!tipo) {
                 e.preventDefault();
                 alert('❌ Por favor, selecciona un tipo de solicitud.');
                 return false;
             }
 
-            // INCAPACIDAD
             if (tipo === 'incapacidad') {
                 const titulo = document.getElementById('incapacidadTitulo');
                 const descripcion = document.getElementById('incapacidadDescripcion');
                 const fechaInicio = document.getElementById('incapacidadFechaInicio');
                 const fechaFin = document.getElementById('incapacidadFechaFin');
                 const archivo = document.getElementById('incapacidadAdjunto');
-
+                
                 if (!titulo?.value.trim()) {
                     e.preventDefault();
                     alert('❌ El título es obligatorio.');
@@ -632,11 +633,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // CERTIFICADO
             if (tipo === 'certificado') {
                 const tipoCert = document.getElementById('certificadoTipo');
                 const proposito = document.getElementById('certificadoProposito');
-
+                
                 if (!tipoCert?.value) {
                     e.preventDefault();
                     alert('❌ El tipo de certificado es obligatorio.');
@@ -649,38 +649,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // PERMISO
             if (['permiso', 'cambio_turno', 'vacaciones'].includes(tipo)) {
                 const tipoPermiso = document.getElementById('permisoTipo');
                 const fechaInicio = document.getElementById('permisoFechaInicio');
                 const fechaFin = document.getElementById('permisoFechaFin');
                 const justificacion = document.getElementById('permisoMotivo');
-
+                
                 if (!tipoPermiso?.value) {
                     e.preventDefault();
                     alert('❌ El tipo de permiso es obligatorio.');
                     return false;
                 }
-
+                
                 if (!fechaInicio?.value) {
                     e.preventDefault();
                     alert('❌ La fecha de inicio es obligatoria.');
                     return false;
                 }
-
+                
                 if (!fechaFin?.value) {
                     e.preventDefault();
                     alert('❌ La fecha de fin es obligatoria.');
                     return false;
                 }
-
+                
                 if (!justificacion?.value.trim()) {
                     e.preventDefault();
                     alert('❌ La justificación es obligatoria.');
                     return false;
                 }
             }
-
+            
             console.log('✅ Formulario válido, enviando...');
             return true;
         });

@@ -1,54 +1,50 @@
+<!-- empleado/solicitudes/certificados/modal.html -->
 <div id="formCertificado" class="dynamic-form" style="display: none;">
-    <div class="row g-3 mt-2">
-        <!-- Tipo (obligatorio) -->
-        <div class="col-md-6">
-            <label class="form-label">Tipo de certificado <span class="text-danger">*</span></label>
-            <select class="form-select" id="certificadoTipo" name="certificado-tipo" >
-                <option value="">Seleccionar...</option>
-                <option value="laboral">Certificado laboral</option>
-                <option value="ingresos">Certificado de ingresos</option>
-                <option value="antiguedad">Certificado de antigüedad</option>
-            </select>
-            {% if certificado_form.tipo.errors %}
-                <div class="text-danger small">{{ certificado_form.tipo.errors }}</div>
-            {% endif %}
+    <div class="novedad-detalle-grid mt-3">
+        <div class="novedad-detalle-item">
+            <span class="novedad-detalle-label">Tipo de certificado <span class="text-danger">*</span></span>
+            <span class="novedad-detalle-value">
+                <select class="form-select" id="certificadoTipo" name="certificado-tipo">
+                    <option value="">Seleccionar...</option>
+                    <option value="laboral">Certificado laboral</option>
+                    <option value="ingresos">Certificado de ingresos</option>
+                    <option value="antiguedad">Certificado de antigüedad</option>
+                </select>
+                {% if certificado_form.tipo.errors %}
+                    <div class="text-danger small">{{ certificado_form.tipo.errors }}</div>
+                {% endif %}
+            </span>
         </div>
-
-        <!-- Propósito (obligatorio) - SIEMPRE VISIBLE -->
-        <div class="col-md-6">
-            <label class="form-label">Propósito <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="certificadoProposito" name="certificado-proposito" 
-                   placeholder="Ej: trámite bancario, estudios" >
-            {% if certificado_form.proposito.errors %}
-                <div class="text-danger small">{{ certificado_form.proposito.errors }}</div>
-            {% endif %}
+        <div class="novedad-detalle-item">
+            <span class="novedad-detalle-label">Propósito <span class="text-danger">*</span></span>
+            <span class="novedad-detalle-value">
+                <input type="text" class="form-control" id="certificadoProposito" name="certificado-proposito" placeholder="Ej: trámite bancario, estudios">
+                {% if certificado_form.proposito.errors %}
+                    <div class="text-danger small">{{ certificado_form.proposito.errors }}</div>
+                {% endif %}
+            </span>
         </div>
-
-        <!-- Dirigido a (opcional) -->
-        <div class="col-md-6">
-            <label class="form-label">Dirigido a <span class="text-muted">(opcional)</span></label>
-            <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" 
-                   placeholder="Nombre de la entidad o persona">
-            {% if certificado_form.dirigido_a.errors %}
-                <div class="text-danger small">{{ certificado_form.dirigido_a.errors }}</div>
-            {% endif %}
+        <div class="novedad-detalle-item">
+            <span class="novedad-detalle-label">Dirigido a <span class="text-muted">(opcional)</span></span>
+            <span class="novedad-detalle-value">
+                <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" placeholder="Nombre de la entidad o persona">
+                {% if certificado_form.dirigido_a.errors %}
+                    <div class="text-danger small">{{ certificado_form.dirigido_a.errors }}</div>
+                {% endif %}
+            </span>
         </div>
-
-        <!-- Período (opcional, solo para ingresos) -->
-        <div class="col-md-6" id="certificadoPeriodoGroup" style="display: none;">
-            <label class="form-label">Período <span class="text-muted">(opcional)</span></label>
-            <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" 
-                   placeholder="Ej: Enero 2025 - Marzo 2025">
-            {% if certificado_form.periodo.errors %}
-                <div class="text-danger small">{{ certificado_form.periodo.errors }}</div>
-            {% endif %}
+        <div class="novedad-detalle-item" id="certificadoPeriodoGroup" style="display: none;">
+            <span class="novedad-detalle-label">Período <span class="text-muted">(opcional)</span></span>
+            <span class="novedad-detalle-value">
+                <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" placeholder="Ej: Enero 2025 - Marzo 2025">
+                {% if certificado_form.periodo.errors %}
+                    <div class="text-danger small">{{ certificado_form.periodo.errors }}</div>
+                {% endif %}
+            </span>
         </div>
-
-        <!-- Archivo (opcional) -->
-        <div class="col-12">
-            <label class="form-label">Adjuntar soporte <span class="text-muted">(opcional)</span></label>
-            <input type="file" class="form-control" id="certificadoAdjunto" name="certificado-archivo" 
-                   accept=".pdf,.jpg,.png,.jpeg">
+        <div class="novedad-detalle-bloque-largo">
+            <span class="novedad-detalle-bloque-largo-label">Adjuntar soporte <span class="text-muted">(opcional)</span></span>
+            <input type="file" class="form-control" id="certificadoAdjunto" name="certificado-archivo" accept=".pdf,.jpg,.png,.jpeg">
             <small class="file-info text-muted">PDF, JPG o PNG (máx 5MB). Opcional.</small>
             {% if certificado_form.archivo.errors %}
                 <div class="text-danger small">{{ certificado_form.archivo.errors }}</div>
