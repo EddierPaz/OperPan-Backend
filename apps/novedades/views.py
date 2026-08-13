@@ -318,26 +318,34 @@ def editar_permiso(request, pk):
             'error': 'El permiso no existe, no te pertenece o ya fue procesado.'
         }, status=404)
 
-    form = PermisoCrearForm(
-        request.POST,
-        request.FILES,
-        instance=permiso,
-        prefix='permiso'
-    )
-
-    if form.is_valid():
-        form.save()
+    # Obtener los datos del POST
+    fecha_inicio = request.POST.get('fecha_inicio')
+    fecha_fin = request.POST.get('fecha_fin')
+    justificacion = request.POST.get('motivo')
+    
+    # Validar campos obligatorios
+    if not fecha_inicio or not fecha_fin or not justificacion:
         return JsonResponse({
-            'status': 'ok',
-            'mensaje': 'Permiso actualizado correctamente.'
-        })
-    else:
-        error_msg = 'Por favor, corrige los errores.'
-        for field, errors in form.errors.items():
-            error_msg = f"{field}: {errors[0]}"
-            break
-        return JsonResponse({'error': error_msg}, status=400)
+            'error': 'Todos los campos son obligatorios.'
+        }, status=400)
+    
+    # Actualizar SOLO los campos permitidos
+    permiso.fecha_inicio = fecha_inicio
+    permiso.fecha_fin = fecha_fin
+    permiso.justificacion = justificacion
+    
+    if request.FILES.get('archivo'):
+        permiso.archivo = request.FILES['archivo']
+    
+    permiso.save()
 
+    # Guardar mensaje en sesión
+    messages.success(request, '✅ Permiso actualizado correctamente.')
+
+    return JsonResponse({
+        'status': 'ok',
+        'mensaje': '✅ Permiso actualizado correctamente.'
+    })
 
 @login_required
 @empleado_required
@@ -357,27 +365,35 @@ def editar_incapacidad(request, pk):
             'error': 'La incapacidad no existe, no te pertenece o ya fue procesada.'
         }, status=404)
 
-    form = IncapacidadCrearForm(
-        request.POST,
-        request.FILES,
-        instance=incapacidad,
-        prefix='incapacidad'
-    )
-
-    if form.is_valid():
-        form.save()
+    # Obtener los datos del POST
+    fecha_inicio = request.POST.get('fecha_inicio')
+    fecha_fin = request.POST.get('fecha_fin')
+    descripcion = request.POST.get('motivo')
+    
+    # Validar campos obligatorios
+    if not fecha_inicio or not fecha_fin or not descripcion:
         return JsonResponse({
-            'status': 'ok',
-            'mensaje': 'Incapacidad actualizada correctamente.'
-        })
-    else:
-        error_msg = 'Por favor, corrige los errores.'
-        for field, errors in form.errors.items():
-            error_msg = f"{field}: {errors[0]}"
-            break
-        return JsonResponse({'error': error_msg}, status=400)
+            'error': 'Todos los campos son obligatorios.'
+        }, status=400)
+    
+    # Actualizar SOLO los campos permitidos
+    incapacidad.fecha_inicio = fecha_inicio
+    incapacidad.fecha_fin = fecha_fin
+    incapacidad.descripcion = descripcion
+    
+    if request.FILES.get('archivo'):
+        incapacidad.archivo = request.FILES['archivo']
+    
+    incapacidad.save()
 
+    # Guardar mensaje en sesión
+    messages.success(request, '✅ Incapacidad actualizada correctamente.')
 
+    return JsonResponse({
+        'status': 'ok',
+        'mensaje': '✅ Incapacidad actualizada correctamente.'
+    })
+    
 @login_required
 @empleado_required
 def editar_certificado(request, pk):
@@ -396,27 +412,31 @@ def editar_certificado(request, pk):
             'error': 'El certificado no existe, no te pertenece o ya fue procesado.'
         }, status=404)
 
-    form = CertificadoCrearForm(
-        request.POST,
-        request.FILES,
-        instance=certificado,
-        prefix='certificado'
-    )
-
-    if form.is_valid():
-        form.save()
+    # Obtener los datos del POST
+    proposito = request.POST.get('motivo')
+    
+    # Validar campos obligatorios
+    if not proposito:
         return JsonResponse({
-            'status': 'ok',
-            'mensaje': 'Certificado actualizado correctamente.'
-        })
-    else:
-        error_msg = 'Por favor, corrige los errores.'
-        for field, errors in form.errors.items():
-            error_msg = f"{field}: {errors[0]}"
-            break
-        return JsonResponse({'error': error_msg}, status=400)
+            'error': 'El propósito es obligatorio.'
+        }, status=400)
+    
+    # Actualizar SOLO los campos permitidos
+    certificado.proposito = proposito
+    
+    if request.FILES.get('archivo'):
+        certificado.archivo = request.FILES['archivo']
+    
+    certificado.save()
 
+    # Guardar mensaje en sesión
+    messages.success(request, '✅ Certificado actualizado correctamente.')
 
+    return JsonResponse({
+        'status': 'ok',
+        'mensaje': '✅ Certificado actualizado correctamente.'
+    })
+    
 # ============================================================
 # ELIMINAR SOLICITUDES - EMPLEADO
 # ============================================================
@@ -439,12 +459,19 @@ def eliminar_permiso(request, pk):
             'error': 'El permiso no existe, no te pertenece o ya fue procesado.'
         }, status=404)
 
+    # Guardar información para el mensaje
+    tipo_permiso = permiso.get_tipo_display()
+    
+    # Eliminar
     permiso.delete()
+
+    # Guardar mensaje en sesión
+    messages.success(request, f'✅ Permiso "{tipo_permiso}" eliminado correctamente.')
+
     return JsonResponse({
         'status': 'ok',
-        'mensaje': 'Permiso eliminado correctamente.'
+        'mensaje': f'✅ Permiso "{tipo_permiso}" eliminado correctamente.'
     })
-
 
 @login_required
 @empleado_required
@@ -464,10 +491,18 @@ def eliminar_incapacidad(request, pk):
             'error': 'La incapacidad no existe, no te pertenece o ya fue procesada.'
         }, status=404)
 
+    # Guardar información para el mensaje
+    titulo = incapacidad.titulo
+    
+    # Eliminar
     incapacidad.delete()
+
+    # Guardar mensaje en sesión
+    messages.success(request, f'✅ Incapacidad "{titulo}" eliminada correctamente.')
+
     return JsonResponse({
         'status': 'ok',
-        'mensaje': 'Incapacidad eliminada correctamente.'
+        'mensaje': f'✅ Incapacidad "{titulo}" eliminada correctamente.'
     })
 
 
@@ -489,12 +524,19 @@ def eliminar_certificado(request, pk):
             'error': 'El certificado no existe, no te pertenece o ya fue procesado.'
         }, status=404)
 
+    # Guardar información para el mensaje
+    tipo_certificado = certificado.get_tipo_display()
+    
+    # Eliminar
     certificado.delete()
+
+    # Guardar mensaje en sesión
+    messages.success(request, f'✅ Certificado "{tipo_certificado}" eliminado correctamente.')
+
     return JsonResponse({
         'status': 'ok',
-        'mensaje': 'Certificado eliminado correctamente.'
+        'mensaje': f'✅ Certificado "{tipo_certificado}" eliminado correctamente.'
     })
-
 
 # ============================================================
 # VISTA PRINCIPAL PARA ADMINISTRADOR (HTML)

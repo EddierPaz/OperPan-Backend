@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (incapDias) incapDias.value = '';
             return;
         }
-        
+
         const inicio = new Date(`${incapInicio.value}T00:00:00`);
         const fin = new Date(`${incapFin.value}T00:00:00`);
 
@@ -200,27 +200,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.btn-ver-detalle').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const d = e.currentTarget.dataset;
-            
+
             const tipo = d.tipo || 'solicitud';
             const estado = d.estadoSlug || 'pendiente';
-            
+
             // Icono
             document.getElementById('detalleIcono').className = `bi ${getTipoIcon(tipo)}`;
-            
+
             // Título
             document.getElementById('detalleTitulo').textContent = d.titulo || 'Detalle de solicitud';
-            
+
             // Subtítulo
             document.getElementById('detalleSubtitulo').textContent = d.subtitulo || 'Información completa de la solicitud';
-            
+
             // Estado
             const badge = document.getElementById('detalleEstadoBadge');
             badge.textContent = getEstadoLabel(estado);
             badge.className = `novedad-detalle-estado ${getEstadoBadge(estado)}`;
-            
+
             // Tipo
             document.getElementById('detalleTipo').textContent = d.titulo || '—';
-            
+
             // Fechas
             const fechasContainer = document.getElementById('detalleFechasContainer');
             const fechasEl = document.getElementById('detalleFechas');
@@ -231,10 +231,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 fechasContainer.style.display = 'none';
             }
-            
+
             // Motivo
             document.getElementById('detalleMotivo').textContent = d.motivo || 'Sin información adicional.';
-            
+
             // Motivo de rechazo
             const rechazoContainer = document.getElementById('detalleRechazoContainer');
             const motivoRechazoEl = document.getElementById('detalleMotivoRechazo');
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 rechazoContainer.style.display = 'none';
             }
-            
+
             // Archivo
             const archivoContainer = document.getElementById('detalleArchivoContainer');
             const archivoLink = document.getElementById('detalleArchivoLink');
@@ -254,26 +254,26 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 archivoContainer.style.display = 'none';
             }
-            
+
             // Botones de acción
             const editarBtn = document.getElementById('detalleEditarBtn');
             const eliminarBtn = document.getElementById('detalleEliminarBtn');
             const descargarBtn = document.getElementById('detalleDescargarBtn');
-            
+
             editarBtn.style.display = 'none';
             eliminarBtn.style.display = 'none';
             descargarBtn.style.display = 'none';
-            
+
             // Si está pendiente, mostrar botones de editar/eliminar
             if (estado === 'pendiente') {
                 const pendingItem = btn.closest('.pending-item');
                 if (pendingItem) {
                     const editarOriginal = pendingItem.querySelector('.btn-editar-solicitud');
                     const eliminarOriginal = pendingItem.querySelector('.btn-eliminar-solicitud');
-                    
+
                     if (editarOriginal) {
                         editarBtn.style.display = 'inline-flex';
-                        editarBtn.onclick = function(e) {
+                        editarBtn.onclick = function (e) {
                             e.stopPropagation();
                             modalDetalle?.hide();
                             setTimeout(() => {
@@ -281,10 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             }, 300);
                         };
                     }
-                    
+
                     if (eliminarOriginal) {
                         eliminarBtn.style.display = 'inline-flex';
-                        eliminarBtn.onclick = function(e) {
+                        eliminarBtn.onclick = function (e) {
                             e.stopPropagation();
                             modalDetalle?.hide();
                             setTimeout(() => {
@@ -293,11 +293,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         };
                     }
                 }
-            } 
+            }
             // Si está aprobado y tiene archivo, mostrar descargar
             else if (estado === 'aprobado' && d.archivo && d.archivo !== '') {
                 descargarBtn.style.display = 'inline-flex';
-                descargarBtn.onclick = function() {
+                descargarBtn.onclick = function () {
                     window.open(d.archivo, '_blank');
                 };
             }
@@ -308,13 +308,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const link = card.querySelector('a[href*="certificado"]');
                     if (link) {
                         descargarBtn.style.display = 'inline-flex';
-                        descargarBtn.onclick = function() {
+                        descargarBtn.onclick = function () {
                             window.open(link.href, '_blank');
                         };
                     }
                 }
             }
-            
+
             // Mostrar el modal
             if (modalDetalle) modalDetalle.show();
         });
@@ -421,6 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const idInput = document.getElementById('editarId');
             if (idInput) idInput.value = idVal;
 
+            // SOLO MOSTRAR EL TIPO (no se envía al backend)
             const tipoDisplay = document.getElementById('editarTipoDisplay');
             if (tipoDisplay) {
                 const tipos = {
@@ -433,8 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tipoDisplay.value = tipos[tipoVal] || tipoVal;
             }
 
-            const tipoOriginal = document.getElementById('editarTipoOriginal');
-            if (tipoOriginal) tipoOriginal.value = tipoVal;
+            // NO HAY input hidden para 'tipo_original'
 
             const inputInicio = document.getElementById('editarFechaInicio');
             if (inputInicio) inputInicio.value = inicioVal;
@@ -489,7 +489,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                const formData = new FormData(formEditar);
+                // CREAR FORM DATA CON SOLO LOS CAMPOS NECESARIOS
+                const formData = new FormData();
+
+                // SOLO AGREGAR LOS CAMPOS QUE REALMENTE SE VAN A ACTUALIZAR
+                const fechaInicio = document.getElementById('editarFechaInicio')?.value || '';
+                const fechaFin = document.getElementById('editarFechaFin')?.value || '';
+                const motivo = document.getElementById('editarMotivo')?.value || '';
+
+                formData.append('fecha_inicio', fechaInicio);
+                formData.append('fecha_fin', fechaFin);
+                formData.append('motivo', motivo);
+
+                // AGREGAR EL ARCHIVO SI SE SELECCIONÓ UNO NUEVO
+                const archivoInput = document.getElementById('editarArchivo');
+                if (archivoInput && archivoInput.files && archivoInput.files.length > 0) {
+                    formData.append('archivo', archivoInput.files[0]);
+                }
+
+                // NO AGREGAMOS NINGÚN CAMPO 'tipo' NI 'tipo_original'
 
                 const response = await fetch(urlParaEditar, {
                     method: 'POST',
@@ -565,14 +583,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // --- 12. VALIDACIÓN DEL FORMULARIO DE NUEVA SOLICITUD ---
     // ============================================================
-    
+
     const formNuevaSolicitud = document.getElementById('solicitudForm');
-    
+
     if (formNuevaSolicitud) {
-        formNuevaSolicitud.addEventListener('submit', function(e) {
+        formNuevaSolicitud.addEventListener('submit', function (e) {
             const tipoSelect = document.getElementById('tipoSolicitud');
             const tipo = tipoSelect?.value;
-            
+
             if (!tipo) {
                 e.preventDefault();
                 alert('❌ Por favor, selecciona un tipo de solicitud.');
@@ -586,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fechaInicio = document.getElementById('incapacidadFechaInicio');
                 const fechaFin = document.getElementById('incapacidadFechaFin');
                 const archivo = document.getElementById('incapacidadAdjunto');
-                
+
                 if (!titulo?.value.trim()) {
                     e.preventDefault();
                     alert('❌ El título es obligatorio.');
@@ -618,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tipo === 'certificado') {
                 const tipoCert = document.getElementById('certificadoTipo');
                 const proposito = document.getElementById('certificadoProposito');
-                
+
                 if (!tipoCert?.value) {
                     e.preventDefault();
                     alert('❌ El tipo de certificado es obligatorio.');
@@ -637,32 +655,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fechaInicio = document.getElementById('permisoFechaInicio');
                 const fechaFin = document.getElementById('permisoFechaFin');
                 const justificacion = document.getElementById('permisoMotivo');
-                
+
                 if (!tipoPermiso?.value) {
                     e.preventDefault();
                     alert('❌ El tipo de permiso es obligatorio.');
                     return false;
                 }
-                
+
                 if (!fechaInicio?.value) {
                     e.preventDefault();
                     alert('❌ La fecha de inicio es obligatoria.');
                     return false;
                 }
-                
+
                 if (!fechaFin?.value) {
                     e.preventDefault();
                     alert('❌ La fecha de fin es obligatoria.');
                     return false;
                 }
-                
+
                 if (!justificacion?.value.trim()) {
                     e.preventDefault();
                     alert('❌ La justificación es obligatoria.');
                     return false;
                 }
             }
-            
+
             console.log('✅ Formulario válido, enviando...');
             return true;
         });
