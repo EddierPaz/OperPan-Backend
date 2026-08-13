@@ -1,6 +1,7 @@
 /* ============================================================
    SISTEMA DE NOTIFICACIONES (TOAST) - OPERPAN
    static/css/base/toasts.css
+   Requiere variables.css cargado antes.
    ============================================================ */
 
 .toast-container {
@@ -33,15 +34,15 @@
 
     gap: 12px;
 
-    background: #FFFFFF;
+    background: var(--color-white);
 
-    border-radius: 16px;
+    border-radius: var(--radius-md);
 
     padding: 14px 16px;
 
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-toast);
 
-    border-left: 4px solid #A40706;
+    border-left: 4px solid var(--color-primary);
 
     /* Estado inicial */
     opacity: 0;
@@ -85,22 +86,22 @@
 
 /* ÉXITO */
 .app-toast-success {
-    border-left-color: #16A34A;
+    border-left-color: var(--color-success);
 }
 
 /* ERROR */
 .app-toast-danger {
-    border-left-color: #A40706;
+    border-left-color: var(--color-primary);
 }
 
 /* ADVERTENCIA */
 .app-toast-warning {
-    border-left-color: #F59E0B;
+    border-left-color: var(--color-warning);
 }
 
 /* INFORMACIÓN */
 .app-toast-info {
-    border-left-color: #A40706;
+    border-left-color: var(--color-primary);
 }
 
 
@@ -114,7 +115,7 @@
     width: 34px;
     height: 34px;
 
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 
     display: flex;
     align-items: center;
@@ -127,16 +128,16 @@
 /* ÉXITO */
 
 .app-toast-success .app-toast-icon {
-    background: #DCFCE7;
-    color: #16A34A;
+    background: var(--color-success-bg);
+    color: var(--color-success);
 }
 
 
 /* ERROR */
 
 .app-toast-danger .app-toast-icon {
-    background: #FEE2E2;
-    color: #A40706;
+    background: var(--color-danger-bg);
+    color: var(--color-primary);
 }
 
 
@@ -144,15 +145,15 @@
 
 .app-toast-warning .app-toast-icon {
     background: #FEF3C7;
-    color: #D97706;
+    color: var(--color-warning-hover);
 }
 
 
 /* INFORMACIÓN */
 
 .app-toast-info .app-toast-icon {
-    background: #F8E4E4;
-    color: #A40706;
+    background: var(--color-primary-soft-2);
+    color: var(--color-primary);
 }
 
 
@@ -163,13 +164,13 @@
 .app-toast-msg {
     flex: 1;
 
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-main);
 
     font-size: 0.88rem;
 
     line-height: 1.4;
 
-    color: #2C3E50;
+    color: var(--color-toast-text);
 
     padding-top: 5px;
 
@@ -195,9 +196,9 @@
 
     border: none;
 
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
 
-    color: #8A99AA;
+    color: var(--color-toast-close);
 
     font-size: 1.1rem;
 
@@ -216,9 +217,9 @@
 
 
 .app-toast-close:hover {
-    color: #A40706;
+    color: var(--color-primary);
 
-    background: #F8E4E4;
+    background: var(--color-primary-soft-2);
 }
 
 

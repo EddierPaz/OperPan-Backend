@@ -525,9 +525,324 @@ main.dashboard-container footer i {
     margin-right: 0.3rem;
 }
 
+/* ============================================================
+   ACCIONES - SOLICITUDES PENDIENTES
+   ============================================================ */
+
+.pending-actions {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.pending-actions-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: #7a7a7a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pending-actions-btn i {
+    font-size: 1.15rem;
+}
+
+.pending-actions-btn:hover,
+.pending-actions-btn:focus {
+    background: #f5f5f5;
+    color: #A40706;
+    box-shadow: none;
+}
+
+.pending-dropdown {
+    min-width: 165px;
+    padding: 6px;
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+    animation: pendingDropdownShow 0.15s ease;
+}
+
+.pending-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 7px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.15s ease;
+}
+
+.pending-dropdown .dropdown-item i {
+    width: 17px;
+    font-size: 0.95rem;
+}
+
+.pending-dropdown .dropdown-item:hover {
+    background: #f8f8f8;
+    color: #A40706;
+}
+
+.pending-dropdown .dropdown-item.text-danger:hover {
+    background: #fff1f1;
+    color: #dc3545;
+}
+
+.pending-dropdown .dropdown-divider {
+    margin: 5px 0;
+}
+
+@keyframes pendingDropdownShow {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 /* ============================================================
-   10. RESPONSIVE DESIGN
+   11. MODAL DETALLE - NUEVO DISEÑO ESTILO ADMIN
+   ============================================================ */
+
+.novedad-modal {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+.novedad-detalle-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #edf2f7;
+    background: #ffffff;
+}
+
+.novedad-detalle-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #A40706;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.novedad-detalle-titulo i {
+    font-size: 1.25rem;
+}
+
+.novedad-detalle-subtitulo {
+    margin-top: 0.25rem;
+    margin-left: 1.85rem;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.novedad-detalle-body {
+    padding: 1.5rem;
+    background: #ffffff;
+}
+
+.novedad-detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.novedad-detalle-item {
+    padding: 0.9rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+}
+
+.novedad-detalle-item-full {
+    grid-column: 1 / -1;
+}
+
+.novedad-detalle-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.novedad-detalle-value {
+    display: block;
+    color: #1e293b;
+    font-size: 0.92rem;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.novedad-detalle-bloque-largo {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+}
+
+.novedad-detalle-bloque-largo-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.novedad-detalle-bloque-largo-texto {
+    margin: 0;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.novedad-detalle-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.novedad-estado-pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.novedad-estado-aprobado {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.novedad-estado-rechazado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.novedad-detalle-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #edf2f7;
+    background: #ffffff;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.novedad-modal-btn {
+    border: none;
+    border-radius: 25px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.novedad-modal-btn-cerrar {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.novedad-modal-btn-cerrar:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.novedad-modal-btn-editar {
+    background: #0d6efd;
+    color: #ffffff;
+}
+
+.novedad-modal-btn-editar:hover {
+    background: #0b5ed7;
+    transform: translateY(-1px);
+}
+
+.novedad-modal-btn-eliminar {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.novedad-modal-btn-eliminar:hover {
+    background: #bb2d3b;
+    transform: translateY(-1px);
+}
+
+.novedad-modal-btn-descargar {
+    background: #198754;
+    color: #ffffff;
+}
+
+.novedad-modal-btn-descargar:hover {
+    background: #157347;
+    transform: translateY(-1px);
+}
+
+
+/* ============================================================
+   12. RESPONSIVE DESIGN PARA MODALES
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .novedad-detalle-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .novedad-detalle-item-full {
+        grid-column: auto;
+    }
+    
+    .novedad-detalle-bloque-largo {
+        grid-column: auto;
+    }
+    
+    .novedad-detalle-footer {
+        flex-direction: column;
+    }
+    
+    .novedad-detalle-footer .novedad-modal-btn {
+        width: 100%;
+    }
+    
+    .novedad-detalle-subtitulo {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .novedad-detalle-header,
+    .novedad-detalle-body,
+    .novedad-detalle-footer {
+        padding: 1rem;
+    }
+}
+
+
+/* ============================================================
+   10. RESPONSIVE DESIGN (ya existente)
    ============================================================ */
 
 @media (max-width: 991.98px) {

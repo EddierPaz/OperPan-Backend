@@ -1,55 +1,87 @@
 <div id="formIncapacidad" class="dynamic-form" style="display: none;">
     <div class="row g-3 mt-2">
+        <!-- Título -->
         <div class="col-md-6">
-            <label class="form-label">Título *</label>
-            <input type="text" class="form-control" id="incapacidadTitulo" name="incapacidad-titulo" placeholder="Ej. Incapacidad por cirugía" value="{{ incapacidad_form.titulo.value|default:'' }}">
+            <label class="form-label">Título <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="incapacidadTitulo" name="incapacidad-titulo" 
+                   placeholder="Ej. Incapacidad por cirugía" 
+                   value="{{ incapacidad_form.titulo.value|default:'' }}" >
             {% if incapacidad_form.titulo.errors %}
                 <div class="text-danger small">{{ incapacidad_form.titulo.errors }}</div>
             {% endif %}
         </div>
+
+        <!-- Fecha inicio -->
         <div class="col-md-3">
-            <label class="form-label">Fecha inicio *</label>
-            <input type="date" class="form-control" id="incapacidadFechaInicio" name="incapacidad-fecha_inicio" value="{{ incapacidad_form.fecha_inicio.value|default:'' }}">
+            <label class="form-label">Fecha inicio <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="incapacidadFechaInicio" 
+                   name="incapacidad-fecha_inicio" 
+                   value="{{ incapacidad_form.fecha_inicio.value|default:'' }}" >
             {% if incapacidad_form.fecha_inicio.errors %}
                 <div class="text-danger small">{{ incapacidad_form.fecha_inicio.errors }}</div>
             {% endif %}
         </div>
+
+        <!-- Fecha fin -->
         <div class="col-md-3">
-            <label class="form-label">Fecha fin *</label>
-            <input type="date" class="form-control" id="incapacidadFechaFin" name="incapacidad-fecha_fin" value="{{ incapacidad_form.fecha_fin.value|default:'' }}">
+            <label class="form-label">Fecha fin <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" id="incapacidadFechaFin" 
+                   name="incapacidad-fecha_fin" 
+                   value="{{ incapacidad_form.fecha_fin.value|default:'' }}" >
             {% if incapacidad_form.fecha_fin.errors %}
                 <div class="text-danger small">{{ incapacidad_form.fecha_fin.errors }}</div>
             {% endif %}
         </div>
+
+        <!-- Días (calculado automáticamente) -->
         <div class="col-md-2">
             <label class="form-label">Días</label>
-            <input type="text" class="form-control" id="incapacidadDias" readonly>
+            <input type="text" class="form-control" id="incapacidadDias" readonly 
+                   style="background-color: #f8f9fa; cursor: not-allowed;">
         </div>
-        <div class="col-md-4">
-            <label class="form-label">Entidad emisora *</label>
-            <input type="text" class="form-control" id="incapacidadEntidad" name="incapacidad-entidad_emisora" placeholder="EPS o clínica" value="{{ incapacidad_form.entidad_emisora.value|default:'' }}">
+
+        <!-- Entidad emisora -->
+        <div class="col-md-6">
+            <label class="form-label">Entidad emisora <span class="text-muted">(opcional)</span></label>
+            <input type="text" class="form-control" id="incapacidadEntidad" 
+                   name="incapacidad-entidad_emisora" 
+                   placeholder="EPS o clínica" 
+                   value="{{ incapacidad_form.entidad_emisora.value|default:'' }}">
             {% if incapacidad_form.entidad_emisora.errors %}
                 <div class="text-danger small">{{ incapacidad_form.entidad_emisora.errors }}</div>
             {% endif %}
         </div>
-        <div class="col-md-4">
-            <label class="form-label">Número de incapacidad *</label>
-            <input type="text" class="form-control" id="incapacidadNumero" name="incapacidad-numero_incapacidad" placeholder="Número de certificado" value="{{ incapacidad_form.numero_incapacidad.value|default:'' }}">
+
+        <!-- Número de incapacidad -->
+        <div class="col-md-6">
+            <label class="form-label">Número de incapacidad <span class="text-muted">(opcional)</span></label>
+            <input type="text" class="form-control" id="incapacidadNumero" 
+                   name="incapacidad-numero_incapacidad" 
+                   placeholder="Número de certificado" 
+                   value="{{ incapacidad_form.numero_incapacidad.value|default:'' }}">
             {% if incapacidad_form.numero_incapacidad.errors %}
                 <div class="text-danger small">{{ incapacidad_form.numero_incapacidad.errors }}</div>
             {% endif %}
         </div>
+
+        <!-- ✅ DESCRIPCIÓN (CORREGIDO: ahora es obligatorio) -->
         <div class="col-12">
-            <label class="form-label">Observaciones</label>
-            <textarea class="form-control" rows="2" id="incapacidadObservaciones" name="incapacidad-descripcion" placeholder="Detalles adicionales">{{ incapacidad_form.descripcion.value|default:'' }}</textarea>
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="2" id="incapacidadDescripcion" 
+                name="incapacidad-descripcion" 
+                placeholder="Detalles de la incapacidad" >{{ incapacidad_form.descripcion.value|default:'' }}</textarea>
             {% if incapacidad_form.descripcion.errors %}
                 <div class="text-danger small">{{ incapacidad_form.descripcion.errors }}</div>
             {% endif %}
         </div>
+
+        <!-- ✅ ARCHIVO (CORREGIDO: ahora tiene required) -->
         <div class="col-12">
-            <label class="form-label">Adjuntar soporte (obligatorio) *</label>
-            <input type="file" class="form-control" id="incapacidadAdjunto" name="incapacidad-archivo" accept=".pdf,.jpg,.png,.jpeg">
-            <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB). Obligatorio para incapacidades.</small>
+            <label class="form-label">Adjuntar soporte <span class="text-danger">*</span></label>
+            <input type="file" class="form-control" id="incapacidadAdjunto" 
+                   name="incapacidad-archivo" 
+                   accept=".pdf,.jpg,.png,.jpeg" >
+            <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB). Obligatorio.</small>
             {% if incapacidad_form.archivo.errors %}
                 <div class="text-danger small">{{ incapacidad_form.archivo.errors }}</div>
             {% endif %}

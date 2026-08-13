@@ -22,7 +22,7 @@
                 <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
             </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
@@ -30,11 +30,11 @@
                     <h3 class="mt-1">{{ total_solicitudes }}</h3>
                 </div>
                 <div class="icono-circular">
-                    <i class="bi bi-send-fill fs-2 text-primary"></i>
+                    <i class="bi bi-send-fill"></i>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
@@ -42,11 +42,11 @@
                     <h3 class="mt-1">{{ total_pendientes }}</h3>
                 </div>
                 <div class="icono-circular">
-                    <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+                    <i class="bi bi-hourglass-split"></i>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
@@ -54,20 +54,11 @@
                     <h3 class="mt-1">{{ total_respondidas }}</h3>
                 </div>
                 <div class="icono-circular">
-                    <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
             </div>
         </div>
     </div>
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
 
     <div class="d-flex align-items-center mb-4 flex-wrap gap-3">
         <h3 class="mb-0">
@@ -82,7 +73,7 @@
 
     <div class="solicitudes-pendientes-section">
         <div class="row g-3">
-            <!-- Permisos -->
+            <!-- PERMISOS PENDIENTES -->
             <div class="col-lg-4 col-md-6">
                 <div class="pending-category-card pending-permisos">
                     <div class="pending-card-header">
@@ -101,7 +92,40 @@
                                         <strong>{{ p.get_tipo_display }}</strong>
                                         <small>{{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
                                     </div>
-                                    <span class="pending-dot"></span>
+                                    <div class="pending-actions">
+                                        <button type="button"
+                                                class="pending-actions-btn"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                                title="Opciones">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+
+                                        <ul class="dropdown-menu dropdown-menu-end pending-dropdown">
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item btn-editar-solicitud"
+                                                        data-url="{% url 'novedades:editar_permiso' p.id %}"
+                                                        data-id="{{ p.id }}"
+                                                        data-tipo="permiso"
+                                                        data-inicio="{{ p.fecha_inicio|date:'Y-m-d' }}"
+                                                        data-fin="{{ p.fecha_fin|date:'Y-m-d' }}"
+                                                        data-motivo="{{ p.justificacion }}"
+                                                        {% if p.archivo %}data-archivo="{{ p.archivo.url }}"{% endif %}>
+                                                    <i class="bi bi-pencil"></i> Editar
+                                                </button>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item text-danger btn-eliminar-solicitud"
+                                                        data-url="{% url 'novedades:eliminar_permiso' p.id %}">
+                                                    <i class="bi bi-trash3"></i>
+                                                    Eliminar
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -118,13 +142,13 @@
                 </div>
             </div>
 
-            <!-- Incapacidades -->
+            <!-- INCAPACIDADES PENDIENTES -->
             <div class="col-lg-4 col-md-6">
                 <div class="pending-category-card pending-incapacidades">
                     <div class="pending-card-header">
                         <div class="pending-icon"><i class="bi bi-heart-pulse"></i></div>
                         <div>
-                            <h5 class="mb-0">Incapacidad</h5>
+                            <h5 class="mb-0">Incapacidades</h5>
                             <span>{{ incapacidades_pendientes|length }} pendiente{{ incapacidades_pendientes|length|pluralize }}</span>
                         </div>
                     </div>
@@ -137,7 +161,40 @@
                                         <strong>{{ i.titulo }}</strong>
                                         <small>{{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</small>
                                     </div>
-                                    <span class="pending-dot"></span>
+                                    <div class="pending-actions">
+                                        <button type="button"
+                                                class="pending-actions-btn"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                                title="Opciones">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+
+                                        <ul class="dropdown-menu dropdown-menu-end pending-dropdown">
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item btn-editar-solicitud"
+                                                        data-url="{% url 'novedades:editar_incapacidad' i.id %}"
+                                                        data-id="{{ i.id }}"
+                                                        data-tipo="incapacidad"
+                                                        data-inicio="{{ i.fecha_inicio|date:'Y-m-d' }}"
+                                                        data-fin="{{ i.fecha_fin|date:'Y-m-d' }}"
+                                                        data-motivo="{{ i.descripcion }}"
+                                                        {% if i.archivo %}data-archivo="{{ i.archivo.url }}"{% endif %}>
+                                                    <i class="bi bi-pencil"></i> Editar
+                                                </button>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item text-danger btn-eliminar-solicitud"
+                                                        data-url="{% url 'novedades:eliminar_incapacidad' i.id %}">
+                                                    <i class="bi bi-trash3"></i>
+                                                    Eliminar
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -154,7 +211,7 @@
                 </div>
             </div>
 
-            <!-- Certificados -->
+            <!-- CERTIFICADOS PENDIENTES -->
             <div class="col-lg-4 col-md-6">
                 <div class="pending-category-card pending-certificados">
                     <div class="pending-card-header">
@@ -173,7 +230,40 @@
                                         <strong>{{ c.get_tipo_display }}</strong>
                                         <small>Solicitado {{ c.fecha_solicitud|date:"d/m/Y" }}</small>
                                     </div>
-                                    <span class="pending-dot"></span>
+                                    <div class="pending-actions">
+                                        <button type="button"
+                                                class="pending-actions-btn"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false"
+                                                title="Opciones">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+
+                                        <ul class="dropdown-menu dropdown-menu-end pending-dropdown">
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item btn-editar-solicitud"
+                                                        data-url="{% url 'novedades:editar_certificado' c.id %}"
+                                                        data-id="{{ c.id }}"
+                                                        data-tipo="certificado"
+                                                        data-inicio="{{ c.fecha_solicitud|date:'Y-m-d' }}"
+                                                        data-fin="{{ c.fecha_emision|date:'Y-m-d'|default:'' }}"
+                                                        data-motivo="{{ c.proposito }}"
+                                                        {% if c.archivo %}data-archivo="{{ c.archivo.url }}"{% endif %}>
+                                                    <i class="bi bi-pencil"></i> Editar
+                                                </button>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button type="button"
+                                                        class="dropdown-item text-danger btn-eliminar-solicitud"
+                                                        data-url="{% url 'novedades:eliminar_certificado' c.id %}">
+                                                    <i class="bi bi-trash3"></i>
+                                                    Eliminar
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -243,54 +333,100 @@
         <div id="solicitudesContainer">
             {% if permisos_historial or incapacidades_historial or certificados_historial %}
                 <div class="solicitudes-lista d-flex flex-column gap-3">
-                    
                     <!-- Permisos del Historial -->
                     {% for p in permisos_historial %}
-                        <div class="request-card request-{{ p.estado|slugify }}" data-tipo="permiso" data-estado="{{ p.estado|slugify }}">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5>Permiso</h5>
-                                    <small class="text-muted">{{ p.get_tipo_solicitud_display|default:"Permiso general" }} · {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
-                                    <p class="mb-1">{{ p.motivo }}</p>
-                                    <small class="text-muted"><i class="bi bi-calendar"></i> Creada: {{ p.fecha_creacion|date:"d/m/Y H:i" }}</small>
-                                </div>
-                                <div class="request-side-info">
+                        <div class="request-card request-{{ p.estado|slugify }}"
+                            data-tipo="permiso" data-estado="{{ p.estado|slugify }}">
+                            <div class="request-icon"><i class="bi bi-calendar-event"></i></div>
+                            <div class="request-info">
+                                <div class="request-info-top">
+                                    <h5>{{ p.get_tipo_display }} <span class="request-subtype">· Permiso</span></h5>
                                     <span class="badge badge-{{ p.estado|slugify }}">{{ p.get_estado_display|default:p.estado }}</span>
                                 </div>
+                                <div class="request-meta">
+                                    <span><i class="bi bi-calendar-range"></i> {{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</span>
+                                    <span><i class="bi bi-clock-history"></i> Solicitado: {{ p.fecha_solicitud|date:"d/m/Y" }}</span>
+                                </div>
+                                <p class="request-motivo">{{ p.justificacion|truncatechars:90 }}</p>
+                            </div>
+                            <div class="request-actions">
+                                <button type="button" class="btn-action-icon btn-ver-detalle"
+                                        data-titulo="{{ p.get_tipo_display }}"
+                                        data-subtitulo="Permiso · {{ p.fecha_inicio|date:'d/m/Y' }} → {{ p.fecha_fin|date:'d/m/Y' }}"
+                                        data-motivo="{{ p.justificacion|escapejs }}"
+                                        data-estado="{{ p.get_estado_display|default:p.estado }}"
+                                        data-estado-slug="{{ p.estado|slugify }}"
+                                        data-motivo-rechazo="{{ p.motivo_rechazo|default:''|escapejs }}"
+                                        data-archivo=""
+                                        data-tipo="permiso"
+                                        title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </button>
                             </div>
                         </div>
                     {% endfor %}
 
                     <!-- Incapacidades del Historial -->
                     {% for i in incapacidades_historial %}
-                        <div class="request-card request-{{ i.estado|slugify }}" data-tipo="incapacidad" data-estado="{{ i.estado|slugify }}">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5>Incapacidad</h5>
-                                    <small class="text-muted">{{ i.titulo|default:"Médica" }} · {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</small>
-                                    <p class="mb-1">{{ i.diagnostico }}</p>
-                                    <small class="text-muted"><i class="bi bi-calendar"></i> Creada: {{ i.fecha_creacion|date:"d/m/Y H:i" }}</small>
-                                </div>
-                                <div class="request-side-info">
+                        <div class="request-card request-{{ i.estado|slugify }}"
+                            data-tipo="incapacidad" data-estado="{{ i.estado|slugify }}">
+                            <div class="request-icon"><i class="bi bi-heart-pulse"></i></div>
+                            <div class="request-info">
+                                <div class="request-info-top">
+                                    <h5>{{ i.titulo|default:"Incapacidad médica" }} <span class="request-subtype">· Incapacidad</span></h5>
                                     <span class="badge badge-{{ i.estado|slugify }}">{{ i.get_estado_display|default:i.estado }}</span>
                                 </div>
+                                <div class="request-meta">
+                                    <span><i class="bi bi-calendar-range"></i> {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</span>
+                                    <span><i class="bi bi-clock-history"></i> Solicitado: {{ i.fecha_solicitud|date:"d/m/Y" }}</span>
+                                </div>
+                                <p class="request-motivo">{{ i.descripcion|truncatechars:90 }}</p>
+                            </div>
+                            <div class="request-actions">
+                                <button type="button" class="btn-action-icon btn-ver-detalle"
+                                        data-titulo="{{ i.titulo|default:'Incapacidad médica' }}"
+                                        data-subtitulo="Incapacidad · {{ i.fecha_inicio|date:'d/m/Y' }} → {{ i.fecha_fin|date:'d/m/Y' }}"
+                                        data-motivo="{{ i.descripcion|escapejs }}"
+                                        data-estado="{{ i.get_estado_display|default:i.estado }}"
+                                        data-estado-slug="{{ i.estado|slugify }}"
+                                        data-motivo-rechazo="{{ i.motivo_rechazo|default:''|escapejs }}"
+                                        data-archivo="{% if i.archivo %}{{ i.archivo.url }}{% endif %}"
+                                        data-tipo="incapacidad"
+                                        title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </button>
                             </div>
                         </div>
                     {% endfor %}
 
                     <!-- Certificados del Historial -->
                     {% for c in certificados_historial %}
-                        <div class="request-card request-{{ c.estado|slugify }}" data-tipo="certificado" data-estado="{{ c.estado|slugify }}">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5>Certificado</h5>
-                                    <small class="text-muted">{{ c.get_tipo_display|default:"Laboral" }} · Solicitado el {{ c.fecha_solicitud|date:"d/m/Y" }}</small>
-                                    <p class="mb-1">{{ c.comentarios|default:"Solicitud de certificado corporativo" }}</p>
-                                    <small class="text-muted"><i class="bi bi-calendar"></i> Creada: {{ c.fecha_creacion|date:"d/m/Y H:i" }}</small>
-                                </div>
-                                <div class="request-side-info">
+                        <div class="request-card request-{{ c.estado|slugify }}"
+                            data-tipo="certificado" data-estado="{{ c.estado|slugify }}">
+                            <div class="request-icon"><i class="bi bi-award"></i></div>
+                            <div class="request-info">
+                                <div class="request-info-top">
+                                    <h5>{{ c.get_tipo_display|default:"Laboral" }} <span class="request-subtype">· Certificado</span></h5>
                                     <span class="badge badge-{{ c.estado|slugify }}">{{ c.get_estado_display|default:c.estado }}</span>
                                 </div>
+                                <div class="request-meta">
+                                    <span><i class="bi bi-clock-history"></i> Solicitado: {{ c.fecha_solicitud|date:"d/m/Y" }}</span>
+                                </div>
+                                <p class="request-motivo">{{ c.proposito|default:"Solicitud de certificado"|truncatechars:90 }}</p>
+                            </div>
+                            <div class="request-actions">
+                                <button type="button" class="btn-action-icon btn-ver-detalle"
+                                        data-titulo="{{ c.get_tipo_display|default:'Laboral' }}"
+                                        data-subtitulo="Certificado · Solicitado el {{ c.fecha_solicitud|date:'d/m/Y' }}"
+                                        data-motivo="{{ c.proposito|default:'Solicitud de certificado'|escapejs }}"
+                                        data-estado="{{ c.get_estado_display|default:c.estado }}"
+                                        data-estado-slug="{{ c.estado|slugify }}"
+                                        data-motivo-rechazo="{{ c.motivo_rechazo|default:''|escapejs }}"
+                                        data-archivo="{% if c.estado == 'aprobado' %}{% url 'novedades:certificado_descargar' c.id %}{% endif %}"
+                                        data-tipo="certificado"
+                                        title="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </button>
                             </div>
                         </div>
                     {% endfor %}
@@ -318,7 +454,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2" style="color:#A40706;"></i> Nueva solicitud</h5>
+                <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2" style="color: var(--color-primary);"></i> Nueva solicitud</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -356,6 +492,167 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     MODAL: DETALLE DE SOLICITUD (EMPLEADO) - NUEVO DISEÑO
+========================================================= -->
+<div class="modal fade" id="modalDetalleSolicitud" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content novedad-modal">
+
+            <div class="modal-header novedad-detalle-header">
+                <div>
+                    <div class="novedad-detalle-titulo">
+                        <i class="bi bi-file-earmark-text-fill" id="detalleIcono"></i>
+                        <span id="detalleTitulo">Detalle de solicitud</span>
+                    </div>
+                    <p class="novedad-detalle-subtitulo mb-0" id="detalleSubtitulo">
+                        Información completa de la solicitud
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body novedad-detalle-body">
+                <div class="novedad-detalle-grid">
+                    <div class="novedad-detalle-item">
+                        <span class="novedad-detalle-label">Estado</span>
+                        <span class="novedad-detalle-value">
+                            <span class="novedad-detalle-estado" id="detalleEstadoBadge">Pendiente</span>
+                        </span>
+                    </div>
+                    <div class="novedad-detalle-item">
+                        <span class="novedad-detalle-label">Tipo</span>
+                        <span class="novedad-detalle-value" id="detalleTipo">—</span>
+                    </div>
+                    <div class="novedad-detalle-item novedad-detalle-item-full" id="detalleFechasContainer" style="display:none;">
+                        <span class="novedad-detalle-label">Período</span>
+                        <span class="novedad-detalle-value" id="detalleFechas">—</span>
+                    </div>
+                    <div class="novedad-detalle-bloque-largo" id="detalleMotivoContainer">
+                        <span class="novedad-detalle-bloque-largo-label">Motivo / Descripción</span>
+                        <p class="novedad-detalle-bloque-largo-texto" id="detalleMotivo">—</p>
+                    </div>
+                    <div class="novedad-detalle-bloque-largo" id="detalleRechazoContainer" style="display:none; border-left: 3px solid #dc3545; background: #fff7f7;">
+                        <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
+                        <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;" id="detalleMotivoRechazo">—</p>
+                    </div>
+                    <div class="novedad-detalle-bloque-largo" id="detalleArchivoContainer" style="display:none;">
+                        <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
+                        <p class="novedad-detalle-bloque-largo-texto">
+                            <a href="#" id="detalleArchivoLink" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-paperclip me-1"></i> Ver archivo
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer novedad-detalle-footer">
+                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+                <div id="detalleAccionesContainer">
+                    <button type="button" class="novedad-modal-btn novedad-modal-btn-editar" id="detalleEditarBtn" style="display:none;">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                    <button type="button" class="novedad-modal-btn novedad-modal-btn-eliminar" id="detalleEliminarBtn" style="display:none;">
+                        <i class="bi bi-trash3"></i> Eliminar
+                    </button>
+                    <button type="button" class="novedad-modal-btn novedad-modal-btn-descargar" id="detalleDescargarBtn" style="display:none;">
+                        <i class="bi bi-download"></i> Descargar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmar Eliminación -->
+<div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="icono-circular mx-auto mb-3" style="width: 60px; height: 60px;">
+                    <i class="bi bi-trash3 fs-3"></i>
+                </div>
+                <p class="mb-1 fw-bold">¿Estás seguro de que deseas eliminar esta solicitud?</p>
+                <p class="text-muted small mb-0">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn-outline-corporate px-4" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-action btn-action-delete px-4" id="btnConfirmarEliminacion">
+                    <i class="bi bi-trash3"></i> Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Editar Solicitud -->
+<div class="modal fade" id="modalEditarSolicitud" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2" style="color: var(--color-primary);"></i>
+                    Editar Solicitud
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarSolicitud" enctype="multipart/form-data">
+                <div class="modal-body py-3">
+                    <input type="hidden" id="editarId" name="id">
+                    <input type="hidden" id="editarTipoOriginal" name="tipo_original">
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Solicitud</label>
+                        <input type="text" class="form-control" id="editarTipoDisplay" disabled style="background-color: #f8f9fa; cursor: not-allowed;">
+                        <small class="text-muted">El tipo de solicitud no se puede modificar.</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editarFechaInicio" class="form-label">Fecha de Inicio <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="editarFechaInicio" name="fecha_inicio" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editarFechaFin" class="form-label">Fecha de Fin <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="editarFechaFin" name="fecha_fin" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editarMotivo" class="form-label">Motivo o Descripción <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="editarMotivo" name="motivo" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Archivo Adjunto</label>
+                        <div id="contenedorArchivoActual" class="mb-2" style="display: none;">
+                            <span class="text-muted small d-block">Archivo actual cargado:</span>
+                            <a href="#" id="verArchivoActual" target="_blank" class="btn btn-sm btn-outline-secondary mt-1">
+                                <i class="bi bi-file-earmark-text me-1"></i> Ver archivo actual
+                            </a>
+                        </div>
+                        <label for="editarArchivo" class="form-label small text-muted">Subir nuevo archivo (Opcional, reemplazará al anterior):</label>
+                        <input type="file" class="form-control" id="editarArchivo" name="archivo">
+                    </div>
+
+                </div>
+                <div class="modal-footer border-0 pb-4">
+                    <button type="button" class="btn-outline-corporate px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-primary-corporate px-4" id="btnGuardarEdicion">Guardar cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

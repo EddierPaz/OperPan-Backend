@@ -1,0 +1,81 @@
+/* ============================================================
+   VARIABLES.CSS - OPERPAN (SISTEMA DE GESTIÓN DE PERSONAL)
+   Única fuente de verdad para colores, tipografía, radios y
+   sombras. Ningún otro archivo debe repetir estos valores:
+   siempre se usan como var(--nombre).
+   Debe cargarse ANTES que base.css, components.css y los
+   CSS de cada módulo.
+   ============================================================ */
+
+:root {
+  /* ── Colores de marca ── */
+  --color-primary: #A40706;
+  --color-primary-hover: #8a0605;
+  --color-primary-soft: rgba(164, 7, 6, 0.1);
+  --color-primary-soft-2: #F8E4E4;
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-pastel: #E6B1B0;
+
+  /* ── Colores de estado (badges, botones de acción, toasts) ── */
+  --color-success: #198754;
+  --color-success-hover: #157347;
+  --color-success-bg: #E0F2E9;
+  --color-success-text: #1E7B48;
+
+  --color-danger: #DC3545;
+  --color-danger-hover: #BB2D3B;
+  --color-danger-bg: #FEE2E2;
+  --color-danger-text: #B91C1C;
+  --color-danger-strong: #EF4444;
+  --color-danger-strong-hover: #B91C1C;
+
+  --color-warning: #F59E0B;
+  --color-warning-hover: #D97706;
+  --color-warning-bg: #FFF3E0;
+  --color-warning-text: #C77A00;
+
+  --color-info: #0284C7;
+  --color-info-hover: #0369A1;
+
+  --color-teal: #0D9488;
+  --color-teal-hover: #0F766E;
+
+  /* ── Neutros ── */
+  --color-bg: #F4F7FC;
+  --color-text: #1E293B;
+  --color-text-muted: #64748B;
+  --color-text-soft: #475569;
+  --color-border: #E2E8F0;
+  --color-border-soft: #EDF2F7;
+  --color-placeholder-icon: #94A3B8;
+  --color-toast-text: #2C3E50;
+  --color-toast-close: #8A99AA;
+
+  /* ── Tipografía ── */
+  --font-main: 'Poppins', sans-serif;
+
+  /* ── Radios ── */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 40px;
+  --radius-pill-lg: 60px;
+  --radius-full: 999px;
+  --radius-circle: 50%;
+
+  /* ── Sombras ── */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.05);
+  --shadow-focus: 0 0 0 3px rgba(164, 7, 6, 0.2);
+  --shadow-focus-soft: 0 0 0 3px rgba(164, 7, 6, 0.08);
+  --shadow-toast: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+  /* ── Sidebar / Topbar (oscuros, no dependen del branding) ── */
+  --color-surface-dark: #000000;
+  --color-surface-dark-border: #2C2C2C;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-on-dark-soft: #E0E0E0;
+  --color-text-on-dark-muted: #BBBBBB;
+}
