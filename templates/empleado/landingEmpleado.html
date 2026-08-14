@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block title %}OperPan | Dashboard{% endblock %}
-{% block section_title %}Bienvenido a Estación Paisa{% endblock %}
-{% block section_subtitle %}Panel de Empleado{% endblock %}
+{% block section_title %}Panel de Empleado{% endblock %}
+{% block section_subtitle %}Bienvenido al sistema{% endblock %}
 {% block active_inicio %}active{% endblock %}
 
 {% block extra_css %}
@@ -12,116 +12,368 @@
 
 {% block content %}
 
-<main class="dashboard-container">
-    <!-- Mensaje de bienvenida destacado -->
-    <div class="welcome-message">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
+<div class="dashboard-container">
+
+    <!-- TARJETA DE BIENVENIDA -->
+    <div class="welcome-card">
+        <div class="welcome-content">
             <div>
-                <h2 class="mb-1">¡Bienvenido, {{ perfil.primer_nombre }} {{ perfil.primer_apellido }}</h2>
-                <p class="me-3">Hoy es <strong id="fechaActual"></strong> · Tu turno comienza a las 6:00 AM
-                </p>
-                <span class="badge-role"><i class="bi bi-briefcase me-1"></i> {{ perfil.get_cargo_display }}</span>
+                <h2>¡Bienvenido, {{ perfil.primer_nombre }} {{ perfil.primer_apellido }}!</h2>
+                <p class="text-white-50">Hoy es <strong id="fechaActual"></strong></p>
+                <span class="badge-role">
+                    <i class="bi bi-briefcase me-1"></i> {{ perfil.get_cargo_display|default:"Sin cargo asignado" }}
+                </span>
             </div>
+            <button class="btn-refresh" onclick="location.reload();">
+                <i class="bi bi-arrow-clockwise"></i> Refrescar
+            </button>
         </div>
     </div>
 
-    <!-- Estadísticas y novedades -->
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="bg-white rounded-4 p-3 h-100 border">
-                <h5 class="mb-3"><i class="bi bi-bar-chart-steps me-2" style="color:#A40706;"></i> Resumen
-                    del mes</h5>
-                <div class="row g-3 text-center">
+    <!-- FILA 1: JORNADA + RESUMEN DEL MES -->
+    <div class="row g-3 mb-4">
+        <!-- Mi jornada (clickeable → asistencia) -->
+        <div class="col-md-6">
+            <a href="{% url 'asistencia:empleado' %}" class="card-block card-link">
+                <div class="card-title">
+                    <span><i class="bi bi-clock-history me-2" style="color:#A40706;"></i> Mi jornada</span>
+                    <i class="bi bi-arrow-right-circle text-muted"></i>
+                </div>
+                <div class="jornada-info">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <small class="text-muted">Turno</small>
+                            <p class="fw-bold mb-0">{{ turno_display }}</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Horario</small>
+                            <p class="fw-bold mb-0">
+                                {% if hora_entrada and hora_salida %}
+                                    {{ hora_entrada }} - {{ hora_salida }}
+                                {% else %}
+                                    Sin horario
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <small class="text-muted">Estado de hoy</small>
+                            <div>
+                                <span class="badge {{ badge_color }} fs-6 py-2 px-3">
+                                    <i class="bi 
+                                        {% if 'puntual' in estado_asistencia %}bi-check-circle-fill
+                                        {% elif 'tarde' in estado_asistencia %}bi-clock-fill
+                                        {% elif 'Ausente' in estado_asistencia %}bi-x-circle-fill
+                                        {% else %}bi-question-circle-fill{% endif %} me-1">
+                                    </i>
+                                    {{ estado_asistencia }}
+                                </span>
+                            </div>
+                        </div>
+                        {% if proximo_descanso %}
+                        <div class="col-12 mt-2">
+                            <small class="text-muted">Próximo descanso</small>
+                            <p class="fw-bold mb-0">
+                                <i class="bi bi-calendar-day me-1" style="color:#A40706;"></i>
+                                {{ proximo_descanso.fecha|date:"d/m/Y" }}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Resumen del mes -->
+        <div class="col-md-6">
+            <div class="card-block">
+                <div class="card-title">
+                    <span><i class="bi bi-bar-chart-steps me-2" style="color:#A40706;"></i> Resumen del mes</span>
+                </div>
+                <div class="row g-2 text-center">
                     <div class="col-4">
                         <div class="stat-summary">
-                            <div class="stat-number" id="diasTrabajados">12</div>
+                            <div class="stat-number">{{ estadisticas_asistencia.dias_trabajados }}</div>
                             <small class="text-muted">Días trabajados</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="stat-summary">
-                            <div class="stat-number" id="horasExtra">3.5</div>
-                            <small class="text-muted">Horas extra</small>
+                            <div class="stat-number">{{ estadisticas_asistencia.puntualidad }}%</div>
+                            <small class="text-muted">Puntualidad</small>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="stat-summary">
-                            <div class="stat-number" id="puntualidad">92</div>
-                            <small class="text-muted">% Puntualidad</small>
+                            <div class="stat-number">{{ tareas_completadas }}</div>
+                            <small class="text-muted">Tareas completadas</small>
                         </div>
                     </div>
                 </div>
-                <div class="mt-3 pt-2 border-top">
+                <div class="mt-2 pt-2 border-top">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-flag-fill text-danger"></i> Tareas pendientes: <strong
-                                id="tareasPendientes">3</strong></span>
-                        <span><i class="bi bi-check-circle-fill text-success"></i> Completadas: <strong
-                                id="tareasCompletadas">8</strong></span>
+                        <span><i class="bi bi-flag-fill text-danger"></i> Tareas pendientes: <strong>{{ kpis_tareas.pendientes }}</strong></span>
+                        <span><i class="bi bi-check-circle-fill text-success"></i> Completadas: <strong>{{ kpis_tareas.finalizadas }}</strong></span>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="bg-white rounded-4 p-3 h-100 border">
-                <h5 class="mb-3"><i class="bi bi-bell me-2" style="color:#A40706;"></i> Últimas novedades
-                </h5>
-                <div class="stat-summary">
-                    <div class="info-box">
-
-                        <span class="text-muted">
-                            Próximo descanso
-                        </span>
-
-                        <h5 class="mt-2">
-
-                            {% if proximo_descanso %}
-
-                            {{ proximo_descanso.fecha|date:"d/m/Y" }}
-
-                            {% else %}
-
-                            Sin asignar
-
-                            {% endif %}
-
-                        </h5>
-
+                <!-- Historial de asistencia con Ver más/Ver menos -->
+                <div class="mt-2 pt-2 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Últimos registros</small>
+                        <button class="btn-ver-mas-small" id="btnVerHistorial">
+                            Ver más <i class="bi bi-chevron-down"></i>
+                        </button>
                     </div>
-                </div>
-                <div id="notificationsContainer">
-                    <div class="notification-item">
-                        <small class="text-muted"><i class="bi bi-calendar-check"></i> Hoy</small>
-                        <p class="mb-0">Tu solicitud de <strong>vacaciones</strong> está siendo evaluada.
-                        </p>
-                    </div>
-                    <div class="notification-item">
-                        <small class="text-muted"><i class="bi bi-clock"></i> Ayer</small>
-                        <p class="mb-0">Tarea <strong>"Preparar masa de pan francés"</strong> fue
-                            actualizada a "En progreso".</p>
-                    </div>
-                    <div class="notification-item">
-                        <small class="text-muted"><i class="bi bi-file-text"></i> 02/04/2025</small>
-                        <p class="mb-0">Certificado laboral disponible para descargar en "Información
-                            personal".</p>
+                    <div id="historialContainer">
+                        {% for item in historial_asistencia %}
+                            <div class="historial-item {% if forloop.counter > 3 %}d-none{% endif %}">
+                                <span class="badge {{ item.badge }}">{{ item.estado }}</span>
+                                <span class="ms-1">{{ item.fecha|date:"d/m/Y" }}</span>
+                                {% if item.hora %}
+                                    <span class="text-muted ms-1">({{ item.hora }})</span>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <span class="text-muted">No hay registros aún</span>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Consejo del día / motivacional -->
-    <div class="mt-4 p-3 bg-white rounded-4 border text-center">
-        <i class="bi bi-lightbulb fs-4 me-2" style="color:#A40706;"></i>
-        <span>Consejo del día: Registra tu entrada y salida puntualmente para mantener tu historial de
-            asistencia impecable.</span>
+    <!-- FILA 2: MIS TAREAS PENDIENTES -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card-block tareas-card">
+                <div class="card-title">
+                    <span><i class="bi bi-list-task me-2" style="color:#A40706;"></i> Mis tareas pendientes</span>
+                    <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn-link-modulo">
+                        Ir al módulo <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                {% if tareas_pendientes %}
+                    <ul class="list-group list-group-flush" id="listaTareas">
+                        {% for tarea in tareas_pendientes %}
+                            <li class="list-group-item tarea-item {% if forloop.counter > 8 %}d-none{% endif %}">
+                                <div class="tarea-row">
+                                    <div class="tarea-info">
+                                        <div class="tarea-titulo">
+                                            <span class="badge 
+                                                {% if tarea.prioridad == 'ALTA' %}bg-danger
+                                                {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
+                                                {% else %}bg-secondary{% endif %} me-1">
+                                                {{ tarea.get_prioridad_display }}
+                                            </span>
+                                            <a href="{% url 'tareas:empleado_tarea_detail' tarea.id %}" class="text-decoration-none fw-bold">
+                                                {{ tarea.titulo }}
+                                            </a>
+                                        </div>
+                                        <small class="text-muted">
+                                            Límite: 
+                                            {% if tarea.fecha_limite < today %}
+                                                <span class="text-danger">{{ tarea.fecha_limite|date:"d/m/Y" }}</span>
+                                            {% else %}
+                                                {{ tarea.fecha_limite|date:"d/m/Y" }}
+                                            {% endif %}
+                                            · Estado: {{ tarea.get_estado_display }}
+                                        </small>
+                                    </div>
+                                    <div class="tarea-acciones">
+                                        {% if tarea.estado == 'PENDIENTE' %}
+                                            <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-accion btn-iniciar">
+                                                    <i class="bi bi-play-fill me-1"></i> Iniciar
+                                                </button>
+                                            </form>
+                                        {% elif tarea.estado == 'EN_PROGRESO' %}
+                                            <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.id %}" class="d-inline" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-accion btn-finalizar">
+                                                    <i class="bi bi-check-lg me-1"></i> Finalizar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Completada</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if tareas_pendientes|length > 8 %}
+                        <button class="btn-ver-mas" id="btnVerMasTareas" data-visible="8" data-total="{{ tareas_pendientes|length }}">
+                            Ver más <i class="bi bi-chevron-down"></i>
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted mt-2 text-center py-3">
+                        <i class="bi bi-check-circle-fill text-success fs-4 d-block mb-2"></i>
+                        No tienes tareas pendientes. ¡Buen trabajo!
+                    </p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
-    <footer>
+    <!-- FILA 3: GRÁFICAS (3 columnas) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-sm-6">
+            <div class="card-block chart-card">
+                <div class="card-title">
+                    <span><i class="bi bi-pie-chart me-2" style="color:#A40706;"></i> Estado de tareas</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartTareas" width="200" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="card-block chart-card">
+                <div class="card-title">
+                    <span><i class="bi bi-calendar-check me-2" style="color:#A40706;"></i> Asistencia (mes)</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartAsistencia" width="200" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="card-block chart-card">
+                <div class="card-title">
+                    <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Solicitudes pendientes</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chartSolicitudes" width="200" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILA 4: MIS SOLICITUDES + MIS MEMORANDOS -->
+    <div class="row g-3 mb-4">
+        <!-- Mis solicitudes (card clickeable) -->
+        <div class="col-md-6">
+            <a href="{% url 'novedades:solicitudes_empleado' %}" class="card-block card-link solicitudes-card">
+                <div class="card-title">
+                    <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Mis solicitudes</span>
+                    <i class="bi bi-arrow-right-circle text-muted"></i>
+                </div>
+                <div class="solicitudes-content">
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <div class="stat-summary stat-sm">
+                                <div class="stat-number text-primary">{{ permisos_pendientes }}</div>
+                                <small class="text-muted">Permisos</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-summary stat-sm">
+                                <div class="stat-number text-danger">{{ incapacidades_pendientes }}</div>
+                                <small class="text-muted">Incapacidades</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-summary stat-sm">
+                                <div class="stat-number text-secondary">{{ certificados_pendientes }}</div>
+                                <small class="text-muted">Certificados</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% if total_solicitudes_pendientes > 0 %}
+                        <div class="mt-2 text-center">
+                            <span class="badge bg-warning text-dark fs-6 py-2 px-3">
+                                <i class="bi bi-clock-history me-1"></i>
+                                {{ total_solicitudes_pendientes }} solicitud(es) pendiente(s)
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="mt-2 text-center text-muted">
+                            <i class="bi bi-check-circle-fill text-success"></i> No hay solicitudes pendientes
+                        </div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+
+        <!-- Mis memorandos (card clickeable completa) -->
+        <div class="col-md-6">
+            <a href="{% url 'memorandos:memorandos_empleado' %}" class="card-block card-link memorandos-card">
+                <div class="card-title">
+                    <span><i class="bi bi-file-pdf me-2" style="color:#A40706;"></i> Mis memorandos</span>
+                    <i class="bi bi-arrow-right-circle text-muted"></i>
+                </div>
+                <div class="memorandos-content text-center py-3">
+                    {% if total_memorandos > 0 %}
+                        <div class="memorandos-number">
+                            <span class="badge bg-danger fs-1 py-3 px-4">
+                                {{ total_memorandos }}
+                            </span>
+                            <p class="text-muted mt-2 small">memorando(s) disponibles</p>
+                        </div>
+                        <div class="memorandos-hint">
+                            <small><i class="bi bi-info-circle me-1"></i> Haz clic para consultarlos</small>
+                        </div>
+                    {% else %}
+                        <div class="memorandos-empty">
+                            <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                            <p class="text-muted mt-2">No tienes memorandos</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- FILA 5: ACTIVIDAD RECIENTE -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card-block actividad-card">
+                <div class="card-title">
+                    <span><i class="bi bi-clock me-2" style="color:#A40706;"></i> Mi actividad reciente</span>
+                </div>
+                {% if actividad_reciente %}
+                    <div class="actividad-feed">
+                        {% for item in actividad_reciente %}
+                            <div class="actividad-item">
+                                <div class="actividad-icon">
+                                    <i class="bi bi-{{ item.icono }} {{ item.color }}"></i>
+                                </div>
+                                <div class="actividad-contenido">
+                                    <a href="{{ item.url }}" class="text-decoration-none">
+                                        {{ item.detalle }}
+                                    </a>
+                                    <div class="actividad-meta">
+                                        <span class="text-muted">{{ item.fecha|date:"d/m/Y H:i" }}</span>
+                                        <span class="badge bg-light text-dark ms-2">{{ item.estado }}</span>
+                                    </div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">No hay actividad reciente.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-4 pt-3 border-top text-center text-muted">
         <i class="bi bi-shield-check"></i> Sistema de gestión de personal - Trazabilidad garantizada
     </footer>
-</main>
 
-<!-- Toast para notificaciones -->
+</div>
+
+<!-- Variables para Chart.js -->
+<script>
+    window.tareasChartData = {{ tareas_chart_data|safe }};
+    window.asistenciaChartData = {{ asistencia_chart_data|safe }};
+    window.solicitudesChartData = {{ solicitudes_chart_data|safe }};
+</script>
+
+<!-- Toast -->
 <div class="toast-message" id="liveToast" style="display: none;">
     <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
         <div class="d-flex gap-2 align-items-center">
@@ -130,8 +382,10 @@
         </div>
     </div>
 </div>
-{% endblock %}
-{% block extra_js %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/empleado/dashboard.js' %}"></script>
 {% endblock %}
