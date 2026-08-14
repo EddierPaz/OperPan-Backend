@@ -330,14 +330,30 @@ def _logo_firma(c, ruta, x, y, size):
 # ============================================================
 
 def generar_memorando_pdf(memorando=None, output_path=None, logo_path=None, **kwargs):
-    # Extracción y limpieza de datos
-    empleado = _primero(memorando, "empleado", "empleado_nombre", "nombre_empleado", "nombre", default=kwargs.get("empleado", "—"))
-    cargo = _primero(memorando, "cargo", "empleado_cargo", default=kwargs.get("cargo", "—"))
+    # --- AJUSTE DE EXTRACCIÓN DE DATOS ---
+    
+    # Intentamos obtener el empleado y el cargo de forma segura
+    empleado_obj = getattr(memorando, 'empleado', None)
+    
+    # Obtener cargo: intenta del objeto, luego del kwarg
+    if memorando and empleado_obj and hasattr(empleado_obj, 'cargo'):
+        # Si usas un campo 'choices', get_cargo_display() es lo correcto
+        cargo = empleado_obj.get_cargo_display() if hasattr(empleado_obj, 'get_cargo_display') else empleado_obj.cargo
+    else:
+        cargo = kwargs.get("cargo", "—")
+
+    empleado = _primero(memorando, "empleado", "empleado_nombre", default=kwargs.get("empleado", "—"))
+    # Si 'empleado' sigue siendo el objeto, extraemos el nombre
+    if hasattr(empleado, 'nombre_completo'):
+        empleado = empleado.nombre_completo()
+    elif hasattr(empleado, 'nombre'):
+        empleado = empleado.nombre
+
     tipo = _primero(memorando, "tipo", "tipo_memorando", default=kwargs.get("tipo", "MEMORANDO"))
     asunto = _primero(memorando, "asunto", "descripcion", default=kwargs.get("asunto", ""))
-    contenido = _primero(memorando, "contenido", "cuerpo", "descripcion_larga", default=kwargs.get("contenido", ""))
-    consecutivo = _primero(memorando, "consecutivo", "numero_consecutivo", "codigo", default=kwargs.get("consecutivo", "MEM-2026-000"))
-    fecha = _primero(memorando, "fecha", "fecha_emision", "fecha_creacion", "fecha_subida", default=kwargs.get("fecha", datetime.now()))
+    contenido = _primero(memorando, "contenido", "cuerpo", default=kwargs.get("contenido", ""))
+    consecutivo = _primero(memorando, "consecutivo", "codigo", default=kwargs.get("consecutivo", "MEM-2026-000"))
+    fecha = _primero(memorando, "fecha", "fecha_emision", default=kwargs.get("fecha", datetime.now()))
 
     # Manejo de rutas y directorios
     media_root = getattr(settings, "MEDIA_ROOT", os.path.join(os.getcwd(), "media"))

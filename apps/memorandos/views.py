@@ -59,12 +59,17 @@ def memorando_crear(request):
         except ValueError:
             archivo_url = None
 
+    # Obtener el cargo del empleado para la respuesta
+    cargo_empleado = memorando.empleado.get_cargo_display() if memorando.empleado.cargo else '—'
+
     return JsonResponse({
         'status': 'ok',
         'mensaje': 'Memorando generado correctamente',
         'id': memorando.id,
         'consecutivo': memorando.consecutivo,
         'archivo_pdf': archivo_url,
+        'empleado_nombre': memorando.empleado.nombre_completo(),
+        'empleado_cargo': cargo_empleado,
     })
 
 
@@ -91,6 +96,7 @@ def memorandos_lista(request):
             'id': m.id,
             'consecutivo': m.consecutivo,
             'empleado': m.empleado.nombre_completo(),
+            'empleado_cargo': m.empleado.get_cargo_display() if m.empleado.cargo else '—',
             'empleado_id': m.empleado.id,
             'tipo': m.get_tipo_display(),
             'tipo_raw': m.tipo,
@@ -110,7 +116,7 @@ def memorandos_lista(request):
 @login_required
 @admin_required
 def memorandos_empleados_lista(request):
-    """Lista de empleados para el dropdown (API JSON)."""
+    """Lista de empleados para el dropdown con nombre y cargo separados (API JSON)."""
     empleados = PerfilEmpleado.objects.filter(estado='activo').order_by('primer_nombre', 'primer_apellido')
     data = [
         {
