@@ -1,5 +1,5 @@
 import json
-import io
+import os
 
 from django.http import JsonResponse, FileResponse, HttpResponseForbidden, Http404
 from django.views.decorators.csrf import csrf_exempt
@@ -7,10 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import cm
-from reportlab.pdfgen import canvas
-
 from .models import Permiso, Incapacidad, Certificado
 from .forms import (
     RechazoForm,
@@ -22,6 +18,7 @@ from .forms import (
 from apps.usuarios.decorators import admin_required_json as admin_required
 from apps.usuarios.decorators import admin_required as admin_required_html
 from apps.usuarios.decorators import empleado_required
+from .pdfs import generar_certificado_pdf
 
 
 # ============================================================
@@ -1036,12 +1033,31 @@ def certificado_aprobar(request, pk):
     except Certificado.DoesNotExist:
         return JsonResponse({'error': 'Certificado no encontrado o ya procesado'}, status=404)
 
+    # Datos opcionales enviados al aprobar (solo aplican según el tipo)
+    try:
+        data = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        data = {}
+
+    if data.get('salario'):
+        c.salario = data['salario']
+    if data.get('fecha_retiro'):
+        c.fecha_retiro = data['fecha_retiro']
+
     c.estado = 'aprobado'
     c.fecha_emision = timezone.now()
     c.decision_por = request.user
     c.decision_fecha = timezone.now()
     c.generado_por = request.user
     c.save()
+
+    try:
+        pdf_path = generar_certificado_pdf(c)
+        c.archivo = pdf_path
+        c.save(update_fields=['archivo'])
+    except Exception as e:
+        print(f"Error al generar PDF para certificado {c.id}: {e}")
+
     return JsonResponse({'status': 'ok', 'mensaje': 'Certificado aprobado'})
 
 
@@ -1087,60 +1103,33 @@ def certificado_rechazar(request, pk):
 
 @login_required
 def certificado_descargar(request, pk):
-    """Genera y descarga el PDF del certificado (solo si está aprobado)."""
+    """Descarga el PDF del certificado (solo si está aprobado)."""
     try:
         c = Certificado.objects.select_related('empleado__user').get(pk=pk)
     except Certificado.DoesNotExist:
         raise Http404('Certificado no encontrado')
 
-    # ============================================================
-    # VERIFICAR PERMISOS - USANDO ROL DEL USUARIO
-    # ============================================================
     user = request.user
-    
-    # Verificar si es administrador por el campo 'rol'
     es_admin = user.rol == 'admin'
-    
-    # Verificar si es el dueño del certificado
-    es_dueño = False
-    if hasattr(user, 'perfil'):
-        es_dueño = c.empleado_id == user.perfil.id
+    es_dueño = hasattr(user, 'perfil') and c.empleado_id == user.perfil.id
 
-    # PERMITIR ADMINISTRADORES Y DUEÑOS
     if not (es_dueño or es_admin):
         return HttpResponseForbidden('No tienes permiso para descargar este certificado.')
 
     if c.estado != 'aprobado':
         return JsonResponse({'error': 'El certificado aún no ha sido aprobado.'}, status=400)
 
-    buffer = io.BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-
-    p.setFont('Helvetica-Bold', 16)
-    p.drawCentredString(width / 2, height - 3 * cm, 'CERTIFICADO')
-
-    p.setFont('Helvetica', 11)
-    lineas = [
-        f"Tipo: {c.get_tipo_display()}",
-        f"Empleado: {c.empleado.nombre_completo()}",
-        f"Cargo: {c.empleado.cargo}",
-        f"Propósito: {c.proposito}",
-        f"Dirigido a: {c.dirigido_a or '-'}",
-        f"Período: {c.periodo or '-'}",
-        f"Fecha de emisión: {c.fecha_emision.strftime('%d/%m/%Y %H:%M')}",
-    ]
-    y = height - 5 * cm
-    for linea in lineas:
-        p.drawString(3 * cm, y, linea)
-        y -= 1 * cm
-
-    p.showPage()
-    p.save()
-    buffer.seek(0)
+    if not c.archivo or not os.path.exists(c.archivo.path):
+        try:
+            pdf_path = generar_certificado_pdf(c)
+            c.archivo = pdf_path
+            c.save(update_fields=['archivo'])
+        except Exception as e:
+            return JsonResponse({'error': f'Error al generar el PDF: {str(e)}'}, status=500)
 
     c.descargas += 1
     c.save(update_fields=['descargas'])
 
     filename = f"certificado_{c.id}_{c.empleado.nombre_completo().replace(' ', '_')}.pdf"
-    return FileResponse(buffer, as_attachment=True, filename=filename, content_type='application/pdf')
+    response = FileResponse(c.archivo.open('rb'), as_attachment=True, filename=filename, content_type='application/pdf')
+    return response

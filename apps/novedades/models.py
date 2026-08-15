@@ -79,7 +79,8 @@ class Certificado(models.Model):
     dirigido_a = models.CharField(max_length=200, blank=True, null=True)
     periodo = models.CharField(max_length=100, blank=True, null=True)
     archivo = models.FileField(upload_to='certificados/', blank=True, null=True)
-
+    salario = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    fecha_retiro = models.DateField(blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     fecha_emision = models.DateTimeField(null=True, blank=True)
