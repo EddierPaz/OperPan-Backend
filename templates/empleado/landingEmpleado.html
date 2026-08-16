@@ -55,7 +55,7 @@
                                 {% endif %}
                             </p>
                         </div>
-                        <div class="col-12 mt-2">
+                        <div class="col-12 mt-2 estado-hoy">
                             <small class="text-muted">Estado de hoy</small>
                             <div>
                                 <span class="badge {{ badge_color }} fs-6 py-2 px-3">
@@ -141,9 +141,10 @@
         </div>
     </div>
 
-    <!-- FILA 2: MIS TAREAS PENDIENTES -->
+    <!-- FILA 2: MIS TAREAS + MI ASISTENCIA DEL MES (dos columnas con scroll) -->
     <div class="row g-3 mb-4">
-        <div class="col-12">
+        <!-- Columna: Mis tareas pendientes (con scroll vertical) -->
+        <div class="col-md-6">
             <div class="card-block tareas-card">
                 <div class="card-title">
                     <span><i class="bi bi-list-task me-2" style="color:#A40706;"></i> Mis tareas pendientes</span>
@@ -151,67 +152,100 @@
                         Ir al módulo <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
-                {% if tareas_pendientes %}
-                    <ul class="list-group list-group-flush" id="listaTareas">
-                        {% for tarea in tareas_pendientes %}
-                            <li class="list-group-item tarea-item {% if forloop.counter > 8 %}d-none{% endif %}">
-                                <div class="tarea-row">
-                                    <div class="tarea-info">
-                                        <div class="tarea-titulo">
-                                            <span class="badge 
-                                                {% if tarea.prioridad == 'ALTA' %}bg-danger
-                                                {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
-                                                {% else %}bg-secondary{% endif %} me-1">
-                                                {{ tarea.get_prioridad_display }}
-                                            </span>
-                                            <a href="{% url 'tareas:empleado_tarea_detail' tarea.id %}" class="text-decoration-none fw-bold">
-                                                {{ tarea.titulo }}
-                                            </a>
+                <div class="tareas-scroll-vertical">
+                    {% if tareas_pendientes %}
+                        <ul class="list-group list-group-flush" id="listaTareas">
+                            {% for tarea in tareas_pendientes %}
+                                <li class="list-group-item tarea-item">
+                                    <div class="tarea-row">
+                                        <div class="tarea-info">
+                                            <div class="tarea-titulo">
+                                                <span class="badge 
+                                                    {% if tarea.prioridad == 'ALTA' %}bg-danger
+                                                    {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
+                                                    {% else %}bg-secondary{% endif %} me-1">
+                                                    {{ tarea.get_prioridad_display }}
+                                                </span>
+                                                <a href="{% url 'tareas:empleado_tarea_detail' tarea.id %}" class="text-decoration-none fw-bold">
+                                                    {{ tarea.titulo }}
+                                                </a>
+                                            </div>
+                                            <small class="text-muted">
+                                                Límite: 
+                                                {% if tarea.fecha_limite < today %}
+                                                    <span class="text-danger">{{ tarea.fecha_limite|date:"d/m/Y" }}</span>
+                                                {% else %}
+                                                    {{ tarea.fecha_limite|date:"d/m/Y" }}
+                                                {% endif %}
+                                                · Estado: {{ tarea.get_estado_display }}
+                                            </small>
                                         </div>
-                                        <small class="text-muted">
-                                            Límite: 
-                                            {% if tarea.fecha_limite < today %}
-                                                <span class="text-danger">{{ tarea.fecha_limite|date:"d/m/Y" }}</span>
+                                        <div class="tarea-acciones">
+                                            {% if tarea.estado == 'PENDIENTE' %}
+                                                <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn-accion btn-iniciar">
+                                                        <i class="bi bi-play-fill me-1"></i> Iniciar
+                                                    </button>
+                                                </form>
+                                            {% elif tarea.estado == 'EN_PROGRESO' %}
+                                                <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.id %}" class="d-inline" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn-accion btn-finalizar">
+                                                        <i class="bi bi-check-lg me-1"></i> Finalizar
+                                                    </button>
+                                                </form>
                                             {% else %}
-                                                {{ tarea.fecha_limite|date:"d/m/Y" }}
+                                                <span class="badge bg-secondary">Completada</span>
                                             {% endif %}
-                                            · Estado: {{ tarea.get_estado_display }}
-                                        </small>
+                                        </div>
                                     </div>
-                                    <div class="tarea-acciones">
-                                        {% if tarea.estado == 'PENDIENTE' %}
-                                            <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.id %}" class="d-inline">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn-accion btn-iniciar">
-                                                    <i class="bi bi-play-fill me-1"></i> Iniciar
-                                                </button>
-                                            </form>
-                                        {% elif tarea.estado == 'EN_PROGRESO' %}
-                                            <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.id %}" class="d-inline" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn-accion btn-finalizar">
-                                                    <i class="bi bi-check-lg me-1"></i> Finalizar
-                                                </button>
-                                            </form>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Completada</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    {% if tareas_pendientes|length > 8 %}
-                        <button class="btn-ver-mas" id="btnVerMasTareas" data-visible="8" data-total="{{ tareas_pendientes|length }}">
-                            Ver más <i class="bi bi-chevron-down"></i>
-                        </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center py-3">
+                            <i class="bi bi-check-circle-fill text-success fs-4 d-block mb-2"></i>
+                            No tienes tareas pendientes. ¡Buen trabajo!
+                        </p>
                     {% endif %}
-                {% else %}
-                    <p class="text-muted mt-2 text-center py-3">
-                        <i class="bi bi-check-circle-fill text-success fs-4 d-block mb-2"></i>
-                        No tienes tareas pendientes. ¡Buen trabajo!
-                    </p>
-                {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna: Mi asistencia del mes (con scroll) -->
+        <div class="col-md-6">
+            <div class="card-block">
+                <div class="card-title">
+                    <span><i class="bi bi-calendar-month me-2" style="color:#A40706;"></i> Mi asistencia del mes</span>
+                    <a href="{% url 'asistencia:empleado' %}" class="btn-link-modulo">
+                        Ver todo <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="asistencia-mes-scroll">
+                    {% if historial_asistencia %}
+                        <table class="tabla-asistencia-mes">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Hora</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in historial_asistencia %}
+                                    <tr>
+                                        <td>{{ item.fecha|date:"d/m/Y" }}</td>
+                                        <td><span class="badge {{ item.badge }}">{{ item.estado }}</span></td>
+                                        <td>{% if item.hora %}{{ item.hora }}{% else %}—{% endif %}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="text-muted text-center py-3">No hay registros de asistencia este mes.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -262,34 +296,35 @@
                 <div class="solicitudes-content">
                     <div class="row g-2 text-center">
                         <div class="col-4">
-                            <div class="stat-summary stat-sm">
+                            <div class="stat-summary">
                                 <div class="stat-number text-primary">{{ permisos_pendientes }}</div>
                                 <small class="text-muted">Permisos</small>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="stat-summary stat-sm">
+                            <div class="stat-summary">
                                 <div class="stat-number text-danger">{{ incapacidades_pendientes }}</div>
                                 <small class="text-muted">Incapacidades</small>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="stat-summary stat-sm">
+                            <div class="stat-summary">
                                 <div class="stat-number text-secondary">{{ certificados_pendientes }}</div>
                                 <small class="text-muted">Certificados</small>
                             </div>
                         </div>
                     </div>
                     {% if total_solicitudes_pendientes > 0 %}
-                        <div class="mt-2 text-center">
+                        <div class="mt-3 text-center">
                             <span class="badge bg-warning text-dark fs-6 py-2 px-3">
                                 <i class="bi bi-clock-history me-1"></i>
                                 {{ total_solicitudes_pendientes }} solicitud(es) pendiente(s)
                             </span>
                         </div>
                     {% else %}
-                        <div class="mt-2 text-center text-muted">
-                            <i class="bi bi-check-circle-fill text-success"></i> No hay solicitudes pendientes
+                        <div class="solicitudes-empty">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <p class="mt-1 text-muted">No hay solicitudes pendientes</p>
                         </div>
                     {% endif %}
                 </div>

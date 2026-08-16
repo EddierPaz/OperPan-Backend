@@ -1,6 +1,12 @@
 /**
  * Dashboard Empleado - OperPan
- * Funcionalidades mejoradas para el panel del empleado
+ * Funcionalidades para el panel del empleado
+ * 
+ * Dependencias: Chart.js (cargado desde CDN en el template)
+ * Datos: se reciben desde el backend mediante variables globales:
+ *   - window.tareasChartData
+ *   - window.asistenciaChartData
+ *   - window.solicitudesChartData
  */
 
 // ============================================================
@@ -60,47 +66,11 @@ function initVerHistorial() {
 }
 
 // ============================================================
-// 3. BOTÓN "VER MÁS/VER MENOS" PARA TAREAS
-// ============================================================
-function initVerMasTareas() {
-    const btn = document.getElementById('btnVerMasTareas');
-    if (!btn) return;
-
-    const items = document.querySelectorAll('#listaTareas .tarea-item');
-    if (items.length <= 8) {
-        btn.style.display = 'none';
-        return;
-    }
-
-    let visible = 8;
-    btn.addEventListener('click', function() {
-        const total = parseInt(this.dataset.total);
-        if (visible === 8) {
-            items.forEach(function(item, index) {
-                if (index >= 8) {
-                    item.classList.remove('d-none');
-                }
-            });
-            visible = total;
-            this.innerHTML = 'Ver menos <i class="bi bi-chevron-up"></i>';
-        } else {
-            items.forEach(function(item, index) {
-                if (index >= 8) {
-                    item.classList.add('d-none');
-                }
-            });
-            visible = 8;
-            this.innerHTML = 'Ver más <i class="bi bi-chevron-down"></i>';
-        }
-    });
-}
-
-// ============================================================
-// 4. INICIALIZAR GRÁFICAS CON CHART.JS
+// 3. INICIALIZAR GRÁFICAS CON CHART.JS
 // ============================================================
 function initCharts() {
     if (typeof Chart === 'undefined') {
-        console.warn('Chart.js no está cargado.');
+        console.warn('Chart.js no está cargado. Las gráficas no se mostrarán.');
         return;
     }
 
@@ -211,11 +181,10 @@ function initCharts() {
 }
 
 // ============================================================
-// 5. INICIALIZACIÓN
+// 4. INICIALIZACIÓN AL CARGAR LA PÁGINA
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     mostrarFecha();
     initVerHistorial();
-    initVerMasTareas();
     setTimeout(initCharts, 100);
 });
