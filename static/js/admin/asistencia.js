@@ -169,20 +169,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("ver-descanso").value = data.descanso || "Sin asignar";
                     document.getElementById("ver-estado").value = data.estado ? "Activo" : "Inactivo";
 
-                    // Historial de próximos descansos
-                    const contHistorial = document.getElementById("ver-historial-descansos");
-                    if (contHistorial) {
-                        contHistorial.innerHTML = "";
-                        if (data.historial_descansos && data.historial_descansos.length) {
-                            data.historial_descansos.forEach(function (fecha) {
-                                const badge = document.createElement("span");
-                                badge.className = "badge bg-light text-dark border";
-                                badge.textContent = fecha;
-                                contHistorial.appendChild(badge);
-                            });
-                        } else {
-                            contHistorial.innerHTML = '<span class="text-muted small">Sin descansos próximos</span>';
-                        }
+                    const ciclo = document.getElementById("ver-ciclo");
+                    if (ciclo) {
+                        ciclo.value = (data.ciclo_inicio && data.ciclo_fin)
+                            ? data.ciclo_inicio + " — " + data.ciclo_fin
+                            : "Sin definir";
                     }
 
                     const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
