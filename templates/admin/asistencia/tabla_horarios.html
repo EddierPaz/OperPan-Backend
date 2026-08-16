@@ -51,13 +51,11 @@
         <td class="col-turno">{{ horario.get_turno_display }}</td>
         <td>{{ horario.hora_entrada }} - {{ horario.hora_salida }}</td>
         <td>
-          {% for descanso in horario.descansos.all %}
-            {% if descanso.es_descanso %}
-              <span class="badge bg-light text-dark border">{{ descanso.fecha|date:"d/m/Y" }}</span>
-            {% endif %}
-          {% empty %}
-            <span class="text-muted small">Sin descanso asignado</span>
-          {% endfor %}
+          {% if horario.proximo_descanso %}
+            <span class="badge bg-light text-dark border">{{ horario.proximo_descanso.fecha|date:"d/m/Y" }}</span>
+          {% else %}
+            <span class="text-muted small">Sin descanso próximo</span>
+          {% endif %}
         </td>
         <td class="col-estado">
           {% if horario.estado %}
