@@ -1,13 +1,15 @@
 from datetime import date, timedelta
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 
 from apps.usuarios.models import PerfilEmpleado
+from apps.usuarios.decorators import admin_required
 from .models import Asistencia, DescansoEmpleado, Horario
-
 
 def dias_ciclo(turno):
     """Devuelve la duración informativa del ciclo según el turno."""
@@ -399,3 +401,72 @@ def asistencia_empleado(request):
             "retardos": retardos,
         }
     )
+
+
+
+# Funcionalidades para Dashboards
+
+# ============================================================
+# ADMIN - ASISTENCIA POR EMPLEADO
+# ============================================================
+
+@login_required
+@admin_required
+def asistencia_empleado_admin(request, empleado_id):
+    """
+    Redirige al administrador al módulo de asistencia con el empleado filtrado.
+    Permite ver y registrar la asistencia de un empleado específico.
+    """
+    from django.contrib import messages
+    from django.shortcuts import redirect
+    from django.urls import reverse
+    from apps.usuarios.models import PerfilEmpleado
+    
+    try:
+        empleado = PerfilEmpleado.objects.get(id=empleado_id)
+    except PerfilEmpleado.DoesNotExist:
+        messages.error(request, "Empleado no encontrado.")
+        return redirect('asistencia:horarios')
+    
+    return redirect(f"{reverse('asistencia:horarios')}?empleado={empleado_id}")
+
+
+# ============================================================
+# ADMIN - CAMBIAR ESTADO DE ASISTENCIA (AJAX)
+# ============================================================
+
+@login_required
+@admin_required
+def cambiar_estado_asistencia(request):
+    """
+    Recibe POST con empleado_id y estado, actualiza la asistencia de hoy.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    empleado_id = request.POST.get('empleado_id')
+    estado = request.POST.get('estado')
+    
+    if not empleado_id or estado not in ['PRESENTE', 'TARDE', 'AUSENTE']:
+        return JsonResponse({'error': 'Datos inválidos'}, status=400)
+    
+    try:
+        empleado = PerfilEmpleado.objects.get(id=empleado_id)
+        horario = Horario.objects.filter(empleado=empleado, estado=True).first()
+        if not horario:
+            return JsonResponse({'error': 'Empleado sin horario activo'}, status=400)
+        
+        hoy = timezone.localdate()
+        asistencia, created = Asistencia.objects.get_or_create(
+            horario=horario,
+            fecha=hoy,
+            defaults={'estado': estado, 'hora_marcada': timezone.localtime().time()}
+        )
+        if not created:
+            asistencia.estado = estado
+            asistencia.hora_marcada = timezone.localtime().time()
+            asistencia.save()
+        
+        return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
+    except PerfilEmpleado.DoesNotExist:
+        return JsonResponse({'error': 'Empleado no encontrado'}, status=404)

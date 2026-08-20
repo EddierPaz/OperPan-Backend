@@ -58,7 +58,7 @@ def admin_dashboard(request):
             'empleado': p.empleado,
             'fecha': p.fecha_solicitud,
             'detalle': p.get_tipo_display(),
-            'url': reverse('novedades:permiso_detalle', args=[p.id]),
+            'url': reverse('novedades:novedades_admin'),
             'id': p.id,
         })
     for i in incapacidades_pendientes_qs:
@@ -67,7 +67,7 @@ def admin_dashboard(request):
             'empleado': i.empleado,
             'fecha': i.fecha_solicitud,
             'detalle': i.titulo,
-            'url': reverse('novedades:incapacidad_detalle', args=[i.id]),
+            'url': reverse('novedades:novedades_admin'),
             'id': i.id,
         })
     for c in certificados_pendientes_qs:
