@@ -1,5 +1,5 @@
 <!-- =========================================================
-     MODALES: CERTIFICADOS
+     MODALES: CERTIFICADOS (ADMIN)
 ========================================================= -->
 
 <!-- Modal Detalle Certificado -->
@@ -11,31 +11,34 @@
                 <div>
                     <div class="novedad-detalle-titulo">
                         <i class="bi bi-award-fill"></i>
-                        <span>Detalle del certificado</span>
+                        <span id="certificadoDetalleTitulo">Detalle de certificado</span>
                     </div>
-                    <p class="novedad-detalle-subtitulo mb-0">
-                        Información de la solicitud
+                    <p class="novedad-detalle-subtitulo mb-0" id="certificadoDetalleSubtitulo">
+                        Información completa de la solicitud
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body novedad-detalle-body" id="certificadosModalBody">
-                <!-- Se renderiza mediante JS -->
+                <!-- Renderizado por JS -->
             </div>
 
             <div class="modal-footer novedad-detalle-footer">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
-                    Cerrar
+                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cerrar
                 </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="certificadosRechazarBtn">
-                    <i class="bi bi-x-circle"></i>
-                    Rechazar
-                </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-aprobar" id="certificadosAprobarBtn">
-                    <i class="bi bi-check-circle"></i>
-                    Aprobar certificado
-                </button>
+                <div class="d-flex gap-2" id="certificadosAccionesFooter">
+                    <button type="button" class="novedad-modal-btn btn-primary-corporate" id="certificadosRechazarBtn">
+                        <i class="bi bi-x-circle"></i> Rechazar
+                    </button>
+                    <button type="button" class="novedad-modal-btn btn-success-corporate" id="certificadosAprobarBtn">
+                        <i class="bi bi-check-circle"></i> Aprobar
+                    </button>
+                    <button type="button" class="novedad-modal-btn btn-success-corporate" id="certificadosDescargarBtn" style="display:none;">
+                        <i class="bi bi-download"></i> Descargar PDF
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -45,67 +48,55 @@
 <!-- Modal Confirmar Aprobación Certificado -->
 <div class="modal fade" id="certificadosConfirmApproveModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal novedad-confirm-modal">
-
-            <div class="modal-header">
-                <div class="novedad-confirm-icon novedad-confirm-icon-success">
+        <div class="modal-content novedad-modal">
+            <div class="modal-header border-0 pb-0">
+                <div class="novedad-confirm-icon novedad-confirm-icon-success mx-auto">
                     <i class="bi bi-check-lg"></i>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-
             <div class="modal-body text-center">
                 <h5>¿Aprobar certificado?</h5>
-                <p class="text-muted mb-0">
-                    El certificado será marcado como aprobado y se registrará la fecha de emisión.
-                </p>
+                <p class="text-muted mb-0">El certificado será marcado como aprobado y se registrará la fecha de emisión.</p>
             </div>
-
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-aprobar" id="certificadosConfirmApprove">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Confirmar aprobación
+                <button type="button" class="novedad-modal-btn btn-success-corporate" id="certificadosConfirmApprove">
+                    <i class="bi bi-check-circle me-1"></i> Sí, aprobar
                 </button>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- Modal Rechazar Certificado -->
+<!-- Modal Motivo de Rechazo Certificado -->
 <div class="modal fade" id="certificadosRejectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal novedad-rechazo-modal">
-
-            <div class="modal-header">
-                <div class="novedad-rechazo-titulo">
-                    <i class="bi bi-x-circle"></i>
-                    <span>Motivo del rechazo</span>
+        <div class="modal-content novedad-modal">
+            <div class="modal-body text-center pt-4">
+                <div class="novedad-confirm-icon novedad-confirm-icon-danger mx-auto mb-3">
+                    <i class="bi bi-x-lg"></i>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="mb-2">¿Rechazar certificado?</h5>
+                <p class="text-muted mb-3">Deberás indicar el motivo del rechazo.</p>
+                <div class="text-start">
+                    <label for="certificadosRejectReason" class="novedad-rechazo-label">
+                        Motivo del rechazo <span class="text-danger">*</span>
+                    </label>
+                    <textarea id="certificadosRejectReason" class="novedad-rechazo-textarea" placeholder="Escribe el motivo del rechazo..."></textarea>
+                    <small class="text-muted d-block mt-1">Este motivo será visible para el empleado.</small>
+                </div>
             </div>
-
-            <div class="modal-body">
-                <label for="certificadosRejectReason" class="novedad-rechazo-label">
-                    Motivo del rechazo <span>*</span>
-                </label>
-                <textarea class="novedad-rechazo-textarea" id="certificadosRejectReason" placeholder="Explique al empleado por qué se rechaza el certificado..."></textarea>
-                <small class="text-muted">Este motivo será visible para el empleado.</small>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="certificadosConfirmReject">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Confirmar rechazo
+                <button type="button" class="novedad-modal-btn btn-primary-corporate" id="certificadosConfirmReject">
+                    <i class="bi bi-x-circle me-1"></i> Rechazar certificado
                 </button>
             </div>
-
         </div>
     </div>
 </div>

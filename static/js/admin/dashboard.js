@@ -1,5 +1,5 @@
 /**
- * Dashboard - OperPan
+ * Dashboard Admin - OperPan
  * Funcionalidades JavaScript para el panel de administración
  * 
  * Dependencias: Chart.js (cargado desde CDN en el template)
@@ -27,63 +27,7 @@ function mostrarFecha() {
 }
 
 // ============================================================
-// 2. BOTONES "VER MÁS / VER MENOS" PARA ASISTENCIA, TAREAS Y NOVEDADES
-// ============================================================
-function initVerMas() {
-    // Función genérica para manejar el toggle
-    function setupVerMas(btnId, itemSelector, listId) {
-        const btn = document.getElementById(btnId);
-        if (!btn) return;
-
-        btn.addEventListener('click', function() {
-            const visible = parseInt(this.dataset.visible);
-            const total = parseInt(this.dataset.total);
-            const items = document.querySelectorAll(itemSelector);
-            const isExpanded = this.dataset.expanded === 'true';
-
-            if (isExpanded) {
-                // Modo "Ver menos": ocultar todos los que superen 8
-                items.forEach(function(item, index) {
-                    if (index >= 8) {
-                        item.classList.add('d-none');
-                    }
-                });
-                this.dataset.visible = 8;
-                this.dataset.expanded = 'false';
-                this.innerHTML = 'Ver más <i class="bi bi-chevron-down"></i>';
-            } else {
-                // Modo "Ver más": mostrar hasta 20
-                let nuevosVisibles = visible + 8;
-                if (nuevosVisibles > total) nuevosVisibles = total;
-                
-                items.forEach(function(item, index) {
-                    if (index < nuevosVisibles) {
-                        item.classList.remove('d-none');
-                    }
-                });
-                
-                this.dataset.visible = nuevosVisibles;
-                if (nuevosVisibles >= total) {
-                    // Si ya se mostraron todos, cambiamos a "Ver menos"
-                    this.dataset.expanded = 'true';
-                    this.innerHTML = 'Ver menos <i class="bi bi-chevron-up"></i>';
-                } else {
-                    // Aún hay más para mostrar, pero cambiamos a "Ver menos" porque el usuario puede querer colapsar
-                    this.dataset.expanded = 'true';
-                    this.innerHTML = 'Ver menos <i class="bi bi-chevron-up"></i>';
-                }
-            }
-        });
-    }
-
-    // Configurar cada botón
-    setupVerMas('btnVerMasAsistencia', '#tablaAsistencia .asistencia-item', 'tablaAsistencia');
-    setupVerMas('btnVerMasTareas', '#listaTareas .tarea-item', 'listaTareas');
-    setupVerMas('btnVerMasNovedades', '#listaNovedades .novedad-item', 'listaNovedades');
-}
-
-// ============================================================
-// 3. INICIALIZAR GRÁFICAS CON CHART.JS
+// 2. INICIALIZAR GRÁFICAS CON CHART.JS
 // ============================================================
 function initCharts() {
     if (typeof Chart === 'undefined') {
@@ -91,7 +35,7 @@ function initCharts() {
         return;
     }
 
-    // --- Gráfica 1: Asistencia (barras) ---
+    // --- Gráfica 1: Asistencia (barras) con borde blanco ---
     const ctxAsistencia = document.getElementById('chartAsistencia');
     if (ctxAsistencia && window.asistenciaChartData) {
         const data = window.asistenciaChartData;
@@ -103,7 +47,8 @@ function initCharts() {
                     label: 'Asistencia',
                     data: data.values,
                     backgroundColor: data.colors,
-                    borderWidth: 0,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
                     borderRadius: 6,
                     barPercentage: 0.7,
                 }]
@@ -128,18 +73,19 @@ function initCharts() {
         });
     }
 
-    // --- Gráfica 2: Estado de tareas (torta/pie) ---
+    // --- Gráfica 2: Estado de tareas (pie) con borde blanco ---
     const ctxTareas = document.getElementById('chartTareas');
     if (ctxTareas && window.tareasChartData) {
         const data = window.tareasChartData;
         new Chart(ctxTareas, {
-            type: 'pie',  // Cambio a pie
+            type: 'pie',
             data: {
                 labels: data.labels,
                 datasets: [{
                     data: data.values,
                     backgroundColor: data.colors,
-                    borderWidth: 0,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
                 }]
             },
             options: {
@@ -151,7 +97,9 @@ function initCharts() {
                         labels: {
                             boxWidth: 12,
                             padding: 8,
-                            font: { size: 10 }
+                            font: { size: 10, family: 'Poppins' },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
                         }
                     }
                 }
@@ -159,7 +107,7 @@ function initCharts() {
         });
     }
 
-    // --- Gráfica 3: Distribución de novedades (dona) ---
+    // --- Gráfica 3: Novedades pendientes (dona) con borde blanco ---
     const ctxNovedades = document.getElementById('chartNovedades');
     if (ctxNovedades && window.novedadesChartData) {
         const data = window.novedadesChartData;
@@ -170,7 +118,8 @@ function initCharts() {
                 datasets: [{
                     data: data.values,
                     backgroundColor: data.colors,
-                    borderWidth: 0,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
                 }]
             },
             options: {
@@ -182,7 +131,9 @@ function initCharts() {
                         labels: {
                             boxWidth: 12,
                             padding: 8,
-                            font: { size: 10 }
+                            font: { size: 10, family: 'Poppins' },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
                         }
                     }
                 },
@@ -193,10 +144,89 @@ function initCharts() {
 }
 
 // ============================================================
-// 4. INICIALIZACIÓN AL CARGAR LA PÁGINA
+// 3. CAMBIAR ESTADO DE ASISTENCIA (AJAX)
+// ============================================================
+function initCambiarEstadoAsistencia() {
+    const botones = document.querySelectorAll('.btn-cambiar-estado');
+    botones.forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tr = this.closest('.asistencia-item');
+            const empleadoId = tr.dataset.empleadoId;
+            const estado = this.dataset.estado;
+            const badge = tr.querySelector('.estado-badge');
+            const url = "/asistencia/cambiar-estado-asistencia/";
+            
+            // Crear formulario con CSRF
+            const formData = new FormData();
+            formData.append('empleado_id', empleadoId);
+            formData.append('estado', estado);
+            
+            // Obtener token CSRF desde el meta tag
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (csrfToken) {
+                formData.append('csrfmiddlewaretoken', csrfToken.value);
+            }
+            
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken ? csrfToken.value : '',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    // Actualizar badge
+                    const badgeClass = estado === 'PRESENTE' ? 'bg-success' : 
+                                      estado === 'TARDE' ? 'bg-warning text-dark' : 'bg-danger';
+                    const badgeText = estado === 'PRESENTE' ? 'Presente' : 
+                                      estado === 'TARDE' ? 'Tarde' : 'Ausente';
+                    badge.className = 'badge ' + badgeClass;
+                    badge.textContent = badgeText;
+                    
+                    // Mostrar toast de éxito
+                    mostrarMensaje('✅ Estado actualizado a ' + badgeText, 'success');
+                } else {
+                    mostrarMensaje('❌ Error: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                mostrarMensaje('❌ Error de conexión', 'danger');
+            });
+        });
+    });
+}
+
+// ============================================================
+// 4. MOSTRAR MENSAJE TOAST
+// ============================================================
+function mostrarMensaje(mensaje, tipo = 'success') {
+    const toast = document.getElementById('liveToast');
+    const msgSpan = document.getElementById('toastMsg');
+    if (!toast || !msgSpan) return;
+    
+    msgSpan.innerText = mensaje;
+    const border = toast.querySelector('.border-start');
+    if (border) {
+        if (tipo === 'success') {
+            border.className = 'border-start border-4 border-success';
+        } else if (tipo === 'danger') {
+            border.className = 'border-start border-4 border-danger';
+        } else {
+            border.className = 'border-start border-4 border-warning';
+        }
+    }
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+}
+
+// ============================================================
+// 5. INICIALIZACIÓN AL CARGAR LA PÁGINA
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     mostrarFecha();
-    initVerMas();
     setTimeout(initCharts, 100);
+    initCambiarEstadoAsistencia();
 });

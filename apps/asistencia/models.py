@@ -33,6 +33,12 @@ class Horario(models.Model):
         auto_now_add=True
     )
 
+    ciclo_inicio = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Fecha en que arrancó el ciclo de descanso vigente."
+    )
+
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.get_turno_display()}"
 
@@ -59,6 +65,7 @@ class DescansoEmpleado(models.Model):
 
     def __str__(self):
         return f"{self.horario.empleado.nombre_completo()} - {self.fecha}"
+
 
 class Asistencia(models.Model):
 

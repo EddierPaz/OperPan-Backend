@@ -1,70 +1,699 @@
-/* DASHBOARD - Cards de bienvenida y resumen */
+/* ============================================
+   DASHBOARD EMPLEADO - OPERPAN
+   ESTILOS COMPLETOS - VERSIÓN FINAL
+   ============================================ */
+
+/* -------- GENERAL -------- */
 .dashboard-container {
     padding: 2rem;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Tarjeta de empleado destacada */
-.employee-highlight {
-    background: white;
-    border-radius: 28px;
-    padding: 1.8rem;
+/* ============================================================
+   1. WELCOME CARD - FONDO FIJO #A40706
+   ============================================================ */
+.welcome-card {
+    background: #A40706 !important;
+    color: #F0F2F5;
+    border-radius: 24px;
+    padding: 1.8rem 2rem;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-    border: 1px solid #F0F2F5;
+    box-shadow: 0 8px 32px rgba(164, 7, 6, 0.25);
+    border: none;
+    transition: all 0.3s ease;
 }
 
-.employee-avatar-large {
-    width: 80px;
-    height: 80px;
-    background: #F0F2F5;
-    border-radius: 60px;
+.welcome-card .welcome-content {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 2rem;
-    color: #A40706;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.welcome-card h2 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.3px;
+    margin-bottom: 0.2rem;
+    color: #ffffff !important;
+}
+
+.welcome-card .text-white-50 {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 0.9rem;
 }
 
 .badge-role {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
-    padding: 0.4rem 1rem;
+    padding: 0.3rem 1.2rem;
     border-radius: 40px;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 500;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: inline-flex;
     align-items: center;
+    gap: 0.3rem;
 }
 
+.btn-refresh {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 40px;
+    padding: 0.3rem 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
 
-/* Cards de estadísticas resumidas */
-.stat-summary {
-    background: white;
+.btn-refresh:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.03);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================================
+   2. CARDS BASE
+   ============================================================ */
+.card-block {
+    background: #ffffff;
     border-radius: 20px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    border: 1px solid #EDF2F7;
+    padding: 1.2rem 1.2rem 0.8rem;
+    border: 1px solid #e9edf4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-block:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    border-color: #d5dbe6;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.card-link:hover {
+    border-color: #A40706;
+    box-shadow: 0 8px 28px rgba(164, 7, 6, 0.10);
+    transform: translateY(-2px);
+}
+
+.card-link .card-title .bi-arrow-right-circle {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+}
+
+.card-link:hover .card-title .bi-arrow-right-circle {
+    opacity: 0.8;
+    transform: translateX(4px);
+}
+
+.card-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f2f7;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.card-title i {
+    font-size: 1.1rem;
+}
+
+.btn-link-modulo {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #6c757d;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    background: transparent;
+}
+
+.btn-link-modulo:hover {
+    color: #A40706;
+    background: rgba(164, 7, 6, 0.06);
+}
+
+.btn-link-modulo i {
+    font-size: 0.6rem;
+    margin-left: 0.2rem;
+}
+
+/* ============================================================
+   3. JORNADA - CON MARGEN SUPERIOR PARA ESTADO DE HOY
+   ============================================================ */
+.jornada-info {
+    padding: 0.2rem 0;
+}
+
+.jornada-info .fw-bold {
+    font-size: 0.95rem;
+}
+
+.jornada-info .text-muted {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+}
+
+.jornada-info .estado-hoy {
+    margin-top: 0.75rem !important;
+}
+
+.jornada-info .estado-hoy .badge {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
+}
+
+/* ============================================================
+   4. ESTADÍSTICAS RESUMIDAS
+   ============================================================ */
+.stat-summary {
+    background: #f8f9fc;
+    border-radius: 16px;
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-summary:hover {
+    background: #f0f2f7;
+}
+
+.stat-summary.stat-sm {
+    padding: 0.4rem 0.2rem;
+}
+
+.stat-summary.stat-sm .stat-number {
+    font-size: 1.4rem;
 }
 
 .stat-number {
     font-size: 1.8rem;
-    font-weight: 800;
+    font-weight: 700;
     color: #1E293B;
+    line-height: 1.2;
 }
 
-/* Notificaciones */
-.notification-item {
-    background: white;
+.stat-summary small {
+    font-size: 0.6rem;
+    color: #6c757d;
+    display: block;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+/* ============================================================
+   5. HISTORIAL DE ASISTENCIA
+   ============================================================ */
+.historial-item {
+    display: inline-block;
+    margin: 0.15rem 0.2rem;
+    font-size: 0.75rem;
+}
+
+.historial-item .badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 30px;
+}
+
+.btn-ver-mas-small {
+    background: none;
+    border: none;
+    color: #A40706;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.1rem 0.6rem;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.btn-ver-mas-small:hover {
+    background: #A40706;
+    color: white;
+}
+
+/* ============================================================
+   6. TAREAS Y ASISTENCIA DEL MES - CON SCROLL
+   ============================================================ */
+.tareas-scroll,
+.asistencia-mes-scroll {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+    padding-right: 6px;
+}
+
+.tareas-scroll::-webkit-scrollbar,
+.asistencia-mes-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tareas-scroll::-webkit-scrollbar-track,
+.asistencia-mes-scroll::-webkit-scrollbar-track {
+    background: #f0f2f7;
+    border-radius: 10px;
+}
+
+.tareas-scroll::-webkit-scrollbar-thumb,
+.asistencia-mes-scroll::-webkit-scrollbar-thumb {
+    background: #c5cad4;
+    border-radius: 10px;
+}
+
+.tareas-scroll::-webkit-scrollbar-thumb:hover,
+.asistencia-mes-scroll::-webkit-scrollbar-thumb:hover {
+    background: #A40706;
+}
+
+/* Lista de tareas */
+.list-group {
+    margin-bottom: 0;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 0.6rem 0;
+    background: transparent;
+    border-color: #f0f2f7;
+    transition: all 0.2s ease;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item:hover {
+    background: #fafbff;
+    border-radius: 8px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.tarea-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.tarea-info {
+    flex: 1;
+    min-width: 150px;
+}
+
+.tarea-titulo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.tarea-titulo a {
+    color: #1a1a2e;
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.tarea-titulo a:hover {
+    color: #A40706;
+    text-decoration: underline;
+}
+
+.tarea-titulo .badge {
+    font-weight: 500;
+    border-radius: 40px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.6rem;
+}
+
+.tarea-info .text-muted {
+    font-size: 0.7rem;
+    font-weight: 400;
+    display: block;
+    margin-top: 0.1rem;
+}
+
+.tarea-info .text-danger {
+    font-weight: 600;
+}
+
+.tarea-acciones {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+/* Botones de acción de tareas */
+.btn-accion {
+    border: none;
+    border-radius: 40px;
+    padding: 0.2rem 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.btn-iniciar {
+    background: #e7f3ff;
+    color: #0d6efd;
+}
+
+.btn-iniciar:hover {
+    background: #0d6efd;
+    color: white;
+    transform: scale(1.03);
+}
+
+.btn-finalizar {
+    background: #e6f9ed;
+    color: #198754;
+}
+
+.btn-finalizar:hover {
+    background: #198754;
+    color: white;
+    transform: scale(1.03);
+}
+
+/* ============================================================
+   7. TABLA DE ASISTENCIA DEL MES
+   ============================================================ */
+.tabla-asistencia-mes {
+    font-size: 0.8rem;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-asistencia-mes th {
+    text-align: left;
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 0.3rem 0.2rem;
+    border-bottom: 1px solid #e9edf4;
+}
+
+.tabla-asistencia-mes td {
+    padding: 0.25rem 0.2rem;
+    border-bottom: 1px solid #f0f2f7;
+    vertical-align: middle;
+}
+
+.tabla-asistencia-mes .badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 30px;
+}
+
+/* ============================================================
+   8. GRÁFICAS
+   ============================================================ */
+.chart-card {
+    padding-bottom: 0.6rem;
+}
+
+.chart-container {
+    background: #f8f9fc;
     border-radius: 16px;
-    padding: 0.8rem;
-    margin-bottom: 0.5rem;
-    border-left: 4px solid #A40706;
+    padding: 0.6rem;
+    height: 100%;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Toast */
+.chart-container canvas {
+    max-width: 100%;
+    height: auto !important;
+}
+
+/* Reducción de gráficas en desktop */
+@media (min-width: 992px) {
+    .chart-card .chart-container {
+        min-height: 140px;
+        padding: 0.4rem;
+    }
+    .chart-card .chart-container canvas {
+        max-height: 140px;
+    }
+    .chart-card .card-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+    }
+}
+
+/* ============================================================
+   9. SOLICITUDES - MEJOR UBICACIÓN Y ALTURA
+   ============================================================ */
+.solicitudes-container .stat-summary {
+    padding: 0.8rem 0.4rem;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.solicitudes-container .stat-summary .stat-number {
+    font-size: 1.8rem;
+}
+
+.solicitudes-container .stat-summary small {
+    font-size: 0.65rem;
+}
+
+.solicitudes-empty {
+    margin-top: 1rem;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.solicitudes-empty i {
+    font-size: 1.5rem;
+}
+
+.solicitudes-container .row.g-2 {
+    align-items: stretch;
+}
+
+/* ============================================================
+   10. MEMORANDOS (CARD CLICKEABLE)
+   ============================================================ */
+.memorandos-card {
+    background: linear-gradient(145deg, #ffffff 0%, #fafbff 100%);
+    border-color: #e9edf4;
+}
+
+.memorandos-card:hover {
+    border-color: #A40706;
+    background: linear-gradient(145deg, #ffffff 0%, #f5f0f0 100%);
+}
+
+.memorandos-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+}
+
+.memorandos-number .badge {
+    font-size: 2.8rem;
+    font-weight: 700;
+    padding: 0.6rem 1.5rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #A40706 0%, #7a0504 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.3);
+}
+
+.memorandos-number p {
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.memorandos-hint {
+    margin-top: 0.3rem;
+}
+
+.memorandos-hint small {
+    color: #A40706;
+    font-size: 0.65rem;
+    opacity: 0.6;
+}
+
+.memorandos-empty i {
+    font-size: 2.5rem;
+    color: #28a745;
+}
+
+.memorandos-empty p {
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   11. ACTIVIDAD RECIENTE
+   ============================================================ */
+.actividad-card {
+    background: #f8f9fc;
+    border-color: #e2e6ed;
+    padding-bottom: 0.6rem;
+}
+
+.actividad-card .card-title {
+    border-bottom-color: #dde1e9;
+}
+
+.actividad-feed {
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.actividad-feed::-webkit-scrollbar {
+    width: 4px;
+}
+
+.actividad-feed::-webkit-scrollbar-track {
+    background: #e9edf4;
+    border-radius: 10px;
+}
+
+.actividad-feed::-webkit-scrollbar-thumb {
+    background: #c5cad4;
+    border-radius: 10px;
+}
+
+.actividad-feed::-webkit-scrollbar-thumb:hover {
+    background: #A40706;
+}
+
+.actividad-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 0.8rem;
+    background: #ffffff;
+    border: 1px solid #e9edf4;
+    border-radius: 12px;
+    margin-bottom: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.actividad-item:hover {
+    border-color: #A40706;
+    box-shadow: 0 2px 12px rgba(164, 7, 6, 0.06);
+    transform: translateX(3px);
+}
+
+.actividad-item:last-child {
+    margin-bottom: 0;
+}
+
+.actividad-icon {
+    font-size: 1.2rem;
+    min-width: 2rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.actividad-contenido {
+    flex: 1;
+    min-width: 0;
+}
+
+.actividad-contenido a {
+    color: #1a1a2e;
+    font-weight: 500;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: block;
+}
+
+.actividad-contenido a:hover {
+    color: #A40706;
+    text-decoration: underline;
+}
+
+.actividad-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.1rem;
+}
+
+.actividad-meta .text-muted {
+    font-size: 0.65rem;
+    font-weight: 400;
+}
+
+.actividad-meta .badge {
+    font-weight: 400;
+    font-size: 0.55rem;
+    border-radius: 40px;
+    padding: 0.1rem 0.5rem;
+}
+
+.actividad-item .bi-chevron-right {
+    opacity: 0.25;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.actividad-item:hover .bi-chevron-right {
+    opacity: 0.7;
+    transform: translateX(4px);
+}
+
+/* ============================================================
+   12. TOAST
+   ============================================================ */
 .toast-message {
     position: fixed;
     bottom: 20px;
@@ -72,50 +701,278 @@
     z-index: 1100;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-    .sidebar {
-        margin-left: -280px;
-    }
-
-    .sidebar.active {
-        margin-left: 0;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    
-}
-
-
+/* ============================================================
+   13. FOOTER
+   ============================================================ */
 footer {
-    text-align: center;
-    padding: 1rem;
-    color: #5F6C7A;
     font-size: 0.75rem;
+    opacity: 0.6;
+    font-weight: 300;
+    padding-top: 1.5rem;
     margin-top: 1rem;
 }
 
-.welcome-message {
-    background: #A40706;
-    border-radius: 24px;
-    padding: 1.5rem;
-    color: #A40706;
-    margin-bottom: 2rem;
+footer i {
+    margin-right: 0.4rem;
 }
 
-.welcome-message h2,
-.welcome-message p {
-    color: white;
+/* ============================================================
+   14. RESPONSIVE
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .dashboard-container {
+        padding: 1.5rem;
+    }
+
+    .welcome-card {
+        padding: 1.5rem;
+    }
+
+    .welcome-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .card-block {
+        padding: 1rem 1rem 0.6rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .chart-container {
+        min-height: 150px;
+    }
+
+    .memorandos-number .badge {
+        font-size: 2rem;
+        padding: 0.4rem 1rem;
+    }
+
+    .tareas-scroll,
+    .asistencia-mes-scroll {
+        max-height: 350px;
+    }
 }
 
-.btn-outline-light-custom {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    background: transparent;
-    color: #A40706;
-    border-radius: 40px;
-    padding: 0.4rem 1rem;
+/* Móvil grande */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .welcome-card {
+        padding: 1.2rem 1.2rem;
+        border-radius: 20px;
+    }
+
+    .welcome-card .welcome-content {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.6rem;
+    }
+
+    .welcome-card h2 {
+        font-size: 1.1rem;
+    }
+
+    .btn-refresh {
+        align-self: flex-start;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.8rem;
+    }
+
+    .badge-role {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.7rem;
+    }
+
+    .card-block {
+        padding: 0.8rem 0.8rem 0.4rem;
+        border-radius: 16px;
+    }
+
+    .card-title {
+        font-size: 0.85rem;
+        padding-bottom: 0.4rem;
+    }
+
+    .btn-link-modulo {
+        font-size: 0.6rem;
+        padding: 0.1rem 0.4rem;
+    }
+
+    .stat-number {
+        font-size: 1.2rem;
+    }
+
+    .stat-summary {
+        padding: 0.4rem 0.2rem;
+    }
+
+    .stat-summary small {
+        font-size: 0.55rem;
+    }
+
+    .stat-summary.stat-sm .stat-number {
+        font-size: 1.1rem;
+    }
+
+    .jornada-info .fw-bold {
+        font-size: 0.85rem;
+    }
+
+    .jornada-info .badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .tarea-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+    }
+
+    .tarea-acciones {
+        justify-content: flex-start;
+    }
+
+    .btn-accion {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.6rem;
+    }
+
+    .chart-container {
+        min-height: 120px;
+        padding: 0.4rem;
+    }
+
+    .chart-container canvas {
+        max-height: 120px;
+    }
+
+    .actividad-item {
+        padding: 0.4rem 0.6rem;
+        gap: 0.5rem;
+    }
+
+    .actividad-icon {
+        font-size: 1rem;
+        min-width: 1.6rem;
+    }
+
+    .actividad-contenido a {
+        font-size: 0.75rem;
+    }
+
+    .actividad-meta .text-muted {
+        font-size: 0.6rem;
+    }
+
+    .actividad-meta .badge {
+        font-size: 0.5rem;
+    }
+
+    .memorandos-number .badge {
+        font-size: 1.6rem;
+        padding: 0.3rem 0.8rem;
+    }
+
+    .memorandos-content {
+        min-height: 70px;
+    }
+
+    .historial-item {
+        font-size: 0.65rem;
+    }
+
+    .historial-item .badge {
+        font-size: 0.55rem;
+        padding: 0.15rem 0.4rem;
+    }
+
+    .btn-ver-mas-small {
+        font-size: 0.6rem;
+    }
+
+    footer {
+        font-size: 0.6rem;
+    }
+
+    .tareas-scroll,
+    .asistencia-mes-scroll {
+        max-height: 260px;
+    }
 }
 
+/* Móvil pequeño */
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 0.6rem;
+    }
+
+    .welcome-card {
+        padding: 0.8rem 1rem;
+    }
+
+    .welcome-card h2 {
+        font-size: 0.95rem;
+    }
+
+    .card-block {
+        padding: 0.6rem 0.6rem 0.3rem;
+    }
+
+    .card-title {
+        font-size: 0.75rem;
+    }
+
+    .stat-number {
+        font-size: 1rem;
+    }
+
+    .chart-container {
+        min-height: 100px;
+    }
+
+    .chart-container canvas {
+        max-height: 100px;
+    }
+
+    .actividad-item {
+        padding: 0.3rem 0.4rem;
+    }
+
+    .actividad-contenido a {
+        font-size: 0.65rem;
+    }
+
+    .memorandos-number .badge {
+        font-size: 1.2rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .tarea-titulo a {
+        font-size: 0.7rem;
+    }
+
+    .tarea-info .text-muted {
+        font-size: 0.6rem;
+    }
+
+    .btn-accion {
+        font-size: 0.55rem;
+        padding: 0.1rem 0.4rem;
+    }
+
+    .solicitudes-container .stat-summary {
+        padding: 0.4rem 0.2rem;
+        min-height: 50px;
+    }
+
+    .solicitudes-container .stat-summary .stat-number {
+        font-size: 1.2rem;
+    }
+}

@@ -1,41 +1,41 @@
 <!-- =========================================================
-     MODALES: INCAPACIDADES
+     MODALES: INCAPACIDADES (ADMIN)
 ========================================================= -->
 
 <!-- Modal Detalle Incapacidad -->
 <div class="modal fade" id="incapacidadesDetalleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content novedad-modal">
 
             <div class="modal-header novedad-detalle-header">
                 <div>
                     <div class="novedad-detalle-titulo">
-                        <i class="bi bi-clipboard2-pulse"></i>
-                        <span>Detalle de incapacidad</span>
+                        <i class="bi bi-heart-pulse-fill"></i>
+                        <span id="incapacidadDetalleTitulo">Detalle de incapacidad</span>
                     </div>
-                    <div class="novedad-detalle-subtitulo">
-                        Información de la solicitud
-                    </div>
+                    <p class="novedad-detalle-subtitulo mb-0" id="incapacidadDetalleSubtitulo">
+                        Información completa de la solicitud
+                    </p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <div class="modal-body novedad-detalle-body" id="incapacidadesModalBody">
-                <!-- JS -->
+                <!-- Renderizado por JS -->
             </div>
 
             <div class="modal-footer novedad-detalle-footer">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
-                    Cerrar
+                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i> Cerrar
                 </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="incapacidadesRechazarBtn">
-                    <i class="bi bi-x-circle"></i>
-                    Rechazar
-                </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-aprobar" id="incapacidadesAprobarBtn">
-                    <i class="bi bi-check-circle"></i>
-                    Aprobar
-                </button>
+                <div class="d-flex gap-2" id="incapacidadesAccionesFooter">
+                    <button type="button" class="novedad-modal-btn btn-primary-corporate" id="incapacidadesRechazarBtn">
+                        <i class="bi bi-x-circle"></i> Rechazar
+                    </button>
+                    <button type="button" class="novedad-modal-btn btn-success-corporate" id="incapacidadesAprobarBtn">
+                        <i class="bi bi-check-circle"></i> Aprobar
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -45,54 +45,23 @@
 <!-- Modal Confirmar Aprobación Incapacidad -->
 <div class="modal fade" id="incapacidadesConfirmApproveModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal novedad-confirm-modal">
-            <div class="modal-header">
-                <div class="novedad-confirm-icon novedad-confirm-icon-success">
+        <div class="modal-content novedad-modal">
+            <div class="modal-header border-0 pb-0">
+                <div class="novedad-confirm-icon novedad-confirm-icon-success mx-auto">
                     <i class="bi bi-check-lg"></i>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-
             <div class="modal-body text-center">
                 <h5>¿Aprobar incapacidad?</h5>
-                <p class="text-muted mb-0">Esta acción registrará la incapacidad como aprobada.</p>
+                <p class="text-muted mb-0">Esta acción marcará la incapacidad como aprobada.</p>
             </div>
-
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-aprobar" id="incapacidadesConfirmApprove">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Sí, aprobar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Confirmación Previa de Rechazo Incapacidad -->
-<div class="modal fade" id="incapacidadesConfirmRejectFirstModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal novedad-confirm-modal">
-            <div class="modal-header">
-                <div class="novedad-confirm-icon" style="background:#fee2e2;color:#dc3545;">
-                    <i class="bi bi-exclamation-lg"></i>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body text-center">
-                <h5>¿Rechazar incapacidad?</h5>
-                <p class="text-muted mb-0">Antes de rechazarla deberás indicar el motivo.</p>
-            </div>
-
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="incapacidadesConfirmRejectFirst">
-                    Continuar
+                <button type="button" class="novedad-modal-btn btn-success-corporate" id="incapacidadesConfirmApprove">
+                    <i class="bi bi-check-circle me-1"></i> Sí, aprobar
                 </button>
             </div>
         </div>
@@ -102,30 +71,27 @@
 <!-- Modal Motivo de Rechazo Incapacidad -->
 <div class="modal fade" id="incapacidadesRejectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal novedad-rechazo-modal">
-            <div class="modal-header">
-                <div class="novedad-rechazo-titulo">
-                    <i class="bi bi-x-circle"></i>
-                    Motivo del rechazo
+        <div class="modal-content novedad-modal">
+            <div class="modal-body text-center pt-4">
+                <div class="novedad-confirm-icon novedad-confirm-icon-danger mx-auto mb-3">
+                    <i class="bi bi-x-lg"></i>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="mb-2">¿Rechazar incapacidad?</h5>
+                <p class="text-muted mb-3">Deberás indicar el motivo del rechazo.</p>
+                <div class="text-start">
+                    <label for="incapacidadesRejectReason" class="novedad-rechazo-label">
+                        Motivo del rechazo <span class="text-danger">*</span>
+                    </label>
+                    <textarea id="incapacidadesRejectReason" class="novedad-rechazo-textarea" placeholder="Escribe el motivo del rechazo..."></textarea>
+                    <small class="text-muted d-block mt-1">Este motivo será visible para el empleado.</small>
+                </div>
             </div>
-
-            <div class="modal-body">
-                <label for="incapacidadesRejectReason" class="novedad-rechazo-label">
-                    Indica el motivo <span>*</span>
-                </label>
-                <textarea id="incapacidadesRejectReason" class="novedad-rechazo-textarea" placeholder="Escribe el motivo del rechazo..."></textarea>
-                <small class="text-muted">Este motivo será visible para el empleado.</small>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-cerrar" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="novedad-modal-btn novedad-modal-btn-rechazar" id="incapacidadesConfirmReject">
-                    <i class="bi bi-x-circle me-1"></i>
-                    Rechazar incapacidad
+                <button type="button" class="novedad-modal-btn btn-primary-corporate" id="incapacidadesConfirmReject">
+                    <i class="bi bi-x-circle me-1"></i> Rechazar incapacidad
                 </button>
             </div>
         </div>

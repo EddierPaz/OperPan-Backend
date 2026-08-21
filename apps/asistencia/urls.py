@@ -39,6 +39,19 @@ urlpatterns = [
         "registrar-asistencia/",
         views.registrar_asistencia,
         name="registrar_asistencia"
+    ),
+
+    path(
+    "asistencia/empleado/<int:empleado_id>/",
+    views.asistencia_empleado_admin,
+    name="asistencia_empleado_admin"
+    ),
+
+    path(
+    "cambiar-estado-asistencia/",
+    views.cambiar_estado_asistencia,
+    name="cambiar_estado_asistencia"
     )
+
 
 ]

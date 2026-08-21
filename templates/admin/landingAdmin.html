@@ -21,7 +21,7 @@
       </h2>
       <p class="mb-0 text-white-50">Hoy es <strong id="fechaActual"></strong></p>
     </div>
-    <button class="btn btn-light btn-sm" onclick="location.reload();">
+    <button class="btn-refresh" onclick="location.reload();">
       <i class="bi bi-arrow-clockwise"></i> Refrescar
     </button>
   </div>
@@ -71,18 +71,18 @@
     </div>
   </div>
 
-  <!-- PRIMERA FILA: Asistencia + Tareas + Novedades (3 columnas en desktop) -->
+  <!-- PRIMERA FILA: Asistencia + Tareas + Novedades (3 columnas) -->
   <div class="row g-3 mb-4 fila-principal">
     <!-- Asistencia -->
     <div class="col-lg-4 col-md-6">
-      <div class="card-block">
+      <div class="card-block asistencia-card">
         <div class="card-title">
           <span><i class="bi bi-clock-history me-2" style="color:#A40706;"></i> Asistencia del día</span>
-          <a href="{% url 'asistencia:horarios' %}" class="btn-ver-todo">
-            Ver todo <i class="bi bi-arrow-right"></i>
+          <a href="{% url 'asistencia:horarios' %}" class="card-link-icon">
+            <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
         </div>
-        <div class="table-responsive">
+        <div class="tabla-scroll">
           <table class="table table-sm table-hover">
             <thead>
               <tr>
@@ -92,123 +92,133 @@
             </thead>
             <tbody id="tablaAsistencia">
               {% for item in lista_asistencia %}
-                <tr class="asistencia-item {% if forloop.counter > 8 %}d-none{% endif %}">
-                  <td>
-                    <a href="{% url 'asistencia:horarios' %}" class="text-decoration-none">
-                      {{ item.empleado.nombre_completo }}
+                <tr class="asistencia-item">
+                  <td colspan="2" class="p-0">
+                    <a href="{% url 'asistencia:horarios' %}?empleado={{ item.empleado.id }}" class="asistencia-link text-decoration-none d-block px-2 py-1">
+                      <div class="d-flex justify-content-between align-items-center w-100">
+                        <span>{{ item.empleado.nombre_completo }}</span>
+                        <span class="badge {{ badge_asistencia_color }}">{{ estado_asistencia_label }}</span>
+                      </div>
                     </a>
-                  </td>
-                  <td>
-                    <span class="badge {{ badge_asistencia_color }}">{{ estado_asistencia_label }}</span>
                   </td>
                 </tr>
               {% empty %}
-                <tr><td colspan="2" class="text-muted">Todos los empleados han llegado puntualmente.</td></tr>
+                <tr>
+                  <td colspan="2">
+                    <div class="empty-state">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                      <span class="text-muted">Todos los empleados han llegado puntualmente.</span>
+                    </div>
+                  </td>
+                </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
-        {% if ausentes_hoy|length > 8 %}
-          <button class="btn-ver-mas" id="btnVerMasAsistencia" data-visible="8" data-total="{{ ausentes_hoy|length }}">
-            Ver más <i class="bi bi-chevron-down"></i>
-          </button>
-        {% endif %}
       </div>
     </div>
 
     <!-- Tareas -->
     <div class="col-lg-4 col-md-6">
-      <div class="card-block">
+      <div class="card-block tareas-card">
         <div class="card-title">
           <span><i class="bi bi-list-task me-2" style="color:#A40706;"></i> Tareas pendientes</span>
-          <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-ver-todo">
-            Ver todo <i class="bi bi-arrow-right"></i>
+          <a href="{% url 'tareas:admin_tareas_list' %}" class="card-link-icon">
+            <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
         </div>
-        <ul class="list-group list-group-flush" id="listaTareas">
-          {% for tarea in tareas_pendientes_mostrar %}
-            <li class="list-group-item d-flex justify-content-between align-items-center tarea-item {% if forloop.counter > 8 %}d-none{% endif %}">
-              <div>
-                <span class="badge 
-                  {% if tarea.prioridad == 'ALTA' %}bg-danger
-                  {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
-                  {% else %}bg-secondary{% endif %} me-1">
-                  {{ tarea.get_prioridad_display }}
-                </span>
-                <a href="{% url 'tareas:admin_tarea_edit' tarea.id %}" class="text-decoration-none">
-                  {{ tarea.titulo }}
+        <div class="lista-scroll">
+          <ul class="list-group list-group-flush" id="listaTareas">
+            {% for tarea in tareas_pendientes_mostrar %}
+              <li class="list-group-item tarea-item p-0">
+                <a href="{% url 'tareas:admin_tarea_edit' tarea.id %}" class="tarea-link text-decoration-none d-block px-2 py-2">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <div>
+                      <span class="badge 
+                        {% if tarea.prioridad == 'ALTA' %}bg-danger
+                        {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
+                        {% else %}bg-secondary{% endif %} me-1">
+                        {{ tarea.get_prioridad_display }}
+                      </span>
+                      <span class="fw-medium">{{ tarea.titulo }}</span>
+                      <br>
+                      <small class="text-muted">
+                        {{ tarea.empleado.nombre_completo }} · 
+                        {% if tarea.fecha_limite < today %}
+                          <span class="text-danger">Vencida: {{ tarea.fecha_limite|date:"d/m/Y" }}</span>
+                        {% else %}
+                          Límite: {{ tarea.fecha_limite|date:"d/m/Y" }}
+                        {% endif %}
+                      </small>
+                    </div>
+                    <i class="bi bi-chevron-right text-muted"></i>
+                  </div>
                 </a>
-                <br>
-                <small class="text-muted">
-                  {{ tarea.empleado.nombre_completo }} · 
-                  {% if tarea.fecha_limite < today %}
-                    <span class="text-danger">Vencida: {{ tarea.fecha_limite|date:"d/m/Y" }}</span>
-                  {% else %}
-                    Límite: {{ tarea.fecha_limite|date:"d/m/Y" }}
-                  {% endif %}
-                </small>
-              </div>
-              <i class="bi bi-chevron-right text-muted"></i>
-            </li>
-          {% empty %}
-            <li class="list-group-item text-muted">No hay tareas pendientes.</li>
-          {% endfor %}
-        </ul>
-        {% if tareas_pendientes_mostrar|length > 8 %}
-          <button class="btn-ver-mas" id="btnVerMasTareas" data-visible="8" data-total="{{ tareas_pendientes_mostrar|length }}">
-            Ver más <i class="bi bi-chevron-down"></i>
-          </button>
-        {% endif %}
+              </li>
+            {% empty %}
+              <li class="list-group-item">
+                <div class="empty-state">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span class="text-muted">No hay tareas pendientes.</span>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
 
     <!-- Novedades -->
     <div class="col-lg-4 col-md-12">
-      <div class="card-block">
+      <div class="card-block novedades-card">
         <div class="card-title">
           <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Novedades pendientes</span>
-          <a href="{% url 'novedades:novedades_admin' %}" class="btn-ver-todo">
-            Ver todo <i class="bi bi-arrow-right"></i>
+          <a href="{% url 'novedades:novedades_admin' %}" class="card-link-icon">
+            <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
         </div>
-        <ul class="list-group list-group-flush" id="listaNovedades">
-          {% for item in novedades_pendientes_mostrar %}
-            <li class="list-group-item d-flex justify-content-between align-items-center novedad-item {% if forloop.counter > 8 %}d-none{% endif %}">
-              <div>
-                <i class="bi 
-                  {% if item.tipo == 'permiso' %}bi-file-earmark-text text-primary
-                  {% elif item.tipo == 'incapacidad' %}bi-heart-pulse text-danger
-                  {% else %}bi-award text-success{% endif %} me-1">
-                </i>
-                <a href="{{ item.url }}" class="text-decoration-none">
-                  {{ item.empleado.nombre_completo }}
+        <div class="lista-scroll">
+          <ul class="list-group list-group-flush" id="listaNovedades">
+            {% for item in novedades_pendientes_mostrar %}
+              <li class="list-group-item novedad-item p-0">
+                <a href="{{ item.url }}" class="novedad-link text-decoration-none d-block px-2 py-2">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <div>
+                      <i class="bi 
+                        {% if item.tipo == 'permiso' %}bi-file-earmark-text text-primary
+                        {% elif item.tipo == 'incapacidad' %}bi-heart-pulse text-danger
+                        {% else %}bi-award text-success{% endif %} me-1">
+                      </i>
+                      <span class="fw-medium">{{ item.empleado.nombre_completo }}</span>
+                      <br>
+                      <small class="text-muted">
+                        {{ item.detalle }} · {{ item.fecha|date:"d/m/Y" }}
+                      </small>
+                    </div>
+                    <span class="badge bg-warning text-dark">Pendiente</span>
+                  </div>
                 </a>
-                <br>
-                <small class="text-muted">
-                  {{ item.detalle }} · {{ item.fecha|date:"d/m/Y" }}
-                </small>
-              </div>
-              <span class="badge bg-warning text-dark">Pendiente</span>
-            </li>
-          {% empty %}
-            <li class="list-group-item text-muted">No hay novedades pendientes.</li>
-          {% endfor %}
-        </ul>
-        {% if novedades_pendientes_mostrar|length > 8 %}
-          <button class="btn-ver-mas" id="btnVerMasNovedades" data-visible="8" data-total="{{ novedades_pendientes_mostrar|length }}">
-            Ver más <i class="bi bi-chevron-down"></i>
-          </button>
-        {% endif %}
+              </li>
+            {% empty %}
+              <li class="list-group-item">
+                <div class="empty-state">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                  <span class="text-muted">No hay novedades pendientes.</span>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- SEGUNDA FILA: Gráficas (3 columnas en desktop, 2 en tablet, 1 en móvil) -->
+  <!-- SEGUNDA FILA: Gráficas (3 columnas) -->
   <div class="row g-3 mb-4 fila-graficas">
     <div class="col-lg-4 col-md-6">
-      <div class="card-block">
+      <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-graph-up-arrow me-2" style="color:#A40706;"></i> Estado de tareas</span>
+          <span><i class="bi bi-pie-chart me-2" style="color:#A40706;"></i> Estado de tareas</span>
         </div>
         <div class="chart-container">
           <canvas id="chartTareas" width="200" height="180"></canvas>
@@ -216,9 +226,9 @@
       </div>
     </div>
     <div class="col-lg-4 col-md-6">
-      <div class="card-block">
+      <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-graph-up-arrow me-2" style="color:#A40706;"></i> Asistencia hoy</span>
+          <span><i class="bi bi-calendar-check me-2" style="color:#A40706;"></i> Asistencia hoy</span>
         </div>
         <div class="chart-container">
           <canvas id="chartAsistencia" width="200" height="180"></canvas>
@@ -226,9 +236,9 @@
       </div>
     </div>
     <div class="col-lg-4 col-md-12">
-      <div class="card-block">
+      <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-graph-up-arrow me-2" style="color:#A40706;"></i> Novedades pendientes</span>
+          <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Novedades pendientes</span>
         </div>
         <div class="chart-container">
           <canvas id="chartNovedades" width="200" height="180"></canvas>
@@ -237,47 +247,48 @@
     </div>
   </div>
 
-  <!-- Feed de actividad (al final) -->
+  <!-- Actividad reciente -->
   <div class="row">
     <div class="col-12">
-      <div class="card-block">
+      <div class="card-block actividad-card">
         <div class="card-title">
           <span><i class="bi bi-clock me-2" style="color:#A40706;"></i> Actividad reciente</span>
         </div>
         {% if actividad_reciente %}
           <div class="actividad-feed">
             {% for item in actividad_reciente %}
-            <div class="actividad-item d-flex align-items-start border-bottom py-2">
-              <div class="actividad-icon me-2">
-                {% if item.tipo == 'permiso' %}
-                  <i class="bi bi-file-earmark-text text-primary"></i>
-                {% elif item.tipo == 'incapacidad' %}
-                  <i class="bi bi-heart-pulse text-danger"></i>
-                {% elif item.tipo == 'certificado' %}
-                  <i class="bi bi-award text-success"></i>
-                {% else %}
-                  <i class="bi bi-check2-square text-info"></i>
-                {% endif %}
-              </div>
-              <div class="flex-grow-1">
-                <div>
-                  <strong>{{ item.empleado }}</strong>
-                  <span class="text-muted">–</span>
-                  <a href="{{ item.url }}" class="text-decoration-none">
-                    {{ item.detalle }}
-                  </a>
+              <div class="actividad-item">
+                <div class="actividad-icon">
+                  {% if item.tipo == 'permiso' %}
+                    <i class="bi bi-file-earmark-text text-primary"></i>
+                  {% elif item.tipo == 'incapacidad' %}
+                    <i class="bi bi-heart-pulse text-danger"></i>
+                  {% elif item.tipo == 'certificado' %}
+                    <i class="bi bi-award text-success"></i>
+                  {% else %}
+                    <i class="bi bi-check2-square text-info"></i>
+                  {% endif %}
                 </div>
-                <small class="text-muted">
-                  {{ item.fecha|date:"d/m/Y H:i" }}
-                  <span class="badge bg-light text-dark ms-2">{{ item.estado }}</span>
-                </small>
+                <div class="actividad-contenido">
+                  <div>
+                    <strong>{{ item.empleado }}</strong>
+                    <span class="text-muted">–</span>
+                    <a href="{{ item.url }}" class="text-decoration-none">{{ item.detalle }}</a>
+                  </div>
+                  <div class="actividad-meta">
+                    <span class="text-muted">{{ item.fecha|date:"d/m/Y H:i" }}</span>
+                    <span class="badge bg-light text-dark ms-2">{{ item.estado }}</span>
+                  </div>
+                </div>
+                <i class="bi bi-chevron-right text-muted"></i>
               </div>
-              <i class="bi bi-chevron-right text-muted"></i>
-            </div>
             {% endfor %}
           </div>
         {% else %}
-          <p class="text-muted">No hay actividad reciente.</p>
+          <div class="empty-state text-center py-3">
+            <i class="bi bi-inbox text-muted fs-3"></i>
+            <p class="text-muted mt-1">No hay actividad reciente.</p>
+          </div>
         {% endif %}
       </div>
     </div>
@@ -290,7 +301,7 @@
 
 </div>
 
-<!-- Variables para Chart.js (datos desde el backend) -->
+<!-- Variables para Chart.js -->
 <script>
   window.asistenciaChartData = {{ asistencia_chart_data|safe }};
   window.tareasChartData = {{ tareas_chart_data|safe }};
@@ -310,11 +321,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'js/admin/dashboard.js' %}"></script>
 {% endblock %}
-
-<!-- ojito -->
-
-<!--  -->

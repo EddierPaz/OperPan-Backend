@@ -35,8 +35,8 @@
 
 .btn-outline-corporate {
   border: 1.5px solid #555555;
-  background: transparent;
-  color: #555555;
+  background: #555555;
+  color: #ffff;
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius-pill);
   font-weight: 600;
@@ -48,9 +48,33 @@
 }
 
 .btn-outline-corporate:hover {
-  background: #555555;
   color: white;
+  background: #444444;  
+  transform: translateY(-1px);
 }
+
+.btn-success-corporate {
+  background: var(--color-success);
+  color: white;
+  border: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.btn-success-corporate:hover {
+  background: var(--color-success-hover);
+  color: white;
+  transform: translateY(-1px);
+}
+
 
 /* ── Botones de acción rápida (Ver, Aprobar, Rechazar, Editar, Eliminar, Descargar) ── */
 .btn-action {

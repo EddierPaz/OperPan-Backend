@@ -1,47 +1,132 @@
 from datetime import date, timedelta
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Horario, DescansoEmpleado, Asistencia
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
+
 from apps.usuarios.models import PerfilEmpleado
-from django.contrib import messages  
+from apps.usuarios.decorators import admin_required
+from .models import Asistencia, DescansoEmpleado, Horario
 
 def dias_ciclo(turno):
-    return 7 if turno == "FIJO" else 15
+    """Devuelve la duración informativa del ciclo según el turno."""
+    return 8 if turno == "FIJO" else 15
+
+
+def _siguiente_dia_habil(dia_semana):
+    if dia_semana >= 4:
+        return 0
+    return dia_semana + 1
+
+
+def _proxima_fecha_con_dia_semana(desde, dia_semana_objetivo):
+    fecha = desde
+    while fecha.weekday() != dia_semana_objetivo:
+        fecha += timedelta(days=1)
+    return fecha
+
+
+def regenerar_descanso_si_vencido(horario, hoy):
+    descansos = list(
+        DescansoEmpleado.objects
+        .filter(horario=horario)
+        .order_by("-fecha", "-id")
+    )
+
+    if not descansos:
+        if hoy.weekday() <= 4:
+            nueva_fecha = hoy
+        else:
+            nueva_fecha = hoy + timedelta(days=7 - hoy.weekday())
+
+        descanso = DescansoEmpleado.objects.create(
+            horario=horario,
+            fecha=nueva_fecha,
+            es_descanso=True,
+        )
+
+        horario.ciclo_inicio = hoy
+        horario.save(update_fields=["ciclo_inicio"])
+        return descanso
+
+    descanso = descansos[0]
+    otros_ids = [d.id for d in descansos[1:]]
+
+    if otros_ids:
+        DescansoEmpleado.objects.filter(id__in=otros_ids).delete()
+
+    if not descanso.es_descanso:
+        descanso.es_descanso = True
+        descanso.save(update_fields=["es_descanso"])
+
+    if descanso.fecha >= hoy:
+        return descanso
+
+    fecha_anterior = descanso.fecha
+
+    if horario.turno == "FIJO":
+        dia_objetivo = fecha_anterior.weekday()
+        base = fecha_anterior + timedelta(days=1)
+        nueva_fecha = _proxima_fecha_con_dia_semana(base, dia_objetivo)
+    else:
+        dia_objetivo = _siguiente_dia_habil(fecha_anterior.weekday())
+        base = fecha_anterior + timedelta(days=1)
+        nueva_fecha = _proxima_fecha_con_dia_semana(base, dia_objetivo)
+
+    DescansoEmpleado.objects.filter(horario=horario).exclude(id=descanso.id).delete()
+
+    descanso.fecha = nueva_fecha
+    descanso.es_descanso = True
+    descanso.save(update_fields=["fecha", "es_descanso"])
+
+    horario.ciclo_inicio = hoy
+    horario.save(update_fields=["ciclo_inicio"])
+
+    return descanso
+
+
+def ciclo_fin(horario):
+    if not horario.ciclo_inicio:
+        return None
+
+    return horario.ciclo_inicio + timedelta(
+        days=dias_ciclo(horario.turno) - 1
+    )
+
 
 def _contexto_base():
-
-    hoy = date.today()
-
+    hoy = timezone.localdate()
     proximos_dias = []
 
     for _ in range(hoy.weekday()):
         proximos_dias.append(None)
 
     for i in range(15):
-
         fecha = hoy + timedelta(days=i)
-
         proximos_dias.append({
             "fecha": fecha,
             "numero": fecha.day,
             "weekday": fecha.weekday(),
-            "indice": i,  # posición 0..14 dentro del ciclo, usada por el JS
-                          # para mostrar solo 7 días cuando el turno es FIJO
+            "indice": i,
         })
 
     horarios = (
         Horario.objects
         .filter(estado=True)
         .select_related("empleado")
-        .prefetch_related("descansos")
         .order_by("-id")
     )
+
+    for horario in horarios:
+        horario.proximo_descanso = regenerar_descanso_si_vencido(horario, hoy)
 
     turnos_hoy = {
         "MANANA": [],
         "TARDE": [],
-        "FIJO": []
+        "FIJO": [],
     }
 
     programados = 0
@@ -50,39 +135,37 @@ def _contexto_base():
     ausentes = 0
 
     for horario in horarios:
+        descanso_hoy = (
+            horario.proximo_descanso is not None
+            and horario.proximo_descanso.fecha == hoy
+        )
 
-        # Verificar si hoy es descanso
-        descanso_hoy = horario.descansos.filter(
-            fecha=hoy,
-            es_descanso=True
-        ).exists()
-
-        # Si está de descanso hoy, no se muestra ni se cuenta
         if descanso_hoy:
             continue
 
         programados += 1
 
-        asistencia = Asistencia.objects.filter(
-            horario=horario,
-            fecha=hoy
-        ).first()
+        asistencia = (
+            Asistencia.objects
+            .filter(
+                horario=horario,
+                fecha=hoy
+            )
+            .first()
+        )
 
         horario.asistencia = asistencia
 
-        turnos_hoy[horario.turno].append(horario)
+        if horario.turno in turnos_hoy:
+            turnos_hoy[horario.turno].append(horario)
 
         if asistencia:
-
             if asistencia.estado == "PRESENTE":
                 presentes += 1
-
             elif asistencia.estado == "TARDE":
                 tardanzas += 1
-
             elif asistencia.estado == "AUSENTE":
                 ausentes += 1
-
         else:
             ausentes += 1
 
@@ -90,31 +173,16 @@ def _contexto_base():
         "programados": programados,
         "presentes": presentes,
         "tardanzas": tardanzas,
-        "ausentes": ausentes
+        "ausentes": ausentes,
     }
 
     return {
-
         "empleados": PerfilEmpleado.objects.all(),
-
         "horarios": horarios,
-
         "proximos_dias": proximos_dias,
-
-        "dias_semana": [
-            "Lun",
-            "Mar",
-            "Mié",
-            "Jue",
-            "Vie",
-            "Sáb",
-            "Dom"
-        ],
-
+        "dias_semana": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
         "fecha_hoy": hoy,
-
         "turnos_hoy": turnos_hoy,
-
         "resumen_asistencia": resumen_asistencia,
     }
 
@@ -127,104 +195,153 @@ def horarios(request):
         hora_salida = request.POST.get("hora_salida")
         fecha_descanso = request.POST.get("fecha_descanso")
 
-        empleado = get_object_or_404(PerfilEmpleado, id=empleado_id)
+        empleado = get_object_or_404(
+            PerfilEmpleado,
+            id=empleado_id
+        )
 
-        # 1. Validar si el empleado ya tiene un horario activo
-        if Horario.objects.filter(empleado=empleado, estado=True).exists():
+        if Horario.objects.filter(
+            empleado=empleado,
+            estado=True
+        ).exists():
             messages.error(
                 request,
-                f"El empleado {empleado} ya tiene un horario activo asignado.",
+                f"El empleado {empleado} ya tiene un horario activo asignado."
             )
             return redirect("asistencia:horarios")
 
-        # 2. Si no tiene un horario activo, se crea el nuevo
         horario = Horario.objects.create(
             empleado=empleado,
             turno=turno,
             hora_entrada=hora_entrada,
             hora_salida=hora_salida,
             estado=True,
+            ciclo_inicio=timezone.localdate(),
         )
 
-        for i in range(dias_ciclo(turno)):
-            fecha = date.today() + timedelta(days=i)
+        if fecha_descanso:
             DescansoEmpleado.objects.create(
                 horario=horario,
-                fecha=fecha,
-                es_descanso=(str(fecha) == fecha_descanso),
+                fecha=fecha_descanso,
+                es_descanso=True,
             )
 
         messages.success(request, "Horario asignado correctamente.")
         return redirect("asistencia:horarios")
 
     return render(
-        request, "admin/asistencia/asistencia.html", _contexto_base()
+        request,
+        "admin/asistencia/asistencia.html",
+        _contexto_base()
     )
 
 
 def horario_json(request, id):
-
     horario = get_object_or_404(
-        Horario.objects.select_related("empleado").prefetch_related("descansos"),
+        Horario.objects.select_related("empleado"),
         id=id
     )
-    descanso = horario.descansos.filter(es_descanso=True).first()
+
+    hoy = timezone.localdate()
+    descanso = regenerar_descanso_si_vencido(horario, hoy)
+    fin = ciclo_fin(horario)
 
     return JsonResponse({
-        "empleado":       horario.empleado.nombre_completo(),
-        "cargo":          horario.empleado.get_cargo_display(),
-        "turno":          horario.get_turno_display(),
-        "turno_valor":    horario.turno,
-        "hora_entrada":   horario.hora_entrada.strftime("%H:%M"),
-        "hora_salida":    horario.hora_salida.strftime("%H:%M"),
-        "estado":         horario.estado,
-        "descanso":       descanso.fecha.strftime("%d/%m/%Y") if descanso else None,
+        "empleado": horario.empleado.nombre_completo(),
+        "cargo": horario.empleado.get_cargo_display(),
+        "turno": horario.get_turno_display(),
+        "turno_valor": horario.turno,
+        "hora_entrada": horario.hora_entrada.strftime("%H:%M"),
+        "hora_salida": horario.hora_salida.strftime("%H:%M"),
+        "estado": horario.estado,
+        "descanso": descanso.fecha.strftime("%d/%m/%Y") if descanso else None,
         "descanso_fecha": descanso.fecha.strftime("%Y-%m-%d") if descanso else None,
+        "ciclo_inicio": horario.ciclo_inicio.strftime("%d/%m/%Y") if horario.ciclo_inicio else None,
+        "ciclo_fin": fin.strftime("%d/%m/%Y") if fin else None,
     })
 
 
 def editar_horario(request, id):
-
     horario = get_object_or_404(Horario, id=id)
 
     if request.method == "POST":
-
-        horario.turno        = request.POST.get("turno")
+        horario.turno = request.POST.get("turno")
         horario.hora_entrada = request.POST.get("hora_entrada")
-        horario.hora_salida  = request.POST.get("hora_salida")
-        horario.save()
-
+        horario.hora_salida = request.POST.get("hora_salida")
         fecha_descanso = request.POST.get("fecha_descanso")
 
         if fecha_descanso:
-            # Borra el ciclo anterior y lo recrea con el nuevo día de descanso
-            horario.descansos.all().delete()
+            descanso = (
+                DescansoEmpleado.objects
+                .filter(
+                    horario=horario,
+                    es_descanso=True
+                )
+                .order_by("-fecha", "-id")
+                .first()
+            )
 
-            for i in range(dias_ciclo(horario.turno)):
-                fecha = date.today() + timedelta(days=i)
+            if descanso:
+                descanso.fecha = fecha_descanso
+                descanso.save(update_fields=["fecha"])
+            else:
                 DescansoEmpleado.objects.create(
                     horario=horario,
-                    fecha=fecha,
-                    es_descanso=(str(fecha) == fecha_descanso),
+                    fecha=fecha_descanso,
+                    es_descanso=True,
                 )
 
+            horario.ciclo_inicio = timezone.localdate()
+
+        horario.save()
+        messages.success(request, "Horario actualizado correctamente.")
         return redirect("asistencia:horarios")
 
     return redirect("asistencia:horarios")
 
 
 def eliminar_horario(request, id):
-
     horario = get_object_or_404(Horario, id=id)
-
     horario.estado = False
-    horario.save()
+    horario.save(update_fields=["estado"])
+
+    messages.success(request, "Horario eliminado correctamente.")
+    return redirect("asistencia:horarios")
+
+
+def registrar_asistencia(request):
+    if request.method == "POST":
+        horario_id = request.POST.get("horario_id")
+        horario = get_object_or_404(Horario, id=horario_id)
+
+        asistencia_existente = (
+            Asistencia.objects
+            .filter(
+                horario=horario,
+                fecha=timezone.localdate()
+            )
+            .first()
+        )
+
+        if asistencia_existente:
+            return redirect("asistencia:horarios")
+
+        hora_actual = timezone.localtime().time()
+        estado = "PRESENTE" if hora_actual <= horario.hora_entrada else "TARDE"
+
+        Asistencia.objects.create(
+            horario=horario,
+            fecha=timezone.localdate(),
+            estado=estado,
+            hora_marcada=hora_actual,
+        )
 
     return redirect("asistencia:horarios")
 
-def asistencia_empleado(request):
 
+def asistencia_empleado(request):
     perfil = request.user.perfil
+    hoy = timezone.localdate()
 
     horario = (
         Horario.objects
@@ -239,38 +356,25 @@ def asistencia_empleado(request):
     proximo_descanso = None
     calendario = []
     asistencias = []
-
     dias_asistencia = 0
     dias_sin_asistencia = 0
     retardos = 0
 
     if horario:
-
-        proximo_descanso = (
-            horario.descansos
-            .filter(es_descanso=True)
-            .order_by("fecha")
-            .first()
-        )
-
-        descansos = set(
-            horario.descansos
-            .filter(es_descanso=True)
-            .values_list("fecha", flat=True)
-        )
-
-        hoy = date.today()
+        proximo_descanso = regenerar_descanso_si_vencido(horario, hoy)
 
         for _ in range(hoy.weekday()):
             calendario.append(None)
 
         for i in range(dias_ciclo(horario.turno)):
             fecha = hoy + timedelta(days=i)
-
             calendario.append({
                 "numero": fecha.day,
                 "fecha": fecha,
-                "es_descanso": fecha in descansos,
+                "es_descanso": (
+                    proximo_descanso is not None
+                    and fecha == proximo_descanso.fecha
+                ),
             })
 
         asistencias = (
@@ -280,15 +384,8 @@ def asistencia_empleado(request):
         )
 
         dias_asistencia = asistencias.count()
-
-        retardos = asistencias.filter(
-            estado="TARDE"
-        ).count()
-
-        dias_sin_asistencia = max(
-            0,
-            30 - dias_asistencia
-        )
+        retardos = asistencias.filter(estado="TARDE").count()
+        dias_sin_asistencia = max(0, 30 - dias_asistencia)
 
     return render(
         request,
@@ -305,38 +402,71 @@ def asistencia_empleado(request):
         }
     )
 
-def registrar_asistencia(request):
 
-    if request.method == "POST":
 
-        horario_id = request.POST.get("horario_id")
+# Funcionalidades para Dashboards
 
-        horario = get_object_or_404(
-            Horario,
-            id=horario_id
-        )
+# ============================================================
+# ADMIN - ASISTENCIA POR EMPLEADO
+# ============================================================
 
-        asistencia_existente = Asistencia.objects.filter(
+@login_required
+@admin_required
+def asistencia_empleado_admin(request, empleado_id):
+    """
+    Redirige al administrador al módulo de asistencia con el empleado filtrado.
+    Permite ver y registrar la asistencia de un empleado específico.
+    """
+    from django.contrib import messages
+    from django.shortcuts import redirect
+    from django.urls import reverse
+    from apps.usuarios.models import PerfilEmpleado
+    
+    try:
+        empleado = PerfilEmpleado.objects.get(id=empleado_id)
+    except PerfilEmpleado.DoesNotExist:
+        messages.error(request, "Empleado no encontrado.")
+        return redirect('asistencia:horarios')
+    
+    return redirect(f"{reverse('asistencia:horarios')}?empleado={empleado_id}")
+
+
+# ============================================================
+# ADMIN - CAMBIAR ESTADO DE ASISTENCIA (AJAX)
+# ============================================================
+
+@login_required
+@admin_required
+def cambiar_estado_asistencia(request):
+    """
+    Recibe POST con empleado_id y estado, actualiza la asistencia de hoy.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    empleado_id = request.POST.get('empleado_id')
+    estado = request.POST.get('estado')
+    
+    if not empleado_id or estado not in ['PRESENTE', 'TARDE', 'AUSENTE']:
+        return JsonResponse({'error': 'Datos inválidos'}, status=400)
+    
+    try:
+        empleado = PerfilEmpleado.objects.get(id=empleado_id)
+        horario = Horario.objects.filter(empleado=empleado, estado=True).first()
+        if not horario:
+            return JsonResponse({'error': 'Empleado sin horario activo'}, status=400)
+        
+        hoy = timezone.localdate()
+        asistencia, created = Asistencia.objects.get_or_create(
             horario=horario,
-            fecha=timezone.localdate()
-        ).first()
-
-        if asistencia_existente:
-            return redirect("asistencia:horarios")
-
-        hora_actual = timezone.localtime().time()
-
-        estado = (
-            "PRESENTE"
-            if hora_actual <= horario.hora_entrada
-            else "TARDE"
+            fecha=hoy,
+            defaults={'estado': estado, 'hora_marcada': timezone.localtime().time()}
         )
-
-        Asistencia.objects.create(
-            horario=horario,
-            fecha=timezone.localdate(),
-            estado=estado,
-            hora_marcada=hora_actual
-        )
-
-    return redirect("asistencia:horarios")
+        if not created:
+            asistencia.estado = estado
+            asistencia.hora_marcada = timezone.localtime().time()
+            asistencia.save()
+        
+        return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
+    except PerfilEmpleado.DoesNotExist:
+        return JsonResponse({'error': 'Empleado no encontrado'}, status=404)

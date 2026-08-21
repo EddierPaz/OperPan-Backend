@@ -169,6 +169,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("ver-descanso").value = data.descanso || "Sin asignar";
                     document.getElementById("ver-estado").value = data.estado ? "Activo" : "Inactivo";
 
+                    const ciclo = document.getElementById("ver-ciclo");
+                    if (ciclo) {
+                        ciclo.value = (data.ciclo_inicio && data.ciclo_fin)
+                            ? data.ciclo_inicio + " — " + data.ciclo_fin
+                            : "Sin definir";
+                    }
+
                     const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
                     modalVer.show();
                 })
