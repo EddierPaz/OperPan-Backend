@@ -342,13 +342,20 @@ def registrar_asistencia(request):
 def asistencia_empleado(request):
     perfil = request.user.perfil
     hoy = timezone.localdate()
+    
+    # 1. Capturar el filtro (default 'semana')
+    filtro = request.GET.get('filtro', 'semana')
+    
+    # 2. Definir fecha de inicio según filtro
+    if filtro == 'mes':
+        fecha_inicio = hoy - timedelta(days=30)
+    else:
+        # Asumimos semana (7 días atrás)
+        fecha_inicio = hoy - timedelta(days=7)
 
     horario = (
         Horario.objects
-        .filter(
-            empleado=perfil,
-            estado=True
-        )
+        .filter(empleado=perfil, estado=True)
         .order_by("-id")
         .first()
     )
@@ -379,7 +386,7 @@ def asistencia_empleado(request):
 
         asistencias = (
             Asistencia.objects
-            .filter(horario=horario)
+            .filter(horario=horario, fecha__gte=fecha_inicio)
             .order_by("-fecha")
         )
 
@@ -391,7 +398,7 @@ def asistencia_empleado(request):
         request,
         "empleado/asistencia/asistencia.html",
         {
-            "fecha_hoy": timezone.localdate(),
+            "fecha_hoy": hoy,
             "horario": horario,
             "proximo_descanso": proximo_descanso,
             "calendario": calendario,
@@ -399,9 +406,9 @@ def asistencia_empleado(request):
             "dias_asistencia": dias_asistencia,
             "dias_sin_asistencia": dias_sin_asistencia,
             "retardos": retardos,
+            "filtro": filtro,  
         }
     )
-
 
 
 # Funcionalidades para Dashboards

@@ -1,33 +1,52 @@
-<!-- 1. TÍTULO Y FILTROS POR FUERA (Sobre el fondo gris) -->
+<!-- 1. TÍTULO Y FILTROS -->
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3 mt-4">
     <h3 class="mb-0 fs-4 fw-bold">
         <i class="bi bi-clock-history me-2"></i>Historial reciente
     </h3>
-    
-    <!-- Filtros tipo Pills corporativos -->
+
     <div class="historial-filter-bar">
-        <button class="btn-filter active" id="filterSemana">Esta semana</button>
-        <button class="btn-filter" id="filterMes">Este mes</button>
+        <a href="?filtro=semana"
+           class="btn-filter {% if filtro == 'semana' or not filtro %}active{% endif %}">
+            Esta semana
+        </a>
+
+        <a href="?filtro=mes"
+           class="btn-filter {% if filtro == 'mes' %}active{% endif %}">
+            Este mes
+        </a>
     </div>
 </div>
 
-<!-- 2. CONTENEDOR BLANCO CON LA TABLA (Tarjeta unificada) -->
+
+<!-- 2. TABLA -->
 <div class="employee-card p-0 overflow-hidden">
+
     <div class="table-responsive">
         <table class="table table-custom align-middle mb-0" id="attendanceTable">
+
             <thead>
                 <tr>
                     <th>Fecha</th>
                     <th>Entrada</th>
-                    <th>Salida</th>
                     <th>Registro</th>
-                    <th class="text-end me-2">Estado</th>
+                    <th class="text-end">Estado</th>
+                    <th class="text-end">Acción</th>
                 </tr>
             </thead>
+
             <tbody>
+
                 {% for asistencia in asistencias %}
+
                 <tr>
-                    <td class="fw-semibold text-dark">{{ asistencia.fecha|date:"d/m/Y" }}</td>
+
+                    <!-- FECHA -->
+                    <td class="fw-semibold text-dark">
+                        {{ asistencia.fecha|date:"d/m/Y" }}
+                    </td>
+
+
+                    <!-- ENTRADA -->
                     <td>
                         {% if asistencia.hora_marcada %}
                             {{ asistencia.hora_marcada|time:"H:i" }}
@@ -35,46 +54,167 @@
                             <span class="text-muted">--:--</span>
                         {% endif %}
                     </td>
-                    <td>
-                        {% if horario.hora_salida %}
-                            {{ horario.hora_salida|time:"H:i" }}
-                        {% else %}
-                            <span class="text-muted">--:--</span>
-                        {% endif %}
-                    </td>
+
+
+                    <!-- REGISTRO -->
                     <td>
                         {% if asistencia.hora_marcada %}
-                            <span class="badge-registro registrada"><i class="bi bi-check-circle-fill me-1"></i> Registrada</span>
+                            <span class="badge-registro registrada">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                Registrada
+                            </span>
                         {% else %}
-                            <span class="badge-registro no-registrada"><i class="bi bi-x-circle-fill me-1"></i> No registrada</span>
+                            <span class="badge-registro no-registrada">
+                                <i class="bi bi-x-circle-fill me-1"></i>
+                                No registrada
+                            </span>
                         {% endif %}
                     </td>
+
+
+                    <!-- ESTADO -->
                     <td class="text-end">
                         {% if asistencia.estado == 'PRESENTE' %}
-                            <span class="badge-status badge-presente">Presente</span>
+                            <span class="badge-status badge-presente">
+                                Presente
+                            </span>
                         {% elif asistencia.estado == 'TARDE' %}
-                            <span class="badge-status badge-tarde">Tarde</span>
+                            <span class="badge-status badge-tarde">
+                                Tarde
+                            </span>
                         {% elif asistencia.estado == 'AUSENTE' %}
-                            <span class="badge-status badge-ausente">Ausente</span>
+                            <span class="badge-status badge-ausente">
+                                Ausente
+                            </span>
                         {% endif %}
                     </td>
+
+
+                    <!-- ACCIÓN -->
+                    <td class="text-end">
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-primary-corporate btn-ver-detalle"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalDetalleAsistencia"
+                            data-fecha="{{ asistencia.fecha|date:'d/m/Y' }}"
+                            data-hora-registro="{% if asistencia.hora_marcada %}{{ asistencia.hora_marcada|time:'H:i' }}{% else %}--:--{% endif %}"
+                            data-turno="{% if horario %}{{ horario.get_turno_display }}{% else %}No asignado{% endif %}"
+                            data-entrada-prog="{% if horario %}{{ horario.hora_entrada|time:'H:i' }}{% else %}--:--{% endif %}"
+                            data-estado="{{ asistencia.estado }}"
+                            data-es-descanso="{% if asistencia.es_descanso %}true{% else %}false{% endif %}"
+                        >
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+
                 </tr>
+
                 {% empty %}
+
                 <tr>
                     <td colspan="5" class="text-center py-4 text-muted">
                         <i class="bi bi-inbox fs-3 d-block mb-2 text-secondary"></i>
                         No tienes asistencias registradas en este período.
                     </td>
                 </tr>
+
                 {% endfor %}
+
             </tbody>
+
         </table>
     </div>
-    
-    <!-- Pie de la tarjeta con el botón corporativo -->
+
+
+    <!-- PIE -->
     <div class="p-3 bg-light border-top text-center">
-        <button class="btn btn-primary-corporate btn-sm px-4" id="verMasBtn">
-            <i class="bi bi-calendar-week me-1"></i> Ver mes completo
-        </button>
+        <a href="?filtro=mes"
+           class="btn btn-primary-corporate btn-sm px-4 text-decoration-none">
+            <i class="bi bi-calendar-week me-1"></i>
+            Ver mes completo
+        </a>
+    </div>
+
+</div>
+
+
+<!-- ========================================================= -->
+<!-- MODAL - DETALLE DE ASISTENCIA (CON TUS ESTILOS Y IDS PARA EL JS) -->
+<!-- ========================================================= -->
+
+<div class="modal fade"
+     id="modalDetalleAsistencia"
+     tabindex="-1"
+     aria-labelledby="modalDetalleAsistenciaLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content asistencia-modal">
+
+            <!-- HEADER -->
+            <div class="asistencia-detalle-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="asistencia-detalle-titulo" id="modalDetalleAsistenciaLabel">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Detalle de asistencia</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <!-- El JS inyecta la fecha aquí (coincide con tu JS: modalFecha) -->
+                <div class="asistencia-detalle-subtitulo" id="modalFecha">--/--/----</div>
+            </div>
+
+
+            <!-- BODY -->
+            <div class="asistencia-detalle-body">
+                
+                <!-- CONTENEDOR SI ES DÍA NORMAL (coincide con tu JS: seccionDiaNormal) -->
+                <div id="seccionDiaNormal" class="asistencia-detalle-grid">
+                    
+                    <!-- HORA DE REGISTRO -->
+                    <div class="asistencia-detalle-item">
+                        <span class="asistencia-detalle-label">Hora de registro</span>
+                        <span class="asistencia-detalle-value" id="modalHoraRegistro">--:--</span>
+                    </div>
+
+                    <!-- TURNO -->
+                    <div class="asistencia-detalle-item">
+                        <span class="asistencia-detalle-label">Turno</span>
+                        <span class="asistencia-detalle-value" id="modalTurno">--</span>
+                    </div>
+
+                    <!-- ENTRADA PROGRAMADA -->
+                    <div class="asistencia-detalle-item">
+                        <span class="asistencia-detalle-label">Entrada programada</span>
+                        <span class="asistencia-detalle-value" id="modalEntradaProg">--:--</span>
+                    </div>
+
+                    <!-- ESTADO -->
+                    <div class="asistencia-detalle-item">
+                        <span class="asistencia-detalle-label">Estado</span>
+                        <span class="asistencia-detalle-value" id="modalEstadoBadge">--</span>
+                    </div>
+
+                </div>
+
+                <!-- CONTENEDOR SI FUE DÍA DE DESCANSO (coincide con tu JS: seccionDiaDescanso) -->
+                <div id="seccionDiaDescanso" class="asistencia-detalle-bloque-largo text-center d-none">
+                    <div class="fs-1 mb-2">💤</div>
+                    <span class="asistencia-detalle-value fs-5 mb-1">Día de descanso</span>
+                    <p class="asistencia-detalle-bloque-largo-texto text-muted">No estaba programado para trabajar este día.</p>
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER -->
+            <div class="asistencia-detalle-footer d-flex justify-content-end">
+                <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    <i class="bi bi-check2"></i> Cerrar
+                </button>
+            </div>
+
+        </div>
     </div>
 </div>

@@ -1,8 +1,98 @@
 /* ==============================================
    MÓDULO DE ASISTENCIA Y HORARIOS (ADMIN)
-============================================== */
+   ============================================== */
 
-/* ── Tarjetas Internas / Métricas / Cajas ── */
+/* ── 1. BARRA DE FILTROS ── */
+.filtros-toolbar {
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.filtro-buscar {
+  position: relative;
+  flex: 1 1 260px;
+}
+
+.filtro-buscar i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.filtro-buscar input {
+  width: 100%;
+  border: 1px solid #edf2f7;
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 0.55rem 1rem 0.55rem 2.25rem;
+  font-size: 0.9rem;
+  color: #1f2937;
+  transition: 0.2s;
+}
+
+.filtro-buscar input::placeholder {
+  color: #94a3b8;
+}
+
+.filtro-buscar input:focus {
+  outline: none;
+  border-color: #A40706;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
+}
+
+.filtro-select {
+  flex: 0 1 190px;
+  border: 1px solid #edf2f7;
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 0.55rem 2rem 0.55rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1f2937;
+  transition: 0.2s;
+}
+
+.filtro-select:focus {
+  outline: none;
+  border-color: #A40706;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
+}
+
+.filtro-btn-limpiar {
+  flex: 0 0 auto;
+  background: #555;
+  border: 1.5px solid #555;
+  color: #ffffff;
+  padding: 0.55rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.filtro-btn-limpiar:hover {
+  background: #444444;
+  border-color: #444444;
+  color: white;
+}
+
+/* ── 2. TARJETAS INTERNAS / MÉTRICAS / CAJAS ── */
 .metric-card,
 .info-box {
   background: #ffffff;
@@ -27,7 +117,36 @@
   color: #000000;
 }
 
-/* ── CALENDARIO DÍAS ── */
+#descansoLabel {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* ── 3. CALENDARIO Y DÍAS ── */
+.calendario-wrapper {
+  width: 100%;
+}
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dia-semana {
+  text-align: center;
+  font-weight: 700;
+  color: #6c757d;
+}
+
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
 .dias-calendario {
   display: flex;
   flex-wrap: wrap;
@@ -60,6 +179,11 @@
   color: white;
 }
 
+.dia-btn.selected {
+  background: #dc3545;
+  color: white;
+}
+
 .dia-btn--ultimo {
   border-style: dashed;
   border-color: #A40706;
@@ -71,46 +195,12 @@
   color: white;
 }
 
-.dia-btn.selected {
-  background: #dc3545;
-  color: white;
-}
-
-#descansoLabel {
-  font-size: 0.85rem;
-  margin-top: 0.5rem;
-}
-
-.calendario-wrapper {
-  width: 100%;
-}
-
-.dias-semana {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.dia-semana {
-  text-align: center;
-  font-weight: 700;
-  color: #6c757d;
-}
-
-.calendario-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  width: 100%;
-}
-
 .dia-vacio {
   width: 100%;
   min-height: 56px;
 }
 
-/* ── ACORDEÓN DE TURNOS ── */
+/* ── 4. ACORDEÓN DE TURNOS ── */
 .accordion-item {
   border: none;
   border-left: 5px solid #A40706;
@@ -124,6 +214,21 @@
   grid-template-columns: 1fr auto 30px;
   align-items: center;
   position: relative;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #fff;
+  color: #A40706;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  border: none;
+}
+
+.accordion-body {
+  border-top: 1px solid #ececec;
 }
 
 .turno-badge {
@@ -143,24 +248,7 @@
   align-items: center;
 }
 
-.accordion-button:not(.collapsed) {
-  background: #fff;
-  color: #A40706;
-  box-shadow: none;
-}
-
-.accordion-button:focus {
-  box-shadow: none;
-  border: none;
-}
-
-.accordion-body {
-  border-top: 1px solid #ececec;
-}
-
-/* ============================================================
-   MODALES 
-============================================================ */
+/* ── 5. MODALES ── */
 .asistencia-modal {
   border: none;
   border-radius: 20px;
@@ -286,7 +374,19 @@
   transform: translateY(-1px);
 }
 
+/* ── 6. MEDIA QUERIES (RESPONSIVE) ── */
 @media (max-width: 768px) {
+  .filtros-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro-buscar,
+  .filtro-select,
+  .filtro-btn-limpiar {
+    flex: 1 1 auto;
+  }
+
   .accordion-button {
     grid-template-columns: 1fr auto;
   }
@@ -300,111 +400,5 @@
   .estado-asistencia-group {
     flex-direction: column;
     width: 100%;
-  }
-}
-
-/* ==============================================
-   BARRA DE FILTROS
-============================================== */
-
-.filtros-toolbar {
-  background: #ffffff;
-  border: 1px solid #edf2f7;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.filtro-buscar {
-  position: relative;
-  flex: 1 1 260px;
-}
-
-.filtro-buscar i {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 0.9rem;
-  pointer-events: none;
-}
-
-.filtro-buscar input {
-  width: 100%;
-  border: 1px solid #edf2f7;
-  background: #f8fafc;
-  border-radius: 999px;
-  padding: 0.55rem 1rem 0.55rem 2.25rem;
-  font-size: 0.9rem;
-  color: #1f2937;
-  transition: 0.2s;
-}
-
-.filtro-buscar input::placeholder {
-  color: #94a3b8;
-}
-
-.filtro-buscar input:focus {
-  outline: none;
-  border-color: #A40706;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-.filtro-select {
-  flex: 0 1 190px;
-  border: 1px solid #edf2f7;
-  background: #f8fafc;
-  border-radius: 999px;
-  padding: 0.55rem 2rem 0.55rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #1f2937;
-  transition: 0.2s;
-}
-
-.filtro-select:focus {
-  outline: none;
-  border-color: #A40706;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-.filtro-btn-limpiar {
-  flex: 0 0 auto;
-  background: #555;
-  border: 1.5px solid #555;
-  color: #ffffff;
-  padding: 0.55rem 1.5rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.filtro-btn-limpiar:hover {
-  background: #444444;
-  border-color: #444444;
-  color: white;
-}
-
-@media (max-width: 768px) {
-  .filtros-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filtro-buscar,
-  .filtro-select,
-  .filtro-btn-limpiar {
-    flex: 1 1 auto;
   }
 }
