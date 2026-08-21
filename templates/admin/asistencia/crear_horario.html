@@ -1,56 +1,83 @@
 <!-- MODAL: Crear horario -->
 <div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Asignar nuevo horario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content asistencia-modal">
+
+      <div class="modal-header asistencia-detalle-header">
+        <div>
+          <div class="asistencia-detalle-titulo">
+            <i class="bi bi-plus-circle"></i> <span>Asignar nuevo horario</span>
+          </div>
+          <p class="asistencia-detalle-subtitulo mb-0">Selecciona los datos y jornada para el empleado</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <form method="POST" action="{% url 'asistencia:horarios' %}" id="formCrearHorario">
-        {% csrf_token %}
-        <div class="modal-body">
-          <div class="row g-3">
 
-            <div class="col-md-4">
-              <label class="form-label" for="empleadoSelect">Empleado *</label>
-              <select name="empleado" id="empleadoSelect" class="form-select" required>
-                <option value="">Seleccione empleado</option>
-                {% for empleado in empleados %}
-                <option value="{{ empleado.id }}" data-cargo="{{ empleado.get_cargo_display }}">
-                  {{ empleado.nombre_completo }}
-                </option>
+      <div class="modal-body asistencia-detalle-body">
+        <form method="POST" action="{% url 'asistencia:horarios' %}" id="formCrearHorario">
+          {% csrf_token %}
+
+          <div class="asistencia-detalle-grid">
+
+            <!-- Empleado -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Empleado <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <select name="empleado" id="empleadoSelect" class="form-select" required>
+                  <option value="">Seleccione empleado</option>
+                  {% for empleado in empleados %}
+                  <option value="{{ empleado.id }}" data-cargo="{{ empleado.get_cargo_display }}">
+                    {{ empleado.nombre_completo }}
+                  </option>
                 {% endfor %}
-              </select>
+                </select>
+              </span>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label" for="cargoInput">Cargo</label>
-              <input type="text" id="cargoInput" class="form-control" readonly placeholder="Se autocompleta">
+            <!-- Cargo -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Cargo</span>
+              <span class="asistencia-detalle-value">
+                <input type="text" id="cargoInput" class="form-control" readonly placeholder="Se autocompleta"
+                  style="background-color: #f8fafc;">
+              </span>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label" for="turnoSelect">Jornada *</label>
-              <select name="turno" id="turnoSelect" class="form-select" required>
-                <option value="">Seleccione jornada</option>
-                <option value="MANANA">Mañana</option>
-                <option value="TARDE">Tarde</option>
-                <option value="FIJO">Fijo</option>
-              </select>
+            <!-- Jornada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Jornada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <select name="turno" id="turnoSelect" class="form-select" required>
+                  <option value="">Seleccione jornada</option>
+                  <option value="MANANA">Mañana</option>
+                  <option value="TARDE">Tarde</option>
+                  <option value="FIJO">Fijo</option>
+                </select>
+              </span>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label" for="horaEntrada">Hora entrada *</label>
-              <input type="time" id="horaEntrada" name="hora_entrada" class="form-control" required>
+            <!-- Hora Entrada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input type="time" name="hora_entrada" id="horaEntrada" class="form-control" required>
+              </span>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label" for="horaSalida">Hora salida *</label>
-              <input type="time" id="horaSalida" name="hora_salida" class="form-control" required>
+            <!-- Hora Salida -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input type="time" name="hora_salida" id="horaSalida" class="form-control" required>
+              </span>
             </div>
 
-            <div class="col-12">
-              <label class="form-label">Seleccione el día de descanso *</label>
-              <div class="calendario-wrapper" id="ciclo14x1">
+            <!-- Día de Descanso (Bloque largo) -->
+            <div class="asistencia-detalle-bloque-largo">
+              <span class="asistencia-detalle-bloque-largo-label">Seleccione el día de descanso <span
+                  class="text-danger">*</span></span>
+
+              <div class="calendario-wrapper mt-2" id="ciclo14x1">
                 <div class="dias-semana">
                   {% for nombre in dias_semana %}
                   <div class="dia-semana">{{ nombre }}</div>
@@ -78,15 +105,23 @@
             </div>
 
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
-          <button type="reset" id="btnLimpiarHorario" class="btn btn-outline-secondary">Limpiar campos</button>
-          <button type="submit" class="btn btn-primary-corporate">
-            <i class="bi bi-save me-1"></i> Guardar horario
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer asistencia-detalle-footer">
+        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="reset" form="formCrearHorario" id="btnLimpiarHorario"
+          class="asistencia-modal-btn btn-outline-secondary">
+          <i class="bi bi-eraser me-1"></i> Limpiar campos
+        </button>
+        <button type="submit" form="formCrearHorario" class="asistencia-modal-btn btn btn-primary-corporate">
+          <i class="bi bi-save me-1"></i> Guardar horario
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

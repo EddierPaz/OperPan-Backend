@@ -158,6 +158,134 @@
   border-top: 1px solid #ececec;
 }
 
+/* ============================================================
+   MODALES 
+============================================================ */
+.asistencia-modal {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+/* Header Detalle */
+.asistencia-detalle-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #edf2f7;
+  background: #ffffff;
+}
+
+.asistencia-detalle-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #A40706;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.asistencia-detalle-titulo i {
+  font-size: 1.25rem;
+}
+
+.asistencia-detalle-subtitulo {
+  margin-top: 0.25rem;
+  margin-left: 1.85rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+/* Cuerpo Detalle */
+.asistencia-detalle-body {
+  padding: 1.5rem;
+  background: #ffffff;
+}
+
+.asistencia-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.asistencia-detalle-item {
+  padding: 0.9rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+}
+
+.asistencia-detalle-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.asistencia-detalle-value {
+  display: block;
+  color: #1e293b;
+  font-size: 0.92rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.asistencia-detalle-bloque-largo {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+}
+
+.asistencia-detalle-bloque-largo-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.asistencia-detalle-bloque-largo-texto {
+  margin: 0;
+  color: #334155;
+  line-height: 1.6;
+}
+
+/* Footer Detalle */
+.asistencia-detalle-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #edf2f7;
+  background: #ffffff;
+  gap: 0.6rem;
+}
+
+/* Botones Modales General */
+.asistencia-modal-btn {
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.asistencia-modal-btn-aprobar {
+  background: #198754;
+  color: #ffffff;
+}
+
+.asistencia-modal-btn-aprobar:hover {
+  background: #157347;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
   .accordion-button {
     grid-template-columns: 1fr auto;

@@ -1,50 +1,76 @@
 <!-- MODAL: Editar horario -->
 <div class="modal fade" id="modalEditarHorario" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar horario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content asistencia-modal">
+
+      <!-- HEADER -->
+      <div class="modal-header asistencia-detalle-header">
+        <div>
+          <div class="asistencia-detalle-titulo">
+            <i class="bi bi-pencil"></i> <span>Editar horario</span>
+          </div>
+          <p class="asistencia-detalle-subtitulo mb-0">Modifica los detalles del horario seleccionado</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <form method="POST" id="formEditar" action="">
-        {% csrf_token %}
-        <div class="modal-body">
-          <div class="row g-3">
 
-            <div class="col-md-6">
-              <label class="form-label" for="editar-empleado">Empleado</label>
-              <input id="editar-empleado" class="form-control" type="text" readonly>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="editar-cargo">Cargo</label>
-              <input id="editar-cargo" class="form-control" type="text" readonly>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label" for="editar-turno">Jornada *</label>
-              <select id="editar-turno" name="turno" class="form-select" required>
-                <option value="MANANA">Mañana</option>
-                <option value="TARDE">Tarde</option>
-                <option value="FIJO">Fijo</option>
-              </select>
+      <div class="modal-body asistencia-detalle-body">
+        <form method="POST" id="formEditar" action="">
+          {% csrf_token %}
+          
+          <div class="asistencia-detalle-grid">
+            
+            <!-- Empleado (Solo lectura) -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Empleado</span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-empleado" class="form-control" type="text" readonly style="background-color: #f8fafc;">
+              </span>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label" for="editar-entrada">Hora entrada *</label>
-              <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" required>
+            <!-- Cargo (Solo lectura) -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Cargo</span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-cargo" class="form-control" type="text" readonly style="background-color: #f8fafc;">
+              </span>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label" for="editar-salida">Hora salida *</label>
-              <input id="editar-salida" type="time" name="hora_salida" class="form-control" required>
+            <!-- Jornada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Jornada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <select id="editar-turno" name="turno" class="form-select" required>
+                  <option value="MANANA">Mañana</option>
+                  <option value="TARDE">Tarde</option>
+                  <option value="FIJO">Fijo</option>
+                </select>
+              </span>
             </div>
 
-            <div class="col-12">
-              <label class="form-label">
-                Cambiar día de descanso
-                <span id="descanso-actual-label" class="text-muted fw-normal ms-1"></span>
-              </label>
-              <div class="calendario-wrapper" id="ciclo14x1Editar">
+            <!-- Hora Entrada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" required>
+              </span>
+            </div>
+
+            <!-- Hora Salida -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-salida" type="time" name="hora_salida" class="form-control" required>
+              </span>
+            </div>
+
+            <!-- Día de Descanso (Bloque largo) -->
+            <div class="asistencia-detalle-bloque-largo">
+              <span class="asistencia-detalle-bloque-largo-label">
+                Cambiar día de descanso <span id="descanso-actual-label" class="text-muted fw-normal ms-1"></span>
+              </span>
+
+              <div class="calendario-wrapper mt-2" id="ciclo14x1Editar">
                 <div class="dias-semana">
                   {% for nombre in dias_semana %}
                   <div class="dia-semana">{{ nombre }}</div>
@@ -72,14 +98,19 @@
             </div>
 
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary-corporate">
-            <i class="bi bi-save me-1"></i> Guardar cambios
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer asistencia-detalle-footer">
+        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="submit" form="formEditar" class="asistencia-modal-btn btn btn-primary-corporate">
+          <i class="bi bi-save me-1"></i> Guardar cambios
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

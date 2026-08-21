@@ -1,49 +1,96 @@
+<!-- MODAL: Ver detalle del horario -->
 <div class="modal fade" id="modalVerHorario" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Detalle del horario</h5>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content asistencia-modal">
+
+      <!-- HEADER: Con estilo corporativo -->
+      <div class="modal-header asistencia-detalle-header">
+        <div>
+          <div class="asistencia-detalle-titulo">
+            <i class="bi bi-eye me-2"></i> <span>Detalle del horario</span>
+          </div>
+          <p class="asistencia-detalle-subtitulo mb-0">Información detallada de la programación</p>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label" for="ver-empleado">Empleado</label>
-            <input id="ver-empleado" class="form-control" type="text" readonly>
+
+      <div class="modal-body asistencia-detalle-body">
+        <div class="asistencia-detalle-grid">
+          
+          <!-- Empleado -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-empleado">Empleado</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-empleado" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-md-6">
-            <label class="form-label" for="ver-cargo">Cargo</label>
-            <input id="ver-cargo" class="form-control" type="text" readonly>
+
+          <!-- Cargo -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-cargo">Cargo</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-cargo" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-md-4">
-            <label class="form-label" for="ver-turno">Jornada</label>
-            <input id="ver-turno" class="form-control" type="text" readonly>
+
+          <!-- Jornada -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-turno">Jornada</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-turno" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-md-4">
-            <label class="form-label" for="ver-entrada">Hora entrada</label>
-            <input id="ver-entrada" class="form-control" type="text" readonly>
+
+          <!-- Hora entrada -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-entrada">Hora entrada</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-entrada" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-md-4">
-            <label class="form-label" for="ver-salida">Hora salida</label>
-            <input id="ver-salida" class="form-control" type="text" readonly>
+
+          <!-- Hora salida -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-salida">Hora salida</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-salida" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-md-6">
-            <label class="form-label" for="ver-descanso">Próximo descanso</label>
-            <input id="ver-descanso" class="form-control" type="text" readonly>
+
+          <!-- Próximo descanso -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-descanso">Próximo descanso</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-descanso" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-md-6">
-            <label class="form-label" for="ver-estado">Estado</label>
-            <input id="ver-estado" class="form-control" type="text" readonly>
+
+          <!-- Estado -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-estado">Estado</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-estado" class="form-control" type="text" readonly>
+            </span>
           </div>
-          <div class="col-12">
-            <label class="form-label" for="ver-ciclo">Horario vigente</label>
-            <input id="ver-ciclo" class="form-control" type="text" readonly>
+
+          <!-- Horario vigente (Bloque largo) -->
+          <div class="asistencia-detalle-bloque-largo">
+            <label class="asistencia-detalle-bloque-largo-label" for="ver-ciclo">Horario vigente</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-ciclo" class="form-control" type="text" readonly>
+            </span>
           </div>
+
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-corporate" data-bs-dismiss="modal">Cerrar</button>
+
+      <!-- FOOTER: Botón corporativo -->
+      <div class="modal-footer asistencia-detalle-footer">
+        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+          Cerrar
+        </button>
       </div>
+
     </div>
   </div>
 </div>
