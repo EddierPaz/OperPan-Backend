@@ -1,182 +1,253 @@
-/* ==============================================
-   PERFIL EMPLEADO - OperPan 
-============================================== */
+/* ============================================================
+   ESTILOS PARA INFORMACIÓN PERSONAL (REDISEÑO MODERNO)
+   ============================================================ */
 
-/* ── Tarjeta principal ── */
-.employee-card {
-    background: white;
-    border-radius: 28px;
-    padding: 1.8rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-    border: 1px solid #F0F2F5;
-}
-
-/* ── Fix: cabecera de la tarjeta en móvil ── */
-.employee-card .d-flex.justify-content-between {
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-
-.employee-card h4 {
-    flex: 1 1 auto;
-    min-width: 0;
-    word-break: break-word;
-}
-
-.employee-card #btnEditar {
-    flex-shrink: 0;
-}
-
-/* ── Avatar ── */
+/* --- Avatar con degradado --- */
 .employee-avatar-large {
     width: 80px;
     height: 80px;
-    background: #F0F2F5;
-    border-radius: 60px;
+    background: linear-gradient(135deg, #A40706, #D94A4A);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 2rem;
-    color: #A40706;
+    font-size: 2.2rem;
+    color: white;
+    box-shadow: 0 4px 12px rgba(164, 7, 6, 0.3);
+    flex-shrink: 0;
 }
 
-/* ── Badge de rol ── */
+/* --- Header del perfil --- */
+.profile-header {
+    padding: 0.5rem 0 1rem 0;
+    border-bottom: 1px solid #EDF2F7;
+}
+
+.profile-info h4 {
+    font-weight: 700;
+    color: #1E293B;
+}
+
+/* --- Badge de rol --- */
 .badge-role {
     background: #A40706;
     color: white;
     padding: 0.3rem 1rem;
     border-radius: 40px;
     font-size: 0.8rem;
+    display: inline-block;
 }
 
-/* ── Tabs ── */
-.custom-tabs {
+/* --- Botón Editar moderno --- */
+.btn-editar {
+    background: white;
+    color: #A40706;
+    border: 1.5px solid #A40706;
+    border-radius: 50px;
+    padding: 0.6rem 1.8rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-editar:hover {
+    background: #A40706;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.35);
+}
+
+.btn-editar.active {
+    background: #8a0504;
+    color: white;
+    border-color: #8a0504;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+/* --- Pestañas Modernas --- */
+.custom-tabs-modern {
     display: flex;
     gap: 0.5rem;
-    flex-wrap: wrap;
     margin-bottom: 2rem;
-    border-bottom: 1px solid #E9ECF3;
-    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #E9ECF3;
+    padding-bottom: 0;
+    flex-wrap: wrap;
 }
 
-.tab-btn-custom {
+.custom-tabs-modern .tab-btn-custom {
     background: transparent;
     border: none;
-    padding: 0.6rem 1.2rem;
+    padding: 0.7rem 1.5rem;
     font-weight: 600;
-    border-radius: 40px;
-    transition: 0.2s;
-    color: #475569;
+    font-size: 0.9rem;
+    color: #64748B;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
     cursor: pointer;
 }
 
-.tab-btn-custom i {
+.custom-tabs-modern .tab-btn-custom i {
     margin-right: 8px;
 }
 
-.tab-btn-custom.active {
-    background: #A40706;
-    color: white;
+.custom-tabs-modern .tab-btn-custom:hover {
+    color: #A40706;
 }
 
-.tab-pane {
-    display: none;
-    animation: fadeIn 0.2s ease;
+.custom-tabs-modern .tab-btn-custom.active {
+    color: #A40706;
+    border-bottom-color: #A40706;
 }
 
-.tab-pane.active {
+/* --- Tarjetas de información (Cards) --- */
+.info-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.8rem 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e9eef3;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.info-card .card-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+/* --- Etiquetas de campos --- */
+.field-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
     display: block;
+    margin-bottom: 0.1rem;
+}
+
+/* --- Valores de campos --- */
+.field-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    padding: 0.3rem 0;
+    min-height: 2.2rem;
+}
+
+/* --- Campos editables (con indicador visual) --- */
+.editable-hint {
+    border-left: 3px solid #a40706;
+    padding-left: 0.75rem !important;
+}
+
+/* --- Badges de estado --- */
+.badge-success {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.badge-warning {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.badge-info {
+    background: #DBEAFE;
+    color: #1E40AF;
+    padding: 0.2rem 0.8rem;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+/* --- Animación al cambiar de pestaña --- */
+.tab-pane {
+    animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* ── Métricas de desempeño ── */
-.metric-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    border: 1px solid #EDF2F7;
+/* --- Ícono de lápiz en campos editables --- */
+.bi-pencil {
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
 }
-/* ============================================================
-   HEADER RESPONSIVE - Botón siempre a la derecha
-============================================================== */
+
+.bi-pencil:hover {
+    opacity: 1;
+}
+
+/* --- Responsive para móvil --- */
 @media (max-width: 576px) {
-    .card-header-custom {
-        flex-wrap: nowrap !important;   /* Evita que el botón caiga abajo */
-        gap: 0.5rem !important;
-    }
-
-    .card-header-custom h3 {
-        font-size: 1rem;                /* Reduce el tamaño del título */
-        white-space: nowrap;            /* Evita que el título se parta */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-shrink: 1;                /* Permite que el título se encoja si es necesario */
-    }
-
-    #btnEditar {
-        font-size: 0.8rem;
-        padding: 0.3rem 0.8rem;
-        white-space: nowrap;
-        flex-shrink: 0;                /* Evita que el botón se encoja */
-    }
-}
-
-/* ============================================================
-   BOTÓN EDITAR - ALINEADO A LA DERECHA
-============================================================== */
-.employee-card .flex-grow-1.d-flex {
-    width: 100%;
-}
-
-#btnEditar {
-    flex-shrink: 0;      /* Evita que se encoja */
-    white-space: nowrap;  /* Evita que el texto se parta */
-    margin-left: auto;   /* Alinea el botón a la derecha en desktop */
-    transition: all 0.2s ease;
-}
-
-#btnEditar.active {
-    background: #048a08;  /* Color más oscuro cuando está activo */
-    opacity: 0.8;
-    cursor: not-allowed;
-}
-
-@media (max-width: 576px) {
-    .employee-card .flex-grow-1.d-flex {
+    .profile-header {
         flex-direction: column !important;
-        align-items: stretch !important;
+        text-align: center;
         gap: 0.5rem !important;
     }
-
-    .employee-card .flex-grow-1.d-flex > div {
+    .profile-info {
         text-align: center;
     }
-
-    #btnEditar {
+    .btn-editar {
         width: 100%;
         justify-content: center;
-        margin-left: 0;  /* Resetear margen en móvil */
     }
-
-    .employee-card .flex-grow-1.d-flex .badge-role {
-        display: inline-block;
+    .employee-avatar-large {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
     }
-
-    /* Botones Guardar/Cancelar en móvil */
-    #accionesEdicion .d-flex {
+    .custom-tabs-modern .tab-btn-custom {
+        flex: 1;
+        text-align: center;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    .info-card {
+        padding: 1rem;
+    }
+    .field-value {
+        font-size: 0.9rem;
+    }
+    #accionesEdicionPersonal .d-flex,
+    #accionesEdicionSeguridad .d-flex {
         flex-direction: column;
         width: 100%;
     }
-
-    #accionesEdicion button {
+    #accionesEdicionPersonal button,
+    #accionesEdicionSeguridad button {
         width: 100%;
+        justify-content: center;
     }
 }
