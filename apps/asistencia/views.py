@@ -175,6 +175,13 @@ def _contexto_base():
         "tardanzas": tardanzas,
         "ausentes": ausentes,
     }
+    
+    resumen_horarios = {
+        "total": horarios.count(),
+        "manana": sum(1 for h in horarios if h.turno == "MANANA"),
+        "tarde": sum(1 for h in horarios if h.turno == "TARDE"),
+        "fijo": sum(1 for h in horarios if h.turno == "FIJO"),
+    }
 
     return {
         "empleados": PerfilEmpleado.objects.all(),
@@ -184,8 +191,17 @@ def _contexto_base():
         "fecha_hoy": hoy,
         "turnos_hoy": turnos_hoy,
         "resumen_asistencia": resumen_asistencia,
+        "resumen_horarios": resumen_horarios,
     }
 
+@login_required
+@admin_required
+def asistencia_dashboard(request):
+    return render(
+        request,
+        "admin/asistencia/asistencia.html",
+        _contexto_base()
+    )
 
 def horarios(request):
     if request.method == "POST":
@@ -231,7 +247,7 @@ def horarios(request):
 
     return render(
         request,
-        "admin/asistencia/asistencia.html",
+        "admin/horario/horario.html",  
         _contexto_base()
     )
 

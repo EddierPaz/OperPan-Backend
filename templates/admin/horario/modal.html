@@ -1,0 +1,343 @@
+{% load static %}
+
+<!-- MODAL: Crear horario -->
+<div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content asistencia-modal">
+
+      <div class="modal-header asistencia-detalle-header">
+        <div>
+          <div class="asistencia-detalle-titulo">
+            <i class="bi bi-plus-circle"></i> <span>Asignar nuevo horario</span>
+          </div>
+          <p class="asistencia-detalle-subtitulo mb-0">Selecciona los datos y jornada para el empleado</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body asistencia-detalle-body">
+        <form method="POST" action="{% url 'asistencia:horarios' %}" id="formCrearHorario">
+          {% csrf_token %}
+
+          <div class="asistencia-detalle-grid">
+
+            <!-- Empleado -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Empleado <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <select name="empleado" id="empleadoSelect" class="form-select" required>
+                  <option value="">Seleccione empleado</option>
+                  {% for empleado in empleados %}
+                  <option value="{{ empleado.id }}" data-cargo="{{ empleado.get_cargo_display }}">
+                    {{ empleado.nombre_completo }}
+                  </option>
+                {% endfor %}
+                </select>
+              </span>
+            </div>
+
+            <!-- Cargo -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Cargo</span>
+              <span class="asistencia-detalle-value">
+                <input type="text" id="cargoInput" class="form-control" readonly placeholder="Se autocompleta"
+                  style="background-color: #f8fafc;">
+              </span>
+            </div>
+
+            <!-- Jornada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Jornada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <select name="turno" id="turnoSelect" class="form-select" required>
+                  <option value="">Seleccione jornada</option>
+                  <option value="MANANA">Mañana</option>
+                  <option value="TARDE">Tarde</option>
+                  <option value="FIJO">Fijo</option>
+                </select>
+              </span>
+            </div>
+
+            <!-- Hora Entrada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input type="time" name="hora_entrada" id="horaEntrada" class="form-control" required>
+              </span>
+            </div>
+
+            <!-- Hora Salida -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input type="time" name="hora_salida" id="horaSalida" class="form-control" required>
+              </span>
+            </div>
+
+            <!-- Día de Descanso (Bloque largo) -->
+            <div class="asistencia-detalle-bloque-largo">
+              <span class="asistencia-detalle-bloque-largo-label">Seleccione el día de descanso <span
+                  class="text-danger">*</span></span>
+
+              <div class="calendario-wrapper mt-2" id="ciclo14x1">
+                <div class="dias-semana">
+                  {% for nombre in dias_semana %}
+                  <div class="dia-semana">{{ nombre }}</div>
+                  {% endfor %}
+                </div>
+                <div class="calendario-grid">
+                  {% for dia in proximos_dias %}
+                  {% if dia %}
+                  <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+                    data-label="{{ dia.fecha|date:'d/m' }}" data-indice="{{ dia.indice }}"
+                    title="{{ dia.fecha|date:'d/m/Y' }}">
+                    {{ dia.numero }}
+                  </button>
+                  {% else %}
+                  <div class="dia-vacio"></div>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="fecha_descanso" id="fechaDescansoInput" required>
+                <p class="text-muted small mt-2" id="descansoLabel" style="display:none;">
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>
+                  Descanso asignado para el día <strong id="descansoFechaTexto"></strong>
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer asistencia-detalle-footer">
+        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="reset" form="formCrearHorario" id="btnLimpiarHorario"
+          class="asistencia-modal-btn btn-outline-corporate">
+          <i class="bi bi-eraser me-1"></i> Limpiar campos
+        </button>
+        <button type="submit" form="formCrearHorario" class="asistencia-modal-btn btn btn-primary-corporate">
+          <i class="bi bi-save me-1"></i> Guardar horario
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Editar horario -->
+<div class="modal fade" id="modalEditarHorario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content asistencia-modal">
+
+      <!-- HEADER -->
+      <div class="modal-header asistencia-detalle-header">
+        <div>
+          <div class="asistencia-detalle-titulo">
+            <i class="bi bi-pencil"></i> <span>Editar horario</span>
+          </div>
+          <p class="asistencia-detalle-subtitulo mb-0">Modifica los detalles del horario seleccionado</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body asistencia-detalle-body">
+        <form method="POST" id="formEditar" action="">
+          {% csrf_token %}
+          
+          <div class="asistencia-detalle-grid">
+            
+            <!-- Empleado (Solo lectura) -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Empleado</span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-empleado" class="form-control" type="text" readonly style="background-color: #f8fafc;">
+              </span>
+            </div>
+
+            <!-- Cargo (Solo lectura) -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Cargo</span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-cargo" class="form-control" type="text" readonly style="background-color: #f8fafc;">
+              </span>
+            </div>
+
+            <!-- Jornada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Jornada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <select id="editar-turno" name="turno" class="form-select" required>
+                  <option value="MANANA">Mañana</option>
+                  <option value="TARDE">Tarde</option>
+                  <option value="FIJO">Fijo</option>
+                </select>
+              </span>
+            </div>
+
+            <!-- Hora Entrada -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" required>
+              </span>
+            </div>
+
+            <!-- Hora Salida -->
+            <div class="asistencia-detalle-item">
+              <span class="asistencia-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="asistencia-detalle-value">
+                <input id="editar-salida" type="time" name="hora_salida" class="form-control" required>
+              </span>
+            </div>
+
+            <!-- Día de Descanso (Bloque largo) -->
+            <div class="asistencia-detalle-bloque-largo">
+              <span class="asistencia-detalle-bloque-largo-label">
+                Cambiar día de descanso <span id="descanso-actual-label" class="text-muted fw-normal ms-1"></span>
+              </span>
+
+              <div class="calendario-wrapper mt-2" id="ciclo14x1Editar">
+                <div class="dias-semana">
+                  {% for nombre in dias_semana %}
+                  <div class="dia-semana">{{ nombre }}</div>
+                  {% endfor %}
+                </div>
+                <div class="calendario-grid">
+                  {% for dia in proximos_dias %}
+                  {% if dia %}
+                  <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+                    data-label="{{ dia.fecha|date:'d/m' }}" data-indice="{{ dia.indice }}"
+                    title="{{ dia.fecha|date:'d/m/Y' }}">
+                    {{ dia.numero }}
+                  </button>
+                  {% else %}
+                  <div class="dia-vacio"></div>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="fecha_descanso" id="fechaDescansoEditarInput">
+                <p class="text-muted small mt-2" id="descansoEditarLabel" style="display:none;">
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>
+                  Nuevo descanso: <strong id="descansoEditarFechaTexto"></strong>
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer asistencia-detalle-footer">
+        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="submit" form="formEditar" class="asistencia-modal-btn btn btn-primary-corporate">
+          <i class="bi bi-save me-1"></i> Guardar cambios
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Ver detalle del horario -->
+<div class="modal fade" id="modalVerHorario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content asistencia-modal">
+
+      <!-- HEADER: Con estilo corporativo -->
+      <div class="modal-header asistencia-detalle-header">
+        <div>
+          <div class="asistencia-detalle-titulo">
+            <i class="bi bi-eye me-2"></i> <span>Detalle del horario</span>
+          </div>
+          <p class="asistencia-detalle-subtitulo mb-0">Información detallada de la programación</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body asistencia-detalle-body">
+        <div class="asistencia-detalle-grid">
+          
+          <!-- Empleado -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-empleado">Empleado</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-empleado" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Cargo -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-cargo">Cargo</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-cargo" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Jornada -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-turno">Jornada</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-turno" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Hora entrada -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-entrada">Hora entrada</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-entrada" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Hora salida -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-salida">Hora salida</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-salida" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Próximo descanso -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-descanso">Próximo descanso</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-descanso" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Estado -->
+          <div class="asistencia-detalle-item">
+            <label class="asistencia-detalle-label" for="ver-estado">Estado</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-estado" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+          <!-- Horario vigente (Bloque largo) -->
+          <div class="asistencia-detalle-bloque-largo">
+            <label class="asistencia-detalle-bloque-largo-label" for="ver-ciclo">Horario vigente</label>
+            <span class="asistencia-detalle-value">
+              <input id="ver-ciclo" class="form-control" type="text" readonly>
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FOOTER: Botón corporativo -->
+      <div class="modal-footer asistencia-detalle-footer">
+        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

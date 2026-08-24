@@ -45,6 +45,10 @@
                     <li class="{% block active_inicio %}{% endblock %}">
                         <a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a>
                     </li>
+                    <li class="{% block active_asistencia %}{% endblock %}">
+                        <a href="{% url 'asistencia:asistencia_dashboard' %}"><i class="bi bi-calendar3-week"></i>
+                            Asistencia</a>
+                    </li>
                     <li class="{% block active_horarios %}{% endblock %}">
                         <a href="{% url 'asistencia:horarios' %}"><i class="bi bi-calendar3-week"></i> Horarios</a>
                     </li>

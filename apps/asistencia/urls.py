@@ -6,6 +6,12 @@ app_name = "asistencia"
 urlpatterns = [
 
     path(
+        "",
+        views.asistencia_dashboard,
+        name="asistencia_dashboard"
+    ),
+
+    path(
         "horarios/",
         views.horarios,
         name="horarios"
