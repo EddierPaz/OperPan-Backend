@@ -188,12 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================
-    // TABS (SIN CAMBIOS)
+    // TABS (PESTAÑAS CORPORATIVAS)
     // ==========================================
 
-    const tabs = document.querySelectorAll(".tab-btn-custom");
-    const panes = document.querySelectorAll(".tab-pane");
-
+const tabs = document.querySelectorAll(".custom-tabs-modern button[data-tab]");
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             const target = tab.dataset.tab;

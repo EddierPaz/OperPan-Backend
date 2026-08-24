@@ -23,18 +23,18 @@
         </div>
     </div>
 
-    <!-- ==================== PESTAÑAS ==================== -->
-    <div class="custom-tabs">
-        <button type="button" class="btn-primary-corporate active" data-tab="personal">
-            <i class="bi bi-person-vcard"></i>Personal
-        </button>
-        <button type="button" class="btn-primary-corporate" data-tab="laboral">
-            <i class="bi bi-briefcase"></i>Laboral
-        </button>
-        <button type="button" class="btn-primary-corporate" data-tab="seguridad">
-            <i class="bi bi-shield-lock"></i>Seguridad
-        </button>
-    </div>
+<!-- ==================== PESTAÑAS (ESTILO MODERNO) ==================== -->
+<div class="custom-tabs-modern">
+    <button type="button" class="tab-btn-custom active" data-tab="personal">
+        <i class="bi bi-person-vcard"></i>Personal
+    </button>
+    <button type="button" class="tab-btn-custom" data-tab="laboral">
+        <i class="bi bi-briefcase"></i>Laboral
+    </button>
+    <button type="button" class="tab-btn-custom" data-tab="seguridad">
+        <i class="bi bi-shield-lock"></i>Seguridad
+    </button>
+</div>
 
     <form method="POST" action="{% url 'employee_profile_update' %}" id="formPerfil">
         {% csrf_token %}

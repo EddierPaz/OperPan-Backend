@@ -102,6 +102,44 @@
     color: #A40706;
     border-bottom-color: #A40706;
 }
+/*Linea 106-142 son los estilos de las pestañas corporativas*/
+/* --- Pestañas con estilo corporativo --- */
+.custom-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.custom-tabs .btn-primary-corporate {
+    background: white !important;
+    color: #A40706 !important;
+    border: 1.5px solid #A40706 !important;
+    padding: 0.6rem 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    border-radius: 40px !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.custom-tabs .btn-primary-corporate:hover {
+    background: #A40706 !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.35) !important;
+}
+
+.custom-tabs .btn-primary-corporate.active {
+    background: #A40706 !important;
+    color: white !important;
+    border-color: #A40706 !important;
+    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.35) !important;
+}
+
+.custom-tabs .btn-primary-corporate i {
+    margin-right: 8px !important;
+}
 
 /* --- Tarjetas de información (Cards) --- */
 .info-card {
