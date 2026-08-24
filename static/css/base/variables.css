@@ -1,10 +1,5 @@
 /* ============================================================
-   VARIABLES.CSS - OPERPAN (SISTEMA DE GESTIÓN DE PERSONAL)
-   Única fuente de verdad para colores, tipografía, radios y
-   sombras. Ningún otro archivo debe repetir estos valores:
-   siempre se usan como var(--nombre).
-   Debe cargarse ANTES que base.css, components.css y los
-   CSS de cada módulo.
+   VARIABLES.CSS 
    ============================================================ */
 
 :root {

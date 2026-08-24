@@ -546,57 +546,47 @@ def employee_dashboard(request):
 # GESTIÓN DE USUARIOS
 # ========================
 
-#@login_required
-#@admin_required
+@login_required
+@admin_required
 def user_list_create(request):
     usuarios = PerfilEmpleado.objects.select_related("user").all()
+    
+    # Obtener lista de cargos para el filtro desde el modelo
+    # CORRECCIÓN: Usar _meta.get_field() para obtener los choices
+    cargos = PerfilEmpleado._meta.get_field('cargo').choices
+    
     if request.method == "POST":
         user_form = UserForm(request.POST)
         perfil_form = PerfilEmpleadoForm(request.POST)
         if user_form.is_valid() and perfil_form.is_valid():
             user = user_form.save(commit=False)
             user.email = perfil_form.cleaned_data["correo"]
-            user.set_password(
-                user_form.cleaned_data["password"]
-            )
+            user.set_password(user_form.cleaned_data["password"])
             user.save()
 
             perfil = perfil_form.save(commit=False)
             perfil.user = user
             perfil.save()
 
-            messages.success(
-                request,
-                "Usuario creado correctamente."
-            )
+            messages.success(request, "Usuario creado correctamente.")
             return redirect("user_list")
 
-        messages.error(
-            request,
-            "Corrige los errores del formulario."
-        )   
+        messages.error(request, "Corrige los errores del formulario.")
     else:
         user_form = UserForm()
         perfil_form = PerfilEmpleadoForm()
+    
     context = {
         "fecha_hoy": timezone.localdate(),
         "usuarios": usuarios,
         "total_usuarios": usuarios.count(),
-        "total_admins": usuarios.filter(
-            user__rol="admin"
-        ).count(),
-        "total_empleados": usuarios.filter(
-            user__rol="empleado"
-        ).count(),
-        "perfil_editar": None,
+        "total_admins": usuarios.filter(user__rol="admin").count(),
+        "total_empleados": usuarios.filter(user__rol="empleado").count(),
+        "cargos": cargos,  # Ahora es una lista de tuplas (valor, etiqueta)
         "user_form": user_form,
         "perfil_form": perfil_form,
     }
-    return render(
-        request,
-        "admin/usuarios/usuarios.html",
-        context
-    )
+    return render(request, "admin/usuarios/usuarios.html", context)
 
 
 @login_required
