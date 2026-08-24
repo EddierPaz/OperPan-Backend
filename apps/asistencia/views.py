@@ -320,8 +320,7 @@ def eliminar_horario(request, id):
     horario = get_object_or_404(Horario, id=id)
     horario.estado = False
     horario.save(update_fields=["estado"])
-
-    messages.success(request, "Horario eliminado correctamente.")
+    messages.error(request, "Horario eliminado correctamente.")
     return redirect("asistencia:horarios")
 
 

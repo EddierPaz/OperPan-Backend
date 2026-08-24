@@ -283,4 +283,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
+    // ==========================================
+    // 8. ELIMINAR HORARIO
+    // ==========================================
+    document.addEventListener("click", function (e) {
+        // BOTÓN ELIMINAR HORARIO
+        const btnEliminar = e.target.closest(".btn-eliminar-horario");
+        if (btnEliminar) {
+            e.preventDefault();
+            const id = btnEliminar.dataset.id;
+            const nombre = btnEliminar.dataset.empleado || "empleado";
+
+            // Configurar el formulario
+            const form = document.getElementById("formEliminarHorario");
+            if (form) {
+                form.action = "/asistencia/horarios/" + id + "/eliminar/";
+            }
+
+            // Mostrar el nombre del empleado
+            const nombreSpan = document.getElementById("eliminar-empleado-nombre");
+            if (nombreSpan) {
+                nombreSpan.textContent = nombre;
+            }
+
+            // Mostrar el modal
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario"));
+            modal.show();
+        }
+    });
+
 });
+
