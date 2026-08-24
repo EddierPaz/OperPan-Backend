@@ -2,7 +2,7 @@
 
 <!-- 1. HEADER -->
 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-  <h3><i class="bi bi-calendar-check me-2"></i>Resumen de horarios</h3>
+  <h3><i class="bi bi-calendar3-week"></i> Resumen de horarios</h3>
   <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
 </div>
 
@@ -120,21 +120,19 @@
           {% endif %}
         </td>
         <td>
-          <button class="btn btn-sm btn-outline-corporate btn-ver-horario" data-id="{{ horario.id }}"
-            title="Ver detalle">
-            <i class="bi bi-eye"></i>
+          <button class="btn-action btn-sm btn-corporate-thi btn-ver-horario" data-id="{{ horario.id }}"
+              title="Ver detalle">
+              <i class="bi bi-eye"></i>
           </button>
-          <button class="btn btn-sm btn-outline-primary btn-editar-horario" data-id="{{ horario.id }}" title="Editar">
-            <i class="bi bi-pencil"></i>
+          <button class="btn-action btn-sm btn-corporate-sec btn-editar-horario" data-id="{{ horario.id }}" title="Editar">
+              <i class="bi bi-pencil"></i>
           </button>
-          <a
-            href="{% url 'asistencia:eliminar_horario' horario.id %}"
-            class="btn btn-sm btn-outline-danger"
-            onclick="return confirm('¿Desea eliminar este horario?');"
-            title="Eliminar"
-          >
-            <i class="bi bi-trash"></i>
-          </a>
+          <button class="btn-action btn-sm btn-primary-corporate btn-eliminar-horario" 
+                  data-id="{{ horario.id }}" 
+                  data-empleado="{{ horario.empleado.nombre_completo }}"
+                  title="Eliminar">
+              <i class="bi bi-trash"></i>
+          </button>
         </td>
       </tr>
       {% empty %}

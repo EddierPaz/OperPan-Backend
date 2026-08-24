@@ -1,0 +1,899 @@
+<!-- ============================================================
+     MODAL: Crear Usuario (Estilo IDÉNTICO a Horarios)
+     ============================================================ -->
+<div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content usuario-modal">
+
+            <!-- HEADER (igual que horarios) -->
+            <div class="modal-header usuario-detalle-header">
+                <div>
+                    <div class="usuario-detalle-titulo">
+                        <i class="bi bi-person-plus-fill"></i> <span>Crear Usuario</span>
+                    </div>
+                    <p class="usuario-detalle-subtitulo mb-0">Registra un nuevo empleado en el sistema</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- BODY (con grid de casillas estilo horarios) -->
+            <div class="modal-body usuario-detalle-body">
+                <form method="POST" id="formCrearUsuario" action="{% url 'user_list' %}">
+                    {% csrf_token %}
+
+                    <!-- DATOS PERSONALES -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-person-vcard me-1"></i> Datos Personales
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Primer Nombre -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="primer_nombre" id="c_primer_nombre" required>
+                            </span>
+                        </div>
+
+                        <!-- Segundo Nombre -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Segundo Nombre</span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="segundo_nombre" id="c_segundo_nombre">
+                            </span>
+                        </div>
+
+                        <!-- Primer Apellido -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Primer Apellido <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="primer_apellido" id="c_primer_apellido" required>
+                            </span>
+                        </div>
+
+                        <!-- Segundo Apellido -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Segundo Apellido <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="segundo_apellido" id="c_segundo_apellido" required>
+                            </span>
+                        </div>
+
+                        <!-- Tipo Documento -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Tipo Documento <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="tipo_documento" id="c_tipo_documento" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="PA">Pasaporte</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- Número Documento -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Número Documento <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="numero_documento" id="c_numero_documento" required>
+                            </span>
+                        </div>
+
+                        <!-- Fecha Nacimiento -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="date" class="form-control" name="fecha_nacimiento" id="c_fecha_nacimiento" required>
+                            </span>
+                        </div>
+
+                        <!-- Género -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Género <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="genero" id="c_genero" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                    <option value="O">Otro</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- Estado Civil -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Estado Civil <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="estado_civil" id="c_estado_civil" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="soltero">Soltero</option>
+                                    <option value="casado">Casado</option>
+                                    <option value="union_libre">Unión Libre</option>
+                                    <option value="divorciado">Divorciado</option>
+                                    <option value="viudo">Viudo</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- Tipo Sangre -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Tipo de Sangre <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="tipo_sangre" id="c_tipo_sangre" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- INFORMACIÓN DE CONTACTO -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-telephone me-1"></i> Información de Contacto
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Teléfono -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Teléfono <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="tel" class="form-control" name="telefono" id="c_telefono" required>
+                            </span>
+                        </div>
+
+                        <!-- Correo -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Correo <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="email" class="form-control" name="correo" id="c_correo" required>
+                            </span>
+                        </div>
+
+                        <!-- Ciudad -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Ciudad <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="ciudad" id="c_ciudad" required>
+                            </span>
+                        </div>
+
+                        <!-- Dirección -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Dirección <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="direccion" id="c_direccion" required>
+                            </span>
+                        </div>
+
+                        <!-- Contacto Emergencia -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Contacto emergencia <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="contacto_emergencia" id="c_contacto_emergencia" required>
+                            </span>
+                        </div>
+
+                        <!-- Parentesco -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Parentesco <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="parentesco_emergencia" id="c_parentesco_emergencia" required>
+                            </span>
+                        </div>
+
+                        <!-- Teléfono Emergencia -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="tel" class="form-control" name="telefono_emergencia" id="c_telefono_emergencia" required>
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- DATOS LABORALES -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-briefcase me-1"></i> Datos Laborales
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Cargo -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Cargo <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="cargo" id="c_cargo" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="mesero">Mesero</option>
+                                    <option value="cajero">Cajero</option>
+                                    <option value="pastelero">Pastelero</option>
+                                    <option value="panadero">Panadero</option>
+                                    <option value="cocina">Cocina</option>
+                                    <option value="buñuelero">Buñuelero</option>
+                                    <option value="greca">Greca</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- Fecha Ingreso -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="date" class="form-control" name="fecha_ingreso" id="c_fecha_ingreso" required>
+                            </span>
+                        </div>
+
+                        <!-- EPS -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">EPS <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="eps" id="c_eps" required>
+                            </span>
+                        </div>
+
+                        <!-- ARL -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">ARL <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="arl" id="c_arl" required>
+                            </span>
+                        </div>
+
+                        <!-- Fondo Pensión -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="fondo_pension" id="c_fondo_pension" required>
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- ACCESO AL SISTEMA -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Usuario -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Usuario <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="username" id="c_username" required>
+                            </span>
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Contraseña <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="password" class="form-control" name="password" id="c_password" required>
+                            </span>
+                        </div>
+
+                        <!-- Rol -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Rol <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="rol" id="c_rol" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="empleado">Empleado</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- FOOTER (igual que horarios) -->
+            <div class="modal-footer usuario-detalle-footer">
+                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="reset" class="usuario-modal-btn filtro-btn-limpiar" id="btnLimpiarCrear">
+                    <i class="bi bi-eraser me-1"></i> Limpiar campos
+                </button>
+                <button type="submit" class="usuario-modal-btn btn btn-primary-corporate">
+                    <i class="bi bi-save me-1"></i> Guardar Usuario
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- ============================================================
+     MODAL: Editar Usuario (Estilo IDÉNTICO a Horarios)
+     ============================================================ -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content usuario-modal">
+
+            <!-- HEADER (igual que horarios) -->
+            <div class="modal-header usuario-detalle-header">
+                <div>
+                    <div class="usuario-detalle-titulo">
+                        <i class="bi bi-pencil-square"></i> <span>Editar Usuario</span>
+                    </div>
+                    <p class="usuario-detalle-subtitulo mb-0">Modifica los datos del empleado</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- BODY (con grid de casillas estilo horarios) -->
+            <div class="modal-body usuario-detalle-body">
+                <form method="POST" id="formEditarUsuario" action="">
+                    {% csrf_token %}
+
+                    <!-- DATOS PERSONALES -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-person-vcard me-1"></i> Datos Personales
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Primer Nombre (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="primer_nombre" id="e_primer_nombre" required>
+                            </span>
+                        </div>
+
+                        <!-- Segundo Nombre (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Segundo Nombre</span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="segundo_nombre" id="e_segundo_nombre">
+                            </span>
+                        </div>
+
+                        <!-- Primer Apellido (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Primer Apellido <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="primer_apellido" id="e_primer_apellido" required>
+                            </span>
+                        </div>
+
+                        <!-- Segundo Apellido (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Segundo Apellido <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="segundo_apellido" id="e_segundo_apellido" required>
+                            </span>
+                        </div>
+
+                        <!-- Tipo Documento (SOLO LECTURA) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Tipo Documento <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="tipo_documento" id="e_tipo_documento" disabled required>
+                                    <option value="">Seleccione</option>
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="PA">Pasaporte</option>
+                                </select>
+                                <input type="hidden" name="tipo_documento" id="e_tipo_documento_hidden">
+                            </span>
+                        </div>
+
+                        <!-- Número Documento (SOLO LECTURA) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Número Documento <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="numero_documento" id="e_numero_documento" readonly required style="background-color: #f1f3f5; cursor: not-allowed;">
+                            </span>
+                        </div>
+
+                        <!-- Fecha Nacimiento (SOLO LECTURA) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="date" class="form-control" name="fecha_nacimiento" id="e_fecha_nacimiento" readonly required style="background-color: #f1f3f5; cursor: not-allowed;">
+                            </span>
+                        </div>
+
+                        <!-- Género (SOLO LECTURA) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Género <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="genero" id="e_genero" disabled required>
+                                    <option value="">Seleccione</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                    <option value="O">Otro</option>
+                                </select>
+                                <input type="hidden" name="genero" id="e_genero_hidden">
+                            </span>
+                        </div>
+
+                        <!-- Estado Civil (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Estado Civil <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="estado_civil" id="e_estado_civil" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="soltero">Soltero</option>
+                                    <option value="casado">Casado</option>
+                                    <option value="union_libre">Unión Libre</option>
+                                    <option value="divorciado">Divorciado</option>
+                                    <option value="viudo">Viudo</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- Tipo Sangre (SOLO LECTURA) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Tipo de Sangre <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="tipo_sangre" id="e_tipo_sangre" disabled required>
+                                    <option value="">Seleccione</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                                <input type="hidden" name="tipo_sangre" id="e_tipo_sangre_hidden">
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- INFORMACIÓN DE CONTACTO (TODO EDITABLE) -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-telephone me-1"></i> Información de Contacto
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Teléfono (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Teléfono <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="tel" class="form-control" name="telefono" id="e_telefono" required>
+                            </span>
+                        </div>
+
+                        <!-- Correo (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Correo <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="email" class="form-control" name="correo" id="e_correo" required>
+                            </span>
+                        </div>
+
+                        <!-- Ciudad (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Ciudad <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="ciudad" id="e_ciudad" required>
+                            </span>
+                        </div>
+
+                        <!-- Dirección (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Dirección <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="direccion" id="e_direccion" required>
+                            </span>
+                        </div>
+
+                        <!-- Contacto Emergencia (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Contacto emergencia <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="contacto_emergencia" id="e_contacto_emergencia" required>
+                            </span>
+                        </div>
+
+                        <!-- Parentesco (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Parentesco <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="parentesco_emergencia" id="e_parentesco_emergencia" required>
+                            </span>
+                        </div>
+
+                        <!-- Teléfono Emergencia (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="tel" class="form-control" name="telefono_emergencia" id="e_telefono_emergencia" required>
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- DATOS LABORALES -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-briefcase me-1"></i> Datos Laborales
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Cargo (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Cargo <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="cargo" id="e_cargo" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="mesero">Mesero</option>
+                                    <option value="cajero">Cajero</option>
+                                    <option value="pastelero">Pastelero</option>
+                                    <option value="panadero">Panadero</option>
+                                    <option value="cocina">Cocina</option>
+                                    <option value="buñuelero">Buñuelero</option>
+                                    <option value="greca">Greca</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <!-- Fecha Ingreso (SOLO LECTURA) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="date" class="form-control" name="fecha_ingreso" id="e_fecha_ingreso" readonly required style="background-color: #f1f3f5; cursor: not-allowed;">
+                            </span>
+                        </div>
+
+                        <!-- EPS (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">EPS <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="eps" id="e_eps" required>
+                            </span>
+                        </div>
+
+                        <!-- ARL (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">ARL <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="arl" id="e_arl" required>
+                            </span>
+                        </div>
+
+                        <!-- Fondo Pensión (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="fondo_pension" id="e_fondo_pension" required>
+                            </span>
+                        </div>
+
+                        <!-- Estado (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Estado <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="estado" id="e_estado" required>
+                                    <option value="activo">Activo</option>
+                                    <option value="suspendido">Suspendido</option>
+                                    <option value="retirado">Retirado</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- ACCESO AL SISTEMA -->
+                    <h5 class="mb-3 text-danger">
+                        <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
+                    </h5>
+
+                    <div class="usuario-detalle-grid">
+                        <!-- Usuario (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Usuario <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <input type="text" class="form-control" name="username" id="e_username" required>
+                            </span>
+                        </div>
+
+                        <!-- Contraseña (EDITABLE - opcional) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Contraseña</span>
+                            <span class="usuario-detalle-value">
+                                <input type="password" class="form-control" name="password" id="e_password" placeholder="Dejar en blanco para no cambiar">
+                            </span>
+                        </div>
+
+                        <!-- Rol (EDITABLE) -->
+                        <div class="usuario-detalle-item">
+                            <span class="usuario-detalle-label">Rol <span class="text-danger">*</span></span>
+                            <span class="usuario-detalle-value">
+                                <select class="form-select" name="rol" id="e_rol" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="empleado">Empleado</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- FOOTER (igual que horarios) -->
+            <div class="modal-footer usuario-detalle-footer">
+                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="submit" class="usuario-modal-btn btn btn-primary-corporate">
+                    <i class="bi bi-save me-1"></i> Guardar Cambios
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL: Ver Usuario (Estilo IDÉNTICO a Horarios)
+     ============================================================ -->
+<div class="modal fade" id="modalVerUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content usuario-modal">
+
+            <!-- HEADER (igual que horarios) -->
+            <div class="modal-header usuario-detalle-header">
+                <div>
+                    <div class="usuario-detalle-titulo">
+                        <i class="bi bi-person-badge"></i> <span>Detalle del Usuario</span>
+                    </div>
+                    <p class="usuario-detalle-subtitulo mb-0">Información completa del empleado</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- BODY (con grid de casillas estilo horarios) -->
+            <div class="modal-body usuario-detalle-body">
+                <div class="usuario-detalle-grid">
+
+                    <!-- ========================================== -->
+                    <!-- DATOS PERSONALES -->
+                    <!-- ========================================== -->
+                    <div class="usuario-detalle-bloque-largo">
+                        <span class="usuario-detalle-bloque-largo-label">
+                            <i class="bi bi-person-vcard me-1"></i> Datos Personales
+                        </span>
+                    </div>
+
+                    <!-- Nombre Completo -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Nombre Completo</span>
+                        <span class="usuario-detalle-value" id="v_nombre_completo">-</span>
+                    </div>
+
+                    <!-- Tipo Documento -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Tipo Documento</span>
+                        <span class="usuario-detalle-value" id="v_tipo_documento">-</span>
+                    </div>
+
+                    <!-- Número Documento -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Número Documento</span>
+                        <span class="usuario-detalle-value" id="v_numero_documento">-</span>
+                    </div>
+
+                    <!-- Fecha Nacimiento -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Fecha Nacimiento</span>
+                        <span class="usuario-detalle-value" id="v_fecha_nacimiento">-</span>
+                    </div>
+
+                    <!-- Género -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Género</span>
+                        <span class="usuario-detalle-value" id="v_genero">-</span>
+                    </div>
+
+                    <!-- Estado Civil -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Estado Civil</span>
+                        <span class="usuario-detalle-value" id="v_estado_civil">-</span>
+                    </div>
+
+                    <!-- Tipo Sangre -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Tipo de Sangre</span>
+                        <span class="usuario-detalle-value" id="v_tipo_sangre">-</span>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- CONTACTO -->
+                    <!-- ========================================== -->
+                    <div class="usuario-detalle-bloque-largo">
+                        <span class="usuario-detalle-bloque-largo-label">
+                            <i class="bi bi-telephone me-1"></i> Información de Contacto
+                        </span>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Teléfono</span>
+                        <span class="usuario-detalle-value" id="v_telefono">-</span>
+                    </div>
+
+                    <!-- Correo -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Correo</span>
+                        <span class="usuario-detalle-value" id="v_correo">-</span>
+                    </div>
+
+                    <!-- Ciudad -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Ciudad</span>
+                        <span class="usuario-detalle-value" id="v_ciudad">-</span>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Dirección</span>
+                        <span class="usuario-detalle-value" id="v_direccion">-</span>
+                    </div>
+
+                    <!-- Contacto Emergencia -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Contacto Emergencia</span>
+                        <span class="usuario-detalle-value" id="v_contacto_emergencia">-</span>
+                    </div>
+
+                    <!-- Parentesco -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Parentesco</span>
+                        <span class="usuario-detalle-value" id="v_parentesco_emergencia">-</span>
+                    </div>
+
+                    <!-- Teléfono Emergencia -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Teléfono Emergencia</span>
+                        <span class="usuario-detalle-value" id="v_telefono_emergencia">-</span>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- DATOS LABORALES -->
+                    <!-- ========================================== -->
+                    <div class="usuario-detalle-bloque-largo">
+                        <span class="usuario-detalle-bloque-largo-label">
+                            <i class="bi bi-briefcase me-1"></i> Datos Laborales
+                        </span>
+                    </div>
+
+                    <!-- Cargo -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Cargo</span>
+                        <span class="usuario-detalle-value" id="v_cargo">-</span>
+                    </div>
+
+                    <!-- Fecha Ingreso -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Fecha Ingreso</span>
+                        <span class="usuario-detalle-value" id="v_fecha_ingreso">-</span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Estado</span>
+                        <span class="usuario-detalle-value" id="v_estado">-</span>
+                    </div>
+
+                    <!-- EPS -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">EPS</span>
+                        <span class="usuario-detalle-value" id="v_eps">-</span>
+                    </div>
+
+                    <!-- ARL -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">ARL</span>
+                        <span class="usuario-detalle-value" id="v_arl">-</span>
+                    </div>
+
+                    <!-- Fondo Pensión -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Fondo Pensión</span>
+                        <span class="usuario-detalle-value" id="v_fondo_pension">-</span>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- ACCESO AL SISTEMA -->
+                    <!-- ========================================== -->
+                    <div class="usuario-detalle-bloque-largo">
+                        <span class="usuario-detalle-bloque-largo-label">
+                            <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
+                        </span>
+                    </div>
+
+                    <!-- Usuario -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Usuario</span>
+                        <span class="usuario-detalle-value" id="v_username">-</span>
+                    </div>
+
+                    <!-- Rol -->
+                    <div class="usuario-detalle-item">
+                        <span class="usuario-detalle-label">Rol</span>
+                        <span class="usuario-detalle-value" id="v_rol">-</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- FOOTER (igual que horarios) -->
+            <div class="modal-footer usuario-detalle-footer">
+                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL: Eliminar Usuario (Estilo IDÉNTICO a Horarios)
+     ============================================================ -->
+<div class="modal fade" id="modalEliminarUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content usuario-modal">
+
+            <!-- HEADER (igual que horarios) -->
+            <div class="modal-header usuario-detalle-header">
+                <div>
+                    <div class="usuario-detalle-titulo">
+                        <i class="bi bi-trash text-danger"></i> <span>Eliminar Usuario</span>
+                    </div>
+                    <p class="usuario-detalle-subtitulo mb-0">¿Estás seguro de eliminar este usuario?</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- BODY (igual que horarios - estilo confirmación) -->
+            <div class="modal-body usuario-detalle-body text-center py-4">
+                <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
+                    ¿Eliminar permanentemente a <span id="eliminar_usuario_nombre" style="font-size: 1rem; font-weight: 600;">...</span>?
+                </h5>
+                <div class="alert alert-danger mt-3 mb-0" style="font-size: 0.875rem;">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    Esta acción <strong>no se puede deshacer</strong>. Se eliminarán todos los datos del usuario.
+                </div>
+            </div>
+
+            <!-- FOOTER (igual que horarios) -->
+            <div class="modal-footer usuario-detalle-footer">
+                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <form id="formEliminarUsuario" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="usuario-modal-btn btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Eliminar permanentemente
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>  

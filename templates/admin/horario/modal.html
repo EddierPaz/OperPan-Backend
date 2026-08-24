@@ -341,3 +341,46 @@
     </div>
   </div>
 </div>
+
+<!-- MODAL: Eliminar horario -->
+<div class="modal fade" id="modalEliminarHorario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content asistencia-modal">
+            
+            <!-- HEADER -->
+            <div class="modal-header asistencia-detalle-header">
+                <div>
+                    <div class="asistencia-detalle-titulo">
+                        <i class="bi bi-trash text-danger"></i> <span>Eliminar horario</span>
+                    </div>
+                    <p class="asistencia-detalle-subtitulo mb-0">¿Estás seguro de eliminar este horario?</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body asistencia-detalle-body text-center py-4">
+                <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
+                    ¿Eliminar permanentemente el horario de <span id="eliminar-empleado-nombre" style="font-size: 1rem; font-weight: 600;">...</span>?
+                </h5>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer asistencia-detalle-footer">
+                <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <form id="formEliminarHorario" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="asistencia-modal-btn btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Eliminar permanentemente
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

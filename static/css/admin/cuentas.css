@@ -1,86 +1,216 @@
 /* ==============================================
-   GESTIÓN DE CUENTAS  
-   (La barra de filtros .filtros-toolbar/.filtro-* ahora vive en
-   base.css como componente compartido — no se redefine aquí)
-============================================== */
+   MÓDULO DE USUARIOS 
+   ============================================== */
 
-.row {
-    margin-right: 0 !important;
-}
-
-/* ── Formulario ── */
-.form-section {
-    background: white;
-    border-radius: 28px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    border: 1px solid #EDF2F7;
-}
-
-/* ── Badges específicos de cuentas ── */
-.badge-inactive {
-    background: #FEF2F0;
-    color: #B91C1C;
+.badge-rol-admin {
+    background: #EDE9FE;
+    color: #5B21B6;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid #DDD6FE;
 }
 
 .badge-rol-empleado {
     background: #E0F2FE;
     color: #0369A1;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid #BAE6FD;
 }
 
-.badge-rol-gerente {
+.badge-inactive {
     background: #FEF3C7;
     color: #92400E;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid #FDE68A;
 }
 
-.badge-rol-admin {
-    background: #EDE9FE;
-    color: #5B21B6;
+.badge-retirado {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid #FCA5A5;
 }
 
-/* ── Botones de acción ── */
-.action-btn {
-    background: transparent;
-    border: none;
-    color: #5F6C7A;
-    transition: 0.2s;
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 6px;
+/* ── MODALES ── */
+.usuario-modal {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
 }
 
-.action-btn:hover {
-    color: #A40706;
-    background: #FEF2F0;
+/* HEADER */
+.usuario-detalle-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #edf2f7;
+  background: #ffffff;
 }
 
-/* ── Modal ── */
-.modal-content {
-    border-radius: 24px;
-    border: none !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+.usuario-detalle-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #A40706;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
-.modal-header {
-    border-bottom: 1px solid #e2e8f0;
+.usuario-detalle-titulo i {
+  font-size: 1.25rem;
 }
 
-.modal-footer {
-    border-top: 1px solid #e2e8f0;
+.usuario-detalle-subtitulo {
+  margin-top: 0.25rem;
+  margin-left: 1.85rem;
+  color: #64748b;
+  font-size: 0.85rem;
 }
 
-/* ── Responsive ── */
-@media (max-width: 992px) {
-    .dashboard-container {
-        padding: 1rem;
-    }
+/* BODY */
+.usuario-detalle-body {
+  padding: 1.5rem;
+  background: #ffffff;
+}
 
-    /* Ocultar Cargo y Rol en móvil */
-    .table-custom thead th:nth-child(4),
-    .table-custom thead th:nth-child(5),
-    .table-custom tbody td:nth-child(4),
-    .table-custom tbody td:nth-child(5) {
-        display: none;
-    }
+/* GRID */
+.usuario-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* ITEMS (CASILLAS) */
+.usuario-detalle-item {
+  padding: 0.9rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+}
+
+.usuario-detalle-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.usuario-detalle-value {
+  display: block;
+  color: #1e293b;
+  font-size: 0.92rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.usuario-detalle-value .form-control,
+.usuario-detalle-value .form-select {
+  font-weight: 400;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.usuario-detalle-value .form-control:focus,
+.usuario-detalle-value .form-select:focus {
+  border-color: #A40706;
+  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
+}
+
+/* BLOQUE LARGO (títulos de sección) */
+.usuario-detalle-bloque-largo {
+  grid-column: 1 / -1;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border-bottom: 2px solid #A40706;
+  border-radius: 0;
+}
+
+.usuario-detalle-bloque-largo-label {
+  display: block;
+  color: #A40706;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* FOOTER */
+.usuario-detalle-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #edf2f7;
+  background: #ffffff;
+  gap: 0.6rem;
+}
+
+/* BOTONES */
+.usuario-modal-btn {
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-corporate {
+  background: #A40706;
+  color: #ffffff;
+  border: 1.5px solid #A40706;
+}
+
+.btn-primary-corporate:hover {
+  background: #8a0605;
+  border-color: #8a0605;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: #ffffff;
+  border: 1.5px solid #dc3545;
+}
+
+.btn-danger:hover {
+  background: #b02a37;
+  border-color: #b02a37;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .usuario-detalle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usuario-detalle-bloque-largo {
+    grid-column: 1;
+  }
 }
