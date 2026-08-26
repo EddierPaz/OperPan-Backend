@@ -189,17 +189,26 @@ def admin_tarea_delete(request, pk):
 @login_required
 @admin_required
 def admin_tarea_cambiar_estado(request, pk):
+
     tarea = get_object_or_404(Task, pk=pk)
     nuevo_estado = request.GET.get('estado')
     next_url = request.GET.get('next', request.META.get('HTTP_REFERER', 'tareas:admin_tareas_list'))
 
-    if nuevo_estado in dict(EstadoTarea.choices):
+    if tarea.esta_vencida:
+        messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
+        return redirect(next_url)
+
+    if nuevo_estado == EstadoTarea.FINALIZADA and tarea.estado == EstadoTarea.EN_PROGRESO:
         if tarea.cambiar_estado(nuevo_estado, request.user):
-            messages.success(request, f"✅ Estado de '{tarea.titulo}' actualizado a '{tarea.get_estado_display()}'.")
+            messages.success(request, f"✅ Tarea '{tarea.titulo}' finalizada exitosamente.")
         else:
-            messages.error(request, "❌ No se pudo cambiar el estado de la tarea.")
+            messages.error(request, "❌ No se pudo finalizar la tarea.")
+    elif nuevo_estado == EstadoTarea.EN_PROGRESO:
+        messages.error(request, "❌ Los administradores no pueden iniciar tareas. Solo los empleados pueden hacerlo.")
+    elif nuevo_estado == EstadoTarea.PENDIENTE:
+        messages.error(request, "❌ Los administradores no pueden revertir tareas a 'Pendiente'.")
     else:
-        messages.error(request, "❌ Estado no válido.")
+        messages.error(request, "❌ Acción no permitida para administradores.")
 
     return redirect(next_url)
 
@@ -227,15 +236,8 @@ def admin_tareas_vencidas(request):
 
 @login_required
 def empleado_tareas_list(request):
-    """
-    Vista principal del empleado.
-    Muestra: KPIs personales, listado de sus tareas con filtros.
-    Template: empleado/tareas.html
-    """
     empleado = request.user
-
     kpis = Task.get_kpis_empleado(empleado)
-
     tareas = Task.objects.filter(empleado__user=request.user).select_related(
         'creador__perfil',
         'ultimo_cambio_por__perfil'
@@ -266,7 +268,7 @@ def empleado_tareas_list(request):
         'total_tareas': tareas.count(),
         'estados': EstadoTarea.choices,
         'tarea_detalle': tarea_detalle,
-        'puede_cambiar': tarea_detalle and tarea_detalle.estado != EstadoTarea.FINALIZADA,
+        'puede_cambiar': tarea_detalle and tarea_detalle.estado != EstadoTarea.FINALIZADA and not tarea_detalle.esta_vencida,
     }
     return render(request, 'empleado/tareas.html', context)
 
@@ -276,6 +278,10 @@ def empleado_tarea_detail(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
 
     if request.method == 'POST':
+        if tarea.esta_vencida:
+            messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
+            return redirect('tareas:empleado_tareas_list')
+        
         nuevo_estado = request.POST.get('estado')
         if nuevo_estado in [EstadoTarea.EN_PROGRESO, EstadoTarea.FINALIZADA]:
             if tarea.cambiar_estado(nuevo_estado, request.user):
@@ -292,7 +298,12 @@ def empleado_tarea_detail(request, pk):
 @login_required
 def empleado_tarea_marcar_progreso(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
+    
     if request.method == 'POST':
+        if tarea.esta_vencida:
+            messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede iniciar.")
+            return redirect('tareas:empleado_tareas_list')
+        
         if tarea.estado == EstadoTarea.PENDIENTE:
             if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
                 messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'En progreso'.")
@@ -300,13 +311,19 @@ def empleado_tarea_marcar_progreso(request, pk):
                 messages.error(request, "❌ No se pudo marcar la tarea como 'En progreso'.")
         else:
             messages.error(request, "❌ Esta tarea ya no está pendiente.")
+    
     return redirect('tareas:empleado_tareas_list')
 
 
 @login_required
 def empleado_tarea_marcar_finalizada(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
+    
     if request.method == 'POST':
+        if tarea.esta_vencida:
+            messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede finalizar.")
+            return redirect('tareas:empleado_tareas_list')
+        
         if tarea.estado == EstadoTarea.EN_PROGRESO:
             evidencia = request.FILES.get('evidencia')
             if evidencia:
@@ -317,4 +334,5 @@ def empleado_tarea_marcar_finalizada(request, pk):
                 messages.error(request, "❌ No se pudo marcar la tarea como 'Finalizada'.")
         else:
             messages.error(request, "❌ Primero debes marcar la tarea como 'En progreso'.")
+    
     return redirect('tareas:empleado_tareas_list')

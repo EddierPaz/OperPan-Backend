@@ -119,7 +119,13 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                             {# ============ BOTONES DE ACCIÓN (ADMIN) ============ #}
                             {# ============================================================ #}
                             <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                                {% if tarea.estado == 'PENDIENTE' %}
+                                {% if tarea.esta_vencida %}
+                                    {# TAREA VENCIDA: solo ver detalles #}
+                                    <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                                       class="btn-action btn-action-view">
+                                        <i class="bi bi-eye"></i> Ver detalles
+                                    </a>
+                                {% elif tarea.estado == 'PENDIENTE' %}
                                     {# ADMIN: NO MUESTRA BOTÓN "INICIAR" - solo el dropdown #}
                                     <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
                                 {% elif tarea.estado == 'EN_PROGRESO' %}
@@ -147,7 +153,8 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                                 <i class="bi bi-eye text-secondary"></i> Ver detalles
                                             </a>
                                         </li>
-                                        {% if tarea.estado != 'FINALIZADA' %}
+                                        {# ADMIN puede editar (si no está finalizada Y no está vencida) #}
+                                        {% if tarea.estado != 'FINALIZADA' and not tarea.esta_vencida %}
                                         <li>
                                             <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
                                                 <i class="bi bi-pencil text-primary"></i> Editar
@@ -268,7 +275,13 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                 {# ============ BOTONES DE ACCIÓN (ADMIN) ============ #}
                 {# ============================================================ #}
                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                    {% if tarea.estado == 'PENDIENTE' %}
+                    {% if tarea.esta_vencida %}
+                        {# TAREA VENCIDA: solo ver detalles #}
+                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                           class="btn-action btn-action-view">
+                            <i class="bi bi-eye"></i> Ver detalles
+                        </a>
+                    {% elif tarea.estado == 'PENDIENTE' %}
                         {# ADMIN: NO MUESTRA BOTÓN "INICIAR" - solo el dropdown #}
                         <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
                     {% elif tarea.estado == 'EN_PROGRESO' %}
@@ -297,7 +310,8 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                     <i class="bi bi-eye text-secondary"></i> Ver detalles
                                 </a>
                             </li>
-                            {% if tarea.estado != 'FINALIZADA' %}
+                            {# ADMIN puede editar (si no está finalizada Y no está vencida) #}
+                            {% if tarea.estado != 'FINALIZADA' and not tarea.esta_vencida %}
                             <li>
                                 <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
                                     <i class="bi bi-pencil text-primary"></i> Editar
