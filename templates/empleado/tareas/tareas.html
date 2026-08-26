@@ -1,0 +1,44 @@
+{% extends "empleado/base/base.html" %}
+{% load static %}
+
+{% block title %}OperPan | Mis Tareas{% endblock %}
+
+{% block section_title %}Mis tareas{% endblock %}
+{% block section_subtitle %}Panel del Empleado{% endblock %}
+
+{% block active_tareas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/empleado/tareas.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- Encabezado y Resumen -->
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas</h3>
+        <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
+    </div>
+
+    <!-- ==================== CONTEXTO COMPLETO ==================== -->
+    {% include "empleado/tareas/context.html" %}
+
+    <!-- ==================== MODAL DE DETALLE ==================== -->
+    {% include "empleado/tareas/modal.html" %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/empleado/tareas.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var detailModalEl = document.getElementById('taskDetailModal');
+        if (detailModalEl) {
+            var modal = new bootstrap.Modal(detailModalEl);
+            modal.show();
+        }
+    });
+</script>
+{% endblock %}

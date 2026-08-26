@@ -22,12 +22,7 @@ from apps.asistencia.models import Horario
 @login_required
 @admin_required
 def admin_tareas_list(request):
-    """
-    Vista principal del administrador.
-    Muestra: KPIs, formulario (crear/editar), tareas de hoy agrupadas por estado,
-    y listado completo con filtros y búsqueda.
-    Template: admin/tareas/tareas.html
-    """
+
     kpis = Task.get_kpis_administrador()
 
     tareas = Task.objects.select_related(
@@ -270,8 +265,8 @@ def empleado_tareas_list(request):
         'tarea_detalle': tarea_detalle,
         'puede_cambiar': tarea_detalle and tarea_detalle.estado != EstadoTarea.FINALIZADA and not tarea_detalle.esta_vencida,
     }
-    return render(request, 'empleado/tareas.html', context)
-
+    return render(request, 'empleado/tareas/tareas.html', context)
+    
 
 @login_required
 def empleado_tarea_detail(request, pk):

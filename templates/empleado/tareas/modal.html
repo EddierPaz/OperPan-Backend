@@ -1,0 +1,127 @@
+{% if tarea_detalle %}
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title" id="taskDetailModalLabel">Detalle de tarea</h5>
+                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="mb-4">
+                    <h4 class="mb-2">{{ tarea_detalle.titulo }}</h4>
+
+                    <!-- Prioridad + Estado -->
+                    <div class="mb-2">
+                        {% if tarea_detalle.prioridad == 'ALTA' %}
+                            <span class="badge bg-danger">Alta prioridad</span>
+                        {% elif tarea_detalle.prioridad == 'MEDIA' %}
+                            <span class="badge bg-warning text-dark">Media prioridad</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Baja prioridad</span>
+                        {% endif %}
+
+                        {% if tarea_detalle.esta_vencida %}
+                            <span class="badge bg-danger ms-1">Vencida</span>
+                        {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                            <span class="badge bg-warning text-dark ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                        {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                            <span class="badge bg-info ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                        {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                            <span class="badge bg-success ms-1">{{ tarea_detalle.get_estado_display }}</span>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-muted">{{ tarea_detalle.descripcion }}</p>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <small class="text-muted"><i class="bi bi-calendar-plus"></i> Asignación: </small>
+                            <span>{{ tarea_detalle.fecha_asignacion|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted"><i class="bi bi-calendar-event"></i> Fecha límite: </small>
+                            <span>{{ tarea_detalle.fecha_limite|date:"Y-m-d" }}</span>
+                            {% if tarea_detalle.hora_limite %}
+                                <span>{{ tarea_detalle.hora_limite|time:"H:i" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        <small class="text-muted"><i class="bi bi-info-circle"></i> Estado actual: </small>
+                        {% if tarea_detalle.esta_vencida %}
+                            <span class="badge bg-danger">Vencida</span>
+                        {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                            <span class="badge bg-warning text-dark">{{ tarea_detalle.get_estado_display }}</span>
+                        {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                            <span class="badge bg-info">{{ tarea_detalle.get_estado_display }}</span>
+                        {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                            <span class="badge bg-success">{{ tarea_detalle.get_estado_display }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if tarea_detalle.ultimo_cambio_por %}
+                    <div class="mt-2">
+                        <small class="text-muted"><i class="bi bi-person"></i> Último cambio por: </small>
+                        <span>{{ tarea_detalle.ultimo_cambio_por.perfil.nombre_completo|default:tarea_detalle.ultimo_cambio_por.username }}</span>
+                        <span class="text-muted">({{ tarea_detalle.fecha_actualizacion|date:"d/m/Y H:i" }})</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Cambiar Estado / Evidencia -->
+                {% if puede_cambiar and not tarea_detalle.esta_vencida %}
+                    <hr />
+                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
+
+                    {% if tarea_detalle.estado == 'PENDIENTE' %}
+                        <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea_detalle.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary-corporate text-white">
+                                <i class="bi bi-play-fill"></i> Marcar en progreso
+                            </button>
+                        </form>
+
+                    {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                        <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea_detalle.pk %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Evidencia (opcional)</label>
+                                <input type="file" name="evidencia" class="form-control" accept="image/*,.pdf">
+                                <small class="text-muted">Puedes adjuntar una foto o documento que respalde la finalización.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary-corporate text-white">
+                                <i class="bi bi-check2-circle"></i> Finalizar tarea
+                            </button>
+                        </form>
+                    {% endif %}
+
+                {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                    <hr />
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle-fill"></i> Esta tarea ya está finalizada.
+                        {% if tarea_detalle.evidencia %}
+                            <br>
+                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline mt-2 d-inline-block">
+                                <i class="bi bi-paperclip"></i> Ver evidencia adjunta
+                            </a>
+                        {% endif %}
+                    </div>
+
+                {% elif tarea_detalle.esta_vencida %}
+                    <hr />
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Esta tarea está vencida. No se puede modificar.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="modal-footer border-0">
+                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate">
+                    Cerrar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
