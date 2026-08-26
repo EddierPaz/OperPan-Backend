@@ -1,11 +1,10 @@
 <!-- ============================================================
-     MODAL: Crear Usuario (Estilo IDÉNTICO a Horarios)
+     MODAL: Crear Usuario 
      ============================================================ -->
 <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content usuario-modal">
 
-            <!-- HEADER (igual que horarios) -->
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
@@ -16,7 +15,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <!-- BODY (con grid de casillas estilo horarios) -->
             <div class="modal-body usuario-detalle-body">
                 <form method="POST" id="formCrearUsuario" action="{% url 'user_list' %}">
                     {% csrf_token %}
@@ -307,7 +305,6 @@
                 </form>
             </div>
 
-            <!-- FOOTER (igual que horarios) -->
             <div class="modal-footer usuario-detalle-footer">
                 <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar
@@ -324,13 +321,12 @@
     </div>
 </div>
 <!-- ============================================================
-     MODAL: Editar Usuario (Estilo IDÉNTICO a Horarios)
+     MODAL: Editar Usuario 
      ============================================================ -->
 <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content usuario-modal">
 
-            <!-- HEADER (igual que horarios) -->
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
@@ -341,7 +337,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <!-- BODY (con grid de casillas estilo horarios) -->
             <div class="modal-body usuario-detalle-body">
                 <form method="POST" id="formEditarUsuario" action="">
                     {% csrf_token %}
@@ -647,12 +642,12 @@
                 </form>
             </div>
 
-            <!-- FOOTER (igual que horarios) -->
+            <!-- FOOTER (Con el atributo form vinculado al ID del formulario) -->
             <div class="modal-footer usuario-detalle-footer">
                 <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="submit" class="usuario-modal-btn btn btn-primary-corporate">
+                <button type="submit" form="formEditarUsuario" class="usuario-modal-btn btn btn-primary-corporate">
                     <i class="bi bi-save me-1"></i> Guardar Cambios
                 </button>
             </div>
@@ -662,13 +657,12 @@
 </div>
 
 <!-- ============================================================
-     MODAL: Ver Usuario (Estilo IDÉNTICO a Horarios)
+     MODAL: Ver Usuario 
      ============================================================ -->
 <div class="modal fade" id="modalVerUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content usuario-modal">
-
-            <!-- HEADER (igual que horarios) -->
+ 
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
@@ -679,7 +673,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <!-- BODY (con grid de casillas estilo horarios) -->
             <div class="modal-body usuario-detalle-body">
                 <div class="usuario-detalle-grid">
 
@@ -854,7 +847,6 @@
                 </div>
             </div>
 
-            <!-- FOOTER (igual que horarios) -->
             <div class="modal-footer usuario-detalle-footer">
                 <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cerrar
@@ -866,13 +858,12 @@
 </div>
 
 <!-- ============================================================
-     MODAL: Eliminar Usuario (Estilo IDÉNTICO a Horarios)
+     MODAL: Eliminar Usuario 
      ============================================================ -->
 <div class="modal fade" id="modalEliminarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content usuario-modal">
 
-            <!-- HEADER (igual que horarios) -->
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
@@ -883,7 +874,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <!-- BODY (igual que horarios - estilo confirmación) -->
             <div class="modal-body usuario-detalle-body text-center py-4">
                 <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
                     <i class="bi bi-exclamation-triangle-fill"></i>
@@ -897,7 +887,6 @@
                 </div>
             </div>
 
-            <!-- FOOTER (igual que horarios) -->
             <div class="modal-footer usuario-detalle-footer">
                 <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                     Cancelar

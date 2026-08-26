@@ -162,13 +162,13 @@
                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto gap-2">
                     
                     {% if tarea.esta_vencida %}
-                        {# TAREA VENCIDA: solo ver detalles #}
+                        {# 🔴 TAREA VENCIDA: solo ver detalles - NO iniciar ni finalizar #}
                         <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn btn-sm btn-primary-corporate rounded-pill px-3 w-100 text-center">
                             <i class="bi bi-eye me-1"></i> Ver detalle
                         </a>
                         
                     {% elif tarea.estado == 'PENDIENTE' %}
-                        {# EMPLEADO: PUEDE INICIAR #}
+                        {# 🟡 EMPLEADO: PUEDE INICIAR #}
                         <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="m-0">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-corporate-sec rounded-pill px-3">
@@ -181,7 +181,7 @@
                         </a>
 
                     {% elif tarea.estado == 'EN_PROGRESO' %}
-                        {# EMPLEADO: PUEDE FINALIZAR #}
+                        {# 🟢 EMPLEADO: PUEDE FINALIZAR #}
                         <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="m-0">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-corporate-thi rounded-pill px-3">

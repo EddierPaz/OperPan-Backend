@@ -84,7 +84,12 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                 <div class="row g-4">
                     {% for tarea in lista_tareas %}
                     <div class="col-12 col-md-6 col-lg-4 d-flex">
-                        <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative">
+                        <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative"
+                             data-titulo="{{ tarea.titulo }}"
+                             data-empleado="{{ tarea.empleado.nombre_completo }}"
+                             data-estado="{{ tarea.estado }}"
+                             data-prioridad="{{ tarea.prioridad }}"
+                             data-vencida="{{ tarea.esta_vencida|yesno:'true,false' }}">
                             <div>
                                 <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                                     <div class="d-flex align-items-center gap-2 text-truncate">
@@ -209,10 +214,11 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
     </div>
 
     <select id="filtroEstadoTarea" class="filtro-select">
-        <option value="">Todos los estados</option>
+        <option value="" selected >Todos los estados</option>
         <option value="PENDIENTE">Pendientes</option>
-        <option value="EN_PROGRESO">En progreso</option>
+        <option value="EN_PROGRESO" >En progreso</option>
         <option value="FINALIZADA">Finalizadas</option>
+        <option value="VENCIDA">Vencidas</option>
     </select>
 
     <select id="filtroPrioridadTarea" class="filtro-select">
@@ -236,7 +242,8 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                  data-titulo="{{ tarea.titulo }}"
                  data-empleado="{{ tarea.empleado.nombre_completo }}"
                  data-estado="{{ tarea.estado }}"
-                 data-prioridad="{{ tarea.prioridad }}">
+                 data-prioridad="{{ tarea.prioridad }}"
+                 data-vencida="{{ tarea.esta_vencida|yesno:'true,false' }}">
 
                 <div>
                     <div class="d-flex justify-content-between align-items-start gap-2 mb-2">

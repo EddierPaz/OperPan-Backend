@@ -30,9 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnLimpiar = document.getElementById('limpiarFiltrosTareas');
 
     function aplicarFiltrosTareas() {
-        // Acotado a #tasksContainer: el listado completo, no las tarjetas
-        // del acordeón "tareas de hoy" (que no deben verse afectadas por
-        // este filtro).
+
         const cards = document.querySelectorAll('#tasksContainer .task-card');
         const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
         const estadoSel = selectEstado ? selectEstado.value.toUpperCase() : '';
@@ -43,12 +41,31 @@ document.addEventListener('DOMContentLoaded', function () {
             const empleado = (card.dataset.empleado || '').toLowerCase();
             const estadoCard = (card.dataset.estado || '').toUpperCase();
             const prioridadCard = (card.dataset.prioridad || '').toUpperCase();
+            const esVencida = card.dataset.vencida === 'true';
 
-            // Obtenemos la columna o contenedor de la tarjeta para ocultar/mostrar
             const contenedor = card.parentElement;
 
+            let coincideEstado = true;
+
+            // Lógica de filtrado por estado
+            if (estadoSel === 'VENCIDA') {
+                // Si el filtro es "Vencidas", solo mostrar tareas vencidas
+                coincideEstado = esVencida;
+            } else if (estadoSel) {
+                // Si el filtro es PENDIENTE, EN_PROGRESO o FINALIZADA
+                // NO mostrar tareas vencidas a menos que coincidan con el estado
+                if (esVencida) {
+                    // Si está vencida y el filtro no es "VENCIDA", no coincide
+                    coincideEstado = false;
+                } else {
+                    coincideEstado = estadoCard === estadoSel;
+                }
+            } else {
+                // Si no hay filtro de estado, mostrar todas (incluyendo vencidas)
+                coincideEstado = true;
+            }
+
             const coincideTexto = !texto || titulo.includes(texto) || empleado.includes(texto);
-            const coincideEstado = !estadoSel || estadoCard === estadoSel;
             const coincidePrioridad = !prioridadSel || prioridadCard === prioridadSel;
 
             if (coincideTexto && coincideEstado && coincidePrioridad) {

@@ -78,10 +78,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = tr.dataset.id;
             const d = tr.dataset;
             
-            // Configurar acción del formulario
+            // ✅ Configurar la acción del formulario correctamente
             const form = document.getElementById('formEditarUsuario');
             if (form) {
-                form.action = '/usuarios/' + id + '/update/';
+                form.action = '/admi/users/' + id + '/update/';
             }
             
             // ==========================================

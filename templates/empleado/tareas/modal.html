@@ -69,33 +69,18 @@
                     {% endif %}
                 </div>
 
-                <!-- Cambiar Estado / Evidencia -->
-                {% if puede_cambiar and not tarea_detalle.esta_vencida %}
+                {# ============================================================ #}
+                {# ============ ACCIONES EN MODAL (EMPLEADO) ============ #}
+                {# ============================================================ #}
+                
+                {# 🔴 Si está VENCIDA: No se puede modificar #}
+                {% if tarea_detalle.esta_vencida %}
                     <hr />
-                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Esta tarea está vencida. No se puede modificar.
+                    </div>
 
-                    {% if tarea_detalle.estado == 'PENDIENTE' %}
-                        <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea_detalle.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary-corporate text-white">
-                                <i class="bi bi-play-fill"></i> Marcar en progreso
-                            </button>
-                        </form>
-
-                    {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                        <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea_detalle.pk %}" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label class="form-label">Evidencia (opcional)</label>
-                                <input type="file" name="evidencia" class="form-control" accept="image/*,.pdf">
-                                <small class="text-muted">Puedes adjuntar una foto o documento que respalde la finalización.</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary-corporate text-white">
-                                <i class="bi bi-check2-circle"></i> Finalizar tarea
-                            </button>
-                        </form>
-                    {% endif %}
-
+                {# ✅ Si está FINALIZADA: Mostrar evidencia #}
                 {% elif tarea_detalle.estado == 'FINALIZADA' %}
                     <hr />
                     <div class="alert alert-success">
@@ -108,12 +93,35 @@
                         {% endif %}
                     </div>
 
-                {% elif tarea_detalle.esta_vencida %}
+                {# 🟡 Si está PENDIENTE: Mostrar botón "Iniciar" #}
+                {% elif tarea_detalle.estado == 'PENDIENTE' and puede_cambiar %}
                     <hr />
-                    <div class="alert alert-danger">
-                        <i class="bi bi-exclamation-triangle-fill"></i> Esta tarea está vencida. No se puede modificar.
-                    </div>
+                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
+                    <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea_detalle.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary-corporate text-white">
+                            <i class="bi bi-play-fill"></i> Marcar en progreso
+                        </button>
+                    </form>
+
+                {# 🟢 Si está EN_PROGRESO: Mostrar botón "Finalizar" con evidencia #}
+                {% elif tarea_detalle.estado == 'EN_PROGRESO' and puede_cambiar %}
+                    <hr />
+                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
+                    <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea_detalle.pk %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Evidencia (opcional)</label>
+                            <input type="file" name="evidencia" class="form-control" accept="image/*,.pdf">
+                            <small class="text-muted">Puedes adjuntar una foto o documento que respalde la finalización.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary-corporate text-white">
+                            <i class="bi bi-check2-circle"></i> Finalizar tarea
+                        </button>
+                    </form>
                 {% endif %}
+                {# ============ FIN ACCIONES EN MODAL ============ #}
+                
             </div>
 
             <div class="modal-footer border-0">
