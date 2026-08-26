@@ -114,24 +114,29 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                     <span><i class="bi bi-calendar me-1"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
                                 </div>
                             </div>
+
+                            {# ============================================================ #}
+                            {# ============ BOTONES DE ACCIÓN (ADMIN) ============ #}
+                            {# ============================================================ #}
                             <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
                                 {% if tarea.estado == 'PENDIENTE' %}
-                                    <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
-                                    class="btn-action btn-corporate-sec">
-                                        <i class="bi bi-play-circle"></i> Iniciar
-                                    </a>
+                                    {# ADMIN: NO MUESTRA BOTÓN "INICIAR" - solo el dropdown #}
+                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
                                 {% elif tarea.estado == 'EN_PROGRESO' %}
+                                    {# ADMIN: SOLO PUEDE FINALIZAR #}
                                     <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
-                                    class="btn-action btn-corporate-thi">
+                                       class="btn-action btn-corporate-thi">
                                         <i class="bi bi-check-circle"></i> Finalizar
                                     </a>
                                 {% else %}
+                                    {# FINALIZADA: solo ver detalles #}
                                     <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
-                                    class="btn-action btn-action-view">
+                                       class="btn-action btn-action-view">
                                         <i class="bi bi-eye"></i> Ver detalles
                                     </a>
                                 {% endif %}
 
+                                {# ===== DROPDOWN OPCIONES (ADMIN) ===== #}
                                 <div class="dropdown">
                                     <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
                                         <i class="bi bi-three-dots-vertical"></i>
@@ -160,6 +165,8 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                     </ul>
                                 </div>
                             </div>
+                            {# ============ FIN BOTONES DE ACCIÓN ============ #}
+
                         </div>
                     </div>
                     {% empty %}
@@ -187,7 +194,7 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
     </button>
 </div>
 
-<!-- Filtros (client-side, sobre #tasksContainer vía tareas.js) -->
+<!-- Filtros -->
 <div class="filtros-toolbar mb-4">
     <div class="filtro-buscar">
         <i class="bi bi-search"></i>
@@ -257,24 +264,28 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                     </div>
                 </div>
 
+                {# ============================================================ #}
+                {# ============ BOTONES DE ACCIÓN (ADMIN) ============ #}
+                {# ============================================================ #}
                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
                     {% if tarea.estado == 'PENDIENTE' %}
-                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={{ request.get_full_path|urlencode }}"
-                           class="btn-action btn-corporate-sec">
-                            <i class="bi bi-play-circle"></i> Iniciar
-                        </a>
+                        {# ADMIN: NO MUESTRA BOTÓN "INICIAR" - solo el dropdown #}
+                        <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
                     {% elif tarea.estado == 'EN_PROGRESO' %}
+                        {# ADMIN: SOLO PUEDE FINALIZAR #}
                         <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
                            class="btn-action btn-corporate-thi">
                             <i class="bi bi-check-circle"></i> Finalizar
                         </a>
                     {% else %}
+                        {# FINALIZADA: solo ver detalles #}
                         <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
                            class="btn-action btn-action-view">
                             <i class="bi bi-eye"></i> Ver detalles
                         </a>
                     {% endif %}
 
+                    {# ===== DROPDOWN OPCIONES (ADMIN) ===== #}
                     <div class="dropdown">
                         <button class="btn-action-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
                             <i class="bi bi-three-dots-vertical"></i>
@@ -304,6 +315,7 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                         </ul>
                     </div>
                 </div>
+                {# ============ FIN BOTONES DE ACCIÓN ============ #}
 
             </div>
         </div>
@@ -316,26 +328,4 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
             </div>
         </div>
     {% endif %}
-</div>
-
-{# ==================== MODAL ELIMINAR ==================== #}
-<div class="modal fade" id="confirmModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-bold">Confirmar acción</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4" id="modalBodyText">
-                ¿Eliminar permanentemente la tarea? Esta acción se registrará en auditoría.
-            </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
-                <form method="POST" id="deleteForm" action="">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-action btn-action-delete">Confirmar</button>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
