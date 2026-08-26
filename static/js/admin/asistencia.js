@@ -161,17 +161,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     return res.json();
                 })
                 .then(function (data) {
-                    document.getElementById("ver-empleado").value = data.empleado;
-                    document.getElementById("ver-cargo").value = data.cargo;
-                    document.getElementById("ver-turno").value = data.turno;
-                    document.getElementById("ver-entrada").value = data.hora_entrada;
-                    document.getElementById("ver-salida").value = data.hora_salida;
-                    document.getElementById("ver-descanso").value = data.descanso || "Sin asignar";
-                    document.getElementById("ver-estado").value = data.estado ? "Activo" : "Inactivo";
+                    document.getElementById("ver-empleado").textContent = data.empleado;
+                    document.getElementById("ver-cargo").textContent = data.cargo;
+                    document.getElementById("ver-turno").textContent = data.turno;
+                    document.getElementById("ver-entrada").textContent = data.hora_entrada;
+                    document.getElementById("ver-salida").textContent = data.hora_salida;
+                    document.getElementById("ver-descanso").textContent = data.descanso || "Sin asignar";
+                    document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
 
                     const ciclo = document.getElementById("ver-ciclo");
                     if (ciclo) {
-                        ciclo.value = (data.ciclo_inicio && data.ciclo_fin)
+                        ciclo.textContent = (data.ciclo_inicio && data.ciclo_fin)
                             ? data.ciclo_inicio + " — " + data.ciclo_fin
                             : "Sin definir";
                     }

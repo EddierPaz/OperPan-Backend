@@ -48,7 +48,7 @@
 
 .filtro-buscar input:focus {
   outline: none;
-  border-color: #A40706;
+  border-color: #a40706;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
 }
@@ -67,7 +67,7 @@
 
 .filtro-select:focus {
   outline: none;
-  border-color: #A40706;
+  border-color: #a40706;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
 }
@@ -164,12 +164,12 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  transition: .2s;
+  transition: 0.2s;
 }
 
 .dia-btn:hover {
-  border-color: #A40706;
-  color: #A40706;
+  border-color: #a40706;
+  color: #a40706;
   transform: translateY(-2px);
 }
 
@@ -186,12 +186,12 @@
 
 .dia-btn--ultimo {
   border-style: dashed;
-  border-color: #A40706;
-  color: #A40706;
+  border-color: #a40706;
+  color: #a40706;
 }
 
 .dia-btn--ultimo:hover {
-  background: #A40706;
+  background: #a40706;
   color: white;
 }
 
@@ -203,9 +203,9 @@
 /* ── 4. ACORDEÓN DE TURNOS ── */
 .accordion-item {
   border: none;
-  border-left: 5px solid #A40706;
+  border-left: 5px solid #a40706;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-bottom: 18px;
 }
 
@@ -218,7 +218,7 @@
 
 .accordion-button:not(.collapsed) {
   background: #fff;
-  color: #A40706;
+  color: #a40706;
   box-shadow: none;
 }
 
@@ -235,11 +235,11 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  background: #A40706;
+  background: #a40706;
   color: #fff;
-  padding: .35rem .9rem;
+  padding: 0.35rem 0.9rem;
   border-radius: 999px;
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -267,7 +267,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: #A40706;
+  color: #a40706;
   font-size: 1.15rem;
   font-weight: 700;
 }
@@ -318,20 +318,48 @@
   word-break: break-word;
 }
 
+/* ESTILOS DE INPUTS Y SELECTS IGUALES A CUENTAS */
+.asistencia-detalle-value .form-control,
+.asistencia-detalle-value .form-select,
+.asistencia-detalle-value input[type="time"],
+.asistencia-detalle-value input[type="text"],
+.asistencia-detalle-value input[type="date"] {
+  font-family: inherit;
+  font-weight: 400;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.asistencia-detalle-value .form-control:focus,
+.asistencia-detalle-value .form-select:focus,
+.asistencia-detalle-value input[type="time"]:focus,
+.asistencia-detalle-value input[type="text"]:focus,
+.asistencia-detalle-value input[type="date"]:focus {
+  border-color: #a40706;
+  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
+  outline: none;
+}
+
+/* BLOQUE LARGO (títulos de sección adaptados al estilo de cuentas) */
 .asistencia-detalle-bloque-largo {
   grid-column: 1 / -1;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   background: #ffffff;
-  border: 1px solid #edf2f7;
-  border-radius: 12px;
+  border: none;
+  border-bottom: 2px solid #a40706;
+  border-radius: 0;
 }
 
 .asistencia-detalle-bloque-largo-label {
   display: block;
-  margin-bottom: 0.4rem;
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 600;
+  margin-bottom: 0;
+  color: #a40706;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 .asistencia-detalle-bloque-largo-texto {
@@ -400,5 +428,13 @@
   .estado-asistencia-group {
     flex-direction: column;
     width: 100%;
+  }
+
+  .asistencia-detalle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .asistencia-detalle-bloque-largo {
+    grid-column: 1;
   }
 }
