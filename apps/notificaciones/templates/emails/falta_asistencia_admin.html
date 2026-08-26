@@ -1,0 +1,7 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color:#2B2B2B; font-size:22px; margin:0 0 10px;">⚠️ Registro de asistencia pendiente</h2>
+<p style="font-size:16px; line-height:1.6;">El empleado <strong>{{ empleado_nombre }}</strong> no tiene registro de asistencia del día <strong>{{ fecha }}</strong>.</p>
+<p style="color:#6B7280; font-size:14px; margin-top:20px;">Por favor, registra su asistencia en el sistema.</p>
+{% endblock %}

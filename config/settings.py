@@ -1,4 +1,8 @@
 from pathlib import Path
+import environ
+import os
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,6 +26,9 @@ INSTALLED_APPS = [
     'apps.memorandos',
     'apps.asistencia',
     'apps.tareas',
+    
+    # Aplicación para consumo de API de Gmail
+    'apps.notificaciones',
 ]
 
 # ── Middleware ────────────────────────────────
@@ -88,6 +95,32 @@ DATABASES = {
 #         },
 #     }
 # }
+
+
+
+
+
+
+# ---
+
+
+# Este pedazo de codigo corresponde a la nueva implementación de variables de entorno para GMAIL API
+# 26/08/2026 - Santiago M.
+
+env = environ.Env()
+# Leer el archivo .env (debe estar en la raíz del proyecto)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Reemplazar las variables sensibles
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=True)
+# ... etc.
+
+
+# ---
+
+
+
 
 
 

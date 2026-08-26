@@ -14,6 +14,9 @@ from apps.usuarios.decorators import admin_required
 from apps.usuarios.models import PerfilEmpleado
 from apps.asistencia.models import Horario
 
+# Gmail API
+from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
+
 
 # ==========================================
 # ============ VISTAS DEL ADMINISTRADOR ============
@@ -144,10 +147,29 @@ def admin_tarea_create(request):
             tarea.creador = request.user
             tarea.ultimo_cambio_por = request.user
             tarea.save()
+
+            # =====================================================
+            # NOTIFICACIÓN AL EMPLEADO
+            # =====================================================
+            contexto = {
+                'empleado_nombre': tarea.empleado.nombre_completo(),
+                'titulo': tarea.titulo,
+                'descripcion': tarea.descripcion,
+                'fecha_limite': tarea.fecha_limite.strftime('%d/%m/%Y'),
+                'prioridad': tarea.get_prioridad_display(),
+            }
+            enviar_notificacion(
+                destinatario=tarea.empleado.correo,
+                asunto=f"📋 Nueva tarea asignada: {tarea.titulo}",
+                template_name='emails/tarea_asignada.html',
+                contexto=contexto
+            )
+
             messages.success(
                 request,
                 f"✅ Tarea '{tarea.titulo}' creada exitosamente para {tarea.empleado.nombre_completo()}."
             )
+            return redirect('tareas:admin_tareas_list')
         else:
             messages.error(request, "❌ Por favor corrige los errores del formulario.")
     return redirect('tareas:admin_tareas_list')
@@ -163,7 +185,26 @@ def admin_tarea_edit(request, pk):
             tarea_editada = form.save(commit=False)
             tarea_editada.ultimo_cambio_por = request.user
             tarea_editada.save()
+
+            # =====================================================
+            # NOTIFICACIÓN AL EMPLEADO
+            # =====================================================
+            contexto = {
+                'empleado_nombre': tarea_editada.empleado.nombre_completo(),
+                'titulo': tarea_editada.titulo,
+                'descripcion': tarea_editada.descripcion,
+                'fecha_limite': tarea_editada.fecha_limite.strftime('%d/%m/%Y'),
+                'prioridad': tarea_editada.get_prioridad_display(),
+            }
+            enviar_notificacion(
+                destinatario=tarea_editada.empleado.correo,
+                asunto=f"✏️ Tarea actualizada: {tarea_editada.titulo}",
+                template_name='emails/tarea_editada.html',
+                contexto=contexto
+            )
+
             messages.success(request, f"✅ Tarea '{tarea.titulo}' actualizada exitosamente.")
+            return redirect('tareas:admin_tareas_list')
         else:
             messages.error(request, "❌ Por favor corrige los errores del formulario.")
     return redirect('tareas:admin_tareas_list')
@@ -175,16 +216,31 @@ def admin_tarea_delete(request, pk):
     tarea = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         titulo = tarea.titulo
-        empleado = tarea.empleado.nombre_completo()
+        empleado_nombre = tarea.empleado.nombre_completo()
+
+        # =====================================================
+        # NOTIFICACIÓN AL EMPLEADO (ANTES DE ELIMINAR)
+        # =====================================================
+        contexto = {
+            'empleado_nombre': tarea.empleado.nombre_completo(),
+            'titulo': tarea.titulo,
+        }
+        enviar_notificacion(
+            destinatario=tarea.empleado.correo,
+            asunto=f"🗑️ Tarea eliminada: {tarea.titulo}",
+            template_name='emails/tarea_eliminada.html',
+            contexto=contexto
+        )
+
         tarea.delete()
-        messages.success(request, f"🗑️ Tarea '{titulo}' de {empleado} eliminada exitosamente.")
+        messages.success(request, f"🗑️ Tarea '{titulo}' de {empleado_nombre} eliminada exitosamente.")
     return redirect('tareas:admin_tareas_list')
+
 
 
 @login_required
 @admin_required
 def admin_tarea_cambiar_estado(request, pk):
-
     tarea = get_object_or_404(Task, pk=pk)
     nuevo_estado = request.GET.get('estado')
     next_url = request.GET.get('next', request.META.get('HTTP_REFERER', 'tareas:admin_tareas_list'))
@@ -195,6 +251,20 @@ def admin_tarea_cambiar_estado(request, pk):
 
     if nuevo_estado == EstadoTarea.FINALIZADA and tarea.estado == EstadoTarea.EN_PROGRESO:
         if tarea.cambiar_estado(nuevo_estado, request.user):
+            # =====================================================
+            # NOTIFICACIÓN AL EMPLEADO (ADMIN FINALIZÓ)
+            # =====================================================
+            contexto = {
+                'empleado_nombre': tarea.empleado.nombre_completo(),
+                'titulo': tarea.titulo,
+                'estado_nuevo': tarea.get_estado_display(),
+            }
+            enviar_notificacion(
+                destinatario=tarea.empleado.correo,
+                asunto=f"🔄 Estado de tarea actualizado",
+                template_name='emails/tarea_estado_cambiado.html',
+                contexto=contexto
+            )
             messages.success(request, f"✅ Tarea '{tarea.titulo}' finalizada exitosamente.")
         else:
             messages.error(request, "❌ No se pudo finalizar la tarea.")
@@ -293,41 +363,61 @@ def empleado_tarea_detail(request, pk):
 @login_required
 def empleado_tarea_marcar_progreso(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
-    
     if request.method == 'POST':
-        if tarea.esta_vencida:
-            messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede iniciar.")
-            return redirect('tareas:empleado_tareas_list')
-        
         if tarea.estado == EstadoTarea.PENDIENTE:
             if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
+                # =====================================================
+                # NOTIFICACIÓN A ADMINISTRADORES
+                # =====================================================
+                admins = obtener_correo_admin()
+                for admin_email in admins:
+                    contexto_admin = {
+                        'empleado_nombre': tarea.empleado.nombre_completo(),
+                        'titulo': tarea.titulo,
+                        'estado_nuevo': tarea.get_estado_display(),
+                    }
+                    enviar_notificacion(
+                        destinatario=admin_email,
+                        asunto=f"🔄 Tarea en progreso por {tarea.empleado.nombre_completo()}",
+                        template_name='emails/tarea_estado_cambiado_admin.html',
+                        contexto=contexto_admin
+                    )
                 messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'En progreso'.")
             else:
                 messages.error(request, "❌ No se pudo marcar la tarea como 'En progreso'.")
         else:
             messages.error(request, "❌ Esta tarea ya no está pendiente.")
-    
     return redirect('tareas:empleado_tareas_list')
 
 
 @login_required
 def empleado_tarea_marcar_finalizada(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
-    
     if request.method == 'POST':
-        if tarea.esta_vencida:
-            messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede finalizar.")
-            return redirect('tareas:empleado_tareas_list')
-        
         if tarea.estado == EstadoTarea.EN_PROGRESO:
             evidencia = request.FILES.get('evidencia')
             if evidencia:
                 tarea.evidencia = evidencia
             if tarea.cambiar_estado(EstadoTarea.FINALIZADA, request.user):
+                # =====================================================
+                # NOTIFICACIÓN A ADMINISTRADORES
+                # =====================================================
+                admins = obtener_correo_admin()
+                for admin_email in admins:
+                    contexto_admin = {
+                        'empleado_nombre': tarea.empleado.nombre_completo(),
+                        'titulo': tarea.titulo,
+                        'estado_nuevo': tarea.get_estado_display(),
+                    }
+                    enviar_notificacion(
+                        destinatario=admin_email,
+                        asunto=f"✅ Tarea finalizada por {tarea.empleado.nombre_completo()}",
+                        template_name='emails/tarea_estado_cambiado_admin.html',
+                        contexto=contexto_admin
+                    )
                 messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'Finalizada'.")
             else:
                 messages.error(request, "❌ No se pudo marcar la tarea como 'Finalizada'.")
         else:
             messages.error(request, "❌ Primero debes marcar la tarea como 'En progreso'.")
-    
     return redirect('tareas:empleado_tareas_list')

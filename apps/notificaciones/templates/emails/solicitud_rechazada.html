@@ -1,0 +1,9 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color:#2B2B2B; font-size:22px; margin:0 0 10px;">❌ Solicitud rechazada</h2>
+<p style="font-size:16px; line-height:1.6;">Hola <strong>{{ empleado_nombre }}</strong>,</p>
+<p style="font-size:16px; line-height:1.6;">Tu solicitud de <strong>{{ tipo_solicitud }}</strong> ha sido <span style="color:#DC3545; font-weight:bold;">RECHAZADA</span>.</p>
+<p style="font-size:16px; line-height:1.6; background-color:#F8D7DA; padding:10px; border-radius:5px;"><strong>Motivo:</strong> {{ motivo_rechazo }}</p>
+<p style="color:#6B7280; font-size:14px; margin-top:20px;">Si tienes dudas, contacta al administrador.</p>
+{% endblock %}

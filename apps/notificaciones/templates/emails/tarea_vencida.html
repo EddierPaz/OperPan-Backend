@@ -1,0 +1,12 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color:#2B2B2B; font-size:22px; margin:0 0 10px;">⏰ Tarea vencida</h2>
+<p style="font-size:16px; line-height:1.6;">Hola <strong>{{ empleado_nombre }}</strong>,</p>
+<p style="font-size:16px; line-height:1.6;">La tarea <strong>{{ titulo }}</strong> ha vencido.</p>
+<table style="width:100%; border-collapse:collapse; margin:20px 0; background-color:#F5F5F5; border-radius:8px;">
+    <tr><td style="padding:10px 15px; font-weight:bold; color:#A40706; width:30%;">Descripción:</td><td style="padding:10px 15px;">{{ descripcion }}</td></tr>
+    <tr><td style="padding:10px 15px; font-weight:bold; color:#A40706;">Fecha límite:</td><td style="padding:10px 15px;">{{ fecha_limite }}</td></tr>
+</table>
+<p style="color:#6B7280; font-size:14px; margin-top:20px;">Por favor, actualiza el estado lo antes posible.</p>
+{% endblock %}

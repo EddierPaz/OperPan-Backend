@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OperPan</title>
+    <style>
+        body { margin:0; padding:0; background-color:#F5F5F5; font-family:Arial, sans-serif; }
+        .container { max-width:600px; margin:20px auto; background-color:#FFFFFF; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+        .header { background-color:#A40706; padding:20px 30px; text-align:center; border-radius:10px 10px 0 0; }
+        .header img { max-width:180px; height:auto; }
+        .content { padding:30px 30px 20px; color:#2B2B2B; }
+        .footer { background-color:#F5F5F5; padding:15px 30px; text-align:center; color:#6B7280; font-size:12px; border-radius:0 0 10px 10px; }
+        @media (max-width: 600px) {
+            .content { padding:20px; }
+            .header { padding:15px; }
+        }
+    </style>
+</head>
+<body>
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px; margin:20px auto; background-color:#FFFFFF; border-radius:10px; box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <tr>
+            <td class="header">
+                <img src="data:image/png;base64,{{ logo_base64 }}" alt="OperPan" style="max-width:180px; height:auto;">
+            </td>
+        </tr>
+        <tr>
+            <td class="content">
+                {% block content %}{% endblock %}
+            </td>
+        </tr>
+        <tr>
+            <td class="footer">
+                © {{ year }} OperPan - Panadería Estación Paisa<br>
+                Este es un mensaje automático, por favor no responder.
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

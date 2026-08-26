@@ -1,0 +1,14 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color:#2B2B2B; font-size:22px; margin:0 0 10px;">📋 Asistencia registrada</h2>
+<p style="font-size:16px; line-height:1.6;">Hola <strong>{{ empleado_nombre }}</strong>,</p>
+<p style="font-size:16px; line-height:1.6;">Tu asistencia del día <strong>{{ fecha }}</strong> ha sido registrada como:</p>
+<p style="font-size:20px; font-weight:bold; text-align:center; padding:15px; background-color:#F5F5F5; border-radius:8px; color: 
+{% if estado == 'Presente' %}#28A745
+{% elif estado == 'Tarde' %}#FFC107
+{% else %}#DC3545{% endif %};">
+{{ estado }}
+</p>
+<p style="color:#6B7280; font-size:14px; margin-top:20px;">Revisa el sistema para más detalles.</p>
+{% endblock %}

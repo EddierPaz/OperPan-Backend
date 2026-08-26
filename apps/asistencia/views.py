@@ -11,6 +11,9 @@ from apps.usuarios.models import PerfilEmpleado
 from apps.usuarios.decorators import admin_required
 from .models import Asistencia, DescansoEmpleado, Horario
 
+# Gmail API
+from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
+
 def dias_ciclo(turno):
     """Devuelve la duración informativa del ciclo según el turno."""
     return 8 if turno == "FIJO" else 15
@@ -234,6 +237,23 @@ def horarios(request):
             estado=True,
             ciclo_inicio=timezone.localdate(),
         )
+        
+        # =====================================================
+        # NOTIFICACIÓN AL EMPLEADO
+        # =====================================================
+        contexto = {
+            'empleado_nombre': empleado.nombre_completo(),
+            'turno': horario.get_turno_display(),
+            'hora_entrada': horario.hora_entrada.strftime('%H:%M'),
+            'hora_salida': horario.hora_salida.strftime('%H:%M'),
+            'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
+        }
+        enviar_notificacion(
+            destinatario=empleado.correo,
+            asunto="🕒 Nuevo horario asignado",
+            template_name='emails/horario_asignado.html',
+            contexto=contexto
+        )
 
         if fecha_descanso:
             DescansoEmpleado.objects.create(
@@ -287,16 +307,7 @@ def editar_horario(request, id):
         fecha_descanso = request.POST.get("fecha_descanso")
 
         if fecha_descanso:
-            descanso = (
-                DescansoEmpleado.objects
-                .filter(
-                    horario=horario,
-                    es_descanso=True
-                )
-                .order_by("-fecha", "-id")
-                .first()
-            )
-
+            descanso = DescansoEmpleado.objects.filter(horario=horario, es_descanso=True).order_by("-fecha", "-id").first()
             if descanso:
                 descanso.fecha = fecha_descanso
                 descanso.save(update_fields=["fecha"])
@@ -306,10 +317,27 @@ def editar_horario(request, id):
                     fecha=fecha_descanso,
                     es_descanso=True,
                 )
-
             horario.ciclo_inicio = timezone.localdate()
 
         horario.save()
+
+        # =====================================================
+        # NOTIFICACIÓN AL EMPLEADO (DESPUÉS DE GUARDAR)
+        # =====================================================
+        contexto = {
+            'empleado_nombre': horario.empleado.nombre_completo(),
+            'turno': horario.get_turno_display(),
+            'hora_entrada': horario.hora_entrada.strftime('%H:%M'),
+            'hora_salida': horario.hora_salida.strftime('%H:%M'),
+            'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
+        }
+        enviar_notificacion(
+            destinatario=horario.empleado.correo,
+            asunto="✏️ Horario actualizado",
+            template_name='emails/horario_editado.html',
+            contexto=contexto
+        )
+
         messages.success(request, "Horario actualizado correctamente.")
         return redirect("asistencia:horarios")
 
@@ -318,9 +346,25 @@ def editar_horario(request, id):
 
 def eliminar_horario(request, id):
     horario = get_object_or_404(Horario, id=id)
+
+    # =====================================================
+    # NOTIFICACIÓN AL EMPLEADO (ANTES DE DESACTIVAR)
+    # =====================================================
+    contexto = {
+        'empleado_nombre': horario.empleado.nombre_completo(),
+        'turno': horario.get_turno_display(),
+    }
+    enviar_notificacion(
+        destinatario=horario.empleado.correo,
+        asunto="🚫 Horario eliminado",
+        template_name='emails/horario_eliminado.html',
+        contexto=contexto
+    )
+
     horario.estado = False
     horario.save(update_fields=["estado"])
-    messages.error(request, "Horario eliminado correctamente.")
+
+    messages.success(request, "Horario eliminado correctamente.")
     return redirect("asistencia:horarios")
 
 
@@ -460,24 +504,21 @@ def asistencia_empleado_admin(request, empleado_id):
 @login_required
 @admin_required
 def cambiar_estado_asistencia(request):
-    """
-    Recibe POST con empleado_id y estado, actualiza la asistencia de hoy.
-    """
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
-    
+
     empleado_id = request.POST.get('empleado_id')
     estado = request.POST.get('estado')
-    
+
     if not empleado_id or estado not in ['PRESENTE', 'TARDE', 'AUSENTE']:
         return JsonResponse({'error': 'Datos inválidos'}, status=400)
-    
+
     try:
         empleado = PerfilEmpleado.objects.get(id=empleado_id)
         horario = Horario.objects.filter(empleado=empleado, estado=True).first()
         if not horario:
             return JsonResponse({'error': 'Empleado sin horario activo'}, status=400)
-        
+
         hoy = timezone.localdate()
         asistencia, created = Asistencia.objects.get_or_create(
             horario=horario,
@@ -488,7 +529,23 @@ def cambiar_estado_asistencia(request):
             asistencia.estado = estado
             asistencia.hora_marcada = timezone.localtime().time()
             asistencia.save()
-        
+
+        # =====================================================
+        # NOTIFICACIÓN AL EMPLEADO (DESPUÉS DE REGISTRAR)
+        # =====================================================
+        estado_display = dict(Asistencia.ESTADOS).get(estado, estado)
+        contexto = {
+            'empleado_nombre': empleado.nombre_completo(),
+            'fecha': hoy.strftime('%d/%m/%Y'),
+            'estado': estado_display,
+        }
+        enviar_notificacion(
+            destinatario=empleado.correo,
+            asunto=f"📋 Asistencia registrada - {estado_display}",
+            template_name='emails/asistencia_registrada.html',
+            contexto=contexto
+        )
+
         return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
     except PerfilEmpleado.DoesNotExist:
         return JsonResponse({'error': 'Empleado no encontrado'}, status=404)

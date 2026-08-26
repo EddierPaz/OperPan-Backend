@@ -20,6 +20,9 @@ from apps.usuarios.decorators import admin_required as admin_required_html
 from apps.usuarios.decorators import empleado_required
 from .pdfs import generar_certificado_pdf
 
+# Gmail API
+from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
+
 
 # ============================================================
 # VISTAS PARA EMPLEADO (HTML + POST)
@@ -110,25 +113,38 @@ def solicitudes_empleado(request):
         # PERMISO
         # --------------------------------------------------------
 
+    if request.method == 'POST':
+        tipo_solicitud = request.POST.get('tipo_solicitud')
+        formulario_invalido = False
+
+        # --------------------------------------------------------
+        # PERMISO
+        # --------------------------------------------------------
         if tipo_solicitud == 'permiso':
-
-            permiso_form = PermisoCrearForm(
-                request.POST,
-                request.FILES,
-                prefix='permiso'
-            )
-
+            permiso_form = PermisoCrearForm(request.POST, request.FILES, prefix='permiso')
             if permiso_form.is_valid():
-
                 permiso = permiso_form.save(commit=False)
                 permiso.empleado = perfil
                 permiso.save()
 
-                messages.success(
-                    request,
-                    '✅ Permiso creado correctamente.'
-                )
+                # Notificar a administradores
+                admins = obtener_correo_admin()
+                contexto_admin = {
+                    'empleado_nombre': perfil.nombre_completo(),
+                    'tipo_solicitud': permiso.get_tipo_display(),
+                    'fecha_inicio': permiso.fecha_inicio.strftime('%d/%m/%Y'),
+                    'fecha_fin': permiso.fecha_fin.strftime('%d/%m/%Y'),
+                    'motivo': permiso.justificacion,
+                }
+                for admin_email in admins:
+                    enviar_notificacion(
+                        destinatario=admin_email,
+                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
+                        template_name='emails/solicitud_creada_admin.html',
+                        contexto=contexto_admin
+                    )
 
+                messages.success(request, '✅ Permiso creado correctamente.')
                 return redirect('novedades:solicitudes_empleado')
             else:
                 formulario_invalido = True
@@ -136,26 +152,31 @@ def solicitudes_empleado(request):
         # --------------------------------------------------------
         # INCAPACIDAD
         # --------------------------------------------------------
-
         elif tipo_solicitud == 'incapacidad':
-
-            incapacidad_form = IncapacidadCrearForm(
-                request.POST,
-                request.FILES,
-                prefix='incapacidad'
-            )
-
+            incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad')
             if incapacidad_form.is_valid():
-
                 incapacidad = incapacidad_form.save(commit=False)
                 incapacidad.empleado = perfil
                 incapacidad.save()
 
-                messages.success(
-                    request,
-                    '✅ Incapacidad creada correctamente.'
-                )
+                # Notificar a administradores
+                admins = obtener_correo_admin()
+                contexto_admin = {
+                    'empleado_nombre': perfil.nombre_completo(),
+                    'tipo_solicitud': 'Incapacidad',
+                    'fecha_inicio': incapacidad.fecha_inicio.strftime('%d/%m/%Y'),
+                    'fecha_fin': incapacidad.fecha_fin.strftime('%d/%m/%Y'),
+                    'motivo': incapacidad.descripcion,
+                }
+                for admin_email in admins:
+                    enviar_notificacion(
+                        destinatario=admin_email,
+                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
+                        template_name='emails/solicitud_creada_admin.html',
+                        contexto=contexto_admin
+                    )
 
+                messages.success(request, '✅ Incapacidad creada correctamente.')
                 return redirect('novedades:solicitudes_empleado')
             else:
                 formulario_invalido = True
@@ -163,57 +184,75 @@ def solicitudes_empleado(request):
         # --------------------------------------------------------
         # CERTIFICADO
         # --------------------------------------------------------
-
         elif tipo_solicitud == 'certificado':
-
-            certificado_form = CertificadoCrearForm(
-                request.POST,
-                request.FILES,
-                prefix='certificado'
-            )
-
+            certificado_form = CertificadoCrearForm(request.POST, request.FILES, prefix='certificado')
             if certificado_form.is_valid():
-
                 certificado = certificado_form.save(commit=False)
                 certificado.empleado = perfil
                 certificado.save()
 
-                messages.success(
-                    request,
-                    '✅ Certificado creado correctamente.'
-                )
+                # Notificar a administradores
+                admins = obtener_correo_admin()
+                contexto_admin = {
+                    'empleado_nombre': perfil.nombre_completo(),
+                    'tipo_solicitud': 'Certificado',
+                    'fecha_inicio': certificado.fecha_solicitud.strftime('%d/%m/%Y'),  # no tiene fechas propias
+                    'fecha_fin': 'N/A',
+                    'motivo': certificado.proposito,
+                }
+                for admin_email in admins:
+                    enviar_notificacion(
+                        destinatario=admin_email,
+                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
+                        template_name='emails/solicitud_creada_admin.html',
+                        contexto=contexto_admin
+                    )
 
+                messages.success(request, '✅ Certificado creado correctamente.')
                 return redirect('novedades:solicitudes_empleado')
             else:
                 formulario_invalido = True
 
         # --------------------------------------------------------
-        # CAMBIO DE TURNO / VACACIONES
+        # CAMBIO DE TURNO / VACACIONES (también son permisos)
         # --------------------------------------------------------
-
         elif tipo_solicitud in ('cambio_turno', 'vacaciones'):
-
-            permiso_form = PermisoCrearForm(
-                request.POST,
-                request.FILES,
-                prefix='permiso'
-            )
-
+            permiso_form = PermisoCrearForm(request.POST, request.FILES, prefix='permiso')
             if permiso_form.is_valid():
-
                 permiso = permiso_form.save(commit=False)
                 permiso.empleado = perfil
                 permiso.tipo = tipo_solicitud
                 permiso.save()
 
-                messages.success(
-                    request,
-                    f'✅ Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.'
-                )
+                # Notificar a administradores
+                admins = obtener_correo_admin()
+                contexto_admin = {
+                    'empleado_nombre': perfil.nombre_completo(),
+                    'tipo_solicitud': permiso.get_tipo_display(),
+                    'fecha_inicio': permiso.fecha_inicio.strftime('%d/%m/%Y'),
+                    'fecha_fin': permiso.fecha_fin.strftime('%d/%m/%Y'),
+                    'motivo': permiso.justificacion,
+                }
+                for admin_email in admins:
+                    enviar_notificacion(
+                        destinatario=admin_email,
+                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
+                        template_name='emails/solicitud_creada_admin.html',
+                        contexto=contexto_admin
+                    )
 
+                messages.success(request, f'✅ Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.')
                 return redirect('novedades:solicitudes_empleado')
             else:
                 formulario_invalido = True
+
+        else:
+            messages.error(request, '❌ Tipo de solicitud no válido.')
+            return redirect('novedades:solicitudes_empleado')
+
+        # Si algún formulario es inválido, renderizar con errores
+        if formulario_invalido:
+            messages.error(request, '❌ Por favor, corrige los errores en el formulario.')
 
         # --------------------------------------------------------
         # TIPO NO VÁLIDO
@@ -300,49 +339,49 @@ def solicitudes_empleado(request):
 @login_required
 @empleado_required
 def editar_permiso(request, pk):
-    """Editar un permiso pendiente"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
 
     try:
-        permiso = Permiso.objects.get(
-            pk=pk,
-            empleado=request.user.perfil,
-            estado='pendiente'
-        )
+        permiso = Permiso.objects.get(pk=pk, empleado=request.user.perfil, estado='pendiente')
     except Permiso.DoesNotExist:
-        return JsonResponse({
-            'error': 'El permiso no existe, no te pertenece o ya fue procesado.'
-        }, status=404)
+        return JsonResponse({'error': 'El permiso no existe, no te pertenece o ya fue procesado.'}, status=404)
 
-    # Obtener los datos del POST
     fecha_inicio = request.POST.get('fecha_inicio')
     fecha_fin = request.POST.get('fecha_fin')
     justificacion = request.POST.get('motivo')
-    
-    # Validar campos obligatorios
+
     if not fecha_inicio or not fecha_fin or not justificacion:
-        return JsonResponse({
-            'error': 'Todos los campos son obligatorios.'
-        }, status=400)
-    
-    # Actualizar SOLO los campos permitidos
+        return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
+
     permiso.fecha_inicio = fecha_inicio
     permiso.fecha_fin = fecha_fin
     permiso.justificacion = justificacion
-    
     if request.FILES.get('archivo'):
         permiso.archivo = request.FILES['archivo']
-    
     permiso.save()
 
-    # Guardar mensaje en sesión
-    messages.success(request, '✅ Permiso actualizado correctamente.')
+    # =====================================================
+    # NOTIFICACIÓN A ADMINISTRADORES (EDICIÓN)
+    # =====================================================
+    admins = obtener_correo_admin()
+    contexto_admin = {
+        'empleado_nombre': request.user.perfil.nombre_completo(),
+        'tipo_solicitud': permiso.get_tipo_display(),
+        'fecha_inicio': permiso.fecha_inicio.strftime('%d/%m/%Y'),
+        'fecha_fin': permiso.fecha_fin.strftime('%d/%m/%Y'),
+        'motivo': permiso.justificacion,
+    }
+    for admin_email in admins:
+        enviar_notificacion(
+            destinatario=admin_email,
+            asunto=f"✏️ Solicitud editada por {request.user.perfil.nombre_completo()}",
+            template_name='emails/solicitud_editada_admin.html',
+            contexto=contexto_admin
+        )
 
-    return JsonResponse({
-        'status': 'ok',
-        'mensaje': '✅ Permiso actualizado correctamente.'
-    })
+    messages.success(request, '✅ Permiso actualizado correctamente.')
+    return JsonResponse({'status': 'ok', 'mensaje': '✅ Permiso actualizado correctamente.'})
 
 @login_required
 @empleado_required
@@ -766,6 +805,23 @@ def permiso_aprobar(request, pk):
     p.decision_por = request.user
     p.decision_fecha = timezone.now()
     p.save()
+
+    # =====================================================
+    # NOTIFICACIÓN AL EMPLEADO
+    # =====================================================
+    contexto = {
+        'empleado_nombre': p.empleado.nombre_completo(),
+        'tipo_solicitud': p.get_tipo_display(),
+        'fecha_inicio': p.fecha_inicio.strftime('%d/%m/%Y'),
+        'fecha_fin': p.fecha_fin.strftime('%d/%m/%Y'),
+    }
+    enviar_notificacion(
+        destinatario=p.empleado.correo,
+        asunto="✅ Tu solicitud ha sido aprobada",
+        template_name='emails/solicitud_aprobada.html',
+        contexto=contexto
+    )
+
     return JsonResponse({'status': 'ok', 'mensaje': 'Permiso aprobado'})
 
 
@@ -795,6 +851,39 @@ def permiso_rechazar(request, pk):
     p.decision_por = request.user
     p.decision_fecha = timezone.now()
     p.save()
+
+    # =====================================================
+    # NOTIFICACIÓN AL EMPLEADO (CON MOTIVO)
+    # =====================================================
+    contexto = {
+        'empleado_nombre': p.empleado.nombre_completo(),
+        'tipo_solicitud': p.get_tipo_display(),
+        'motivo_rechazo': p.motivo_rechazo,
+    }
+    enviar_notificacion(
+        destinatario=p.empleado.correo,
+        asunto="❌ Tu solicitud ha sido rechazada",
+        template_name='emails/solicitud_rechazada.html',
+        contexto=contexto
+    )
+
+    return JsonResponse({'status': 'ok', 'mensaje': 'Permiso rechazado'})
+
+    # =====================================================
+    # NOTIFICACIÓN AL EMPLEADO (CON MOTIVO)
+    # =====================================================
+    contexto = {
+        'empleado_nombre': p.empleado.nombre_completo(),
+        'tipo_solicitud': p.get_tipo_display(),
+        'motivo_rechazo': p.motivo_rechazo,
+    }
+    enviar_notificacion(
+        destinatario=p.empleado.correo,
+        asunto="❌ Tu solicitud ha sido rechazada",
+        template_name='emails/solicitud_rechazada.html',
+        contexto=contexto
+    )
+
     return JsonResponse({'status': 'ok', 'mensaje': 'Permiso rechazado'})
 
 
@@ -887,6 +976,21 @@ def incapacidad_aprobar(request, pk):
     i.decision_por = request.user
     i.decision_fecha = timezone.now()
     i.save()
+
+    # Notificar al empleado
+    contexto = {
+        'empleado_nombre': i.empleado.nombre_completo(),
+        'tipo_solicitud': 'Incapacidad',
+        'fecha_inicio': i.fecha_inicio.strftime('%d/%m/%Y'),
+        'fecha_fin': i.fecha_fin.strftime('%d/%m/%Y'),
+    }
+    enviar_notificacion(
+        destinatario=i.empleado.correo,
+        asunto="✅ Tu solicitud ha sido aprobada",
+        template_name='emails/solicitud_aprobada.html',
+        contexto=contexto
+    )
+
     return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad aprobada'})
 
 
@@ -916,6 +1020,21 @@ def incapacidad_rechazar(request, pk):
     i.decision_por = request.user
     i.decision_fecha = timezone.now()
     i.save()
+    
+    # Notificar al empleado
+    contexto = {
+        'empleado_nombre': i.empleado.nombre_completo(),
+        'tipo_solicitud': 'Incapacidad',
+        'fecha_inicio': i.fecha_inicio.strftime('%d/%m/%Y'),
+        'fecha_fin': i.fecha_fin.strftime('%d/%m/%Y'),
+    }
+    enviar_notificacion(
+        destinatario=i.empleado.correo,
+        asunto="❌ Tu solicitud ha sido rechazada",
+        template_name='emails/solicitud_rechazada.html',
+        contexto=contexto
+    )
+    
     return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad rechazada'})
 
 
@@ -1033,7 +1152,7 @@ def certificado_aprobar(request, pk):
     except Certificado.DoesNotExist:
         return JsonResponse({'error': 'Certificado no encontrado o ya procesado'}, status=404)
 
-    # Datos opcionales enviados al aprobar (solo aplican según el tipo)
+    # Datos opcionales para el certificado (salario, fecha_retiro, etc.)
     try:
         data = json.loads(request.body) if request.body else {}
     except json.JSONDecodeError:
@@ -1051,12 +1170,29 @@ def certificado_aprobar(request, pk):
     c.generado_por = request.user
     c.save()
 
+    # Generar PDF (ya existente)
     try:
         pdf_path = generar_certificado_pdf(c)
         c.archivo = pdf_path
         c.save(update_fields=['archivo'])
     except Exception as e:
         print(f"Error al generar PDF para certificado {c.id}: {e}")
+
+    # =====================================================
+    # NOTIFICACIÓN AL EMPLEADO
+    # =====================================================
+    contexto = {
+        'empleado_nombre': c.empleado.nombre_completo(),
+        'tipo_solicitud': c.get_tipo_display(),
+        'fecha_inicio': c.fecha_solicitud.strftime('%d/%m/%Y'),
+        'fecha_fin': 'N/A',
+    }
+    enviar_notificacion(
+        destinatario=c.empleado.correo,
+        asunto="✅ Tu solicitud ha sido aprobada",
+        template_name='emails/solicitud_aprobada.html',
+        contexto=contexto
+    )
 
     return JsonResponse({'status': 'ok', 'mensaje': 'Certificado aprobado'})
 
@@ -1093,12 +1229,24 @@ def certificado_rechazar(request, pk):
     c.decision_por = request.user
     c.decision_fecha = timezone.now()
     c.save()
+    
+    # =====================================================
+    # NOTIFICACIÓN AL EMPLEADO
+    # =====================================================
+    contexto = {
+        'empleado_nombre': c.empleado.nombre_completo(),
+        'tipo_solicitud': c.get_tipo_display(),
+        'fecha_inicio': c.fecha_solicitud.strftime('%d/%m/%Y'),
+        'fecha_fin': 'N/A',
+    }
+    enviar_notificacion(
+        destinatario=c.empleado.correo,
+        asunto="❌ Tu solicitud ha sido rechazada",
+        template_name='emails/solicitud_rechazada.html',
+        contexto=contexto
+    )
 
-    return JsonResponse({
-        'status': 'ok',
-        'mensaje': 'Certificado rechazado',
-        'fecha_decision': c.decision_fecha.isoformat()
-    })
+    return JsonResponse({'status': 'ok', 'mensaje': 'Certificado rechazado'})
 
 
 @login_required

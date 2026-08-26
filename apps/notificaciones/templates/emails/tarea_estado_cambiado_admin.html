@@ -1,0 +1,8 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color:#2B2B2B; font-size:22px; margin:0 0 10px;">🔄 Estado de tarea actualizado</h2>
+<p style="font-size:16px; line-height:1.6;">El empleado <strong>{{ empleado_nombre }}</strong> ha cambiado el estado de la tarea <strong>{{ titulo }}</strong> a:</p>
+<p style="font-size:20px; font-weight:bold; color:#A40706; text-align:center; padding:15px; background-color:#F5F5F5; border-radius:8px;">{{ estado_nuevo }}</p>
+<p style="color:#6B7280; font-size:14px; margin-top:20px;">Ingresa al sistema para revisar.</p>
+{% endblock %}

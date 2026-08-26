@@ -1,0 +1,8 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="color:#2B2B2B; font-size:22px; margin:0 0 10px;">📅 Recordatorio: día de descanso</h2>
+<p style="font-size:16px; line-height:1.6;">Hola <strong>{{ empleado_nombre }}</strong>,</p>
+<p style="font-size:16px; line-height:1.6;">Tu próximo día de descanso es el <strong>{{ fecha_descanso }}</strong> (en {{ dias_restantes }} día{% if dias_restantes > 1 %}s{% endif %}).</p>
+<p style="color:#6B7280; font-size:14px; margin-top:20px;">Disfruta tu descanso.</p>
+{% endblock %}
