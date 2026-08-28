@@ -1,72 +1,36 @@
+<!-- empleado/solicitudes/certificados/content.html -->
 {% for c in certificados_historial %}
-<div class="request-card {% if c.estado == 'aprobado' %}request-approved{% elif c.estado == 'rechazado' %}request-rejected{% endif %}"
-     data-estado="{{ c.estado }}"
-     data-tipo="certificado">
+    <div class="request-card request-card-grid request-{{ c.estado|slugify }}"
+        data-tipo="certificado"
+        data-estado="{{ c.estado|slugify }}">
 
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-        
-        <!-- INFORMACIÓN DE LA SOLICITUD -->
-        <div class="flex-grow-1">
-            <h5 class="mb-1">
-                <i class="bi bi-award me-1"></i>
-                Certificado
-            </h5>
+        <h6 class="card-grid-title">{{ c.get_tipo_display|default:"Certificado"|truncatechars:25 }}</h6>
 
-            <small class="text-muted">
-                {{ c.get_tipo_display }}
-            </small>
-
-            {% if c.proposito %}
-                <p class="mb-2 mt-2">{{ c.proposito }}</p>
-            {% endif %}
-
-            <div class="small text-muted mt-2">
-                <i class="bi bi-calendar3 me-1"></i>
-                Solicitado: {{ c.fecha_solicitud|date:"d/m/Y H:i" }}
-            </div>
-
-            {% if c.motivo_rechazo %}
-                <div class="small text-danger mt-2">
-                    <i class="bi bi-chat-dots me-1"></i>
-                    <strong>Motivo del rechazo:</strong> {{ c.motivo_rechazo }}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- ESTADO Y ARCHIVO -->
-        <div class="text-end">
-            <span class="badge {% if c.estado == 'aprobado' %}badge-approved{% elif c.estado == 'rechazado' %}badge-rejected{% endif %}">
-                {{ c.get_estado_display }}
+        <div class="card-grid-meta">
+            <span>
+                <i class="bi bi-calendar3"></i>
+                {{ c.fecha_solicitud|date:"d/m/Y" }}
             </span>
-
-            {% if c.archivo %}
-                <div class="mt-2">
-                    <span class="badge bg-light text-dark">
-                        <i class="bi bi-paperclip me-1"></i>
-                        {{ c.archivo.name }}
-                    </span>
-                </div>
-            {% endif %}
-
-            {% if c.estado == 'aprobado' %}
-                <div class="mt-2">
-                    <a href="{% url 'novedades:certificado_pdf' c.id %}"
-                       class="btn btn-sm btn-success-corporate"
-                       target="_blank">
-                        <i class="bi bi-download me-1"></i> Descargar PDF
-                    </a>
-                </div>
+            {% if c.fecha_emision %}
+                <span>
+                    <i class="bi bi-check-circle"></i>
+                    {{ c.fecha_emision|date:"d/m/Y" }}
+                </span>
             {% endif %}
         </div>
-    </div>
-</div>
 
-{% empty %}
-<div class="empty-history">
-    <div class="empty-history-icon">
-        <i class="bi bi-folder2-open"></i>
+        <div class="card-grid-footer">
+            <button type="button" class="card-grid-btn btn-ver-detalle"
+                    data-titulo="{{ c.get_tipo_display|default:'Certificado' }}"
+                    data-subtitulo="Certificado · Solicitado el {{ c.fecha_solicitud|date:'d/m/Y' }}"
+                    data-motivo="{{ c.proposito|default:'Solicitud de certificado'|escapejs }}"
+                    data-estado="{{ c.get_estado_display|default:c.estado }}"
+                    data-estado-slug="{{ c.estado|slugify }}"
+                    data-motivo-rechazo="{{ c.motivo_rechazo|default:''|escapejs }}"
+                    data-archivo="{% if c.estado == 'aprobado' %}{% url 'novedades:certificado_descargar' c.id %}{% endif %}"
+                    data-tipo="certificado">
+                <i class="bi bi-eye"></i> Ver detalles
+            </button>
+        </div>
     </div>
-    <h5>No hay certificados en el historial</h5>
-    <p class="text-muted mb-0">Los certificados aprobados o rechazados aparecerán aquí.</p>
-</div>
 {% endfor %}

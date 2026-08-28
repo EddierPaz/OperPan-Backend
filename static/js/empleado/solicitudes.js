@@ -56,6 +56,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     [incapInicio, incapFin].forEach(el => el?.addEventListener('change', actualizarDiasIncapacidad));
 
+    // --- 2bis. Restricciones de fecha mínima según tipo de solicitud ---
+    const permisoInicio = document.getElementById('permisoFechaInicio');
+    const permisoFin = document.getElementById('permisoFechaFin');
+
+    // Formatea un objeto Date a 'YYYY-MM-DD' para usarlo en el atributo min de un <input type="date">
+    const formatearFechaISO = (fecha) => {
+        const y = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    };
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    // PERMISOS: mínimo 3 días de anticipación (hoy + 4 días es el primer día habilitado)
+    const DIAS_ANTICIPACION_PERMISO = 3;
+    const minPermiso = new Date(hoy);
+    minPermiso.setDate(minPermiso.getDate() + DIAS_ANTICIPACION_PERMISO + 1);
+    const minPermisoStr = formatearFechaISO(minPermiso);
+
+    if (permisoInicio) {
+        permisoInicio.min = minPermisoStr;
+        permisoInicio.addEventListener('change', () => {
+            if (permisoFin) {
+                permisoFin.min = permisoInicio.value || minPermisoStr;
+            }
+        });
+    }
+    if (permisoFin) {
+        permisoFin.min = minPermisoStr;
+    }
+
+    // INCAPACIDADES: mínimo hoy (sin anticipación, pero sin fechas pasadas)
+    const minIncapStr = formatearFechaISO(hoy);
+    if (incapInicio) {
+        incapInicio.min = minIncapStr;
+        incapInicio.addEventListener('change', () => {
+            if (incapFin) {
+                incapFin.min = incapInicio.value || minIncapStr;
+            }
+        });
+    }
+    if (incapFin) {
+        incapFin.min = minIncapStr;
+    }
+
     // --- 3. Certificados ---
     const certTipo = document.getElementById('certificadoTipo');
     const periodoGroup = document.getElementById('certificadoPeriodoGroup');
@@ -441,9 +488,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const inputInicio = document.getElementById('editarFechaInicio');
-            if (inputInicio) inputInicio.value = inicioVal;
-
             const inputFin = document.getElementById('editarFechaFin');
+
+            // Aplicar la misma restricción de fecha mínima según el tipo de solicitud
+            if (['permiso', 'cambio_turno', 'vacaciones'].includes(tipoVal)) {
+                if (inputInicio) inputInicio.min = minPermisoStr;
+                if (inputFin) inputFin.min = minPermisoStr;
+            } else if (tipoVal === 'incapacidad') {
+                if (inputInicio) inputInicio.min = minIncapStr;
+                if (inputFin) inputFin.min = minIncapStr;
+            } else {
+                if (inputInicio) inputInicio.removeAttribute('min');
+                if (inputFin) inputFin.removeAttribute('min');
+            }
+
+            if (inputInicio) inputInicio.value = inicioVal;
             if (inputFin) inputFin.value = finVal;
 
             const inputMotivo = document.getElementById('editarMotivo');
@@ -495,10 +554,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const formData = new FormData();
                 
-                const fechaInicio = document.getElementById('editarFechaInicio')?.value || '';
+                const inputInicioEdit = document.getElementById('editarFechaInicio');
+                const fechaInicio = inputInicioEdit?.value || '';
                 const fechaFin = document.getElementById('editarFechaFin')?.value || '';
                 const motivo = document.getElementById('editarMotivo')?.value || '';
-                
+
+                if (inputInicioEdit?.min && fechaInicio && fechaInicio < inputInicioEdit.min) {
+                    if (btnGuardarEdicion) {
+                        btnGuardarEdicion.disabled = false;
+                        btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
+                    }
+                    alert('❌ La fecha de inicio no es válida para este tipo de solicitud.');
+                    return;
+                }
+
                 formData.append('fecha_inicio', fechaInicio);
                 formData.append('fecha_fin', fechaFin);
                 formData.append('motivo', motivo);
@@ -621,6 +690,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('❌ La fecha de inicio es obligatoria.');
                     return false;
                 }
+                if (incapInicio && incapInicio.min && fechaInicio.value < incapInicio.min) {
+                    e.preventDefault();
+                    alert('❌ La fecha de inicio no puede ser anterior a hoy.');
+                    return false;
+                }
                 if (!fechaFin?.value) {
                     e.preventDefault();
                     alert('❌ La fecha de fin es obligatoria.');
@@ -666,6 +740,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('❌ La fecha de inicio es obligatoria.');
                     return false;
                 }
+
+                if (permisoInicio && permisoInicio.min && fechaInicio.value < permisoInicio.min) {
+                    e.preventDefault();
+                    alert(`❌ Los permisos deben solicitarse con al menos ${DIAS_ANTICIPACION_PERMISO} días de anticipación.`);
+                    return false;
+                }
                 
                 if (!fechaFin?.value) {
                     e.preventDefault();
@@ -687,4 +767,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('✅ OperPan - Solicitudes.js cargado correctamente');
 });
-

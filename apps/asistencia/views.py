@@ -383,7 +383,7 @@ def registrar_asistencia(request):
         )
 
         if asistencia_existente:
-            return redirect("asistencia:horarios")
+            return redirect("asistencia:asistencia_dashboard")
 
         hora_actual = timezone.localtime().time()
         estado = "PRESENTE" if hora_actual <= horario.hora_entrada else "TARDE"
@@ -395,7 +395,7 @@ def registrar_asistencia(request):
             hora_marcada=hora_actual,
         )
 
-    return redirect("asistencia:horarios")
+    return redirect("asistencia:asistencia_dashboard")
 
 
 def asistencia_empleado(request):

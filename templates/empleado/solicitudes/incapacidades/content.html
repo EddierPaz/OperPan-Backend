@@ -1,62 +1,34 @@
+<!-- empleado/solicitudes/incapacidades/content.html -->
 {% for i in incapacidades_historial %}
-<div class="request-card {% if i.estado == 'aprobado' %}request-approved{% elif i.estado == 'rechazado' %}request-rejected{% endif %}"
-     data-estado="{{ i.estado }}"
-     data-tipo="incapacidad">
+    <div class="request-card request-card-grid request-{{ i.estado|slugify }}"
+        data-tipo="incapacidad"
+        data-estado="{{ i.estado|slugify }}">
 
-    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-        
-        <!-- INFORMACIÓN DE LA SOLICITUD -->
-        <div class="flex-grow-1">
-            <h5 class="mb-1">
-                <i class="bi bi-heart-pulse me-1"></i>
-                Incapacidad
-            </h5>
+        <h6 class="card-grid-title">{{ i.titulo|default:"Incapacidad médica"|truncatechars:25 }}</h6>
 
-            <small class="text-muted">
-                {{ i.titulo }} · {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}
-            </small>
-
-            {% if i.descripcion %}
-                <p class="mb-2 mt-2">{{ i.descripcion }}</p>
-            {% endif %}
-
-            {% if i.archivo %}
-                <div class="mt-2">
-                    <span class="badge bg-light text-dark">
-                        <i class="bi bi-paperclip me-1"></i>
-                        {{ i.archivo.name }}
-                    </span>
-                </div>
-            {% endif %}
-
-            <div class="small text-muted mt-2">
-                <i class="bi bi-calendar3 me-1"></i>
-                Creada: {{ i.fecha_solicitud|date:"d/m/Y H:i" }}
-            </div>
-
-            {% if i.motivo_rechazo %}
-                <div class="small text-danger mt-2">
-                    <i class="bi bi-chat-dots me-1"></i>
-                    <strong>Motivo del rechazo:</strong> {{ i.motivo_rechazo }}
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- ESTADO -->
-        <div>
-            <span class="badge {% if i.estado == 'aprobado' %}badge-approved{% elif i.estado == 'rechazado' %}badge-rejected{% endif %}">
-                {{ i.get_estado_display }}
+        <div class="card-grid-meta">
+            <span>
+                <i class="bi bi-calendar3"></i>
+                {{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}
+            </span>
+            <span>
+                <i class="bi bi-clock"></i>
+                {{ i.fecha_solicitud|date:"d/m/Y" }}
             </span>
         </div>
-    </div>
-</div>
 
-{% empty %}
-<div class="empty-history">
-    <div class="empty-history-icon">
-        <i class="bi bi-folder2-open"></i>
+        <div class="card-grid-footer">
+            <button type="button" class="card-grid-btn btn-ver-detalle"
+                    data-titulo="{{ i.titulo|default:'Incapacidad médica' }}"
+                    data-subtitulo="Incapacidad · {{ i.fecha_inicio|date:'d/m/Y' }} → {{ i.fecha_fin|date:'d/m/Y' }}"
+                    data-motivo="{{ i.descripcion|escapejs }}"
+                    data-estado="{{ i.get_estado_display|default:i.estado }}"
+                    data-estado-slug="{{ i.estado|slugify }}"
+                    data-motivo-rechazo="{{ i.motivo_rechazo|default:''|escapejs }}"
+                    data-archivo="{% if i.archivo %}{{ i.archivo.url }}{% endif %}"
+                    data-tipo="incapacidad">
+                <i class="bi bi-eye"></i> Ver detalles
+            </button>
+        </div>
     </div>
-    <h5>No hay incapacidades en el historial</h5>
-    <p class="text-muted mb-0">Las incapacidades aprobadas o rechazadas aparecerán aquí.</p>
-</div>
 {% endfor %}

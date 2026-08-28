@@ -43,8 +43,14 @@ def enviar_notificacion(destinatario, asunto, template_name, contexto, attachmen
     )
 
 def obtener_correo_admin():
-    """Retorna una lista con los correos de los administradores activos."""
+    """Retorna una lista con los correos de los administradores activos que tengan perfil y correo."""
     from apps.usuarios.models import User
-    admin_users = User.objects.filter(rol='admin', is_active=True)
-    correos = [user.perfil.correo for user in admin_users if user.perfil.correo]
+    admin_users = User.objects.filter(rol='admin', is_active=True).select_related('perfil')
+
+    correos = []
+    for user in admin_users:
+        perfil = getattr(user, 'perfil', None)
+        if perfil and perfil.correo:
+            correos.append(perfil.correo)
+
     return correos

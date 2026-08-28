@@ -1,6 +1,6 @@
 import json
 import os
-
+from datetime import date, timedelta
 from django.http import JsonResponse, FileResponse, HttpResponseForbidden, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -34,6 +34,7 @@ def solicitudes_empleado(request):
     """
     Vista principal del empleado para gestionar sus solicitudes.
     Las solicitudes pendientes se muestran separadas del historial.
+    Límite: máximo 2 solicitudes pendientes por tipo (permiso, incapacidad, certificado).
     """
 
     perfil = request.user.perfil
@@ -105,15 +106,6 @@ def solicitudes_empleado(request):
     # ============================================================
 
     if request.method == 'POST':
-
-        tipo_solicitud = request.POST.get('tipo_solicitud')
-        formulario_invalido = False
-
-        # --------------------------------------------------------
-        # PERMISO
-        # --------------------------------------------------------
-
-    if request.method == 'POST':
         tipo_solicitud = request.POST.get('tipo_solicitud')
         formulario_invalido = False
 
@@ -121,6 +113,10 @@ def solicitudes_empleado(request):
         # PERMISO
         # --------------------------------------------------------
         if tipo_solicitud == 'permiso':
+            if permisos_pendientes.count() >= 2:
+                messages.error(request, 'Ya tienes 2 permisos pendientes. Espera a que sean respondidos antes de crear otro.')
+                return redirect('novedades:solicitudes_empleado')
+
             permiso_form = PermisoCrearForm(request.POST, request.FILES, prefix='permiso')
             if permiso_form.is_valid():
                 permiso = permiso_form.save(commit=False)
@@ -153,6 +149,10 @@ def solicitudes_empleado(request):
         # INCAPACIDAD
         # --------------------------------------------------------
         elif tipo_solicitud == 'incapacidad':
+            if incapacidades_pendientes.count() >= 2:
+                messages.error(request, 'Ya tienes 2 incapacidades pendientes. Espera a que sean respondidas antes de crear otra.')
+                return redirect('novedades:solicitudes_empleado')
+
             incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad')
             if incapacidad_form.is_valid():
                 incapacidad = incapacidad_form.save(commit=False)
@@ -185,6 +185,10 @@ def solicitudes_empleado(request):
         # CERTIFICADO
         # --------------------------------------------------------
         elif tipo_solicitud == 'certificado':
+            if certificados_pendientes.count() >= 2:
+                messages.error(request, 'Ya tienes 2 certificados pendientes. Espera a que sean respondidos antes de crear otro.')
+                return redirect('novedades:solicitudes_empleado')
+
             certificado_form = CertificadoCrearForm(request.POST, request.FILES, prefix='certificado')
             if certificado_form.is_valid():
                 certificado = certificado_form.save(commit=False)
@@ -217,6 +221,10 @@ def solicitudes_empleado(request):
         # CAMBIO DE TURNO / VACACIONES (también son permisos)
         # --------------------------------------------------------
         elif tipo_solicitud in ('cambio_turno', 'vacaciones'):
+            if permisos_pendientes.count() >= 2:
+                messages.error(request, 'Ya tienes 2 permisos pendientes. Espera a que sean respondidos antes de crear otro.')
+                return redirect('novedades:solicitudes_empleado')
+
             permiso_form = PermisoCrearForm(request.POST, request.FILES, prefix='permiso')
             if permiso_form.is_valid():
                 permiso = permiso_form.save(commit=False)
@@ -246,35 +254,20 @@ def solicitudes_empleado(request):
             else:
                 formulario_invalido = True
 
-        else:
-            messages.error(request, '❌ Tipo de solicitud no válido.')
-            return redirect('novedades:solicitudes_empleado')
-
-        # Si algún formulario es inválido, renderizar con errores
-        if formulario_invalido:
-            messages.error(request, '❌ Por favor, corrige los errores en el formulario.')
-
         # --------------------------------------------------------
         # TIPO NO VÁLIDO
         # --------------------------------------------------------
-
         else:
-
-            messages.error(
-                request,
-                '❌ Tipo de solicitud no válido.'
-            )
-
+            messages.error(request, 'Tipo de solicitud no válido.')
             return redirect('novedades:solicitudes_empleado')
 
         # ========================================================
         # SOLO SI EL FORMULARIO ES INVÁLIDO
         # ========================================================
-
         if formulario_invalido:
             messages.error(
                 request,
-                '❌ Por favor, corrige los errores en el formulario.'
+                'Por favor, corrige los errores en el formulario.'
             )
 
             context = {
@@ -354,6 +347,18 @@ def editar_permiso(request, pk):
     if not fecha_inicio or not fecha_fin or not justificacion:
         return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
 
+    try:
+        fecha_inicio_dt = date.fromisoformat(fecha_inicio)
+    except ValueError:
+        return JsonResponse({'error': 'Fecha de inicio inválida.'}, status=400)
+
+    minimo = date.today() + timedelta(days=PermisoCrearForm.DIAS_ANTICIPACION + 1)
+    if fecha_inicio_dt < minimo:
+        return JsonResponse({
+            'error': f'Los permisos deben solicitarse con al menos {PermisoCrearForm.DIAS_ANTICIPACION} '
+                     f'días de anticipación. La fecha más próxima disponible es {minimo.strftime("%d/%m/%Y")}.'
+        }, status=400)
+
     permiso.fecha_inicio = fecha_inicio
     permiso.fecha_fin = fecha_fin
     permiso.justificacion = justificacion
@@ -411,7 +416,15 @@ def editar_incapacidad(request, pk):
         return JsonResponse({
             'error': 'Todos los campos son obligatorios.'
         }, status=400)
-    
+
+    try:
+        fecha_inicio_dt = date.fromisoformat(fecha_inicio)
+    except ValueError:
+        return JsonResponse({'error': 'Fecha de inicio inválida.'}, status=400)
+
+    if fecha_inicio_dt < date.today():
+        return JsonResponse({'error': 'La fecha de inicio no puede ser anterior a hoy.'}, status=400)
+
     # Actualizar SOLO los campos permitidos
     incapacidad.fecha_inicio = fecha_inicio
     incapacidad.fecha_fin = fecha_fin
@@ -502,11 +515,11 @@ def eliminar_permiso(request, pk):
     permiso.delete()
 
     # Guardar mensaje en sesión
-    messages.success(request, f'✅ Permiso "{tipo_permiso}" eliminado correctamente.')
+    messages.error(request, f'Permiso "{tipo_permiso}" eliminado correctamente.')
 
     return JsonResponse({
         'status': 'ok',
-        'mensaje': f'✅ Permiso "{tipo_permiso}" eliminado correctamente.'
+        'mensaje': f'Permiso "{tipo_permiso}" eliminado correctamente.'
     })
 
 @login_required
@@ -534,11 +547,11 @@ def eliminar_incapacidad(request, pk):
     incapacidad.delete()
 
     # Guardar mensaje en sesión
-    messages.success(request, f'✅ Incapacidad "{titulo}" eliminada correctamente.')
+    messages.error(request, f'Incapacidad "{titulo}" eliminada correctamente.')
 
     return JsonResponse({
         'status': 'ok',
-        'mensaje': f'✅ Incapacidad "{titulo}" eliminada correctamente.'
+        'mensaje': f'Incapacidad "{titulo}" eliminada correctamente.'
     })
 
 
@@ -567,11 +580,11 @@ def eliminar_certificado(request, pk):
     certificado.delete()
 
     # Guardar mensaje en sesión
-    messages.success(request, f'✅ Certificado "{tipo_certificado}" eliminado correctamente.')
+    messages.error(request, f'Certificado "{tipo_certificado}" eliminado correctamente.')
 
     return JsonResponse({
         'status': 'ok',
-        'mensaje': f'✅ Certificado "{tipo_certificado}" eliminado correctamente.'
+        'mensaje': f'Certificado "{tipo_certificado}" eliminado correctamente.'
     })
 
 # ============================================================
@@ -862,24 +875,7 @@ def permiso_rechazar(request, pk):
     }
     enviar_notificacion(
         destinatario=p.empleado.correo,
-        asunto="❌ Tu solicitud ha sido rechazada",
-        template_name='emails/solicitud_rechazada.html',
-        contexto=contexto
-    )
-
-    return JsonResponse({'status': 'ok', 'mensaje': 'Permiso rechazado'})
-
-    # =====================================================
-    # NOTIFICACIÓN AL EMPLEADO (CON MOTIVO)
-    # =====================================================
-    contexto = {
-        'empleado_nombre': p.empleado.nombre_completo(),
-        'tipo_solicitud': p.get_tipo_display(),
-        'motivo_rechazo': p.motivo_rechazo,
-    }
-    enviar_notificacion(
-        destinatario=p.empleado.correo,
-        asunto="❌ Tu solicitud ha sido rechazada",
+        asunto="Tu solicitud ha sido rechazada",
         template_name='emails/solicitud_rechazada.html',
         contexto=contexto
     )
@@ -1030,7 +1026,7 @@ def incapacidad_rechazar(request, pk):
     }
     enviar_notificacion(
         destinatario=i.empleado.correo,
-        asunto="❌ Tu solicitud ha sido rechazada",
+        asunto="Tu solicitud ha sido rechazada",
         template_name='emails/solicitud_rechazada.html',
         contexto=contexto
     )
@@ -1241,7 +1237,7 @@ def certificado_rechazar(request, pk):
     }
     enviar_notificacion(
         destinatario=c.empleado.correo,
-        asunto="❌ Tu solicitud ha sido rechazada",
+        asunto="Tu solicitud ha sido rechazada",
         template_name='emails/solicitud_rechazada.html',
         contexto=contexto
     )

@@ -1,0 +1,68 @@
+<!-- empleado/solicitudes/certificados/pending.html -->
+<div class="col-lg-4 col-md-6">
+    <div class="pending-category-card pending-certificados">
+        <div class="pending-card-header">
+            <div class="pending-icon"><i class="bi bi-award"></i></div>
+            <div>
+                <h5 class="mb-0">Certificados</h5>
+                <span>{{ certificados_pendientes|length }} pendiente{{ certificados_pendientes|length|pluralize }}</span>
+            </div>
+        </div>
+        <div class="pending-card-body">
+            {% if certificados_pendientes %}
+                {% for c in certificados_pendientes|slice:":3" %}
+                    <div class="pending-item">
+                        <div class="pending-item-icon pending-item-certificado"><i class="bi bi-file-earmark-check"></i></div>
+                        <div class="pending-item-info">
+                            <strong>{{ c.get_tipo_display }}</strong>
+                            <small>Solicitado {{ c.fecha_solicitud|date:"d/m/Y" }}</small>
+                        </div>
+                        <div class="pending-actions">
+                            <button type="button"
+                                    class="pending-actions-btn"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    title="Opciones">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end pending-dropdown">
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item btn-editar-solicitud"
+                                            data-url="{% url 'novedades:editar_certificado' c.id %}"
+                                            data-id="{{ c.id }}"
+                                            data-tipo="certificado"
+                                            data-inicio="{{ c.fecha_solicitud|date:'Y-m-d' }}"
+                                            data-fin="{{ c.fecha_emision|date:'Y-m-d'|default:'' }}"
+                                            data-motivo="{{ c.proposito }}"
+                                            {% if c.archivo %}data-archivo="{{ c.archivo.url }}"{% endif %}>
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button type="button"
+                                            class="dropdown-item text-danger btn-eliminar-solicitud"
+                                            data-url="{% url 'novedades:eliminar_certificado' c.id %}">
+                                        <i class="bi bi-trash3"></i>
+                                        Eliminar
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-pending"><i class="bi bi-check-circle"></i> <span>No tienes certificados pendientes.</span></div>
+            {% endif %}
+        </div>
+        {% if certificados_pendientes %}
+            <div class="pending-card-footer">
+                <button type="button" class="btn-view-pending" data-scroll-to="historial" data-tipo="certificado">
+                    Ver todas <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>

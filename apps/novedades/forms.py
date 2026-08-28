@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django import forms
 from .models import Permiso, Incapacidad, Certificado
 
@@ -27,6 +29,11 @@ class CertificadoFiltroForm(forms.Form):
 class PermisoCrearForm(forms.ModelForm):
     archivo = forms.FileField(required=False)
 
+    # Días mínimos de anticipación exigidos para solicitar un permiso.
+    # Con DIAS_ANTICIPACION = 3, si hoy es 28, los días 29/30/31 quedan
+    # bloqueados y el primer día disponible es el 1 (28 + 4).
+    DIAS_ANTICIPACION = 3
+
     class Meta:
         model = Permiso
         fields = ['tipo', 'fecha_inicio', 'fecha_fin', 'justificacion', 'nuevo_horario', 'archivo']
@@ -34,6 +41,18 @@ class PermisoCrearForm(forms.ModelForm):
             'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
         }
+
+    def clean_fecha_inicio(self):
+        fecha_inicio = self.cleaned_data.get('fecha_inicio')
+        if fecha_inicio:
+            minimo = date.today() + timedelta(days=self.DIAS_ANTICIPACION + 1)
+            if fecha_inicio < minimo:
+                raise forms.ValidationError(
+                    f"Los permisos deben solicitarse con al menos {self.DIAS_ANTICIPACION} "
+                    f"días de anticipación. La fecha más próxima disponible es "
+                    f"{minimo.strftime('%d/%m/%Y')}."
+                )
+        return fecha_inicio
 
     def clean(self):
         cleaned_data = super().clean()
@@ -69,6 +88,20 @@ class IncapacidadCrearForm(forms.ModelForm):
             'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
         }
+
+    def clean_fecha_inicio(self):
+        fecha_inicio = self.cleaned_data.get('fecha_inicio')
+        if fecha_inicio and fecha_inicio < date.today():
+            raise forms.ValidationError("La fecha de inicio no puede ser anterior a hoy.")
+        return fecha_inicio
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_inicio = cleaned_data.get('fecha_inicio')
+        fecha_fin = cleaned_data.get('fecha_fin')
+        if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
+            raise forms.ValidationError("La fecha de inicio no puede ser mayor que la fecha de fin.")
+        return cleaned_data
 
     def clean_archivo(self):
         archivo = self.cleaned_data.get('archivo')
