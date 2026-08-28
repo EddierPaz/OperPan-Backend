@@ -111,11 +111,12 @@ class Task(models.Model):
         """True si la fecha/hora límite ya pasó y la tarea no está finalizada."""
         if self.estado == EstadoTarea.FINALIZADA:
             return False
-        hoy = timezone.now().date()
+        ahora_local = timezone.localtime(timezone.now())
+        hoy = ahora_local.date()
         if self.fecha_limite < hoy:
             return True
         if self.fecha_limite == hoy and self.hora_limite:
-            return timezone.now().time() > self.hora_limite
+            return ahora_local.time() > self.hora_limite
         return False
 
     @classmethod

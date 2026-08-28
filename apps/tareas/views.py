@@ -203,10 +203,10 @@ def admin_tarea_edit(request, pk):
                 contexto=contexto
             )
 
-            messages.success(request, f"✅ Tarea '{tarea.titulo}' actualizada exitosamente.")
+            messages.success(request, f"Tarea '{tarea.titulo}' actualizada exitosamente.")
             return redirect('tareas:admin_tareas_list')
         else:
-            messages.error(request, "❌ Por favor corrige los errores del formulario.")
+            messages.error(request, "Por favor corrige los errores del formulario.")
     return redirect('tareas:admin_tareas_list')
 
 
@@ -233,7 +233,7 @@ def admin_tarea_delete(request, pk):
         )
 
         tarea.delete()
-        messages.success(request, f"🗑️ Tarea '{titulo}' de {empleado_nombre} eliminada exitosamente.")
+        messages.error(request, f"Tarea '{titulo}' de {empleado_nombre} eliminada exitosamente.")
     return redirect('tareas:admin_tareas_list')
 
 
@@ -246,7 +246,7 @@ def admin_tarea_cambiar_estado(request, pk):
     next_url = request.GET.get('next', request.META.get('HTTP_REFERER', 'tareas:admin_tareas_list'))
 
     if tarea.esta_vencida:
-        messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
+        messages.error(request, f"La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
         return redirect(next_url)
 
     if nuevo_estado == EstadoTarea.FINALIZADA and tarea.estado == EstadoTarea.EN_PROGRESO:
@@ -261,19 +261,19 @@ def admin_tarea_cambiar_estado(request, pk):
             }
             enviar_notificacion(
                 destinatario=tarea.empleado.correo,
-                asunto=f"🔄 Estado de tarea actualizado",
+                asunto=f"Estado de tarea actualizado",
                 template_name='emails/tarea_estado_cambiado.html',
                 contexto=contexto
             )
-            messages.success(request, f"✅ Tarea '{tarea.titulo}' finalizada exitosamente.")
+            messages.success(request, f"Tarea '{tarea.titulo}' finalizada exitosamente.")
         else:
-            messages.error(request, "❌ No se pudo finalizar la tarea.")
+            messages.error(request, "No se pudo finalizar la tarea.")
     elif nuevo_estado == EstadoTarea.EN_PROGRESO:
-        messages.error(request, "❌ Los administradores no pueden iniciar tareas. Solo los empleados pueden hacerlo.")
+        messages.error(request, "Los administradores no pueden iniciar tareas. Solo los empleados pueden hacerlo.")
     elif nuevo_estado == EstadoTarea.PENDIENTE:
-        messages.error(request, "❌ Los administradores no pueden revertir tareas a 'Pendiente'.")
+        messages.error(request, "Los administradores no pueden revertir tareas a 'Pendiente'.")
     else:
-        messages.error(request, "❌ Acción no permitida para administradores.")
+        messages.error(request, "Acción no permitida para administradores.")
 
     return redirect(next_url)
 
@@ -344,17 +344,17 @@ def empleado_tarea_detail(request, pk):
 
     if request.method == 'POST':
         if tarea.esta_vencida:
-            messages.error(request, f"❌ La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
+            messages.error(request, f"La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
             return redirect('tareas:empleado_tareas_list')
         
         nuevo_estado = request.POST.get('estado')
         if nuevo_estado in [EstadoTarea.EN_PROGRESO, EstadoTarea.FINALIZADA]:
             if tarea.cambiar_estado(nuevo_estado, request.user):
-                messages.success(request, f"✅ Estado actualizado a '{tarea.get_estado_display()}'.")
+                messages.success(request, f"Estado actualizado a '{tarea.get_estado_display()}'.")
             else:
-                messages.error(request, "❌ No se pudo actualizar el estado.")
+                messages.error(request, "No se pudo actualizar el estado.")
         else:
-            messages.error(request, "❌ No tienes permiso para cambiar a ese estado.")
+            messages.error(request, "No tienes permiso para cambiar a ese estado.")
         return redirect('tareas:empleado_tareas_list')
 
     return redirect(f"{reverse('tareas:empleado_tareas_list')}?detalle={pk}")
@@ -378,15 +378,15 @@ def empleado_tarea_marcar_progreso(request, pk):
                     }
                     enviar_notificacion(
                         destinatario=admin_email,
-                        asunto=f"🔄 Tarea en progreso por {tarea.empleado.nombre_completo()}",
+                        asunto=f"Tarea en progreso por {tarea.empleado.nombre_completo()}",
                         template_name='emails/tarea_estado_cambiado_admin.html',
                         contexto=contexto_admin
                     )
-                messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'En progreso'.")
+                messages.success(request, f"Tarea '{tarea.titulo}' marcada como 'En progreso'.")
             else:
-                messages.error(request, "❌ No se pudo marcar la tarea como 'En progreso'.")
+                messages.error(request, "No se pudo marcar la tarea como 'En progreso'.")
         else:
-            messages.error(request, "❌ Esta tarea ya no está pendiente.")
+            messages.error(request, "Esta tarea ya no está pendiente.")
     return redirect('tareas:empleado_tareas_list')
 
 
@@ -411,13 +411,13 @@ def empleado_tarea_marcar_finalizada(request, pk):
                     }
                     enviar_notificacion(
                         destinatario=admin_email,
-                        asunto=f"✅ Tarea finalizada por {tarea.empleado.nombre_completo()}",
+                        asunto=f"Tarea finalizada por {tarea.empleado.nombre_completo()}",
                         template_name='emails/tarea_estado_cambiado_admin.html',
                         contexto=contexto_admin
                     )
-                messages.success(request, f"✅ Tarea '{tarea.titulo}' marcada como 'Finalizada'.")
+                messages.success(request, f"Tarea '{tarea.titulo}' marcada como 'Finalizada'.")
             else:
-                messages.error(request, "❌ No se pudo marcar la tarea como 'Finalizada'.")
+                messages.error(request, "No se pudo marcar la tarea como 'Finalizada'.")
         else:
-            messages.error(request, "❌ Primero debes marcar la tarea como 'En progreso'.")
+            messages.error(request, "Primero debes marcar la tarea como 'En progreso'.")
     return redirect('tareas:empleado_tareas_list')

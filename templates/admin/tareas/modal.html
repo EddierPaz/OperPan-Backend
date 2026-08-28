@@ -1,213 +1,312 @@
-
-{# ==================== MODAL CREAR/EDITAR ==================== #}
+{# ==================== MODAL CREAR/EDITAR TAREA ==================== #}
 <div class="modal fade" id="modalTarea" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-bold" id="modalTareaLabel">
-                    <i class="bi bi-plus-circle-fill me-2 text-danger"></i>
-                    {% if editando %}Editar tarea{% else %}Asignar nueva tarea{% endif %}
-                </h5>
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content tarea-modal">
+
+            <div class="modal-header tarea-detalle-header">
+                <div>
+                    <div class="tarea-detalle-titulo">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        <span>{% if editando %}Editar Tarea{% else %}Asignar Nueva Tarea{% endif %}</span>
+                    </div>
+                    <p class="tarea-detalle-subtitulo mb-0">
+                        {% if editando %}Modifica los datos de la tarea{% else %}Registra una nueva tarea para un empleado{% endif %}
+                    </p>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="POST"
-                  action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
-                  id="taskForm"
-                  data-editando="{{ editando|yesno:'1,0' }}"
-                  data-empleado-actual="{{ form.empleado.value|default:'' }}"
-                  data-titulo-actual="{{ form.titulo.value|default:'' }}">
-                {% csrf_token %}
+            <div class="modal-body tarea-detalle-body">
+                <form method="POST"
+                      action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
+                      id="taskForm"
+                      data-editando="{{ editando|yesno:'1,0' }}"
+                      data-empleado-actual="{{ form.empleado.value|default:'' }}"
+                      data-titulo-actual="{{ form.titulo.value|default:'' }}">
+                    {% csrf_token %}
 
-                <div class="modal-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Empleado *</label>
-                            <select class="form-select" name="empleado" id="id_empleado" required>
-                                <option value="" disabled {% if not form.empleado.value %}selected{% endif %}>
-                                    Seleccionar empleado
-                                </option>
-                                {% for emp in form.empleado.field.queryset %}
-                                    <option value="{{ emp.pk }}" {% if form.empleado.value == emp.pk %}selected{% endif %}>
-                                        {{ emp.nombre_completo }}
+                    <!-- ASIGNACIÓN -->
+                    <div class="tarea-detalle-grid">
+                        <div class="tarea-detalle-bloque-largo">
+                            <span class="tarea-detalle-bloque-largo-label">
+                                <i class="bi bi-person-vcard me-1"></i> Asignación
+                            </span>
+                        </div>
+
+                        <!-- Empleado -->
+                        <div class="tarea-detalle-item">
+                            <span class="tarea-detalle-label">Empleado <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-value">
+                                <select class="form-select" name="empleado" id="id_empleado" required>
+                                    <option value="" disabled {% if not form.empleado.value %}selected{% endif %}>
+                                        Seleccionar empleado
                                     </option>
-                                {% endfor %}
-                            </select>
+                                    {% for emp in form.empleado.field.queryset %}
+                                        <option value="{{ emp.pk }}" {% if form.empleado.value == emp.pk %}selected{% endif %}>
+                                            {{ emp.nombre_completo }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </span>
                             {% if form.empleado.errors %}<div class="invalid-feedback d-block">{{ form.empleado.errors }}</div>{% endif %}
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Cargo</label>
-                            <input type="text" class="form-control bg-light" id="id_cargo_display" readonly disabled placeholder="—">
+                        <!-- Cargo -->
+                        <div class="tarea-detalle-item">
+                            <span class="tarea-detalle-label">Cargo</span>
+                            <span class="tarea-detalle-value">
+                                <input type="text" class="form-control bg-light" id="id_cargo_display" readonly disabled placeholder="—">
+                            </span>
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Turno *</label>
-                            <select class="form-select" name="turno_asociado" id="id_turno_asociado" required>
-                                <option value="">Seleccionar</option>
-                                {% for value, label in form.turno_asociado.field.choices %}
-                                    {% if value %}
-                                    <option value="{{ value }}" {% if form.turno_asociado.value == value %}selected{% endif %}>{{ label }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
+                        <!-- Turno -->
+                        <div class="tarea-detalle-item">
+                            <span class="tarea-detalle-label">Turno <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-value">
+                                <select class="form-select" name="turno_asociado" id="id_turno_asociado" required>
+                                    <option value="">Seleccionar</option>
+                                    {% for value, label in form.turno_asociado.field.choices %}
+                                        {% if value %}
+                                        <option value="{{ value }}" {% if form.turno_asociado.value == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </span>
                             {% if form.turno_asociado.errors %}<div class="invalid-feedback d-block">{{ form.turno_asociado.errors }}</div>{% endif %}
                         </div>
+                    </div>
 
-                        <div class="col-md-8">
-                            <label class="form-label">Título *</label>
-                            <select class="form-select" id="id_titulo_preset">
-                                <option value="">Selecciona un empleado primero</option>
-                            </select>
-                            <input type="text" class="form-control mt-2" name="titulo" id="id_titulo"
-                                required placeholder="Escribe el título de la tarea"
-                                value="{{ form.titulo.value|default:'' }}"
-                                style="display:none;">
+                    <hr class="my-4">
+
+                    <!-- DETALLES DE LA TAREA -->
+                    <div class="tarea-detalle-grid">
+                        <div class="tarea-detalle-bloque-largo">
+                            <span class="tarea-detalle-bloque-largo-label">
+                                <i class="bi bi-clipboard-check me-1"></i> Detalles de la Tarea
+                            </span>
+                        </div>
+
+                        <!-- Título -->
+                        <div class="tarea-detalle-item" style="grid-column: span 2;">
+                            <span class="tarea-detalle-label">Título <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-value">
+                                <select class="form-select" id="id_titulo_preset">
+                                    <option value="">Selecciona un empleado primero</option>
+                                </select>
+                                <input type="text" class="form-control mt-2" name="titulo" id="id_titulo"
+                                    required placeholder="Escribe el título de la tarea"
+                                    value="{{ form.titulo.value|default:'' }}"
+                                    style="display:none;">
+                            </span>
                             {% if form.titulo.errors %}<div class="invalid-feedback d-block">{{ form.titulo.errors }}</div>{% endif %}
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label">Prioridad *</label>
-                            <select class="form-select locked-field" name="prioridad" id="id_prioridad" tabindex="-1">
-                                {% for value, label in form.prioridad.field.choices %}
-                                    <option value="{{ value }}" {% if form.prioridad.value == value %}selected{% endif %}>{{ label }}</option>
-                                {% endfor %}
-                            </select>
+                        <!-- Prioridad -->
+                        <div class="tarea-detalle-item">
+                            <span class="tarea-detalle-label">Prioridad <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-value">
+                                <select class="form-select locked-field" name="prioridad" id="id_prioridad" tabindex="-1">
+                                    {% for value, label in form.prioridad.field.choices %}
+                                        <option value="{{ value }}" {% if form.prioridad.value == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </span>
                             {% if form.prioridad.errors %}<div class="invalid-feedback d-block">{{ form.prioridad.errors }}</div>{% endif %}
                         </div>
 
-                        <div class="col-12">
-                            <label class="form-label">Descripción *</label>
-                            <textarea class="form-control locked-field" name="descripcion" id="id_descripcion"
-                                    rows="3" required readonly placeholder="Instrucciones detalladas...">{{ form.descripcion.value|default:'' }}</textarea>
+                        <!-- Descripción -->
+                        <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="tarea-detalle-label">Descripción <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-value">
+                                <textarea class="form-control locked-field" name="descripcion" id="id_descripcion"
+                                        rows="3" required readonly placeholder="Instrucciones detalladas...">{{ form.descripcion.value|default:'' }}</textarea>
+                            </span>
                             {% if form.descripcion.errors %}<div class="invalid-feedback d-block">{{ form.descripcion.errors }}</div>{% endif %}
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha límite *</label>
-                            <input type="date" class="form-control" name="fecha_limite" id="id_fecha_limite"
-                                   required value="{{ form.fecha_limite.value|date:'Y-m-d'|default:'' }}">
+                        <!-- Fecha límite -->
+                        <div class="tarea-detalle-item">
+                            <span class="tarea-detalle-label">Fecha límite <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-value">
+                                <input type="date" class="form-control" name="fecha_limite" id="id_fecha_limite"
+                                       required value="{{ form.fecha_limite.value|date:'Y-m-d'|default:'' }}">
+                            </span>
                             {% if form.fecha_limite.errors %}<div class="invalid-feedback d-block">{{ form.fecha_limite.errors }}</div>{% endif %}
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Hora límite</label>
-                            <input type="time" class="form-control" name="hora_limite" id="id_hora_limite"
-                                   value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
-                            <small class="text-muted" id="hora-limite-hint"></small>
+                        <!-- Hora límite -->
+                        <div class="tarea-detalle-item">
+                            <span class="tarea-detalle-label">Hora límite</span>
+                            <span class="tarea-detalle-value">
+                                <input type="time" class="form-control" name="hora_limite" id="id_hora_limite"
+                                       value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
+                                <small class="text-muted" id="hora-limite-hint"></small>
+                            </span>
                             {% if form.hora_limite.errors %}<div class="invalid-feedback d-block">{{ form.hora_limite.errors }}</div>{% endif %}
                         </div>
-
                     </div>
-                </div>
 
-                <div class="modal-footer border-top p-3">
-                    <button type="reset" class="btn-outline-corporate">Limpiar campos</button>
-                    <button type="submit" class="btn-primary-corporate">
-                        <i class="bi bi-save me-1"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer tarea-detalle-footer mt-4">
+                        <button type="reset" class="tarea-modal-btn btn-outline-corporate">
+                            <i class="bi bi-eraser me-1"></i> Limpiar campos
+                        </button>
+                        <button type="submit" class="tarea-modal-btn btn-primary-corporate">
+                            <i class="bi bi-save me-1"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
-{# ==================== MODAL VER DETALLE ==================== #}
+{# ==================== MODAL VER DETALLE DE TAREA ==================== #}
 {% if tarea_detalle %}
 <div class="modal fade show" id="adminTaskDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 rounded-4 shadow">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2 text-danger"></i>Detalle de Tarea</h5>
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content tarea-modal">
+
+            <div class="modal-header tarea-detalle-header">
+                <div>
+                    <div class="tarea-detalle-titulo">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>Detalle de Tarea</span>
+                    </div>
+                    <p class="tarea-detalle-subtitulo mb-0">{{ tarea_detalle.titulo }}</p>
+                </div>
                 <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
             </div>
-            <div class="modal-body p-4">
-                <h4 class="mb-2 fw-bold text-dark">{{ tarea_detalle.titulo }}</h4>
 
-                <div class="mb-3">
-                    {% if tarea_detalle.prioridad == 'ALTA' %}
-                        <span class="badge priority-high">Alta prioridad</span>
-                    {% elif tarea_detalle.prioridad == 'MEDIA' %}
-                        <span class="badge priority-medium">Media prioridad</span>
-                    {% else %}
-                        <span class="badge priority-low">Baja prioridad</span>
-                    {% endif %}
+            <div class="modal-body tarea-detalle-body">
+                <div class="tarea-detalle-grid">
 
-                    {% if tarea_detalle.estado == 'PENDIENTE' %}
-                        <span class="badge badge-status badge-pendiente ms-1">{{ tarea_detalle.get_estado_display }}</span>
-                    {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                        <span class="badge badge-status badge-progreso ms-1">{{ tarea_detalle.get_estado_display }}</span>
-                    {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                        <span class="badge badge-status badge-finalizada ms-1">{{ tarea_detalle.get_estado_display }}</span>
-                    {% endif %}
-                </div>
-
-                <p class="text-secondary bg-light p-3 rounded-3">{{ tarea_detalle.descripcion }}</p>
-
-                <div class="row g-3 mt-1">
-                    <div class="col-md-6">
-                        <small class="text-muted d-block"><i class="bi bi-person-badge me-1"></i> Asignado a:</small>
-                        <strong class="text-dark">{{ tarea_detalle.empleado.nombre_completo }}</strong>
+                    <!-- INFORMACIÓN GENERAL -->
+                    <div class="tarea-detalle-bloque-largo">
+                        <span class="tarea-detalle-bloque-largo-label">
+                            <i class="bi bi-clipboard-check me-1"></i> Información General
+                        </span>
                     </div>
-                    <div class="col-md-6">
-                        <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite:</small>
-                        <strong class="text-dark">
+
+                    <!-- Prioridad -->
+                    <div class="tarea-detalle-item">
+                        <span class="tarea-detalle-label">Prioridad</span>
+                        <span class="tarea-detalle-value">
+                            {% if tarea_detalle.prioridad == 'ALTA' %}
+                                <span class="badge priority-high">Alta</span>
+                            {% elif tarea_detalle.prioridad == 'MEDIA' %}
+                                <span class="badge priority-medium">Media</span>
+                            {% else %}
+                                <span class="badge priority-low">Baja</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="tarea-detalle-item">
+                        <span class="tarea-detalle-label">Estado</span>
+                        <span class="tarea-detalle-value">
+                            {% if tarea_detalle.estado == 'PENDIENTE' %}
+                                <span class="badge badge-status badge-pendiente">{{ tarea_detalle.get_estado_display }}</span>
+                            {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                                <span class="badge badge-status badge-progreso">{{ tarea_detalle.get_estado_display }}</span>
+                            {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                                <span class="badge badge-status badge-finalizada">{{ tarea_detalle.get_estado_display }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="tarea-detalle-label">Descripción</span>
+                        <span class="tarea-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
+                    </div>
+
+                    <!-- Asignado a -->
+                    <div class="tarea-detalle-item">
+                        <span class="tarea-detalle-label"><i class="bi bi-person-badge me-1"></i> Asignado a</span>
+                        <span class="tarea-detalle-value">{{ tarea_detalle.empleado.nombre_completo }}</span>
+                    </div>
+
+                    <!-- Turno -->
+                    <div class="tarea-detalle-item">
+                        <span class="tarea-detalle-label"><i class="bi bi-clock me-1"></i> Turno</span>
+                        <span class="tarea-detalle-value">{{ tarea_detalle.get_turno_asociado_display }}</span>
+                    </div>
+
+                    <!-- Fecha y Hora Límite -->
+                    <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="tarea-detalle-label"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite</span>
+                        <span class="tarea-detalle-value">
                             {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
                             {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
-                        </strong>
+                        </span>
                     </div>
-                </div>
 
-                <div class="row g-3 mt-2">
-                    <div class="col-md-6">
-                        <small class="text-muted d-block"><i class="bi bi-clock me-1"></i> Turno:</small>
-                        <strong class="text-dark">{{ tarea_detalle.get_turno_asociado_display }}</strong>
+                    {% if tarea_detalle.estado == 'FINALIZADA' %}
+                    <!-- EVIDENCIA -->
+                    <div class="tarea-detalle-bloque-largo">
+                        <span class="tarea-detalle-bloque-largo-label">
+                            <i class="bi bi-check-circle-fill me-1"></i> Tarea Finalizada
+                        </span>
                     </div>
-                    <div class="col-md-6">
-                        <small class="text-muted d-block"><i class="bi bi-tag me-1"></i> Estado:</small>
-                        <strong class="text-dark">{{ tarea_detalle.get_estado_display }}</strong>
-                    </div>
-                </div>
-
-                {% if tarea_detalle.estado == 'FINALIZADA' %}
-                    <hr class="my-3"/>
-                    <div class="alert alert-success mb-0 rounded-3">
-                        <i class="bi bi-check-circle-fill me-1"></i> <strong>Tarea Finalizada</strong>
+                    <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
                         {% if tarea_detalle.evidencia %}
-                            <br>
-                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download mt-2">
+                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download">
                                 <i class="bi bi-paperclip"></i> Ver evidencia
                             </a>
                         {% else %}
-                            <br><small class="text-muted">El empleado no adjuntó archivo de evidencia.</small>
+                            <span class="tarea-detalle-value fw-normal text-muted">El empleado no adjuntó archivo de evidencia.</span>
                         {% endif %}
                     </div>
-                {% endif %}
+                    {% endif %}
+
+                </div>
             </div>
-            <div class="modal-footer border-top">
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-outline-corporate">Cerrar</a>
+
+            <div class="modal-footer tarea-detalle-footer">
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="tarea-modal-btn btn-outline-corporate">Cerrar</a>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
 
-{# ==================== MODAL ELIMINAR ==================== #}
+{# ==================== MODAL ELIMINAR TAREA ==================== #}
 <div class="modal fade" id="confirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4 shadow">
-            <div class="modal-header border-bottom">
-                <h5 class="modal-title fw-bold">Confirmar acción</h5>
+        <div class="modal-content tarea-modal">
+
+            <div class="modal-header tarea-detalle-header">
+                <div>
+                    <div class="tarea-detalle-titulo">
+                        <i class="bi bi-trash text-danger"></i>
+                        <span>Eliminar Tarea</span>
+                    </div>
+                    <p class="tarea-detalle-subtitulo mb-0">Confirmar acción</p>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4" id="modalBodyText">
-                ¿Eliminar permanentemente la tarea? Esta acción se registrará en auditoría.
+
+            <div class="modal-body tarea-detalle-body text-center py-4" id="modalBodyText">
+                <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
+                    ¿Eliminar permanentemente la tarea?
+                </h5>
+                <div class="alert alert-danger mt-3 mb-0" style="font-size: 0.875rem;">
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    Esta acción se registrará en auditoría y <strong>no se puede deshacer</strong>.
+                </div>
             </div>
-            <div class="modal-footer border-top">
-                <button type="button" class="btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
+
+            <div class="modal-footer tarea-detalle-footer">
+                <button type="button" class="tarea-modal-btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
                 <form method="POST" id="deleteForm" action="">
                     {% csrf_token %}
-                    <button type="submit" class="btn-action btn-action-delete">Confirmar</button>
+                    <button type="submit" class="tarea-modal-btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Confirmar
+                    </button>
                 </form>
             </div>
         </div>

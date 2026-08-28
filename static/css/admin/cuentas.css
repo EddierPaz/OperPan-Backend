@@ -181,18 +181,6 @@
   transition: all 0.2s ease;
 }
 
-.btn-primary-corporate {
-  background: #A40706;
-  color: #ffffff;
-  border: 1.5px solid #A40706;
-}
-
-.btn-primary-corporate:hover {
-  background: #8a0605;
-  border-color: #8a0605;
-  color: #ffffff;
-}
-
 .btn-danger {
   background: #dc3545;
   color: #ffffff;
