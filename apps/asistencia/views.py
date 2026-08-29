@@ -116,15 +116,21 @@ def _contexto_base():
             "indice": i,
         })
 
-    horarios = (
+    # 1. Obtenemos los horarios base
+    horarios_qs = (
         Horario.objects
         .filter(estado=True)
         .select_related("empleado")
-        .order_by("-id")
     )
 
-    for horario in horarios:
+    horarios = []
+    for horario in horarios_qs:
         horario.proximo_descanso = regenerar_descanso_si_vencido(horario, hoy)
+        horarios.append(horario)
+
+    # 2. ORDENAR: Por la fecha de descanso más cercana (ascendente). 
+    # Los que no tengan descanso quedan al final.
+    horarios.sort(key=lambda h: h.proximo_descanso.fecha if h.proximo_descanso else date.max)
 
     turnos_hoy = {
         "MANANA": [],
@@ -180,7 +186,7 @@ def _contexto_base():
     }
     
     resumen_horarios = {
-        "total": horarios.count(),
+        "total": len(horarios),
         "manana": sum(1 for h in horarios if h.turno == "MANANA"),
         "tarde": sum(1 for h in horarios if h.turno == "TARDE"),
         "fijo": sum(1 for h in horarios if h.turno == "FIJO"),
