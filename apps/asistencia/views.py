@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-
+from datetime import datetime, time
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -210,8 +210,8 @@ def horarios(request):
     if request.method == "POST":
         empleado_id = request.POST.get("empleado")
         turno = request.POST.get("turno")
-        hora_entrada = request.POST.get("hora_entrada")
-        hora_salida = request.POST.get("hora_salida")
+        hora_entrada_str = request.POST.get("hora_entrada")
+        hora_salida_str = request.POST.get("hora_salida")
         fecha_descanso = request.POST.get("fecha_descanso")
 
         empleado = get_object_or_404(
@@ -229,23 +229,27 @@ def horarios(request):
             )
             return redirect("asistencia:horarios")
 
+        # Convertir strings de hora a objetos time de Python de forma segura
+        hora_entrada_obj = datetime.strptime(hora_entrada_str, '%H:%M').time() if hora_entrada_str else None
+        hora_salida_obj = datetime.strptime(hora_salida_str, '%H:%M').time() if hora_salida_str else None
+
         horario = Horario.objects.create(
             empleado=empleado,
             turno=turno,
-            hora_entrada=hora_entrada,
-            hora_salida=hora_salida,
+            hora_entrada=hora_entrada_obj,
+            hora_salida=hora_salida_obj,
             estado=True,
             ciclo_inicio=timezone.localdate(),
         )
         
         # =====================================================
-        # NOTIFICACIÓN AL EMPLEADO
+        # NOTIFICACIÓN AL EMPLEADO (Usando el objeto ya guardado)
         # =====================================================
         contexto = {
             'empleado_nombre': empleado.nombre_completo(),
             'turno': horario.get_turno_display(),
-            'hora_entrada': horario.hora_entrada.strftime('%H:%M'),
-            'hora_salida': horario.hora_salida.strftime('%H:%M'),
+            'hora_entrada': horario.hora_entrada.strftime('%H:%M') if horario.hora_entrada else '',
+            'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
             'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
         }
         enviar_notificacion(
@@ -302,8 +306,15 @@ def editar_horario(request, id):
 
     if request.method == "POST":
         horario.turno = request.POST.get("turno")
-        horario.hora_entrada = request.POST.get("hora_entrada")
-        horario.hora_salida = request.POST.get("hora_salida")
+        
+        hora_entrada_str = request.POST.get("hora_entrada")
+        hora_salida_str = request.POST.get("hora_salida")
+        
+        if hora_entrada_str:
+            horario.hora_entrada = datetime.strptime(hora_entrada_str, '%H:%M').time()
+        if hora_salida_str:
+            horario.hora_salida = datetime.strptime(hora_salida_str, '%H:%M').time()
+            
         fecha_descanso = request.POST.get("fecha_descanso")
 
         if fecha_descanso:
@@ -327,8 +338,8 @@ def editar_horario(request, id):
         contexto = {
             'empleado_nombre': horario.empleado.nombre_completo(),
             'turno': horario.get_turno_display(),
-            'hora_entrada': horario.hora_entrada.strftime('%H:%M'),
-            'hora_salida': horario.hora_salida.strftime('%H:%M'),
+            'hora_entrada': horario.hora_entrada.strftime('%H:%M') if horario.hora_entrada else '',
+            'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
             'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
         }
         enviar_notificacion(

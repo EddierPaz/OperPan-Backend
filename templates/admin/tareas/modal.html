@@ -18,11 +18,12 @@
 
             <div class="modal-body tarea-detalle-body">
                 <form method="POST"
-                      action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
-                      id="taskForm"
-                      data-editando="{{ editando|yesno:'1,0' }}"
-                      data-empleado-actual="{{ form.empleado.value|default:'' }}"
-                      data-titulo-actual="{{ form.titulo.value|default:'' }}">
+                    action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
+                    id="taskForm"
+                    data-editando="{{ editando|yesno:'1,0' }}"
+                    data-empleado-actual="{{ form.empleado.value|default:'' }}"
+                    data-titulo-actual="{{ form.titulo.value|default:'' }}"
+                    data-turno-actual="{{ form.turno_asociado.value|default:'' }}">
                     {% csrf_token %}
 
                     <!-- ASIGNACIÓN -->
@@ -37,7 +38,7 @@
                         <div class="tarea-detalle-item">
                             <span class="tarea-detalle-label">Empleado <span class="text-danger">*</span></span>
                             <span class="tarea-detalle-value">
-                                <select class="form-select" name="empleado" id="id_empleado" required>
+                                <select class="form-select {% if editando %}bg-light{% endif %}" name="empleado" id="id_empleado" required {% if editando %}disabled{% endif %}>
                                     <option value="" disabled {% if not form.empleado.value %}selected{% endif %}>
                                         Seleccionar empleado
                                     </option>
@@ -47,6 +48,10 @@
                                         </option>
                                     {% endfor %}
                                 </select>
+                                {% if editando %}
+                                    <!-- Campo oculto para enviar el valor del empleado ya que el select está disabled -->
+                                    <input type="hidden" name="empleado" value="{{ form.empleado.value }}">
+                                {% endif %}
                             </span>
                             {% if form.empleado.errors %}<div class="invalid-feedback d-block">{{ form.empleado.errors }}</div>{% endif %}
                         </div>
@@ -61,9 +66,10 @@
 
                         <!-- Turno -->
                         <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Turno <span class="text-danger">*</span></span>
+                            <span class="tarea-detalle-label">Turno</span>
                             <span class="tarea-detalle-value">
-                                <select class="form-select" name="turno_asociado" id="id_turno_asociado" required>
+                                <input type="text" class="form-control bg-light" id="id_turno_display" readonly disabled placeholder="—">
+                                <select class="form-select" name="turno_asociado" id="id_turno_asociado" required style="display:none;">
                                     <option value="">Seleccionar</option>
                                     {% for value, label in form.turno_asociado.field.choices %}
                                         {% if value %}
@@ -229,8 +235,19 @@
 
                     <!-- Turno -->
                     <div class="tarea-detalle-item">
-                        <span class="tarea-detalle-label"><i class="bi bi-clock me-1"></i> Turno</span>
-                        <span class="tarea-detalle-value">{{ tarea_detalle.get_turno_asociado_display }}</span>
+                        <span class="tarea-detalle-label">Turno <span class="text-danger">*</span></span>
+                        <span class="tarea-detalle-value">
+                            <input type="text" class="form-control bg-light" id="id_turno_display" readonly disabled placeholder="—">
+                            <select class="form-select" name="turno_asociado" id="id_turno_asociado" required style="display:none;">
+                                <option value="">Seleccionar</option>
+                                {% for value, label in form.turno_asociado.field.choices %}
+                                    {% if value %}
+                                    <option value="{{ value }}" {% if form.turno_asociado.value == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </span>
+                        {% if form.turno_asociado.errors %}<div class="invalid-feedback d-block">{{ form.turno_asociado.errors }}</div>{% endif %}
                     </div>
 
                     <!-- Fecha y Hora Límite -->

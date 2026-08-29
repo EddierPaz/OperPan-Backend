@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const empleadoSelect = document.getElementById('id_empleado');
     const cargoDisplay = document.getElementById('id_cargo_display');
     const turnoSelect = document.getElementById('id_turno_asociado');
+    const turnoDisplay = document.getElementById('id_turno_display');
     const tituloPreset = document.getElementById('id_titulo_preset');
     const tituloInput = document.getElementById('id_titulo');
     const prioridadSelect = document.getElementById('id_prioridad');
@@ -132,14 +133,71 @@ document.addEventListener('DOMContentLoaded', function () {
         fechaInput.setAttribute('min', hoy);
     }
 
-    function actualizarLimiteHora(horaSalida) {
-        if (horaSalida) {
-            if (horaInput) horaInput.setAttribute('max', horaSalida);
-            if (horaHint) horaHint.textContent = `No puede superar el fin de la jornada (${horaSalida}).`;
-        } else {
-            if (horaInput) horaInput.removeAttribute('max');
-            if (horaHint) horaHint.textContent = '';
+    function aplicarTurnoAutomatico(turnoValue, turnoLabel) {
+        if (turnoSelect) {
+            turnoSelect.value = turnoValue || '';
+            turnoSelect.style.display = 'none';
         }
+        if (turnoDisplay) {
+            turnoDisplay.style.display = 'block';
+            turnoDisplay.value = turnoLabel || '';
+        }
+    }
+
+    function permitirTurnoManual(turnoActual) {
+        if (turnoSelect) {
+            turnoSelect.style.display = 'block';
+            turnoSelect.value = turnoActual || '';
+        }
+        if (turnoDisplay) {
+            turnoDisplay.style.display = 'none';
+            turnoDisplay.value = '';
+        }
+    }
+
+    function actualizarLimiteHora(horaEntrada, horaSalida) {
+        if (horaInput) {
+            if (horaSalida) horaInput.setAttribute('max', horaSalida);
+            else horaInput.removeAttribute('max');
+
+            if (horaEntrada) horaInput.setAttribute('min', horaEntrada);
+            else horaInput.removeAttribute('min');
+        }
+
+        if (horaHint) {
+            if (horaEntrada && horaSalida) {
+                horaHint.textContent = `Debe estar entre ${horaEntrada} y ${horaSalida} (jornada del empleado).`;
+            } else if (horaSalida) {
+                horaHint.textContent = `No puede superar el fin de la jornada (${horaSalida}).`;
+            } else {
+                horaHint.textContent = '';
+            }
+        }
+
+        validarHoraLimite(); // revalida por si ya había un valor cargado (ej. al editar)
+    }
+
+    function validarHoraLimite() {
+        if (!horaInput) return;
+        const min = horaInput.getAttribute('min');
+        const max = horaInput.getAttribute('max');
+
+        if (!horaInput.value) {
+            horaInput.setCustomValidity('');
+            return;
+        }
+        if (min && horaInput.value < min) {
+            horaInput.setCustomValidity(`La hora no puede ser antes de ${min} (inicio de jornada).`);
+        } else if (max && horaInput.value > max) {
+            horaInput.setCustomValidity(`La hora no puede superar ${max} (fin de jornada).`);
+        } else {
+            horaInput.setCustomValidity('');
+        }
+    }
+
+    if (horaInput) {
+        horaInput.addEventListener('input', validarHoraLimite);
+        horaInput.addEventListener('change', validarHoraLimite);
     }
 
     function bloquear(campo) {
@@ -226,14 +284,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const emp = empleadosData[this.value];
             if (!emp) {
                 if (cargoDisplay) cargoDisplay.value = '';
+                permitirTurnoManual('');
                 if (tituloPreset) tituloPreset.innerHTML = '<option value="">Selecciona un empleado primero</option>';
-                actualizarLimiteHora(null);
+                actualizarLimiteHora(null, null);
                 return;
             }
             if (cargoDisplay) cargoDisplay.value = emp.cargo_display || '';
-            if (turnoSelect && emp.turno) turnoSelect.value = emp.turno;
-
-            actualizarLimiteHora(emp.hora_salida);
+            if (emp.turno) {
+                aplicarTurnoAutomatico(emp.turno, emp.turno_display);
+            } else {
+                permitirTurnoManual('');
+            }
+            actualizarLimiteHora(emp.hora_entrada, emp.hora_salida);
             poblarTitulos(emp.cargo, null);
         });
     }
@@ -257,14 +319,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (editando) {
         const empleadoActual = taskForm.dataset.empleadoActual;
         const tituloActual = taskForm.dataset.tituloActual;
+        const turnoActual = taskForm.dataset.turnoActual;
 
         if (empleadoActual && empleadoSelect) {
             empleadoSelect.value = empleadoActual;
             const emp = empleadosData[empleadoActual];
             if (emp) {
                 if (cargoDisplay) cargoDisplay.value = emp.cargo_display || '';
-                if (turnoSelect && !turnoSelect.value && emp.turno) turnoSelect.value = emp.turno;
-                actualizarLimiteHora(emp.hora_salida);
+                if (emp.turno) {
+                    aplicarTurnoAutomatico(emp.turno, emp.turno_display);
+                } else {
+                    permitirTurnoManual(turnoActual);
+                }
+                actualizarLimiteHora(emp.hora_entrada, emp.hora_salida);
                 poblarTitulos(emp.cargo, tituloActual);
             }
         }
