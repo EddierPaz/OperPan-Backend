@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // ==========================================
-    // 1. DELEGACIÓN DE EVENTOS (Ver, Editar, Eliminar)
+    // 1. DELEGACIÓN DE EVENTOS (Ver, Editar, acciones de estado)
     // ==========================================
     document.addEventListener('click', function(e) {
 
@@ -15,24 +15,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const tr = btnVer.closest('tr');
             if (!tr) return;
             const d = tr.dataset;
-            
-            // Mapeo de valores para mostrar
+
             const tiposDoc = { 'CC': 'Cédula de Ciudadanía', 'CE': 'Cédula de Extranjería', 'TI': 'Tarjeta de Identidad', 'PA': 'Pasaporte' };
             const generos = { 'M': 'Masculino', 'F': 'Femenino', 'O': 'Otro' };
             const estadosCiviles = { 'soltero': 'Soltero', 'casado': 'Casado', 'union_libre': 'Unión Libre', 'divorciado': 'Divorciado', 'viudo': 'Viudo' };
             const cargos = { 'mesero': 'Mesero', 'cajero': 'Cajero', 'pastelero': 'Pastelero', 'panadero': 'Panadero', 'cocina': 'Cocina', 'buñuelero': 'Buñuelero', 'greca': 'Greca' };
             const roles = { 'admin': 'Administrador', 'empleado': 'Empleado' };
-            const estados = { 'activo': 'Activo', 'suspendido': 'Suspendido', 'retirado': 'Retirado' };
-            
-            // Construir nombre completo
+            const estadosLaborales = { 'activo': 'Activo', 'retirado': 'Retirado' };
+            const estadosCuenta = { 'PENDIENTE': 'Pendiente', 'ACTIVA': 'Activa', 'SUSPENDIDA': 'Suspendida', 'INACTIVA': 'Inactiva' };
+
             const nombreCompleto = [
                 d.primerNombre || '',
                 d.segundoNombre || '',
                 d.primerApellido || '',
                 d.segundoApellido || ''
             ].filter(Boolean).join(' ');
-            
-            // Llenar campos de vista (usando textContent)
+
             const campos = {
                 'v_nombre_completo': nombreCompleto || '-',
                 'v_tipo_documento': tiposDoc[d.tipoDocumento] || d.tipoDocumento || '-',
@@ -55,19 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 'v_fondo_pension': d.fondoPension || '-',
                 'v_username': d.username || '-',
                 'v_rol': roles[d.rol] || d.rol || '-',
-                'v_estado': estados[d.estado] || d.estado || '-'
+                'v_estado': estadosLaborales[d.estado] || d.estado || '-',
+                'v_estado_cuenta': estadosCuenta[d.estadoCuenta] || d.estadoCuenta || '-'
             };
-            
+
             for (const [id, valor] of Object.entries(campos)) {
                 const el = document.getElementById(id);
-                if (el) el.textContent = valor.trim();
+                if (el) el.textContent = valor.trim ? valor.trim() : valor;
             }
-            
+
             const modalEl = document.getElementById('modalVerUsuario');
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
+            if (modalEl) new bootstrap.Modal(modalEl).show();
         }
 
         // ===== EDITAR USUARIO =====
@@ -77,16 +73,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!tr) return;
             const id = tr.dataset.id;
             const d = tr.dataset;
-            
-            // ✅ Configurar la acción del formulario correctamente
+
             const form = document.getElementById('formEditarUsuario');
-            if (form) {
-                form.action = '/admi/users/' + id + '/update/';
-            }
-            
-            // ==========================================
-            // CAMPOS EDITABLES (con .value)
-            // ==========================================
+            if (form) form.action = '/admi/users/' + id + '/update/';
+
             const camposEditables = {
                 'e_primer_nombre': d.primerNombre || '',
                 'e_segundo_nombre': d.segundoNombre || '',
@@ -104,106 +94,109 @@ document.addEventListener('DOMContentLoaded', function() {
                 'e_eps': d.eps || '',
                 'e_arl': d.arl || '',
                 'e_fondo_pension': d.fondoPension || '',
-                'e_estado': d.estado || 'activo',
                 'e_username': d.username || '',
                 'e_rol': d.rol || ''
             };
-            
+
             for (const [id, valor] of Object.entries(camposEditables)) {
                 const el = document.getElementById(id);
                 if (el) el.value = valor;
             }
-            
-            // ==========================================
-            // CAMPOS SOLO LECTURA (disabled + hidden)
-            // ==========================================
-            // Tipo Documento (disabled + hidden)
+
+            // Campos solo lectura (disabled + hidden)
             const tipoDocSelect = document.getElementById('e_tipo_documento');
             const tipoDocHidden = document.getElementById('e_tipo_documento_hidden');
-            if (tipoDocSelect) {
-                tipoDocSelect.value = d.tipoDocumento || '';
-            }
-            if (tipoDocHidden) {
-                tipoDocHidden.value = d.tipoDocumento || '';
-            }
-            
-            // Número Documento (readonly)
+            if (tipoDocSelect) tipoDocSelect.value = d.tipoDocumento || '';
+            if (tipoDocHidden) tipoDocHidden.value = d.tipoDocumento || '';
+
             const numDocInput = document.getElementById('e_numero_documento');
-            if (numDocInput) {
-                numDocInput.value = d.numeroDocumento || '';
-            }
-            
-            // Fecha Nacimiento (readonly)
+            if (numDocInput) numDocInput.value = d.numeroDocumento || '';
+
             const fechaNacInput = document.getElementById('e_fecha_nacimiento');
-            if (fechaNacInput) {
-                fechaNacInput.value = d.fechaNacimiento || '';
-            }
-            
-            // Género (disabled + hidden)
+            if (fechaNacInput) fechaNacInput.value = d.fechaNacimiento || '';
+
             const generoSelect = document.getElementById('e_genero');
             const generoHidden = document.getElementById('e_genero_hidden');
-            if (generoSelect) {
-                generoSelect.value = d.genero || '';
-            }
-            if (generoHidden) {
-                generoHidden.value = d.genero || '';
-            }
-            
-            // Tipo Sangre (disabled + hidden)
+            if (generoSelect) generoSelect.value = d.genero || '';
+            if (generoHidden) generoHidden.value = d.genero || '';
+
             const sangreSelect = document.getElementById('e_tipo_sangre');
             const sangreHidden = document.getElementById('e_tipo_sangre_hidden');
-            if (sangreSelect) {
-                sangreSelect.value = d.tipoSangre || '';
-            }
-            if (sangreHidden) {
-                sangreHidden.value = d.tipoSangre || '';
-            }
-            
-            // Fecha Ingreso (readonly)
+            if (sangreSelect) sangreSelect.value = d.tipoSangre || '';
+            if (sangreHidden) sangreHidden.value = d.tipoSangre || '';
+
             const fechaIngresoInput = document.getElementById('e_fecha_ingreso');
-            if (fechaIngresoInput) {
-                fechaIngresoInput.value = d.fechaIngreso || '';
-            }
-            
-            // ==========================================
-            // LIMPIAR CONTRASEÑA (siempre vacío)
-            // ==========================================
-            const passInput = document.getElementById('e_password');
-            if (passInput) {
-                passInput.value = '';
-            }
-            
-            // Mostrar modal
+            if (fechaIngresoInput) fechaIngresoInput.value = d.fechaIngreso || '';
+
             const modalEl = document.getElementById('modalEditarUsuario');
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
+            if (modalEl) new bootstrap.Modal(modalEl).show();
         }
 
-        // ===== ELIMINAR USUARIO =====
+        // ===== SUSPENDER =====
+        const btnSuspender = e.target.closest('.btn-suspender-usuario');
+        if (btnSuspender) {
+            const id = btnSuspender.dataset.id;
+            const nombre = btnSuspender.dataset.nombre || 'usuario';
+            document.getElementById('formSuspenderUsuario').action = '/admi/users/' + id + '/suspender/';
+            document.getElementById('suspender_usuario_nombre').textContent = nombre;
+            document.getElementById('suspender_motivo').value = '';
+            new bootstrap.Modal(document.getElementById('modalSuspenderUsuario')).show();
+        }
+
+        // ===== REACTIVAR (SUSPENDIDA → ACTIVA) =====
+        const btnReactivar = e.target.closest('.btn-reactivar-usuario');
+        if (btnReactivar) {
+            const id = btnReactivar.dataset.id;
+            const nombre = btnReactivar.dataset.nombre || 'usuario';
+            document.getElementById('formReactivarUsuario').action = '/admi/users/' + id + '/reactivar/';
+            document.getElementById('reactivar_usuario_nombre').textContent = nombre;
+            new bootstrap.Modal(document.getElementById('modalReactivarUsuario')).show();
+        }
+
+        // ===== RETIRAR =====
+        const btnRetirar = e.target.closest('.btn-retirar-usuario');
+        if (btnRetirar) {
+            const id = btnRetirar.dataset.id;
+            const nombre = btnRetirar.dataset.nombre || 'usuario';
+            document.getElementById('formRetirarUsuario').action = '/admi/users/' + id + '/retirar/';
+            document.getElementById('retirar_usuario_nombre').textContent = nombre;
+            document.getElementById('retirar_motivo').value = '';
+            new bootstrap.Modal(document.getElementById('modalRetirarUsuario')).show();
+        }
+
+        // ===== REINCORPORAR (RETIRADO → ACTIVO) =====
+        const btnReactivarRetiro = e.target.closest('.btn-reactivar-retiro-usuario');
+        if (btnReactivarRetiro) {
+            const id = btnReactivarRetiro.dataset.id;
+            const nombre = btnReactivarRetiro.dataset.nombre || 'usuario';
+            document.getElementById('formReactivarRetiroUsuario').action = '/admi/users/' + id + '/reactivar-retiro/';
+            document.getElementById('reactivar_retiro_usuario_nombre').textContent = nombre;
+            new bootstrap.Modal(document.getElementById('modalReactivarRetiroUsuario')).show();
+        }
+
+        // ===== REENVIAR CREDENCIALES =====
+        const btnCredenciales = e.target.closest('.btn-credenciales-usuario');
+        if (btnCredenciales) {
+            const id = btnCredenciales.dataset.id;
+            const nombre = btnCredenciales.dataset.nombre || 'usuario';
+            document.getElementById('formEnviarCredenciales').action = '/admi/users/' + id + '/enviar-credenciales/';
+            document.getElementById('credenciales_usuario_nombre').textContent = nombre;
+            new bootstrap.Modal(document.getElementById('modalEnviarCredenciales')).show();
+        }
+
+        // ===== ELIMINAR USUARIO (físico, excepcional) =====
         const btnEliminar = e.target.closest('.btn-eliminar-usuario');
         if (btnEliminar) {
-            const tr = btnEliminar.closest('tr');
-            if (!tr) return;
-            const id = tr.dataset.id;
+            const id = btnEliminar.dataset.id;
             const nombre = btnEliminar.dataset.nombre || 'usuario';
-            
+
             const form = document.getElementById('formEliminarUsuario');
-            if (form) {
-                form.action = '/usuarios/' + id + '/eliminar/';
-            }
-            
+            if (form) form.action = '/admi/users/' + id + '/delete/';
+
             const nombreSpan = document.getElementById('eliminar_usuario_nombre');
-            if (nombreSpan) {
-                nombreSpan.textContent = nombre;
-            }
-            
-            const modalEl = document.getElementById('modalEliminarUsuario');
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
+            if (nombreSpan) nombreSpan.textContent = nombre;
+
+            new bootstrap.Modal(document.getElementById('modalEliminarUsuario')).show();
         }
     });
 
@@ -213,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputBuscar = document.getElementById('buscarCuenta');
     const filtroCargo = document.getElementById('filtroCargo');
     const filtroRol = document.getElementById('filtroRol');
-    const filtroEstado = document.getElementById('filtroEstado');
+    const filtroEstadoCuenta = document.getElementById('filtroEstadoCuenta');
     const btnLimpiar = document.getElementById('limpiarFiltrosCuentas');
 
     if (inputBuscar) {
@@ -221,54 +214,51 @@ document.addEventListener('DOMContentLoaded', function() {
             const texto = inputBuscar.value.trim().toLowerCase();
             const cargo = filtroCargo ? filtroCargo.value.toLowerCase() : '';
             const rol = filtroRol ? filtroRol.value.toLowerCase() : '';
-            const estado = filtroEstado ? filtroEstado.value.toLowerCase() : '';
-            
+            const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value : '';
+
             const filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-id]');
             filas.forEach(fila => {
                 const d = fila.dataset;
-                
-                // Construir nombre completo para búsqueda
+
                 const nombreCompleto = [
                     d.primerNombre || '',
                     d.segundoNombre || '',
                     d.primerApellido || '',
                     d.segundoApellido || ''
                 ].filter(Boolean).join(' ').toLowerCase();
-                
+
                 const documento = (d.numeroDocumento || '').toLowerCase();
                 const usuario = (d.username || '').toLowerCase();
                 const cargoFila = (d.cargo || '').toLowerCase();
                 const rolFila = (d.rol || '').toLowerCase();
-                const estadoFila = (d.estado || '').toLowerCase();
-                
-                const coincideTexto = !texto || 
-                    documento.includes(texto) || 
-                    usuario.includes(texto) || 
+                const estadoCuentaFila = d.estadoCuenta || '';
+
+                const coincideTexto = !texto ||
+                    documento.includes(texto) ||
+                    usuario.includes(texto) ||
                     nombreCompleto.includes(texto);
-                
+
                 const coincideCargo = !cargo || cargoFila === cargo;
                 const coincideRol = !rol || rolFila === rol;
-                const coincideEstado = !estado || estadoFila === estado;
-                
-                fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstado) ? '' : 'none';
+                const coincideEstadoCuenta = !estadoCuenta || estadoCuentaFila === estadoCuenta;
+
+                fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) ? '' : 'none';
             });
         }
 
-        // Event listeners para filtros
-        [inputBuscar, filtroCargo, filtroRol, filtroEstado].forEach(el => {
+        [inputBuscar, filtroCargo, filtroRol, filtroEstadoCuenta].forEach(el => {
             if (el) {
                 el.addEventListener('input', aplicarFiltros);
                 el.addEventListener('change', aplicarFiltros);
             }
         });
 
-        // Botón limpiar filtros
         if (btnLimpiar) {
             btnLimpiar.addEventListener('click', function() {
                 inputBuscar.value = '';
                 if (filtroCargo) filtroCargo.value = '';
                 if (filtroRol) filtroRol.value = '';
-                if (filtroEstado) filtroEstado.value = '';
+                if (filtroEstadoCuenta) filtroEstadoCuenta.value = '';
                 aplicarFiltros();
             });
         }
@@ -284,11 +274,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('formCrearUsuario');
             if (form) {
                 form.reset();
-                // Limpiar campos ocultos o especiales si es necesario
                 const selects = form.querySelectorAll('select');
-                selects.forEach(select => {
-                    select.selectedIndex = 0;
-                });
+                selects.forEach(select => { select.selectedIndex = 0; });
             }
         });
     }
@@ -296,18 +283,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================
     // 4. PREVENIR ENVÍO DE CAMPOS DISABLED
     // ==========================================
-    // Los campos disabled no se envían, pero tenemos hidden inputs
-    // que sí se envían con los valores correctos.
-    // Esto asegura que el backend reciba todos los datos.
     document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form.id === 'formEditarUsuario') {
-            // Asegurar que los hidden inputs tengan los valores correctos
             const tipoDocHidden = document.getElementById('e_tipo_documento_hidden');
             const generoHidden = document.getElementById('e_genero_hidden');
             const sangreHidden = document.getElementById('e_tipo_sangre_hidden');
-            
-            // Si el hidden está vacío, tomar del select disabled
+
             if (tipoDocHidden && !tipoDocHidden.value) {
                 const select = document.getElementById('e_tipo_documento');
                 if (select) tipoDocHidden.value = select.value;

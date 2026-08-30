@@ -12,11 +12,44 @@ class User(AbstractUser):
         ('empleado', 'Empleado'),
     )
 
+    # --- NUEVO: estados de cuenta (fuente de verdad de negocio para el acceso) ---
+    class EstadoCuenta(models.TextChoices):
+        PENDIENTE = 'PENDIENTE', 'Pendiente'
+        ACTIVA = 'ACTIVA', 'Activa'
+        SUSPENDIDA = 'SUSPENDIDA', 'Suspendida'
+        INACTIVA = 'INACTIVA', 'Inactiva'
+
     rol = models.CharField(
         max_length=20,
         choices=ROLES,
         default='empleado'
     )
+
+    # --- NUEVOS CAMPOS ---
+    estado_cuenta = models.CharField(
+        max_length=20,
+        choices=EstadoCuenta.choices,
+        default=EstadoCuenta.PENDIENTE
+    )
+
+    debe_cambiar_password = models.BooleanField(
+        default=True
+    )
+
+    fecha_primer_acceso = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Se registra la primera vez que el usuario completa su cambio de contraseña obligatorio."
+    )
+
+    # --- Mapa de sincronización estado_cuenta -> is_active ---
+    # Única dirección permitida (RN-CT-07): nadie debe asignar is_active a mano en ningún form/vista.
+    ESTADOS_QUE_PERMITEN_ACCESO = {EstadoCuenta.PENDIENTE, EstadoCuenta.ACTIVA}
+
+    def save(self, *args, **kwargs):
+        # is_active se recalcula siempre a partir de estado_cuenta, nunca al revés.
+        self.is_active = self.estado_cuenta in self.ESTADOS_QUE_PERMITEN_ACCESO
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.username} ({self.get_rol_display()})"
@@ -66,9 +99,9 @@ class PerfilEmpleado(models.Model):
         ('greca', 'Greca'),
     )
 
+    # --- MODIFICADO: se quita 'suspendido'. Este campo ahora es SOLO estado laboral. ---
     ESTADOS = (
         ('activo', 'Activo'),
-        ('suspendido', 'Suspendido'),
         ('retirado', 'Retirado'),
     )
 
@@ -218,7 +251,8 @@ class PerfilEmpleado(models.Model):
 
     def __str__(self):
         return  f'{self.nombre_completo()} {self.cargo}'
-    
+
+
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reset_tokens')
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -228,3 +262,54 @@ class PasswordResetToken(models.Model):
     def es_valido(self):
         vencimiento = self.creado + timedelta(hours=1)
         return not self.usado and timezone.now() < vencimiento
+
+
+# --- NUEVO: modelo de auditoría (sección S del análisis) ---
+class RegistroAuditoriaCuenta(models.Model):
+
+    class Accion(models.TextChoices):
+        CREACION = 'CREACION', 'Creación de cuenta'
+        PRIMER_ACCESO = 'PRIMER_ACCESO', 'Primer acceso completado'
+        SUSPENSION = 'SUSPENSION', 'Suspensión'
+        REACTIVACION = 'REACTIVACION', 'Reactivación'
+        RETIRO = 'RETIRO', 'Retiro'
+        REACTIVACION_RETIRO = 'REACTIVACION_RETIRO', 'Reactivación por reingreso'
+        CAMBIO_ROL = 'CAMBIO_ROL', 'Cambio de rol'
+        RESET_PASSWORD = 'RESET_PASSWORD', 'Restablecimiento de contraseña'
+
+    usuario_afectado = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='eventos_como_afectado'
+    )
+    username_afectado = models.CharField(max_length=150)
+
+    ejecutado_por = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='eventos_ejecutados'
+    )
+    username_ejecutor = models.CharField(max_length=150, blank=True)
+
+    accion = models.CharField(max_length=30, choices=Accion.choices)
+    estado_anterior = models.CharField(max_length=30, blank=True)
+    estado_nuevo = models.CharField(max_length=30, blank=True)
+    motivo = models.TextField(blank=True)
+
+    memorando_consecutivo = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text="Consecutivo del memorando relacionado, si aplica (ej. MEM-2026-003). No es una FK para evitar acoplar las apps usuarios/memorandos."
+    )
+
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-fecha_hora']
+
+    def __str__(self):
+        return f"{self.get_accion_display()} - {self.username_afectado} ({self.fecha_hora:%Y-%m-%d %H:%M})"

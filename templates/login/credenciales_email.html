@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a OperPan</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f4f4f7; font-family: 'Segoe UI', Arial, sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7; padding:40px 0;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    <tr>
+                        <td style="background-color:#A40706; padding:24px; text-align:center;">
+                            <h1 style="color:#ffffff; margin:0; font-size:20px;">OperPan</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px;">
+                            <h2 style="color:#222222; font-size:18px; margin-top:0;">Hola, {{ nombre }}</h2>
+                            <p style="color:#555555; font-size:14px; line-height:1.6;">
+                                Se ha creado tu cuenta en el sistema <strong>OperPan</strong>. 
+                                Estas son tus credenciales de acceso:
+                            </p>
+                            <ul style="list-style:none; padding:0; margin:20px 0;">
+                                <li style="padding:8px 0; border-bottom:1px solid #eee;">
+                                    <strong>Usuario:</strong> {{ username }}
+                                </li>
+                                <li style="padding:8px 0;">
+                                    <strong>Contraseña inicial:</strong> {{ documento }}
+                                </li>
+                            </ul>
+                            <p style="color:#555555; font-size:14px; line-height:1.6;">
+                                Por seguridad, deberás cambiar tu contraseña en tu primer acceso.
+                            </p>
+                            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;">
+                                <tr>
+                                    <td style="border-radius:6px; background-color:#A40706;">
+                                        <a href="{{ login_url }}"
+                                           style="display:inline-block; padding:12px 28px; color:#ffffff; text-decoration:none; font-size:14px; font-weight:bold; border-radius:6px;">
+                                            Iniciar sesión
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="color:#888888; font-size:13px; line-height:1.6;">
+                                Si no esperabas este correo, ignóralo. Tus datos están seguros.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#f4f4f7; padding:16px; text-align:center;">
+                            <span style="color:#aaaaaa; font-size:12px;">
+                                &copy; {% now "Y" %} OperPan · Panadería Estación Paisa
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

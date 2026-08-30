@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="stat-card d-flex justify-content-between align-items-center">
             <div>
@@ -70,11 +70,12 @@
         <option value="admin">Administrador</option>
         <option value="empleado">Empleado</option>
     </select>
-    <select id="filtroEstado" class="filtro-select">
+    <select id="filtroEstadoCuenta" class="filtro-select">
         <option value="">Todos los estados</option>
-        <option value="activo">Activo</option>
-        <option value="suspendido">Suspendido</option>
-        <option value="retirado">Retirado</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="ACTIVA">Activa</option>
+        <option value="SUSPENDIDA">Suspendida</option>
+        <option value="INACTIVA">Inactiva</option>
     </select>
     <button type="button" id="limpiarFiltrosCuentas" class="filtro-btn-limpiar">
         <i class="bi bi-eraser me-1"></i> Limpiar campos
@@ -97,33 +98,34 @@
         </thead>
         <tbody>
             {% for usuario in usuarios %}
-            <tr data-id="{{ usuario.user.id }}" 
+            <tr data-id="{{ usuario.user.id }}"
                 data-primer-nombre="{{ usuario.primer_nombre }}"
-                data-segundo-nombre="{{ usuario.segundo_nombre }}" 
+                data-segundo-nombre="{{ usuario.segundo_nombre }}"
                 data-primer-apellido="{{ usuario.primer_apellido }}"
                 data-segundo-apellido="{{ usuario.segundo_apellido }}"
                 data-tipo-documento="{{ usuario.tipo_documento }}"
                 data-numero-documento="{{ usuario.numero_documento }}"
-                data-fecha-nacimiento="{{ usuario.fecha_nacimiento|date:'Y-m-d' }}" 
+                data-fecha-nacimiento="{{ usuario.fecha_nacimiento|date:'Y-m-d' }}"
                 data-genero="{{ usuario.genero }}"
-                data-estado-civil="{{ usuario.estado_civil }}" 
+                data-estado-civil="{{ usuario.estado_civil }}"
                 data-tipo-sangre="{{ usuario.tipo_sangre }}"
-                data-telefono="{{ usuario.telefono }}" 
+                data-telefono="{{ usuario.telefono }}"
                 data-correo="{{ usuario.correo }}"
-                data-ciudad="{{ usuario.ciudad }}" 
+                data-ciudad="{{ usuario.ciudad }}"
                 data-direccion="{{ usuario.direccion|default:'' }}"
                 data-contacto-emergencia="{{ usuario.contacto_emergencia|default:'' }}"
                 data-parentesco-emergencia="{{ usuario.parentesco_emergencia|default:'' }}"
-                data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}" 
+                data-telefono-emergencia="{{ usuario.telefono_emergencia|default:'' }}"
                 data-cargo="{{ usuario.cargo }}"
-                data-fecha-ingreso="{{ usuario.fecha_ingreso|date:'Y-m-d'|default:'' }}" 
+                data-fecha-ingreso="{{ usuario.fecha_ingreso|date:'Y-m-d'|default:'' }}"
                 data-eps="{{ usuario.eps|default:'' }}"
-                data-arl="{{ usuario.arl|default:'' }}" 
+                data-arl="{{ usuario.arl|default:'' }}"
                 data-fondo-pension="{{ usuario.fondo_pension|default:'' }}"
-                data-estado="{{ usuario.estado }}" 
+                data-estado="{{ usuario.estado }}"
+                data-estado-cuenta="{{ usuario.user.estado_cuenta }}"
                 data-username="{{ usuario.user.username }}"
                 data-rol="{{ usuario.user.rol }}">
-                
+
                 <td>{{ usuario.numero_documento }}</td>
                 <td>{{ usuario.user.username }}</td>
                 <td>{{ usuario.nombre_completo }}</td>
@@ -136,35 +138,78 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if usuario.estado == 'activo' %}
-                    <span class="badge badge-active">Activo</span>
-                    {% elif usuario.estado == 'suspendido' %}
-                    <span class="badge badge-inactive">Suspendido</span>
+                    {% if usuario.user.estado_cuenta == 'PENDIENTE' %}
+                        <span class="badge bg-info-subtle text-info-emphasis">Pendiente</span>
+                    {% elif usuario.user.estado_cuenta == 'ACTIVA' %}
+                        <span class="badge badge-active">Activa</span>
+                    {% elif usuario.user.estado_cuenta == 'SUSPENDIDA' %}
+                        <span class="badge badge-inactive">Suspendida</span>
                     {% else %}
-                    <span class="badge bg-secondary">Retirado</span>
+                        <span class="badge bg-secondary">Inactiva{% if usuario.estado == 'retirado' %} (retirado){% endif %}</span>
                     {% endif %}
                 </td>
                 <td>
-                    <div class="d-flex gap-1">
-                        <!-- VER - Clase btn-ver-usuario -->
-                        <button type="button" class="btn-action btn-sm btn-corporate-thi btn-ver-usuario" 
+                    <div class="d-flex gap-1 flex-wrap">
+                        <button type="button" class="btn-action btn-sm btn-corporate-thi btn-ver-usuario"
                                 title="Ver" data-id="{{ usuario.user.id }}">
                             <i class="bi bi-eye"></i>
                         </button>
-                        
-                        <!-- EDITAR - Clase btn-editar-usuario -->
-                        <button type="button" class="btn-action btn-sm btn-corporate-sec btn-editar-usuario" 
+
+                        {% if usuario.user.estado_cuenta != 'INACTIVA' %}
+                        <button type="button" class="btn-action btn-sm btn-corporate-sec btn-editar-usuario"
                                 title="Editar" data-id="{{ usuario.user.id }}">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-                        
-                        <!-- ELIMINAR - Clase btn-eliminar-usuario -->
-                        <button type="button" class="btn-action btn-sm btn-primary-corporate btn-eliminar-usuario" 
-                                title="Eliminar" 
+                        {% endif %}
+
+                        {% if usuario.user.estado_cuenta == 'PENDIENTE' %}
+                        <button type="button" class="btn-action btn-sm btn-corporate-thi btn-credenciales-usuario"
+                                title="Reenviar credenciales" data-id="{{ usuario.user.id }}"
+                                data-nombre="{{ usuario.nombre_completo }}">
+                            <i class="bi bi-envelope"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if usuario.user.estado_cuenta == 'PENDIENTE' or usuario.user.estado_cuenta == 'ACTIVA' %}
+                        <button type="button" class="btn-action btn-sm btn-corporate-sec btn-suspender-usuario"
+                                title="Suspender" data-id="{{ usuario.user.id }}"
+                                data-nombre="{{ usuario.nombre_completo }}">
+                            <i class="bi bi-slash-circle"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if usuario.user.estado_cuenta == 'SUSPENDIDA' %}
+                        <button type="button" class="btn-action btn-sm btn-corporate-thi btn-reactivar-usuario"
+                                title="Reactivar" data-id="{{ usuario.user.id }}"
+                                data-nombre="{{ usuario.nombre_completo }}">
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if usuario.user.estado_cuenta != 'INACTIVA' %}
+                        <button type="button" class="btn-action btn-sm btn-primary-corporate btn-retirar-usuario"
+                                title="Retirar" data-id="{{ usuario.user.id }}"
+                                data-nombre="{{ usuario.nombre_completo }}">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if usuario.user.estado_cuenta == 'INACTIVA' and usuario.estado == 'retirado' %}
+                        <button type="button" class="btn-action btn-sm btn-corporate-thi btn-reactivar-retiro-usuario"
+                                title="Reincorporar" data-id="{{ usuario.user.id }}"
+                                data-nombre="{{ usuario.nombre_completo }}">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if usuario.user.estado_cuenta == 'PENDIENTE' %}
+                        <button type="button" class="btn-action btn-sm btn-danger btn-eliminar-usuario"
+                                title="Eliminar"
                                 data-id="{{ usuario.user.id }}"
                                 data-nombre="{{ usuario.nombre_completo }}">
                             <i class="bi bi-trash"></i>
                         </button>
+                        {% endif %}
                     </div>
                 </td>
             </tr>

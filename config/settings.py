@@ -38,6 +38,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.usuarios.middleware.VerificarEstadoCuentaMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -177,3 +178,5 @@ EMAIL_HOST_USER = "operpangestion@gmail.com"   # Cambia por tu correo
 EMAIL_HOST_PASSWORD = "xyem pixd lphs ftmu"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SITE_URL = "http://127.0.0.1:8000"
