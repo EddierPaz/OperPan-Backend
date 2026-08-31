@@ -1,146 +1,155 @@
 <div class="employee-card">
 
-    <!-- ==================== TÍTULO (SOLO) ==================== -->
-    <h3 class="mb-3">Información personal</h3>
-
-    <!-- ==================== AVATAR + NOMBRE + CARGO + BOTÓN ==================== -->
-    <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+    <!-- ==================== HEADER: AVATAR + NOMBRE + CARGO + BOTÓN ==================== -->
+    <div class="profile-header d-flex align-items-center gap-3 mb-4 flex-wrap">
         <div class="employee-avatar-large" id="avatarIniciales">
             {{ perfil.nombre_completo|slice:":1" }}
         </div>
-
-        <div class="flex-grow-1 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-                <h4 class="mb-1">{{ perfil.nombre_completo }}</h4>
-                <span class="badge-role">
-                    <i class="bi bi-briefcase-fill me-1"></i>{{ perfil.get_cargo_display }}
-                </span>
-            </div>
-            <button type="button" id="btnEditar" class="btn btn-sm btn-primary-corporate" form="formPerfil">
-                <i class="bi bi-pencil-square"></i>
-                <span id="btnEditarTexto">Editar</span>
-            </button>
+        <div class="profile-info flex-grow-1">
+            <h4 class="mb-0">{{ perfil.nombre_completo }}</h4>
+            <span class="badge-role">
+                <i class="bi bi-briefcase-fill me-1"></i>{{ perfil.get_cargo_display }}
+            </span>
         </div>
+        <button type="button" id="btnEditar" class="btn btn-editar">
+            <i class="bi bi-pencil-square"></i> <span id="btnEditarTexto">Editar</span>
+        </button>
     </div>
 
-<!-- ==================== PESTAÑAS (ESTILO MODERNO) ==================== -->
-<div class="custom-tabs-modern">
-    <button type="button" class="tab-btn-custom active" data-tab="personal">
-        <i class="bi bi-person-vcard"></i>Personal
-    </button>
-    <button type="button" class="tab-btn-custom" data-tab="laboral">
-        <i class="bi bi-briefcase"></i>Laboral
-    </button>
-    <button type="button" class="tab-btn-custom" data-tab="seguridad">
-        <i class="bi bi-shield-lock"></i>Seguridad
-    </button>
-</div>
+    <!-- ==================== PESTAÑAS MODERNAS ==================== -->
+    <div class="custom-tabs-modern">
+        <button type="button" class="tab-btn-custom active" data-tab="personal">
+            <i class="bi bi-person-vcard"></i> Personal
+        </button>
+        <button type="button" class="tab-btn-custom" data-tab="laboral">
+            <i class="bi bi-briefcase"></i> Laboral
+        </button>
+        <button type="button" class="tab-btn-custom" data-tab="seguridad">
+            <i class="bi bi-shield-lock"></i> Seguridad
+        </button>
+    </div>
 
     <form method="POST" action="{% url 'employee_profile_update' %}" id="formPerfil">
         {% csrf_token %}
 
         <!-- ============================================================ -->
-        <!-- TAB: PERSONAL (CON BOTONES GUARDAR/CANCELAR)                  -->
+        <!-- TAB 1: PERSONAL                                               -->
         <!-- ============================================================ -->
         <div class="tab-pane active" id="personal">
-            <div class="row g-4">
 
-                <div class="col-md-4">
-                    <small class="text-muted">Nombre completo</small>
-                    <div class="fw-semibold">{{ perfil.nombre_completo }}</div>
+            <!-- Card 1: Datos Personales -->
+            <div class="info-card">
+                <h6 class="card-title"><i class="bi bi-person-badge me-2"></i>Datos Personales</h6>
+                <div class="row g-3">
+                    <!-- Nombre (No editable) -->
+                    <div class="col-md-6">
+                        <small class="field-label">Nombre completo</small>
+                        <div class="field-value">{{ perfil.nombre_completo }}</div>
+                    </div>
+                    <!-- Documento (No editable) -->
+                    <div class="col-md-3">
+                        <small class="field-label">Documento</small>
+                        <div class="field-value">{{ perfil.numero_documento }}</div>
+                    </div>
+                    <!-- Tipo Documento (No editable) -->
+                    <div class="col-md-3">
+                        <small class="field-label">Tipo Documento</small>
+                        <div class="field-value">{{ perfil.get_tipo_documento_display }}</div>
+                    </div>
+                    <!-- Fecha Nacimiento (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Fecha Nacimiento</small>
+                        <div class="field-value">{{ perfil.fecha_nacimiento }}</div>
+                    </div>
+                    <!-- Género (Editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Género</small>
+                        <div class="view-mode field-value">{{ perfil.get_genero_display }}</div>
+                        <select name="genero" class="form-select edit-mode d-none">
+                            <option value="M" {% if perfil.genero == 'M' %}selected{% endif %}>Masculino</option>
+                            <option value="F" {% if perfil.genero == 'F' %}selected{% endif %}>Femenino</option>
+                            <option value="O" {% if perfil.genero == 'O' %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+                    <!-- Estado Civil (Editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Estado Civil</small>
+                        <div class="view-mode field-value">{{ perfil.get_estado_civil_display }}</div>
+                        <select name="estado_civil" class="form-select edit-mode d-none">
+                            <option value="soltero" {% if perfil.estado_civil == 'soltero' %}selected{% endif %}>Soltero</option>
+                            <option value="casado" {% if perfil.estado_civil == 'casado' %}selected{% endif %}>Casado</option>
+                            <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %}selected{% endif %}>Unión Libre</option>
+                            <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %}selected{% endif %}>Divorciado</option>
+                            <option value="viudo" {% if perfil.estado_civil == 'viudo' %}selected{% endif %}>Viudo</option>
+                        </select>
+                    </div>
                 </div>
+            </div>
 
-                <div class="col-md-4">
-                    <small class="text-muted">Documento</small>
-                    <div class="fw-semibold">{{ perfil.numero_documento }}</div>
+            <!-- Card 2: Contacto -->
+            <div class="info-card">
+                <h6 class="card-title"><i class="bi bi-envelope me-2"></i>Contacto</h6>
+                <div class="row g-3">
+                    <!-- Teléfono (Editable) -->
+                    <div class="col-md-6">
+                        <small class="field-label">Teléfono</small>
+                        <div class="view-mode field-value">{{ perfil.telefono }}</div>
+                        <input type="text" name="telefono" class="form-control edit-mode d-none" value="{{ perfil.telefono }}">
+                    </div>
+                    <!-- Correo (Editable) -->
+                    <div class="col-md-6">
+                        <small class="field-label">Correo</small>
+                        <div class="view-mode field-value">{{ perfil.correo }}</div>
+                        <input type="email" name="correo" class="form-control edit-mode d-none" value="{{ perfil.correo }}">
+                    </div>
+                    <!-- Dirección (Editable) -->
+                    <div class="col-md-6">
+                        <small class="field-label">Dirección</small>
+                        <div class="view-mode field-value">{{ perfil.direccion }}</div>
+                        <input type="text" name="direccion" class="form-control edit-mode d-none" value="{{ perfil.direccion }}">
+                    </div>
+                    <!-- Ciudad (Editable) -->
+                    <div class="col-md-6">
+                        <small class="field-label">Ciudad</small>
+                        <div class="view-mode field-value">{{ perfil.ciudad }}</div>
+                        <input type="text" name="ciudad" class="form-control edit-mode d-none" value="{{ perfil.ciudad }}">
+                    </div>
                 </div>
+            </div>
 
-                <div class="col-md-4">
-                    <small class="text-muted">Tipo Documento</small>
-                    <div class="fw-semibold">{{ perfil.get_tipo_documento_display }}</div>
+            <!-- Card 3: Contacto de Emergencia -->
+            <div class="info-card">
+                <h6 class="card-title"><i class="bi bi-exclamation-triangle me-2"></i>Contacto de Emergencia</h6>
+                <div class="row g-3">
+                    <!-- Nombre (Editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Nombre</small>
+                        <div class="view-mode field-value">{{ perfil.contacto_emergencia }}</div>
+                        <input type="text" name="contacto_emergencia" class="form-control edit-mode d-none" value="{{ perfil.contacto_emergencia }}">
+                    </div>
+                    <!-- Parentesco (Editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Parentesco</small>
+                        <div class="view-mode field-value">{{ perfil.parentesco_emergencia }}</div>
+                        <input type="text" name="parentesco_emergencia" class="form-control edit-mode d-none" value="{{ perfil.parentesco_emergencia }}">
+                    </div>
+                    <!-- Teléfono (Editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Teléfono</small>
+                        <div class="view-mode field-value">{{ perfil.telefono_emergencia }}</div>
+                        <input type="text" name="telefono_emergencia" class="form-control edit-mode d-none" value="{{ perfil.telefono_emergencia }}">
+                    </div>
                 </div>
+            </div>
 
-                <div class="col-md-4">
-                    <small class="text-muted">Fecha Nacimiento</small>
-                    <div class="fw-semibold">{{ perfil.fecha_nacimiento }}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Género</small>
-                    <div class="view-mode fw-semibold">{{ perfil.get_genero_display }}</div>
-                    <select name="genero" class="form-select edit-mode d-none">
-                        <option value="M" {% if perfil.genero == 'M' %} selected {% endif %}>Masculino</option>
-                        <option value="F" {% if perfil.genero == 'F' %} selected {% endif %}>Femenino</option>
-                        <option value="O" {% if perfil.genero == 'O' %} selected {% endif %}>Otro</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Estado Civil</small>
-                    <div class="view-mode fw-semibold">{{ perfil.get_estado_civil_display }}</div>
-                    <select name="estado_civil" class="form-select edit-mode d-none">
-                        <option value="soltero" {% if perfil.estado_civil == 'soltero' %} selected {% endif %}>Soltero</option>
-                        <option value="casado" {% if perfil.estado_civil == 'casado' %} selected {% endif %}>Casado</option>
-                        <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %} selected {% endif %}>Unión Libre</option>
-                        <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %} selected {% endif %}>Divorciado</option>
-                        <option value="viudo" {% if perfil.estado_civil == 'viudo' %} selected {% endif %}>Viudo</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Teléfono</small>
-                    <div class="view-mode fw-semibold">{{ perfil.telefono }}</div>
-                    <input type="text" name="telefono" class="form-control edit-mode d-none" value="{{ perfil.telefono }}">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Correo</small>
-                    <div class="view-mode fw-semibold">{{ perfil.correo }}</div>
-                    <input type="email" name="correo" class="form-control edit-mode d-none" value="{{ perfil.correo }}">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Dirección</small>
-                    <div class="view-mode fw-semibold">{{ perfil.direccion }}</div>
-                    <input type="text" name="direccion" class="form-control edit-mode d-none" value="{{ perfil.direccion }}">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Ciudad</small>
-                    <div class="view-mode fw-semibold">{{ perfil.ciudad }}</div>
-                    <input type="text" name="ciudad" class="form-control edit-mode d-none" value="{{ perfil.ciudad }}">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Nombre del contacto de emergencia</small>
-                    <div class="view-mode fw-semibold">{{ perfil.contacto_emergencia }}</div>
-                    <input type="text" name="contacto_emergencia" class="form-control edit-mode d-none" value="{{ perfil.contacto_emergencia }}">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Parentesco</small>
-                    <div class="view-mode fw-semibold">{{ perfil.parentesco_emergencia }}</div>
-                    <input type="text" name="parentesco_emergencia" class="form-control edit-mode d-none" value="{{ perfil.parentesco_emergencia }}">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Teléfono del contacto de emergencia</small>
-                    <div class="view-mode fw-semibold">{{ perfil.telefono_emergencia }}</div>
-                    <input type="text" name="telefono_emergencia" class="form-control edit-mode d-none" value="{{ perfil.telefono_emergencia }}">
-                </div>
-
-            </div><!-- /row -->
-
-            <!-- ===== ACCIONES SOLO EN PERSONAL ===== -->
+            <!-- Acciones de Personal -->
             <div class="mt-4 d-none" id="accionesEdicionPersonal">
                 <div class="d-flex gap-2 flex-wrap">
                     <button type="button" class="btnCancelarPersonal btn btn-outline-corporate">
-                        <i class="bi bi-x-circle"></i>
-                        Cancelar cambios
+                        <i class="bi bi-x-circle"></i> Cancelar cambios
                     </button>
                     <button type="submit" class="btn btn-primary-corporate fw-bold">
-                        <i class="bi bi-check-circle"></i>
-                        Guardar cambios
+                        <i class="bi bi-check-circle"></i> Guardar cambios
                     </button>
                 </div>
             </div>
@@ -148,103 +157,105 @@
 
 
         <!-- ============================================================ -->
-        <!-- TAB: LABORAL (SIN BOTONES GUARDAR/CANCELAR)                   -->
+        <!-- TAB 2: LABORAL (SOLO LECTURA)                                -->
         <!-- ============================================================ -->
         <div class="tab-pane" id="laboral">
-            <div class="row g-4">
-
-                <div class="col-md-4">
-                    <small class="text-muted">Cargo</small>
-                    <div class="fw-semibold">{{ perfil.get_cargo_display }}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Fecha Ingreso</small>
-                    <div class="fw-semibold">{{ perfil.fecha_ingreso }}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Estado</small>
-                    <div class="fw-semibold">
-                        {% if perfil.estado == 'activo' %}
-                            <span class="badge-success">{{ perfil.get_estado_display }}</span>
-                        {% else %}
-                            <span class="badge-warning">{{ perfil.get_estado_display }}</span>
-                        {% endif %}
+            <div class="info-card">
+                <h6 class="card-title"><i class="bi bi-briefcase-fill me-2"></i>Información Laboral</h6>
+                <div class="row g-3">
+                    <!-- Cargo (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Cargo</small>
+                        <div class="field-value">{{ perfil.get_cargo_display }}</div>
+                    </div>
+                    <!-- Fecha Ingreso (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Fecha Ingreso</small>
+                        <div class="field-value">{{ perfil.fecha_ingreso }}</div>
+                    </div>
+                    <!-- Estado (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Estado</small>
+                        <div class="field-value">
+                            {% if perfil.estado == 'activo' %}
+                                <span class="badge-success">{{ perfil.get_estado_display }}</span>
+                            {% elif perfil.estado == 'vacaciones' %}
+                                <span class="badge-info">{{ perfil.get_estado_display }}</span>
+                            {% else %}
+                                <span class="badge-warning">{{ perfil.get_estado_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- EPS (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">EPS</small>
+                        <div class="field-value">{{ perfil.eps }}</div>
+                    </div>
+                    <!-- ARL (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">ARL</small>
+                        <div class="field-value">{{ perfil.arl }}</div>
+                    </div>
+                    <!-- Fondo de Pensión (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Fondo de Pensión</small>
+                        <div class="field-value">{{ perfil.fondo_pension }}</div>
+                    </div>
+                    <!-- Tipo Sangre (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Tipo Sangre</small>
+                        <div class="field-value">{{ perfil.tipo_sangre }}</div>
                     </div>
                 </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">EPS</small>
-                    <div class="fw-semibold">{{ perfil.eps }}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">ARL</small>
-                    <div class="fw-semibold">{{ perfil.arl }}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Fondo de Pensión</small>
-                    <div class="fw-semibold">{{ perfil.fondo_pension }}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted">Tipo Sangre</small>
-                    <div class="fw-semibold">{{ perfil.tipo_sangre }}</div>
-                </div>
-
-            </div><!-- /row -->
-            <!-- ⚠️ NO HAY BOTONES GUARDAR/CANCELAR EN LABORAL -->
+            </div>
+            <!-- ⚠️ NO HAY BOTONES GUARDAR/CANCELAR EN LABORAL (solo lectura) -->
         </div><!-- /tab laboral -->
 
 
         <!-- ============================================================ -->
-        <!-- TAB: SEGURIDAD (CON BOTONES GUARDAR/CANCELAR)                 -->
+        <!-- TAB 3: SEGURIDAD (CON BOTONES GUARDAR/CANCELAR)              -->
         <!-- ============================================================ -->
         <div class="tab-pane" id="seguridad">
-            <div class="row g-4">
-
-                <div class="col-md-4">
-                    <small class="text-muted">Usuario</small>
-                    <div class="fw-semibold">{{ request.user.username }}</div>
+            <div class="info-card">
+                <h6 class="card-title"><i class="bi bi-shield-lock-fill me-2"></i>Seguridad</h6>
+                <div class="row g-3">
+                    <!-- Usuario (No editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Usuario</small>
+                        <div class="field-value">{{ request.user.username }}</div>
+                    </div>
+                    <!-- Contraseña (Editable) -->
+                    <div class="col-md-4">
+                        <small class="field-label">Contraseña</small>
+                        <div class="view-mode field-value">••••••••••••</div>
+                        <input type="password" name="password" class="form-control edit-mode d-none" placeholder="Nueva contraseña">
+                    </div>
+                    <!-- Confirmar Contraseña (solo en modo edición) -->
+                    <div class="col-md-4">
+                        <small class="field-label edit-mode d-none">Confirmar contraseña</small>
+                        <input type="password" name="confirmar_password" class="form-control edit-mode d-none" placeholder="Confirmar contraseña">
+                    </div>
                 </div>
+            </div>
 
-                <div class="col-md-4">
-                    <small class="text-muted">Contraseña</small>
-                    <div class="view-mode fw-semibold">••••••••••••</div>
-                    <input type="password" name="password" class="form-control edit-mode d-none" placeholder="Nueva contraseña">
-                </div>
-
-                <div class="col-md-4">
-                    <small class="text-muted edit-mode d-none">Confirmar contraseña</small>
-                    <input type="password" name="confirmar_password" class="form-control edit-mode d-none" placeholder="Confirmar contraseña">
-                </div>
-
-            </div><!-- /row -->
-
-            <!-- ===== ACCIONES SOLO EN SEGURIDAD ===== -->
+            <!-- Acciones de Seguridad -->
             <div class="mt-4 d-none" id="accionesEdicionSeguridad">
                 <div class="d-flex gap-2 flex-wrap">
                     <button type="button" class="btnCancelarSeguridad btn btn-outline-corporate">
-                        <i class="bi bi-x-circle"></i>
-                        Cancelar cambios
+                        <i class="bi bi-x-circle"></i> Cancelar cambios
                     </button>
                     <button type="submit" class="btn btn-primary-corporate fw-bold">
-                        <i class="bi bi-check-circle"></i>
-                        Guardar cambios
+                        <i class="bi bi-check-circle"></i> Guardar cambios
                     </button>
                 </div>
             </div>
         </div><!-- /tab seguridad -->
 
     </form>
-
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Iniciales del avatar (nombre + apellido)
     const avatarEl = document.getElementById('avatarIniciales');
     const nombreCompleto = "{{ perfil.nombre_completo|escapejs }}".trim();
     if (avatarEl && nombreCompleto) {
