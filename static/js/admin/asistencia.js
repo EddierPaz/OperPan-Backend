@@ -232,33 +232,34 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 7. FILTROS DE BÚSQUEDA Y SELECCIÓN EN TABLA
     // ==========================================
-    const filas = document.querySelectorAll("table.table-custom tbody tr");
+    const filas = document.querySelectorAll("table.table-custom tbody tr.fila-horario");
     const inputBuscar = document.getElementById("buscarHorario");
     const selectTurno = document.getElementById("filtroTurno");
     const selectEstado = document.getElementById("filtroEstadoHorario");
 
-    if (inputBuscar) {
-        function aplicarFiltros() {
-            const texto = inputBuscar.value.trim().toLowerCase();
-            const turno = selectTurno.value.toLowerCase();
-            const estado = selectEstado.value.toLowerCase();
+    function aplicarFiltros() {
+        const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : "";
+        const turno = selectTurno ? selectTurno.value.toLowerCase() : "";
+        const estado = selectEstado ? selectEstado.value.toLowerCase() : "";
 
-            filas.forEach(fila => {
-                const celdas = fila.querySelectorAll("td");
-                if (celdas.length < 6) return;
+        filas.forEach(fila => {
+            const empleadoFila = fila.dataset.empleado || "";
+            const turnoFila = fila.dataset.turno || "";
+            const estadoFila = fila.dataset.estado || "";
 
-                const empleado = celdas[0].textContent.trim().toLowerCase();
-                const turnoFila = celdas[2].textContent.trim().toLowerCase();
-                const estadoFila = celdas[5].textContent.trim().toLowerCase();
+            const coincideTexto = !texto || empleadoFila.includes(texto);
+            const coincideTurno = !turno || turnoFila === turno;
+            const coincideEstado = !estado || estadoFila === estado;
 
-                const coincideTexto = !texto || empleado.includes(texto);
-                const coincideTurno = !turno || turnoFila === turno;
-                const coincideEstado = !estado || estadoFila === estado;
+            if (coincideTexto && coincideTurno && coincideEstado) {
+                fila.style.display = "";
+            } else {
+                fila.style.display = "none";
+            }
+        });
+    }
 
-                fila.style.display = (coincideTexto && coincideTurno && coincideEstado) ? "" : "none";
-            });
-        }
-
+    if (inputBuscar || selectTurno || selectEstado) {
         [inputBuscar, selectTurno, selectEstado].forEach(el => {
             if (el) {
                 el.addEventListener("input", aplicarFiltros);
@@ -269,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnLimpiarFiltros = document.getElementById("limpiarFiltrosHorarios");
         if (btnLimpiarFiltros) {
             btnLimpiarFiltros.addEventListener("click", function () {
-                inputBuscar.value = "";
+                if (inputBuscar) inputBuscar.value = "";
                 if (selectTurno) selectTurno.value = "";
                 if (selectEstado) selectEstado.value = "";
                 aplicarFiltros();
