@@ -103,6 +103,20 @@
   transform: translateY(-2px);
 }
 
+.btn-corporate-four {
+  background: #ffffff;
+  color: #333333;
+  border: 1px solid #cccccc;
+  transition: all 0.3s ease;
+}
+
+.btn-corporate-four:hover {
+  background: #f0f0f0;
+  color: #000000;
+  border-color: #999999;
+  transform: translateY(-2px);
+}
+
 
 /* ── Botones de acción rápida (Ver, Aprobar, Rechazar, Editar, Eliminar, Descargar) ── */
 .btn-action {

@@ -304,4 +304,58 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // ============================================================
+    // 5. MEJORAS PARA EL NUEVO MENÚ DE ACCIONES
+    // (Añadido para soportar el rediseño de la tabla)
+    // ============================================================
+
+    // ===== Cerrar dropdown automáticamente después de una acción =====
+    // Cuando el usuario hace clic en una acción del dropdown, el menú se cierra automáticamente
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('.dropdown-item');
+        if (target) {
+            const dropdown = target.closest('.dropdown');
+            if (dropdown) {
+                const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+                if (toggle) {
+                    const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                    if (bsDropdown) {
+                        bsDropdown.hide();
+                    }
+                }
+            }
+        }
+    });
+
+    // ===== Feedback visual al hacer clic en acciones =====
+    // Añade un pequeño efecto de "clic" para mejorar la experiencia de usuario
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('.btn-accion-principal, .dropdown-item');
+        if (target) {
+            target.style.transition = 'transform 0.1s ease';
+            target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                target.style.transform = 'scale(1)';
+            }, 100);
+        }
+    });
+
+    // ===== Soporte para teclado en el menú de acciones =====
+    // Mejora la accesibilidad permitiendo navegar con teclado
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const openDropdowns = document.querySelectorAll('.dropdown.show');
+            openDropdowns.forEach(dropdown => {
+                const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+                if (toggle) {
+                    const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
+                    if (bsDropdown) {
+                        bsDropdown.hide();
+                    }
+                }
+            });
+        }
+    });
+
 });

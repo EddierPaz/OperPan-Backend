@@ -3,58 +3,176 @@
    ============================================== */
 
 .badge-rol-admin {
-    background: #EDE9FE;
-    color: #5B21B6;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    border: 1px solid #DDD6FE;
+  background: #EDE9FE;
+  color: #5B21B6;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid #DDD6FE;
 }
 
 .badge-rol-empleado {
-    background: #E0F2FE;
-    color: #0369A1;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    border: 1px solid #BAE6FD;
+  background: #E0F2FE;
+  color: #0369A1;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid #BAE6FD;
 }
 
 .badge-inactive {
-    background: #FEF3C7;
-    color: #92400E;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    border: 1px solid #FDE68A;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid #FDE68A;
 }
 
 .badge-retirado {
-    background: #FEE2E2;
-    color: #991B1B;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    border: 1px solid #FCA5A5;
+  background: #FEE2E2;
+  color: #991B1B;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid #FCA5A5;
 }
 
-/* ── MODALES ── */
+.badge-subtext {
+  font-weight: 400;
+  font-size: 0.65rem;
+  opacity: 0.8;
+  margin-left: 0.2rem;
+}
+
+/* ==============================================
+   NUEVOS ESTILOS PARA LA TABLA DE USUARIOS
+   ============================================== */
+
+/* 1. COLUMNA: Usuario (Badge distintivo) */
+.usuario-badge {
+  background-color: #f0f4f8;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1a2b3c;
+  display: inline-block;
+  letter-spacing: 0.3px;
+  border: 1px solid #dce3ec;
+}
+
+/* 2. COLUMNA: Nombre y cargo */
+.nombre-cargo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.nombre-empleado {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #131d26;
+}
+
+.cargo-empleado {
+  font-size: 0.75rem;
+  color: #6c7a89;
+  font-weight: 400;
+}
+
+/* 3. COLUMNA: Acciones - Centrado */
+.acciones-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+/* Texto de las acciones (visible en desktop) */
+.accion-texto {
+  font-size: 0.75rem;
+  margin-left: 0.15rem;
+}
+
+/* Ocultar texto en móvil, mostrar solo iconos */
+@media (max-width: 768px) {
+  .accion-texto {
+    display: none;
+  }
+
+  .btn-action {
+    padding: 0.3rem 0.5rem !important;
+  }
+
+  .btn-action i {
+    font-size: 0.95rem !important;
+  }
+
+  .btn-action-icon {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .btn-action-icon i {
+    font-size: 0.9rem !important;
+  }
+
+  .dropdown-item {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .nombre-empleado {
+    font-size: 0.85rem;
+  }
+
+  .cargo-empleado {
+    font-size: 0.65rem;
+  }
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+  .btn-action {
+    padding: 0.3rem 0.5rem !important;
+  }
+
+  .btn-action i {
+    font-size: 1.1rem !important;
+  }
+
+  .btn-action-icon {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .btn-action-icon i {
+    font-size: 1rem !important;
+  }
+}
+
+/* ==============================================
+   MODALES (se mantienen igual)
+   ============================================== */
+
 .usuario-modal {
   border: none;
   border-radius: 20px;
@@ -163,10 +281,12 @@
   padding: 1rem 1.5rem;
   border-top: 1px solid #edf2f7;
   background: #ffffff;
+  display: flex;
+  justify-content: flex-end;
   gap: 0.6rem;
 }
 
-/* BOTONES */
+/* BOTONES DE MODAL */
 .usuario-modal-btn {
   border: none;
   border-radius: 25px;
@@ -192,7 +312,7 @@
   border-color: #b02a37;
 }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE MODALES ── */
 @media (max-width: 768px) {
   .usuario-detalle-grid {
     grid-template-columns: 1fr;
