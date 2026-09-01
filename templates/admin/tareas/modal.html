@@ -1,22 +1,22 @@
 {# ==================== MODAL CREAR/EDITAR TAREA ==================== #}
 <div class="modal fade" id="modalTarea" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content tarea-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header tarea-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="tarea-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-plus-circle-fill"></i>
                         <span>{% if editando %}Editar Tarea{% else %}Asignar Nueva Tarea{% endif %}</span>
                     </div>
-                    <p class="tarea-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         {% if editando %}Modifica los datos de la tarea{% else %}Registra una nueva tarea para un empleado{% endif %}
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <div class="modal-body tarea-detalle-body">
+            <div class="modal-body modal-detalle-body">
                 <form method="POST"
                     action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
                     id="taskForm"
@@ -27,17 +27,17 @@
                     {% csrf_token %}
 
                     <!-- ASIGNACIÓN -->
-                    <div class="tarea-detalle-grid">
-                        <div class="tarea-detalle-bloque-largo">
-                            <span class="tarea-detalle-bloque-largo-label">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-bloque-largo">
+                            <span class="modal-detalle-bloque-largo-label">
                                 <i class="bi bi-person-vcard me-1"></i> Asignación
                             </span>
                         </div>
 
                         <!-- Empleado -->
-                        <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Empleado <span class="text-danger">*</span></span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Empleado <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select {% if editando %}bg-light{% endif %}" name="empleado" id="id_empleado" required {% if editando %}disabled{% endif %}>
                                     <option value="" disabled {% if not form.empleado.value %}selected{% endif %}>
                                         Seleccionar empleado
@@ -57,17 +57,17 @@
                         </div>
 
                         <!-- Cargo -->
-                        <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Cargo</span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Cargo</span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control bg-light" id="id_cargo_display" readonly disabled placeholder="—">
                             </span>
                         </div>
 
                         <!-- Turno -->
-                        <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Turno</span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Turno</span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control bg-light" id="id_turno_display" readonly disabled placeholder="—">
                                 <select class="form-select" name="turno_asociado" id="id_turno_asociado" required style="display:none;">
                                     <option value="">Seleccionar</option>
@@ -85,17 +85,17 @@
                     <hr class="my-4">
 
                     <!-- DETALLES DE LA TAREA -->
-                    <div class="tarea-detalle-grid">
-                        <div class="tarea-detalle-bloque-largo">
-                            <span class="tarea-detalle-bloque-largo-label">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-bloque-largo">
+                            <span class="modal-detalle-bloque-largo-label">
                                 <i class="bi bi-clipboard-check me-1"></i> Detalles de la Tarea
                             </span>
                         </div>
 
                         <!-- Título -->
-                        <div class="tarea-detalle-item" style="grid-column: span 2;">
-                            <span class="tarea-detalle-label">Título <span class="text-danger">*</span></span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item" style="grid-column: span 2;">
+                            <span class="modal-detalle-label">Título <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" id="id_titulo_preset">
                                     <option value="">Selecciona un empleado primero</option>
                                 </select>
@@ -108,9 +108,9 @@
                         </div>
 
                         <!-- Prioridad -->
-                        <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Prioridad <span class="text-danger">*</span></span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Prioridad <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select locked-field" name="prioridad" id="id_prioridad" tabindex="-1">
                                     {% for value, label in form.prioridad.field.choices %}
                                         <option value="{{ value }}" {% if form.prioridad.value == value %}selected{% endif %}>{{ label }}</option>
@@ -121,9 +121,9 @@
                         </div>
 
                         <!-- Descripción -->
-                        <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
-                            <span class="tarea-detalle-label">Descripción <span class="text-danger">*</span></span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-label">Descripción <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <textarea class="form-control locked-field" name="descripcion" id="id_descripcion"
                                         rows="3" required readonly placeholder="Instrucciones detalladas...">{{ form.descripcion.value|default:'' }}</textarea>
                             </span>
@@ -131,9 +131,9 @@
                         </div>
 
                         <!-- Fecha límite -->
-                        <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Fecha límite <span class="text-danger">*</span></span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha límite <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="date" class="form-control" name="fecha_limite" id="id_fecha_limite"
                                        required value="{{ form.fecha_limite.value|date:'Y-m-d'|default:'' }}">
                             </span>
@@ -141,9 +141,9 @@
                         </div>
 
                         <!-- Hora límite -->
-                        <div class="tarea-detalle-item">
-                            <span class="tarea-detalle-label">Hora límite</span>
-                            <span class="tarea-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Hora límite</span>
+                            <span class="modal-detalle-value">
                                 <input type="time" class="form-control" name="hora_limite" id="id_hora_limite"
                                        value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
                                 <small class="text-muted" id="hora-limite-hint"></small>
@@ -152,12 +152,12 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer tarea-detalle-footer mt-4">
-                        <button type="reset" class="tarea-modal-btn btn-outline-corporate">
-                            <i class="bi bi-eraser me-1"></i> Limpiar campos
+                    <div class="modal-footer modal-detalle-footer mt-4">
+                        <button type="reset" class="btn-action btn-action-cancel">
+                            <i class="bi bi-eraser"></i> Limpiar campos
                         </button>
-                        <button type="submit" class="tarea-modal-btn btn-primary-corporate">
-                            <i class="bi bi-save me-1"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
+                        <button type="submit" class="btn-action btn-action-save">
+                            <i class="bi bi-save"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
                         </button>
                     </div>
                 </form>
@@ -170,33 +170,33 @@
 {% if tarea_detalle %}
 <div class="modal fade show" id="adminTaskDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content tarea-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header tarea-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="tarea-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-info-circle-fill"></i>
                         <span>Detalle de Tarea</span>
                     </div>
-                    <p class="tarea-detalle-subtitulo mb-0">{{ tarea_detalle.titulo }}</p>
+                    <p class="modal-detalle-subtitulo mb-0">{{ tarea_detalle.titulo }}</p>
                 </div>
                 <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
             </div>
 
-            <div class="modal-body tarea-detalle-body">
-                <div class="tarea-detalle-grid">
+            <div class="modal-body modal-detalle-body">
+                <div class="modal-detalle-grid">
 
                     <!-- INFORMACIÓN GENERAL -->
-                    <div class="tarea-detalle-bloque-largo">
-                        <span class="tarea-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-clipboard-check me-1"></i> Información General
                         </span>
                     </div>
 
                     <!-- Prioridad -->
-                    <div class="tarea-detalle-item">
-                        <span class="tarea-detalle-label">Prioridad</span>
-                        <span class="tarea-detalle-value">
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Prioridad</span>
+                        <span class="modal-detalle-value">
                             {% if tarea_detalle.prioridad == 'ALTA' %}
                                 <span class="badge priority-high">Alta</span>
                             {% elif tarea_detalle.prioridad == 'MEDIA' %}
@@ -208,9 +208,9 @@
                     </div>
 
                     <!-- Estado -->
-                    <div class="tarea-detalle-item">
-                        <span class="tarea-detalle-label">Estado</span>
-                        <span class="tarea-detalle-value">
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-value">
                             {% if tarea_detalle.estado == 'PENDIENTE' %}
                                 <span class="badge badge-status badge-pendiente">{{ tarea_detalle.get_estado_display }}</span>
                             {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
@@ -222,21 +222,21 @@
                     </div>
 
                     <!-- Descripción -->
-                    <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
-                        <span class="tarea-detalle-label">Descripción</span>
-                        <span class="tarea-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-label">Descripción</span>
+                        <span class="modal-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
                     </div>
 
                     <!-- Asignado a -->
-                    <div class="tarea-detalle-item">
-                        <span class="tarea-detalle-label"><i class="bi bi-person-badge me-1"></i> Asignado a</span>
-                        <span class="tarea-detalle-value">{{ tarea_detalle.empleado.nombre_completo }}</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label"><i class="bi bi-person-badge me-1"></i> Asignado a</span>
+                        <span class="modal-detalle-value">{{ tarea_detalle.empleado.nombre_completo }}</span>
                     </div>
 
                     <!-- Turno -->
-                    <div class="tarea-detalle-item">
-                        <span class="tarea-detalle-label">Turno <span class="text-danger">*</span></span>
-                        <span class="tarea-detalle-value">
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Turno <span class="text-danger">*</span></span>
+                        <span class="modal-detalle-value">
                             <input type="text" class="form-control bg-light" id="id_turno_display" readonly disabled placeholder="—">
                             <select class="form-select" name="turno_asociado" id="id_turno_asociado" required style="display:none;">
                                 <option value="">Seleccionar</option>
@@ -251,9 +251,9 @@
                     </div>
 
                     <!-- Fecha y Hora Límite -->
-                    <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
-                        <span class="tarea-detalle-label"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite</span>
-                        <span class="tarea-detalle-value">
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-label"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite</span>
+                        <span class="modal-detalle-value">
                             {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
                             {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
                         </span>
@@ -261,18 +261,18 @@
 
                     {% if tarea_detalle.estado == 'FINALIZADA' %}
                     <!-- EVIDENCIA -->
-                    <div class="tarea-detalle-bloque-largo">
-                        <span class="tarea-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-check-circle-fill me-1"></i> Tarea Finalizada
                         </span>
                     </div>
-                    <div class="tarea-detalle-item" style="grid-column: 1 / -1;">
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
                         {% if tarea_detalle.evidencia %}
                             <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download">
                                 <i class="bi bi-paperclip"></i> Ver evidencia
                             </a>
                         {% else %}
-                            <span class="tarea-detalle-value fw-normal text-muted">El empleado no adjuntó archivo de evidencia.</span>
+                            <span class="modal-detalle-value fw-normal text-muted">El empleado no adjuntó archivo de evidencia.</span>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -280,49 +280,37 @@
                 </div>
             </div>
 
-            <div class="modal-footer tarea-detalle-footer">
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="tarea-modal-btn btn-outline-corporate">Cerrar</a>
+            <div class="modal-footer modal-detalle-footer">
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-action btn-action-cancel">Cerrar</a>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
 
-{# ==================== MODAL ELIMINAR TAREA ==================== #}
-<div class="modal fade" id="confirmModal" tabindex="-1">
+{# ==================== MODAL ELIMINAR TAREA ====================
+   Usa el modal de confirmación global (.confirm-modal) de
+   components.css en vez de un modal propio del módulo. #}
+<div class="modal fade confirm-modal" id="confirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content tarea-modal">
+        <div class="modal-content">
 
-            <div class="modal-header tarea-detalle-header">
-                <div>
-                    <div class="tarea-detalle-titulo">
-                        <i class="bi bi-trash text-danger"></i>
-                        <span>Eliminar Tarea</span>
-                    </div>
-                    <p class="tarea-detalle-subtitulo mb-0">Confirmar acción</p>
+            <div class="modal-body confirm-modal-body">
+                <div class="confirm-modal-icon confirm-modal-icon--danger">
+                    <i class="bi bi-x-lg"></i>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="confirm-modal-title" id="confirmModalTitle">¿Eliminar permanentemente esta tarea?</h5>
+                <p class="confirm-modal-text">
+                    Esta acción se registrará en auditoría y no se puede deshacer.
+                </p>
             </div>
 
-            <div class="modal-body tarea-detalle-body text-center py-4" id="modalBodyText">
-                <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
-                    ¿Eliminar permanentemente la tarea?
-                </h5>
-                <div class="alert alert-danger mt-3 mb-0" style="font-size: 0.875rem;">
-                    <i class="bi bi-exclamation-circle me-1"></i>
-                    Esta acción se registrará en auditoría y <strong>no se puede deshacer</strong>.
-                </div>
-            </div>
-
-            <div class="modal-footer tarea-detalle-footer">
-                <button type="button" class="tarea-modal-btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
+            <div class="confirm-modal-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
                 <form method="POST" id="deleteForm" action="">
                     {% csrf_token %}
-                    <button type="submit" class="tarea-modal-btn btn-danger">
-                        <i class="bi bi-trash me-1"></i> Confirmar
+                    <button type="submit" class="btn-action btn-action-delete">
+                        <i class="bi bi-trash"></i> Confirmar
                     </button>
                 </form>
             </div>

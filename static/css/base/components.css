@@ -466,7 +466,7 @@
          <div class="modal-content">
            <div class="modal-body confirm-modal-body">
              <div class="confirm-modal-icon confirm-modal-icon--danger">
-               <i class="bi bi-exclamation-triangle"></i>
+               <i class="bi bi-x-lg"></i>
              </div>
              <h5 class="confirm-modal-title">¿Eliminar registro?</h5>
              <p class="confirm-modal-text">Esta acción no se puede deshacer.</p>
@@ -479,7 +479,9 @@
        </div>
      </div>
    La clase modificadora del ícono (--danger/--warning/--success)
-   determina el color según el tipo de acción a confirmar.
+   determina el color según el tipo de acción a confirmar. El
+   ícono estándar es "bi-x-lg" para todas las variantes: solo
+   cambia el color de fondo/texto según --danger/--warning/--success.
    ============================================================ */
 .confirm-modal .modal-content {
   border: none;
@@ -536,6 +538,235 @@
   gap: 0.75rem;
   padding: 1.25rem 1.75rem 1.75rem;
   border-top: none;
+}
+
+/* ============================================================
+   SISTEMA GLOBAL DE MODALES DE DETALLE (.modal-detalle-*)
+   Para modales de "ver / crear / editar registro": header con
+   ícono + título + subtítulo, body con grid de datos en tarjetas,
+   y footer de acciones. Reemplaza lo que cada módulo venía
+   reinventando por su cuenta (tarea-detalle-*, usuario-detalle-*,
+   novedad-detalle-*, tarea-modal, usuario-modal, novedad-modal).
+   Ningún módulo debe volver a crear su propio header/body/grid/
+   item/footer de modal: siempre se usan estas clases. Si un
+   módulo necesita un detalle puntual, agrega una clase
+   modificadora propia (ej. .modal-detalle-item.item-horario)
+   sin redefinir la base.
+
+   Estructura esperada:
+     <div class="modal-content modal-detalle">
+       <div class="modal-detalle-header">
+         <div>
+           <div class="modal-detalle-titulo">
+             <i class="bi bi-clipboard-check"></i><span>Título</span>
+           </div>
+           <p class="modal-detalle-subtitulo mb-0">Subtítulo</p>
+         </div>
+         <button class="btn-close" data-bs-dismiss="modal"></button>
+       </div>
+
+       <div class="modal-detalle-body">
+         <div class="modal-detalle-grid">
+           <div class="modal-detalle-bloque-largo">
+             <span class="modal-detalle-bloque-largo-label">
+               <i class="bi bi-person-vcard me-1"></i> Sección
+             </span>
+           </div>
+           <div class="modal-detalle-item">
+             <span class="modal-detalle-label">Campo</span>
+             <span class="modal-detalle-value">Valor</span>
+           </div>
+         </div>
+       </div>
+
+       <div class="modal-detalle-footer">
+         <button class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
+         <button class="btn-action btn-action-save">Guardar</button>
+       </div>
+     </div>
+   Los botones del footer SIEMPRE usan .btn-action + el color
+   semántico que corresponda (btn-action-save, btn-action-cancel,
+   btn-action-approve, btn-action-reject, btn-action-delete,
+   btn-action-download...). Nunca una clase de botón propia del
+   módulo (quedan eliminadas: tarea-modal-btn, usuario-modal-btn,
+   novedad-modal-btn, novedad-modal-btn-aprobar, btn-danger).
+   ============================================================ */
+.modal-detalle {
+  border: none;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-modal);
+}
+
+.modal-detalle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-soft);
+  background: var(--color-white);
+}
+
+.modal-detalle-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.modal-detalle-titulo i {
+  font-size: 1.25rem;
+}
+
+.modal-detalle-subtitulo {
+  margin-top: 0.25rem;
+  margin-left: 1.85rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.modal-detalle-body {
+  padding: 1.5rem;
+  background: var(--color-white);
+}
+
+.modal-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.modal-detalle-item {
+  padding: 0.9rem 1rem;
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.modal-detalle-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.modal-detalle-value {
+  display: block;
+  color: var(--color-text);
+  font-size: 0.92rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.modal-detalle-value .form-control,
+.modal-detalle-value .form-select {
+  font-weight: 400;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.modal-detalle-value .form-control:focus,
+.modal-detalle-value .form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus-soft);
+}
+
+/* Bloque largo: separador de sección dentro del grid (ocupa las
+   2 columnas). Variante por defecto: línea inferior roja (la que
+   ya usaban tareas/cuentas). Variante --caja: tarjeta con borde
+   completo, pensada para bloques de texto largo (la que ya usaba
+   novedades para descripción/motivo). */
+.modal-detalle-bloque-largo {
+  grid-column: 1 / -1;
+  padding: 0.5rem 1rem;
+  background: var(--color-white);
+  border-bottom: 2px solid var(--color-primary);
+  border-radius: 0;
+}
+
+.modal-detalle-bloque-largo--caja {
+  padding: 1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.modal-detalle-bloque-largo-label {
+  display: block;
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.modal-detalle-bloque-largo--caja .modal-detalle-bloque-largo-label {
+  margin-bottom: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.modal-detalle-bloque-largo-texto {
+  margin: 0;
+  color: var(--color-text-soft);
+  line-height: 1.6;
+}
+
+/* Caja de motivo de rechazo dentro de un detalle (antes
+   novedad-detalle-rechazo / novedad-motivo-rechazo) */
+.modal-detalle-rechazo {
+  grid-column: 1 / -1;
+  padding: 0.9rem 1rem;
+  background: var(--color-danger-bg);
+  border-left: 3px solid var(--color-danger-strong);
+  border-radius: var(--radius-xs);
+  color: var(--color-danger-text);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.modal-detalle-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border-soft);
+  background: var(--color-white);
+  gap: 0.6rem;
+}
+
+@media (max-width: 768px) {
+  .modal-detalle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-detalle-bloque-largo,
+  .modal-detalle-bloque-largo--caja,
+  .modal-detalle-rechazo {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-detalle-header,
+  .modal-detalle-body,
+  .modal-detalle-footer {
+    padding: 1rem;
+  }
+
+  .modal-detalle-footer {
+    flex-direction: column;
+  }
+
+  .modal-detalle-footer .btn-action {
+    width: 100%;
+  }
+
+  .modal-detalle-subtitulo {
+    margin-left: 0;
+  }
 }
 
 /* ============================================================
