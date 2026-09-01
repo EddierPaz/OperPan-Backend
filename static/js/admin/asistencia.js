@@ -169,12 +169,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("ver-descanso").textContent = data.descanso || "Sin asignar";
                     document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
 
-                    const ciclo = document.getElementById("ver-ciclo");
-                    if (ciclo) {
-                        ciclo.textContent = (data.ciclo_inicio && data.ciclo_fin)
-                            ? data.ciclo_inicio + " — " + data.ciclo_fin
-                            : "Sin definir";
-                    }
+                    // === MODIFICADO: Mostrar inicio y fin con etiquetas ===
+                    document.getElementById("ver-ciclo-inicio").textContent = data.ciclo_inicio || "No definido";
+                    document.getElementById("ver-ciclo-fin").textContent = data.ciclo_fin || "En curso";
 
                     const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
                     modalVer.show();
@@ -238,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================
     // 7. FILTROS DE BÚSQUEDA Y SELECCIÓN EN TABLA
     // ==========================================
-    const filas = document.querySelectorAll("table.table-custom tbody tr");
+    const filas = document.querySelectorAll("#tablaHorarios tbody .fila-horario");
     const inputBuscar = document.getElementById("buscarHorario");
     const selectTurno = document.getElementById("filtroTurno");
     const selectEstado = document.getElementById("filtroEstadoHorario");
@@ -250,12 +247,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const estado = selectEstado.value.toLowerCase();
 
             filas.forEach(fila => {
-                const celdas = fila.querySelectorAll("td");
-                if (celdas.length < 6) return; // Salta la fila de vacíos
-
-                const empleado = celdas[0].textContent.trim().toLowerCase();
-                const turnoFila = celdas[2].textContent.trim().toLowerCase();
-                const estadoFila = celdas[5].textContent.trim().toLowerCase();
+                const empleado = fila.dataset.empleado || "";
+                const turnoFila = fila.dataset.turno || "";
+                const estadoFila = fila.dataset.estado || "";
 
                 const coincideTexto = !texto || empleado.includes(texto);
                 const coincideTurno = !turno || turnoFila === turno;

@@ -70,14 +70,9 @@
   </div>
   <select id="filtroTurno" class="filtro-select">
     <option value="">Todos los turnos</option>
-    <option value="mañana">Mañana</option>
+    <option value="manana">Mañana</option>
     <option value="tarde">Tarde</option>
     <option value="fijo">Fijo</option>
-  </select>
-  <select id="filtroEstadoHorario" class="filtro-select">
-    <option value="">Todos los estados</option>
-    <option value="activo">Activo</option>
-    <option value="inactivo">Inactivo</option>
   </select>
   <button type="button" id="limpiarFiltrosHorarios" class="filtro-btn-limpiar">
     Limpiar filtros
@@ -85,75 +80,76 @@
 </div>
 
 <!-- 5. Tabla -->
-<div class="table-responsive">
-  <table class="table table-custom align-middle mb-0" id="tablaHorarios">
-    <thead>
-      <tr>
-        <th>Empleado</th>
-        <th>Turno</th>
-        <th>Descanso</th>
-        <th>Fecha inicio</th>
-        <th>Fecha fin</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for horario in horarios %}
-      <tr>
-        <!-- Empleado y cargo integrado -->
-        <td class="col-empleado">
-          <div class="fw-bold text-dark" style="line-height: 1.2;">
-            {{ horario.empleado.nombre_completo|wordwrap:15|linebreaksbr }}
-          </div>
-          <small class="text-muted d-block mt-1">{{ horario.empleado.get_cargo_display }}</small>
-        </td>
-        
-        <!-- Turno (incluye el nombre del turno y opcionalmente las horas si las requieres) -->
-        <td class="col-turno">
-          <div>{{ horario.get_turno_display }}</div>
-          <small class="text-muted">{{ horario.hora_entrada }} - {{ horario.hora_salida }}</small>
-        </td>
+<div class="card-modern">
+  <div class="p-3 table-responsive-stack">
+    <table class="table table-custom align-middle mb-0" id="tablaHorarios">
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Turno</th>
+          <th>Descanso</th>
+          <th>Vigencia</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for horario in horarios %}
+        <tr class="fila-horario"
+            data-empleado="{{ horario.empleado.nombre_completo|lower }}"
+            data-turno="{{ horario.turno|lower }}"
+            data-estado="{{ horario.vigencia_estado }}">
+          <!-- Empleado y cargo integrado -->
+          <td class="col-empleado">
+            <div class="fw-bold text-dark" style="line-height: 1.2;">
+              {{ horario.empleado.nombre_completo|wordwrap:15|linebreaksbr }}
+            </div>
+            <small class="text-muted d-block mt-1">{{ horario.empleado.get_cargo_display }}</small>
+          </td>
 
-        <!-- Descanso próximo -->
-        <td>
-          {% if horario.proximo_descanso %}
-          <span class="badge bg-light text-dark border">{{ horario.proximo_descanso.fecha|date:"d/m/Y" }}</span>
-          {% else %}
-          <span class="text-muted small">Sin descanso próximo</span>
-          {% endif %}
-        </td>
+          <!-- Turno -->
+          <td class="col-turno">
+            <div>{{ horario.get_turno_display }}</div>
+            <small class="text-muted">{{ horario.hora_entrada }} - {{ horario.hora_salida }}</small>
+          </td>
 
-        <!-- Fecha de inicio del horario -->
-        <td>
-          <span class="text-secondary">{{ horario.fecha_inicio|date:"d/m/Y" }}</span>
-        </td>
+          <!-- Descanso próximo -->
+          <td>
+            {% if horario.proximo_descanso %}
+            <span class="badge bg-light text-dark border">{{ horario.proximo_descanso.fecha|date:"d/m/Y" }}</span>
+            {% else %}
+            <span class="text-muted small">Sin descanso próximo</span>
+            {% endif %}
+          </td>
 
-        <!-- Fecha de fin del horario -->
-        <td>
-          <span class="text-secondary">{{ horario.fecha_fin|date:"d/m/Y" }}</span>
-        </td>
+          <!-- Vigencia: ciclo + estado -->
+          <td>
+            <div class="badge bg-light text-dark border">
+              {{ horario.ciclo_inicio|date:"d/m/Y" }} → {{ horario.vigencia_fin|date:"d/m/Y"|default:"—" }}
+            </div>
+          </td>
 
-        <!-- Acciones -->
-        <td>
-          <button class="btn-action btn-sm btn-corporate-thi btn-ver-horario" data-id="{{ horario.id }}" title="Ver detalle">
-              <i class="bi bi-eye"></i>
-          </button>
-          <button class="btn-action btn-sm btn-corporate-sec btn-editar-horario" data-id="{{ horario.id }}" title="Editar">
-              <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn-action btn-sm btn-primary-corporate btn-eliminar-horario" 
-                  data-id="{{ horario.id }}" 
-                  data-empleado="{{ horario.empleado.nombre_completo }}"
-                  title="Eliminar">
-              <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="6" class="text-center text-muted py-3">No hay horarios registrados.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+          <!-- Acciones -->
+          <td>
+            <button class="btn-action btn-sm btn-corporate-thi btn-ver-horario" data-id="{{ horario.id }}" title="Ver detalle">
+                <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn-action btn-sm btn-corporate-sec btn-editar-horario" data-id="{{ horario.id }}" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn-action btn-sm btn-primary-corporate btn-eliminar-horario" 
+                    data-id="{{ horario.id }}" 
+                    data-empleado="{{ horario.empleado.nombre_completo }}"
+                    title="Eliminar">
+                <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-3">No hay horarios registrados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>

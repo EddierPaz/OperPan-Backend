@@ -99,6 +99,18 @@ def ciclo_fin(horario):
         days=dias_ciclo(horario.turno) - 1
     )
 
+def estado_vigencia_horario(horario, hoy, fin):
+    """Determina el estado de vigencia mostrado en la tabla/modal."""
+    if not horario.estado:
+        return "inactivo"
+    if fin is None:
+        return "activo"
+    if fin < hoy:
+        return "vencido"
+    if (fin - hoy).days <= 2:
+        return "por_vencer"
+    return "activo"
+
 
 def _contexto_base():
     hoy = timezone.localdate()
@@ -126,6 +138,8 @@ def _contexto_base():
     horarios = []
     for horario in horarios_qs:
         horario.proximo_descanso = regenerar_descanso_si_vencido(horario, hoy)
+        horario.vigencia_fin = ciclo_fin(horario)
+        horario.vigencia_estado = estado_vigencia_horario(horario, hoy, horario.vigencia_fin)
         horarios.append(horario)
 
     # 2. ORDENAR: Por la fecha de descanso más cercana (ascendente). 
@@ -291,6 +305,7 @@ def horario_json(request, id):
     hoy = timezone.localdate()
     descanso = regenerar_descanso_si_vencido(horario, hoy)
     fin = ciclo_fin(horario)
+    vigencia_estado = estado_vigencia_horario(horario, hoy, fin)
 
     return JsonResponse({
         "empleado": horario.empleado.nombre_completo(),
@@ -300,6 +315,7 @@ def horario_json(request, id):
         "hora_entrada": horario.hora_entrada.strftime("%H:%M"),
         "hora_salida": horario.hora_salida.strftime("%H:%M"),
         "estado": horario.estado,
+        "vigencia_estado": vigencia_estado,
         "descanso": descanso.fecha.strftime("%d/%m/%Y") if descanso else None,
         "descanso_fecha": descanso.fecha.strftime("%Y-%m-%d") if descanso else None,
         "ciclo_inicio": horario.ciclo_inicio.strftime("%d/%m/%Y") if horario.ciclo_inicio else None,
