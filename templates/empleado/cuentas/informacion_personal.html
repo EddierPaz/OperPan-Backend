@@ -1,257 +1,385 @@
 <div class="employee-card">
 
-    <!-- ==================== HEADER: AVATAR + NOMBRE + CARGO + BOTÓN ==================== -->
+    <!-- ==================== HEADER ==================== -->
     <div class="profile-header d-flex align-items-center gap-3 mb-4 flex-wrap">
         <div class="employee-avatar-large" id="avatarIniciales">
             {{ perfil.nombre_completo|slice:":1" }}
         </div>
         <div class="profile-info flex-grow-1">
-            <h4 class="mb-0">{{ perfil.nombre_completo }}</h4>
-            <span class="badge-role">
-                <i class="bi bi-briefcase-fill me-1"></i>{{ perfil.get_cargo_display }}
-            </span>
+            <h4 class="mb-1">{{ perfil.nombre_completo }}</h4>
+            <div class="d-flex gap-2 flex-wrap">
+                <span class="badge-role">
+                    <i class="bi bi-briefcase-fill me-1"></i>{{ perfil.get_cargo_display }}
+                </span>
+            </div>
         </div>
-        <button type="button" id="btnEditar" class="btn btn-editar">
-            <i class="bi bi-pencil-square"></i> <span id="btnEditarTexto">Editar</span>
+        <button type="button" class="btn btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
+            <i class="bi bi-pencil-square"></i> Editar perfil
         </button>
     </div>
 
-    <!-- ==================== PESTAÑAS MODERNAS ==================== -->
+    <!-- ==================== PESTAÑAS ==================== -->
     <div class="custom-tabs-modern">
         <button type="button" class="tab-btn-custom active" data-tab="personal">
-            <i class="bi bi-person-vcard"></i> Personal
+            <i class="bi bi-person-vcard"></i> Información personal
         </button>
         <button type="button" class="tab-btn-custom" data-tab="laboral">
-            <i class="bi bi-briefcase"></i> Laboral
+            <i class="bi bi-briefcase"></i> Información laboral
         </button>
         <button type="button" class="tab-btn-custom" data-tab="seguridad">
             <i class="bi bi-shield-lock"></i> Seguridad
         </button>
     </div>
 
-    <form method="POST" action="{% url 'employee_profile_update' %}" id="formPerfil">
-        {% csrf_token %}
+    <!-- ============================================================ -->
+    <!-- TAB 1: PERSONAL (SOLO LECTURA)                                -->
+    <!-- ============================================================ -->
+    <div class="tab-pane active" id="personal">
 
-        <!-- ============================================================ -->
-        <!-- TAB 1: PERSONAL                                               -->
-        <!-- ============================================================ -->
-        <div class="tab-pane active" id="personal">
-
-            <!-- Card 1: Datos Personales -->
-            <div class="info-card">
-                <h6 class="card-title"><i class="bi bi-person-badge me-2"></i>Datos Personales</h6>
-                <div class="row g-3">
-                    <!-- Nombre (No editable) -->
-                    <div class="col-md-6">
-                        <small class="field-label">Nombre completo</small>
-                        <div class="field-value">{{ perfil.nombre_completo }}</div>
-                    </div>
-                    <!-- Documento (No editable) -->
-                    <div class="col-md-3">
-                        <small class="field-label">Documento</small>
-                        <div class="field-value">{{ perfil.numero_documento }}</div>
-                    </div>
-                    <!-- Tipo Documento (No editable) -->
-                    <div class="col-md-3">
-                        <small class="field-label">Tipo Documento</small>
-                        <div class="field-value">{{ perfil.get_tipo_documento_display }}</div>
-                    </div>
-                    <!-- Fecha Nacimiento (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Fecha Nacimiento</small>
-                        <div class="field-value">{{ perfil.fecha_nacimiento }}</div>
-                    </div>
-                    <!-- Género (Editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Género</small>
-                        <div class="view-mode field-value">{{ perfil.get_genero_display }}</div>
-                        <select name="genero" class="form-select edit-mode d-none">
-                            <option value="M" {% if perfil.genero == 'M' %}selected{% endif %}>Masculino</option>
-                            <option value="F" {% if perfil.genero == 'F' %}selected{% endif %}>Femenino</option>
-                            <option value="O" {% if perfil.genero == 'O' %}selected{% endif %}>Otro</option>
-                        </select>
-                    </div>
-                    <!-- Estado Civil (Editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Estado Civil</small>
-                        <div class="view-mode field-value">{{ perfil.get_estado_civil_display }}</div>
-                        <select name="estado_civil" class="form-select edit-mode d-none">
-                            <option value="soltero" {% if perfil.estado_civil == 'soltero' %}selected{% endif %}>Soltero</option>
-                            <option value="casado" {% if perfil.estado_civil == 'casado' %}selected{% endif %}>Casado</option>
-                            <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %}selected{% endif %}>Unión Libre</option>
-                            <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %}selected{% endif %}>Divorciado</option>
-                            <option value="viudo" {% if perfil.estado_civil == 'viudo' %}selected{% endif %}>Viudo</option>
-                        </select>
-                    </div>
+        <div class="info-card">
+            <h6 class="card-title"><i class="bi bi-person-badge me-2"></i>Datos personales</h6>
+            <div class="usuarios-detalle-grid">
+                <div class="usuarios-detalle-bloque-largo">
+                    <span class="usuarios-detalle-bloque-largo-label">Nombre completo</span>
+                    <p class="usuarios-detalle-bloque-largo-texto">{{ perfil.nombre_completo }}</p>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Documento</span>
+                    <span class="usuarios-detalle-value">{{ perfil.numero_documento }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Tipo de documento</span>
+                    <span class="usuarios-detalle-value">{{ perfil.get_tipo_documento_display }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Fecha de nacimiento</span>
+                    <span class="usuarios-detalle-value">{{ perfil.fecha_nacimiento }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Género</span>
+                    <span class="usuarios-detalle-value">{{ perfil.get_genero_display }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Estado civil</span>
+                    <span class="usuarios-detalle-value">{{ perfil.get_estado_civil_display }}</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Card 2: Contacto -->
-            <div class="info-card">
-                <h6 class="card-title"><i class="bi bi-envelope me-2"></i>Contacto</h6>
-                <div class="row g-3">
-                    <!-- Teléfono (Editable) -->
-                    <div class="col-md-6">
-                        <small class="field-label">Teléfono</small>
-                        <div class="view-mode field-value">{{ perfil.telefono }}</div>
-                        <input type="text" name="telefono" class="form-control edit-mode d-none" value="{{ perfil.telefono }}">
-                    </div>
-                    <!-- Correo (Editable) -->
-                    <div class="col-md-6">
-                        <small class="field-label">Correo</small>
-                        <div class="view-mode field-value">{{ perfil.correo }}</div>
-                        <input type="email" name="correo" class="form-control edit-mode d-none" value="{{ perfil.correo }}">
-                    </div>
-                    <!-- Dirección (Editable) -->
-                    <div class="col-md-6">
-                        <small class="field-label">Dirección</small>
-                        <div class="view-mode field-value">{{ perfil.direccion }}</div>
-                        <input type="text" name="direccion" class="form-control edit-mode d-none" value="{{ perfil.direccion }}">
-                    </div>
-                    <!-- Ciudad (Editable) -->
-                    <div class="col-md-6">
-                        <small class="field-label">Ciudad</small>
-                        <div class="view-mode field-value">{{ perfil.ciudad }}</div>
-                        <input type="text" name="ciudad" class="form-control edit-mode d-none" value="{{ perfil.ciudad }}">
-                    </div>
+        <div class="info-card">
+            <h6 class="card-title"><i class="bi bi-envelope me-2"></i>Información de contacto</h6>
+            <div class="usuarios-detalle-grid">
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label"><i class="bi bi-telephone"></i>Teléfono</span>
+                    <span class="usuarios-detalle-value">{{ perfil.telefono }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label"><i class="bi bi-envelope-at"></i>Correo electrónico</span>
+                    <span class="usuarios-detalle-value">{{ perfil.correo }}</span>
+                </div>
+                <div class="usuarios-detalle-bloque-largo">
+                    <span class="usuarios-detalle-bloque-largo-label"><i class="bi bi-geo-alt"></i> Dirección</span>
+                    <p class="usuarios-detalle-bloque-largo-texto">{{ perfil.direccion }}</p>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label"><i class="bi bi-pin-map"></i>Ciudad</span>
+                    <span class="usuarios-detalle-value">{{ perfil.ciudad }}</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Card 3: Contacto de Emergencia -->
-            <div class="info-card">
-                <h6 class="card-title"><i class="bi bi-exclamation-triangle me-2"></i>Contacto de Emergencia</h6>
-                <div class="row g-3">
-                    <!-- Nombre (Editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Nombre</small>
-                        <div class="view-mode field-value">{{ perfil.contacto_emergencia }}</div>
-                        <input type="text" name="contacto_emergencia" class="form-control edit-mode d-none" value="{{ perfil.contacto_emergencia }}">
-                    </div>
-                    <!-- Parentesco (Editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Parentesco</small>
-                        <div class="view-mode field-value">{{ perfil.parentesco_emergencia }}</div>
-                        <input type="text" name="parentesco_emergencia" class="form-control edit-mode d-none" value="{{ perfil.parentesco_emergencia }}">
-                    </div>
-                    <!-- Teléfono (Editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Teléfono</small>
-                        <div class="view-mode field-value">{{ perfil.telefono_emergencia }}</div>
-                        <input type="text" name="telefono_emergencia" class="form-control edit-mode d-none" value="{{ perfil.telefono_emergencia }}">
-                    </div>
+        <div class="info-card info-card-emergencia">
+            <h6 class="card-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Contacto de emergencia</h6>
+            <div class="usuarios-detalle-grid">
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Nombre</span>
+                    <span class="usuarios-detalle-value">{{ perfil.contacto_emergencia }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Parentesco</span>
+                    <span class="usuarios-detalle-value">{{ perfil.parentesco_emergencia }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Teléfono</span>
+                    <span class="usuarios-detalle-value">{{ perfil.telefono_emergencia }}</span>
                 </div>
             </div>
+        </div>
+    </div><!-- /tab personal -->
 
-            <!-- Acciones de Personal -->
-            <div class="mt-4 d-none" id="accionesEdicionPersonal">
-                <div class="d-flex gap-2 flex-wrap">
-                    <button type="button" class="btnCancelarPersonal btn btn-outline-corporate">
-                        <i class="bi bi-x-circle"></i> Cancelar cambios
-                    </button>
-                    <button type="submit" class="btn btn-primary-corporate fw-bold">
-                        <i class="bi bi-check-circle"></i> Guardar cambios
-                    </button>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: LABORAL (SOLO LECTURA)                                 -->
+    <!-- ============================================================ -->
+    <div class="tab-pane" id="laboral">
+        <div class="info-card">
+            <h6 class="card-title"><i class="bi bi-briefcase-fill me-2"></i>Información laboral</h6>
+            <div class="usuarios-detalle-grid">
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Cargo</span>
+                    <span class="usuarios-detalle-value">{{ perfil.get_cargo_display }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Fecha de ingreso</span>
+                    <span class="usuarios-detalle-value">{{ perfil.fecha_ingreso }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Estado</span>
+                    <span class="badge badge-active">
+                        {% if perfil.estado == 'activo' %}
+                            <span class="badge-active">{{ perfil.get_estado_display }}</span>
+                        {% elif perfil.estado == 'vacaciones' %}
+                            <span class="badge-pendiente">{{ perfil.get_estado_display }}</span>
+                        {% else %}
+                            <span class="badge-pendiente">{{ perfil.get_estado_display }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">EPS</span>
+                    <span class="usuarios-detalle-value">{{ perfil.eps }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">ARL</span>
+                    <span class="usuarios-detalle-value">{{ perfil.arl }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Fondo de pensión</span>
+                    <span class="usuarios-detalle-value">{{ perfil.fondo_pension }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Tipo de sangre</span>
+                    <span class="usuarios-detalle-value">{{ perfil.tipo_sangre }}</span>
                 </div>
             </div>
-        </div><!-- /tab personal -->
+        </div>
+    </div><!-- /tab laboral -->
 
 
-        <!-- ============================================================ -->
-        <!-- TAB 2: LABORAL (SOLO LECTURA)                                -->
-        <!-- ============================================================ -->
-        <div class="tab-pane" id="laboral">
-            <div class="info-card">
-                <h6 class="card-title"><i class="bi bi-briefcase-fill me-2"></i>Información Laboral</h6>
-                <div class="row g-3">
-                    <!-- Cargo (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Cargo</small>
-                        <div class="field-value">{{ perfil.get_cargo_display }}</div>
-                    </div>
-                    <!-- Fecha Ingreso (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Fecha Ingreso</small>
-                        <div class="field-value">{{ perfil.fecha_ingreso }}</div>
-                    </div>
-                    <!-- Estado (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Estado</small>
-                        <div class="field-value">
-                            {% if perfil.estado == 'activo' %}
-                                <span class="badge-success">{{ perfil.get_estado_display }}</span>
-                            {% elif perfil.estado == 'vacaciones' %}
-                                <span class="badge-info">{{ perfil.get_estado_display }}</span>
-                            {% else %}
-                                <span class="badge-warning">{{ perfil.get_estado_display }}</span>
-                            {% endif %}
+    <!-- ============================================================ -->
+    <!-- TAB 3: SEGURIDAD (SOLO LECTURA + ACCIÓN)                      -->
+    <!-- ============================================================ -->
+    <div class="tab-pane" id="seguridad">
+        <div class="info-card">
+            <h6 class="card-title"><i class="bi bi-shield-lock-fill me-2"></i>Seguridad de la cuenta</h6>
+            <div class="usuarios-detalle-grid mb-3">
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Usuario</span>
+                    <span class="usuarios-detalle-value">{{ request.user.username }}</span>
+                </div>
+                <div class="usuarios-detalle-item">
+                    <span class="usuarios-detalle-label">Estado de la cuenta</span>
+                    <span class="badge badge-active">
+                        {% if request.user.estado_cuenta == 'ACTIVA' %}
+                            <span class="badge-active">Activa</span>
+                        {% elif request.user.estado_cuenta == 'PENDIENTE' %}
+                            <span class="badge-pendiente">Pendiente de activación</span>
+                        {% elif request.user.estado_cuenta == 'SUSPENDIDA' %}
+                            <span class="badge-danger">Suspendida</span>
+                        {% else %}
+                            <span class="badge-pendiente">{{ request.user.get_estado_cuenta_display }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#cambiarPasswordModal">
+                <i class="bi bi-key"></i> Cambiar contraseña
+            </button>
+        </div>
+    </div><!-- /tab seguridad -->
+
+</div><!-- /employee-card -->
+
+
+<!-- ============================================================ -->
+<!-- MODAL: EDITAR PERFIL                                          -->
+<!-- ============================================================ -->
+<div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content usuarios-modal">
+            <form method="POST" action="{% url 'employee_profile_update' %}">
+                {% csrf_token %}
+
+                <div class="usuarios-detalle-header d-flex justify-content-between align-items-start">
+                    <div class="d-flex gap-2">
+                        <span class="usuarios-modal-icono"><i class="bi bi-pencil-square"></i></span>
+                        <div>
+                            <div class="usuarios-detalle-titulo" id="editarPerfilModalLabel">Editar perfil</div>
+                            <div class="usuarios-detalle-subtitulo mb-0">Actualiza tus datos de contacto y personales</div>
                         </div>
                     </div>
-                    <!-- EPS (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">EPS</small>
-                        <div class="field-value">{{ perfil.eps }}</div>
-                    </div>
-                    <!-- ARL (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">ARL</small>
-                        <div class="field-value">{{ perfil.arl }}</div>
-                    </div>
-                    <!-- Fondo de Pensión (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Fondo de Pensión</small>
-                        <div class="field-value">{{ perfil.fondo_pension }}</div>
-                    </div>
-                    <!-- Tipo Sangre (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Tipo Sangre</small>
-                        <div class="field-value">{{ perfil.tipo_sangre }}</div>
-                    </div>
+                    <button type="button" class="usuarios-modal-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
-            </div>
-            <!-- ⚠️ NO HAY BOTONES GUARDAR/CANCELAR EN LABORAL (solo lectura) -->
-        </div><!-- /tab laboral -->
 
+                <div class="usuarios-detalle-body">
 
-        <!-- ============================================================ -->
-        <!-- TAB 3: SEGURIDAD (CON BOTONES GUARDAR/CANCELAR)              -->
-        <!-- ============================================================ -->
-        <div class="tab-pane" id="seguridad">
-            <div class="info-card">
-                <h6 class="card-title"><i class="bi bi-shield-lock-fill me-2"></i>Seguridad</h6>
-                <div class="row g-3">
-                    <!-- Usuario (No editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Usuario</small>
-                        <div class="field-value">{{ request.user.username }}</div>
+                    <div class="usuarios-modal-tabs">
+                        <button type="button" class="usuarios-modal-tab-btn active" data-modal-tab="datosBasicos">Datos básicos</button>
+                        <button type="button" class="usuarios-modal-tab-btn" data-modal-tab="contacto">Contacto</button>
+                        <button type="button" class="usuarios-modal-tab-btn" data-modal-tab="contactoEmergencia">Contacto de emergencia</button>
                     </div>
-                    <!-- Contraseña (Editable) -->
-                    <div class="col-md-4">
-                        <small class="field-label">Contraseña</small>
-                        <div class="view-mode field-value">••••••••••••</div>
-                        <input type="password" name="password" class="form-control edit-mode d-none" placeholder="Nueva contraseña">
+
+                    <div class="usuarios-modal-tab-pane active" id="datosBasicos">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_genero" class="form-label usuarios-detalle-label">Género</label>
+                                    <select id="id_genero" name="genero" class="form-select">
+                                        <option value="M" {% if perfil.genero == 'M' %}selected{% endif %}>Masculino</option>
+                                        <option value="F" {% if perfil.genero == 'F' %}selected{% endif %}>Femenino</option>
+                                        <option value="O" {% if perfil.genero == 'O' %}selected{% endif %}>Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_estado_civil" class="form-label usuarios-detalle-label">Estado civil</label>
+                                    <span class="usuarios-detalle-value">
+                                        <select id="id_estado_civil" name="estado_civil" class="form-select">
+                                            <option value="soltero" {% if perfil.estado_civil == 'soltero' %}selected{% endif %}>Soltero</option>
+                                            <option value="casado" {% if perfil.estado_civil == 'casado' %}selected{% endif %}>Casado</option>
+                                            <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %}selected{% endif %}>Unión Libre</option>
+                                            <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %}selected{% endif %}>Divorciado</option>
+                                            <option value="viudo" {% if perfil.estado_civil == 'viudo' %}selected{% endif %}>Viudo</option>
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Confirmar Contraseña (solo en modo edición) -->
-                    <div class="col-md-4">
-                        <small class="field-label edit-mode d-none">Confirmar contraseña</small>
-                        <input type="password" name="confirmar_password" class="form-control edit-mode d-none" placeholder="Confirmar contraseña">
+
+                    <div class="usuarios-modal-tab-pane" id="contacto">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_telefono" class="form-label usuarios-detalle-label">Teléfono</label>
+                                    <input type="text" id="id_telefono" name="telefono" class="form-control" value="{{ perfil.telefono }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_correo" class="form-label usuarios-detalle-label">Correo electrónico</label>
+                                    <input type="email" id="id_correo" name="correo" class="form-control" value="{{ perfil.correo }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_direccion" class="form-label usuarios-detalle-label">Dirección</label>
+                                    <input type="text" id="id_direccion" name="direccion" class="form-control" value="{{ perfil.direccion }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_ciudad" class="form-label usuarios-detalle-label">Ciudad</label>
+                                    <input type="text" id="id_ciudad" name="ciudad" class="form-control" value="{{ perfil.ciudad }}">
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="usuarios-modal-tab-pane" id="contactoEmergencia">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_contacto_emergencia" class="form-label usuarios-detalle-label">Nombre del contacto</label>
+                                    <input type="text" id="id_contacto_emergencia" name="contacto_emergencia" class="form-control" value="{{ perfil.contacto_emergencia }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_parentesco_emergencia" class="form-label usuarios-detalle-label">Parentesco</label>
+                                    <input type="text" id="id_parentesco_emergencia" name="parentesco_emergencia" class="form-control" value="{{ perfil.parentesco_emergencia }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="usuarios-detalle-item">
+                                    <label for="id_telefono_emergencia" class="form-label usuarios-detalle-label">Teléfono</label>
+                                    <input type="text" id="id_telefono_emergencia" name="telefono_emergencia" class="form-control" value="{{ perfil.telefono_emergencia }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-
-            <!-- Acciones de Seguridad -->
-            <div class="mt-4 d-none" id="accionesEdicionSeguridad">
-                <div class="d-flex gap-2 flex-wrap">
-                    <button type="button" class="btnCancelarSeguridad btn btn-outline-corporate">
+                <div class="usuarios-detalle-footer d-flex justify-content-end">
+                    <button type="button" class="usuarios-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar cambios
                     </button>
-                    <button type="submit" class="btn btn-primary-corporate fw-bold">
+                    <button type="submit" class="usuarios-modal-btn btn-primary-corporate">
                         <i class="bi bi-check-circle"></i> Guardar cambios
                     </button>
                 </div>
-            </div>
-        </div><!-- /tab seguridad -->
+            </form>
+        </div>
+    </div>
+</div>
 
-    </form>
+
+<!-- ============================================================ -->
+<!-- MODAL: CAMBIAR CONTRASEÑA                                     -->
+<!-- ============================================================ -->
+<div class="modal fade" id="cambiarPasswordModal" tabindex="-1" aria-labelledby="cambiarPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content usuarios-modal">
+            <form method="POST" action="{% url 'employee_password_update' %}" id="formCambiarPassword" novalidate>
+                {% csrf_token %}
+
+                <div class="usuarios-detalle-header d-flex justify-content-between align-items-start">
+                    <div class="d-flex gap-2">
+                        <span class="usuarios-modal-icono"><i class="bi bi-key"></i></span>
+                        <div>
+                            <div class="usuarios-detalle-titulo" id="cambiarPasswordModalLabel">Cambiar contraseña</div>
+                            <div class="usuarios-detalle-subtitulo mb-0">Tu nueva contraseña quedará activa de inmediato</div>
+                        </div>
+                    </div>
+                    <button type="button" class="usuarios-modal-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="usuarios-detalle-body">
+                    <div class="mb-3 usuarios-detalle-item">
+                        <label for="id_password_actual" class="form-label usuarios-detalle-label">Contraseña actual</label>
+                        <div class="input-group usuarios-modal-input-password">
+                            <input type="password" id="id_password_actual" name="password_actual" class="form-control" required>
+                            <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar contraseña actual">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_actual"></div>
+                    </div>
+                    <div class="mb-3 usuarios-detalle-item">
+                        <label for="id_password_nueva" class="form-label usuarios-detalle-label">Nueva contraseña</label>
+                        <div class="input-group usuarios-modal-input-password">
+                            <input type="password" id="id_password_nueva" name="password_nueva" class="form-control" minlength="8" required>
+                            <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar nueva contraseña">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_nueva"></div>
+                    </div>
+                    <div class="mb-2 usuarios-detalle-item">
+                        <label for="id_password_confirmar" class="form-label usuarios-detalle-label">Confirmar nueva contraseña</label>
+                        <div class="input-group usuarios-modal-input-password">
+                            <input type="password" id="id_password_confirmar" name="password_confirmar" class="form-control" minlength="8" required>
+                            <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar confirmación de contraseña">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_confirmar"></div>
+                    </div>
+                </div>
+                <div class="usuarios-detalle-footer d-flex justify-content-end">
+                    <button type="button" class="usuarios-modal-btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="usuarios-modal-btn btn-primary-corporate">
+                        <i class="bi bi-check-circle"></i> Actualizar contraseña
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>

@@ -5,193 +5,11 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     // ==========================================
-    // ELEMENTOS DOM
+    // PESTAÑAS PRINCIPALES (Personal / Laboral / Seguridad)
     // ==========================================
+    const tabs = document.querySelectorAll(".custom-tabs-modern button[data-tab]");
+    const panes = document.querySelectorAll(".employee-card > .tab-pane");
 
-    const btnEditar = document.getElementById("btnEditar");
-    const btnEditarTexto = document.getElementById("btnEditarTexto");
-
-    // Contenedores de acciones por pestaña
-    const accionesPersonal = document.getElementById("accionesEdicionPersonal");
-    const accionesSeguridad = document.getElementById("accionesEdicionSeguridad");
-
-    // Botones de cancelar por pestaña
-    const btnCancelarPersonal = document.querySelector(".btnCancelarPersonal");
-    const btnCancelarSeguridad = document.querySelector(".btnCancelarSeguridad");
-
-    // Variables de estado
-    let valoresOriginales = {};
-
-    // Verificar que el botón Editar existe
-    if (!btnEditar) {
-        console.error("❌ Botón Editar no encontrado");
-        return;
-    }
-
-    // ==========================================
-    // FUNCIONES AUXILIARES
-    // ==========================================
-
-    function ocultarTodasLasAcciones() {
-        if (accionesPersonal) accionesPersonal.classList.add("d-none");
-        if (accionesSeguridad) accionesSeguridad.classList.add("d-none");
-    }
-
-    function mostrarAccionesEnPestanaActiva() {
-        const pestañaActiva = document.querySelector(".tab-pane.active");
-        if (!pestañaActiva) return;
-
-        // Buscar el contenedor de acciones dentro de la pestaña activa
-        const acciones = pestañaActiva.querySelector('[id^="accionesEdicion"]');
-        if (acciones) {
-            acciones.classList.remove("d-none");
-        }
-    }
-
-    function guardarValoresOriginales() {
-        const campos = document.querySelectorAll(".edit-mode");
-        valoresOriginales = {};
-        campos.forEach(campo => {
-            if (campo.type === 'checkbox' || campo.type === 'radio') {
-                valoresOriginales[campo.name] = campo.checked;
-            } else {
-                valoresOriginales[campo.name] = campo.value;
-            }
-        });
-    }
-
-    function restaurarValoresOriginales() {
-        const campos = document.querySelectorAll(".edit-mode");
-        campos.forEach(campo => {
-            if (campo.name in valoresOriginales) {
-                if (campo.type === 'checkbox' || campo.type === 'radio') {
-                    campo.checked = valoresOriginales[campo.name];
-                } else {
-                    campo.value = valoresOriginales[campo.name];
-                }
-            }
-        });
-    }
-
-    function entrarModoEdicion() {
-        const vistas = document.querySelectorAll(".view-mode");
-        const campos = document.querySelectorAll(".edit-mode");
-
-        // Guardar valores originales
-        guardarValoresOriginales();
-
-        // Mostrar campos editables, ocultar vistas
-        vistas.forEach(vista => vista.classList.add("d-none"));
-        campos.forEach(campo => campo.classList.remove("d-none"));
-
-        // Mostrar botones de acción en la pestaña activa
-        mostrarAccionesEnPestanaActiva();
-
-        // Cambiar estado del botón Editar
-        btnEditar.classList.add("active");
-        btnEditarTexto.textContent = "Editando...";
-    }
-
-    function salirModoEdicion() {
-        const vistas = document.querySelectorAll(".view-mode");
-        const campos = document.querySelectorAll(".edit-mode");
-
-        // Restaurar valores originales
-        restaurarValoresOriginales();
-
-        // Ocultar campos editables, mostrar vistas
-        vistas.forEach(vista => vista.classList.remove("d-none"));
-        campos.forEach(campo => campo.classList.add("d-none"));
-
-        // Ocultar todos los botones de acción
-        ocultarTodasLasAcciones();
-
-        // Restaurar estado del botón Editar
-        btnEditar.classList.remove("active");
-        btnEditarTexto.textContent = "Editar";
-        valoresOriginales = {};
-    }
-
-    // ==========================================
-    // EVENTO: CLIC EN "EDITAR1"
-    // ==========================================
-
-    btnEditar.addEventListener("click", function(e) {
-        e.preventDefault();
-
-        const estaEditando = btnEditar.classList.contains("active");
-        if (estaEditando) {
-            salirModoEdicion();
-        } else {
-            entrarModoEdicion();
-        }
-    });
-
-    // ==========================================
-    // EVENTO: CLIC EN "CANCELAR" (Personal)
-    // ==========================================
-
-    if (btnCancelarPersonal) {
-        btnCancelarPersonal.addEventListener("click", function(e) {
-            e.preventDefault();
-            salirModoEdicion();
-        });
-    }
-
-    // ==========================================
-    // EVENTO: CLIC EN "CANCELAR" (Seguridad)
-    // ==========================================
-
-    if (btnCancelarSeguridad) {
-        btnCancelarSeguridad.addEventListener("click", function(e) {
-            e.preventDefault();
-            salirModoEdicion();
-        });
-    }
-
-    // ==========================================
-    // EVENTO: ENVÍO DEL FORMULARIO (GUARDAR)
-    // ==========================================
-
-    const formPerfil = document.getElementById("formPerfil");
-    if (formPerfil) {
-        formPerfil.addEventListener("submit", function() {
-            // Feedback visual al guardar
-            btnEditar.classList.remove("active");
-            btnEditarTexto.textContent = "Guardando...";
-            btnEditar.disabled = true;
-            // El formulario se envía normalmente (POST)
-            // La página se recargará después del envío
-        });
-    }
-
-    // ==========================================
-    // INICIALIZACIÓN: VERIFICAR ERRORES
-    // ==========================================
-
-    const hayErrores = document.querySelector('.is-invalid');
-    if (hayErrores) {
-        // Si hay errores, mantener el modo edición activo
-        document.querySelectorAll('.view-mode').forEach(el => el.classList.add("d-none"));
-        document.querySelectorAll('.edit-mode').forEach(el => el.classList.remove("d-none"));
-        mostrarAccionesEnPestanaActiva();
-        btnEditar.classList.add("active");
-        btnEditarTexto.textContent = "Editando...";
-    } else {
-        // Modo vista normal
-        document.querySelectorAll('.view-mode').forEach(el => el.classList.remove("d-none"));
-        document.querySelectorAll('.edit-mode').forEach(el => el.classList.add("d-none"));
-        ocultarTodasLasAcciones();
-        btnEditar.classList.remove("active");
-        btnEditarTexto.textContent = "Editar";
-        guardarValoresOriginales();
-    }
-
-    // ==========================================
-    // TABS (PESTAÑAS CORPORATIVAS)
-    // ==========================================
-
-const tabs = document.querySelectorAll(".custom-tabs-modern button[data-tab]");
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             const target = tab.dataset.tab;
@@ -199,25 +17,120 @@ const tabs = document.querySelectorAll(".custom-tabs-modern button[data-tab]");
             panes.forEach(p => p.classList.remove("active"));
             tab.classList.add("active");
             document.getElementById(target)?.classList.add("active");
+        });
+    });
 
-            // Si estamos en modo edición, mostrar las acciones en la nueva pestaña activa
-            if (btnEditar.classList.contains("active")) {
-                ocultarTodasLasAcciones();
-                mostrarAccionesEnPestanaActiva();
+    // ==========================================
+    // PESTAÑAS INTERNAS DEL MODAL "EDITAR PERFIL"
+    // ==========================================
+    const modalTabs = document.querySelectorAll(".usuarios-modal-tab-btn[data-modal-tab]");
+    const modalPanes = document.querySelectorAll(".usuarios-modal-tab-pane");
+
+    modalTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            const target = tab.dataset.modalTab;
+            modalTabs.forEach(t => t.classList.remove("active"));
+            modalPanes.forEach(p => p.classList.remove("active"));
+            tab.classList.add("active");
+            document.getElementById(target)?.classList.add("active");
+        });
+    });
+
+    // Volver siempre a la primera pestaña interna al cerrar el modal de perfil
+    document.getElementById("editarPerfilModal")?.addEventListener("hidden.bs.modal", () => {
+        modalTabs.forEach(t => t.classList.remove("active"));
+        modalPanes.forEach(p => p.classList.remove("active"));
+        modalTabs[0]?.classList.add("active");
+        modalPanes[0]?.classList.add("active");
+    });
+
+    // ==========================================
+    // MOSTRAR / OCULTAR CONTRASEÑA
+    // ==========================================
+    document.querySelectorAll(".btn-toggle-password").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const input = btn.closest(".usuarios-modal-input-password").querySelector("input");
+            const icon = btn.querySelector("i");
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+            icon.classList.toggle("bi-eye");
+            icon.classList.toggle("bi-eye-slash");
+        });
+    });
+
+    // ==========================================
+    // VALIDACIÓN VISUAL: MODAL CAMBIAR CONTRASEÑA
+    // ==========================================
+    const formPassword = document.getElementById("formCambiarPassword");
+
+    if (formPassword) {
+        const actual = document.getElementById("id_password_actual");
+        const nueva = document.getElementById("id_password_nueva");
+        const confirmar = document.getElementById("id_password_confirmar");
+
+        function mostrarError(input, mensaje) {
+            const feedback = formPassword.querySelector(`[data-feedback-for="${input.name}"]`);
+            input.closest(".usuarios-modal-input-password").classList.add("is-invalid-custom");
+            if (feedback) {
+                feedback.textContent = mensaje;
+                feedback.classList.add("visible");
+            }
+        }
+
+        function limpiarError(input) {
+            const feedback = formPassword.querySelector(`[data-feedback-for="${input.name}"]`);
+            input.closest(".usuarios-modal-input-password").classList.remove("is-invalid-custom");
+            if (feedback) feedback.classList.remove("visible");
+        }
+
+        [actual, nueva, confirmar].forEach(input => {
+            input.addEventListener("input", () => limpiarError(input));
+        });
+
+        formPassword.addEventListener("submit", function (e) {
+            let valido = true;
+
+            if (!actual.value.trim()) {
+                mostrarError(actual, "Este campo es obligatorio.");
+                valido = false;
+            }
+            if (!nueva.value.trim()) {
+                mostrarError(nueva, "Este campo es obligatorio.");
+                valido = false;
+            } else if (nueva.value.length < 8) {
+                mostrarError(nueva, "La contraseña debe tener al menos 8 caracteres.");
+                valido = false;
+            }
+            if (!confirmar.value.trim()) {
+                mostrarError(confirmar, "Este campo es obligatorio.");
+                valido = false;
+            } else if (nueva.value && confirmar.value !== nueva.value) {
+                mostrarError(confirmar, "Las contraseñas no coinciden.");
+                valido = false;
+            }
+
+            if (!valido) {
+                e.preventDefault();
             }
         });
-    });
+    }
 
     // ==========================================
-    // DESCARGA DOCUMENTOS (SIN CAMBIOS)
+    // RESETEAR MODAL DE CONTRASEÑA AL CERRARLO
     // ==========================================
+    document.getElementById("cambiarPasswordModal")?.addEventListener("hidden.bs.modal", () => {
+        const form = document.getElementById("formCambiarPassword");
+        if (!form) return;
 
-    document.querySelectorAll(".descargarBtn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const documento = btn.dataset.doc;
-            console.log(`Descargando documento: ${documento}`);
+        form.reset();
+        form.querySelectorAll(".usuarios-modal-invalid-feedback").forEach(f => f.classList.remove("visible"));
+        form.querySelectorAll(".usuarios-modal-input-password").forEach(g => g.classList.remove("is-invalid-custom"));
+        form.querySelectorAll("input[type=text]").forEach(i => { i.type = "password"; });
+        form.querySelectorAll(".btn-toggle-password i").forEach(icon => {
+            icon.classList.add("bi-eye");
+            icon.classList.remove("bi-eye-slash");
         });
     });
 
-    console.log("✅ Módulo de información personal cargado correctamente.");
+    console.log("✅ Módulo de perfil (modales) cargado correctamente.");
 });

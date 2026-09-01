@@ -921,21 +921,41 @@ def employee_profile_update(request):
         perfil.telefono_emergencia = request.POST.get("telefono_emergencia")
         perfil.save()
 
-        password = request.POST.get("password")
+        messages.success(request, "Los cambios se guardaron correctamente.")
 
-        if password:
-            # RN-CT-04: nunca puede quedar igual al número de documento.
-            if password == perfil.numero_documento:
-                messages.error(
-                    request,
-                    "La contraseña no puede ser igual a tu número de documento."
-                )
-                return redirect("employee_profile")
+    return redirect("employee_profile")
 
-            request.user.set_password(password)
-            request.user.save()
-            update_session_auth_hash(request, request.user)
+@login_required
+def employee_password_update(request):
+    if request.method == "POST":
+        user = request.user
+        perfil = user.perfil
 
-        messages.success(request, "Perfil actualizado correctamente.")
+        password_actual = request.POST.get("password_actual", "")
+        password_nueva = request.POST.get("password_nueva", "")
+        password_confirmar = request.POST.get("password_confirmar", "")
+
+        if not user.check_password(password_actual):
+            messages.error(request, "La contraseña actual no es correcta.")
+            return redirect("employee_profile")
+
+        if password_nueva != password_confirmar:
+            messages.error(request, "Las contraseñas no coinciden.")
+            return redirect("employee_profile")
+
+        if len(password_nueva) < 8:
+            messages.error(request, "La nueva contraseña debe tener al menos 8 caracteres.")
+            return redirect("employee_profile")
+
+        # RN-CT-04: nunca puede quedar igual al número de documento.
+        if password_nueva == perfil.numero_documento:
+            messages.error(request, "La contraseña no puede ser igual a tu número de documento.")
+            return redirect("employee_profile")
+
+        user.set_password(password_nueva)
+        user.save()
+        update_session_auth_hash(request, user)
+
+        messages.success(request, "La contraseña se actualizó correctamente.")
 
     return redirect("employee_profile")
