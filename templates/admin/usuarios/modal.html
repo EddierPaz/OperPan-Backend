@@ -289,15 +289,18 @@
                 </form>
             </div>
 
+            <!-- Footer: Cancelar/Limpiar = gris neutro, Guardar = verde.
+                 (Antes: btn-outline-corporate para ambos grises, y
+                 btn-primary-corporate rojo institucional para Guardar). -->
             <div class="modal-footer usuario-detalle-footer">
-                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cancelar
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
-                <button type="reset" class="usuario-modal-btn filtro-btn-limpiar" id="btnLimpiarCrear">
-                    <i class="bi bi-eraser me-1"></i> Limpiar campos
+                <button type="reset" class="btn-action btn-action-cancel" id="btnLimpiarCrear">
+                    <i class="bi bi-eraser"></i> Limpiar campos
                 </button>
-                <button type="submit" form="formCrearUsuario" class="usuario-modal-btn btn btn-primary-corporate">
-                    <i class="bi bi-save me-1"></i> Guardar Usuario
+                <button type="submit" form="formCrearUsuario" class="btn-action btn-action-save">
+                    <i class="bi bi-check"></i> Guardar Usuario
                 </button>
             </div>
 
@@ -590,11 +593,11 @@
             </div>
 
             <div class="modal-footer usuario-detalle-footer">
-                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cancelar
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
-                <button type="submit" form="formEditarUsuario" class="usuario-modal-btn btn btn-primary-corporate">
-                    <i class="bi bi-save me-1"></i> Guardar Cambios
+                <button type="submit" form="formEditarUsuario" class="btn-action btn-action-save">
+                    <i class="bi bi-check"></i> Guardar Cambios
                 </button>
             </div>
 
@@ -765,8 +768,8 @@
             </div>
 
             <div class="modal-footer usuario-detalle-footer">
-                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cerrar
+                <button type="button" class="btn-action btn-action-close" data-bs-dismiss="modal">
+                    <i class="bi bi-x"></i> Cerrar
                 </button>
             </div>
 
@@ -783,7 +786,7 @@
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
-                        <i class="bi bi-slash-circle text-warning"></i> <span>Suspender Cuenta</span>
+                        <i class="bi bi-pause-circle text-warning"></i> <span>Suspender Cuenta</span>
                     </div>
                     <p class="usuario-detalle-subtitulo mb-0">
                         Suspender a <strong id="suspender_usuario_nombre">...</strong>
@@ -800,11 +803,11 @@
                     <textarea class="form-control" name="motivo" id="suspender_motivo" rows="3" required></textarea>
                 </div>
                 <div class="modal-footer usuario-detalle-footer">
-                    <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                        Cancelar
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="submit" class="usuario-modal-btn btn btn-warning">
-                        <i class="bi bi-slash-circle me-1"></i> Suspender
+                    <button type="submit" class="btn-action btn-action-suspend">
+                        <i class="bi bi-pause-circle"></i> Suspender
                     </button>
                 </div>
             </form>
@@ -832,11 +835,11 @@
             <form id="formReactivarUsuario" method="POST" action="">
                 {% csrf_token %}
                 <div class="modal-footer usuario-detalle-footer">
-                    <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                        Cancelar
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="submit" class="usuario-modal-btn btn btn-success">
-                        <i class="bi bi-check-circle me-1"></i> Reactivar
+                    <button type="submit" class="btn-action btn-action-activate">
+                        <i class="bi bi-check-circle"></i> Reactivar
                     </button>
                 </div>
             </form>
@@ -853,7 +856,7 @@
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
-                        <i class="bi bi-box-arrow-right text-secondary"></i> <span>Retirar Empleado</span>
+                        <i class="bi bi-box-arrow-right text-danger"></i> <span>Retirar Empleado</span>
                     </div>
                     <p class="usuario-detalle-subtitulo mb-0">
                         Retirar a <strong id="retirar_usuario_nombre">...</strong>. Su historial se conserva.
@@ -867,12 +870,15 @@
                     <label class="usuario-detalle-label mb-2" for="retirar_motivo">Motivo (opcional)</label>
                     <textarea class="form-control" name="motivo" id="retirar_motivo" rows="3"></textarea>
                 </div>
+                <!-- Retirar es una acción seria (aunque reversible vía "Reincorporar"),
+                     por eso usa el mismo rojo que Eliminar en el menú "Más" de la tabla
+                     (consistencia: la misma acción siempre el mismo color, punto 22). -->
                 <div class="modal-footer usuario-detalle-footer">
-                    <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                        Cancelar
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="submit" class="usuario-modal-btn btn btn-secondary">
-                        <i class="bi bi-box-arrow-right me-1"></i> Retirar
+                    <button type="submit" class="btn-action btn-action-delete">
+                        <i class="bi bi-box-arrow-right"></i> Retirar
                     </button>
                 </div>
             </form>
@@ -889,7 +895,7 @@
             <div class="modal-header usuario-detalle-header">
                 <div>
                     <div class="usuario-detalle-titulo">
-                        <i class="bi bi-arrow-repeat text-primary"></i> <span>Reincorporar Empleado</span>
+                        <i class="bi bi-arrow-repeat text-success"></i> <span>Reincorporar Empleado</span>
                     </div>
                     <p class="usuario-detalle-subtitulo mb-0">
                         Reincorporar a <strong id="reactivar_retiro_usuario_nombre">...</strong>
@@ -914,11 +920,11 @@
                     </div>
                 </div>
                 <div class="modal-footer usuario-detalle-footer">
-                    <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                        Cancelar
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="submit" class="usuario-modal-btn btn btn-primary-corporate">
-                        <i class="bi bi-arrow-repeat me-1"></i> Reincorporar
+                    <button type="submit" class="btn-action btn-action-activate">
+                        <i class="bi bi-arrow-repeat"></i> Reincorporar
                     </button>
                 </div>
             </form>
@@ -946,11 +952,11 @@
             <form id="formEnviarCredenciales" method="POST" action="">
                 {% csrf_token %}
                 <div class="modal-footer usuario-detalle-footer">
-                    <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                        Cancelar
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
                     </button>
-                    <button type="submit" class="usuario-modal-btn btn btn-info">
-                        <i class="bi bi-envelope-fill me-1"></i> Enviar
+                    <button type="submit" class="btn-action btn-action-info">
+                        <i class="bi bi-envelope-fill"></i> Enviar
                     </button>
                 </div>
             </form>
@@ -976,7 +982,7 @@
             </div>
 
             <div class="modal-body usuario-detalle-body text-center py-4">
-                <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                <div class="confirm-modal-icon confirm-modal-icon--danger mb-3">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
                 <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
@@ -990,13 +996,13 @@
             </div>
 
             <div class="modal-footer usuario-detalle-footer">
-                <button type="button" class="usuario-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cancelar
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
                 <form id="formEliminarUsuario" method="POST" action="">
                     {% csrf_token %}
-                    <button type="submit" class="usuario-modal-btn btn btn-danger">
-                        <i class="bi bi-trash me-1"></i> Eliminar permanentemente
+                    <button type="submit" class="btn-action btn-action-delete">
+                        <i class="bi bi-trash"></i> Eliminar permanentemente
                     </button>
                 </form>
             </div>

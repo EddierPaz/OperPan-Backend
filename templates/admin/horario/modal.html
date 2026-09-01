@@ -110,17 +110,20 @@
         </form>
       </div>
 
-      <!-- Footer -->
+      <!-- Footer: antes botones .asistencia-modal-btn con distintos colores
+           inconsistentes entre módulos (btn-outline-corporate para Cancelar
+           Y Limpiar, sin distinción). Ahora usa el sistema global:
+           Cancelar/Limpiar = gris neutro, Guardar = verde (acción de
+           confirmación positiva). -->
       <div class="modal-footer asistencia-detalle-footer">
-        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-          Cancelar
+        <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancelar
         </button>
-        <button type="reset" form="formCrearHorario" id="btnLimpiarHorario"
-          class="asistencia-modal-btn btn-outline-corporate">
-          <i class="bi bi-eraser me-1"></i> Limpiar campos
+        <button type="reset" form="formCrearHorario" id="btnLimpiarHorario" class="btn-action btn-action-cancel">
+          <i class="bi bi-eraser"></i> Limpiar campos
         </button>
-        <button type="submit" form="formCrearHorario" class="asistencia-modal-btn btn btn-primary-corporate">
-          <i class="bi bi-save me-1"></i> Guardar horario
+        <button type="submit" form="formCrearHorario" class="btn-action btn-action-save">
+          <i class="bi bi-check"></i> Guardar horario
         </button>
       </div>
 
@@ -233,11 +236,11 @@
 
       <!-- FOOTER -->
       <div class="modal-footer asistencia-detalle-footer">
-        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-          Cancelar
+        <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancelar
         </button>
-        <button type="submit" form="formEditar" class="asistencia-modal-btn btn btn-primary-corporate">
-          <i class="bi bi-save me-1"></i> Guardar cambios
+        <button type="submit" form="formEditar" class="btn-action btn-action-save">
+          <i class="bi bi-check"></i> Guardar cambios
         </button>
       </div>
 
@@ -323,8 +326,8 @@
 
       <!-- FOOTER: Botón corporativo -->
       <div class="modal-footer asistencia-detalle-footer">
-        <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-          Cerrar
+        <button type="button" class="btn-action btn-action-close" data-bs-dismiss="modal">
+          <i class="bi bi-x"></i> Cerrar
         </button>
       </div>
 
@@ -350,7 +353,7 @@
 
             <!-- BODY -->
             <div class="modal-body asistencia-detalle-body text-center py-4">
-                <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                <div class="confirm-modal-icon confirm-modal-icon--danger mb-3">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
                 <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
@@ -360,13 +363,13 @@
 
             <!-- FOOTER -->
             <div class="modal-footer asistencia-detalle-footer">
-                <button type="button" class="asistencia-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cancelar
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
                 <form id="formEliminarHorario" method="POST" action="">
                     {% csrf_token %}
-                    <button type="submit" class="asistencia-modal-btn btn btn-danger">
-                        <i class="bi bi-trash me-1"></i> Eliminar permanentemente
+                    <button type="submit" class="btn-action btn-action-delete">
+                        <i class="bi bi-trash"></i> Eliminar permanentemente
                     </button>
                 </form>
             </div>

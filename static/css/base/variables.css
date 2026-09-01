@@ -74,4 +74,51 @@
   --color-text-on-dark: #FFFFFF;
   --color-text-on-dark-soft: #E0E0E0;
   --color-text-on-dark-muted: #BBBBBB;
+
+  /* ── Espaciado (escala global) ── */
+  --spacing-xs: 0.4rem;
+  --spacing-sm: 0.6rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+
+  /* ── Sistema global de acciones (.btn-action-*) ──
+     Un único lugar para cambiar alto/radio/padding/gap de
+     TODOS los botones de acción de OperPan, sin tocar
+     components.css ni ningún módulo. */
+  --action-height: 36px;
+  --action-radius: 25px;
+  --action-radius-icon: var(--radius-circle);
+  --action-padding: 0.5rem 1rem;
+  --action-gap: 0.4rem;
+  --action-font-size: 0.88rem;
+  --action-icon-size: 1rem;
+
+  /* ── Colores semánticos de acción (para no acoplar botones a
+     colores de estado/badge; ver punto 10 del Design System) ── */
+  --color-action-view: var(--color-info);
+  --color-action-view-hover: var(--color-info-hover);
+  --color-action-edit: var(--color-info);
+  --color-action-edit-hover: var(--color-info-hover);
+  --color-action-info: var(--color-info);
+  --color-action-info-hover: var(--color-info-hover);
+  --color-action-create: var(--color-success);
+  --color-action-create-hover: var(--color-success-hover);
+  --color-action-save: var(--color-success);
+  --color-action-save-hover: var(--color-success-hover);
+  --color-action-approve: var(--color-success);
+  --color-action-approve-hover: var(--color-success-hover);
+  --color-action-activate: var(--color-success);
+  --color-action-activate-hover: var(--color-success-hover);
+  --color-action-reject: var(--color-danger);
+  --color-action-reject-hover: var(--color-danger-hover);
+  --color-action-delete: var(--color-danger-strong);
+  --color-action-delete-hover: var(--color-danger-strong-hover);
+  --color-action-suspend: var(--color-warning);
+  --color-action-suspend-hover: var(--color-warning-hover);
+  --color-action-download: var(--color-teal);
+  --color-action-download-hover: var(--color-teal-hover);
+  --color-action-print: var(--color-teal);
+  --color-action-print-hover: var(--color-teal-hover);
+  --color-action-neutral: #555555;
+  --color-action-neutral-hover: #444444;
 }

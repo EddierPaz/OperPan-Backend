@@ -118,93 +118,233 @@
 }
 
 
-/* ── Botones de acción rápida (Ver, Aprobar, Rechazar, Editar, Eliminar, Descargar) ── */
+/* ============================================================
+   SISTEMA GLOBAL DE ACCIONES (.btn-action-*)
+   Una única acción = una única clase, reutilizable en TODOS
+   los módulos (horarios, cuentas, tareas, novedades, etc).
+   Ningún módulo debe crear su propio botón de Ver/Editar/
+   Eliminar/etc: siempre se usa una de estas clases.
+
+   Uso:
+     <button class="btn-action btn-action-view" title="Ver"
+             aria-label="Ver">
+       <i class="bi bi-eye"></i> Ver
+     </button>
+
+   Solo-ícono (tablas con poco espacio): agregar
+   "btn-action-icon-only" además del modificador de color, y
+   SIEMPRE incluir title + aria-label (accesibilidad).
+   ============================================================ */
 .btn-action {
   border: none;
-  border-radius: 25px;
-  padding: 0.5rem 1rem;
-  font-size: 0.88rem;
+  border-radius: var(--action-radius);
+  padding: var(--action-padding);
+  font-size: var(--action-font-size);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: var(--action-gap);
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
+}
+
+.btn-action i {
+  font-size: var(--action-icon-size);
+  line-height: 1;
 }
 
 .btn-action:hover {
   transform: translateY(-1px);
 }
 
+.btn-action:disabled,
+.btn-action.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
+
+.btn-action:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Ver: azul/info — consultar información (nunca rojo institucional,
+   ese color queda reservado a eliminar/rechazar) */
 .btn-action-view {
-  background: var(--color-primary);
+  background: var(--color-action-view);
   color: #ffffff;
 }
 
 .btn-action-view:hover {
-  background: var(--color-primary-hover);
+  background: var(--color-action-view-hover);
   color: #ffffff;
 }
 
-.btn-action-approve {
-  background: var(--color-success);
-  color: #ffffff;
-}
-
-.btn-action-approve:hover {
-  background: var(--color-success-hover);
-  color: #ffffff;
-}
-
-.btn-action-reject {
-  background: var(--color-danger);
-  color: #ffffff;
-}
-
-.btn-action-reject:hover {
-  background: var(--color-danger-hover);
-  color: #ffffff;
-}
-
+/* Editar: azul/info — modificar información */
 .btn-action-edit {
-  background: var(--color-info);
+  background: var(--color-action-edit);
   color: #ffffff;
 }
 
 .btn-action-edit:hover {
-  background: var(--color-info-hover);
+  background: var(--color-action-edit-hover);
   color: #ffffff;
 }
 
+/* Crear: verde — nuevo registro (acción principal, Nivel 1) */
+.btn-action-create {
+  background: var(--color-action-create);
+  color: #ffffff;
+}
+
+.btn-action-create:hover {
+  background: var(--color-action-create-hover);
+  color: #ffffff;
+}
+
+/* Guardar: verde — confirmar un formulario/modal */
+.btn-action-save {
+  background: var(--color-action-save);
+  color: #ffffff;
+}
+
+.btn-action-save:hover {
+  background: var(--color-action-save-hover);
+  color: #ffffff;
+}
+
+/* Aprobar / Activar: verde — estado positivo */
+.btn-action-approve,
+.btn-action-activate {
+  background: var(--color-action-approve);
+  color: #ffffff;
+}
+
+.btn-action-approve:hover,
+.btn-action-activate:hover {
+  background: var(--color-action-approve-hover);
+  color: #ffffff;
+}
+
+/* Rechazar: rojo (institucional) — rechazar solicitud */
+.btn-action-reject {
+  background: var(--color-action-reject);
+  color: #ffffff;
+}
+
+.btn-action-reject:hover {
+  background: var(--color-action-reject-hover);
+  color: #ffffff;
+}
+
+/* Eliminar: rojo fuerte — acción destructiva, la más grave */
 .btn-action-delete {
-  background: var(--color-danger-strong);
+  background: var(--color-action-delete);
   color: #ffffff;
 }
 
 .btn-action-delete:hover {
-  background: var(--color-danger-strong-hover);
+  background: var(--color-action-delete-hover);
   color: #ffffff;
 }
 
+/* Suspender: amarillo/naranja — requiere atención, reversible */
+.btn-action-suspend {
+  background: var(--color-action-suspend);
+  color: #ffffff;
+}
+
+.btn-action-suspend:hover {
+  background: var(--color-action-suspend-hover);
+  color: #ffffff;
+}
+
+/* Descargar / Imprimir: teal — acciones de salida de documento */
 .btn-action-download {
-  background: var(--color-teal);
+  background: var(--color-action-download);
   color: #ffffff;
 }
 
 .btn-action-download:hover {
-  background: var(--color-teal-hover);
+  background: var(--color-action-download-hover);
   color: #ffffff;
 }
 
+.btn-action-print {
+  background: var(--color-action-print);
+  color: #ffffff;
+}
+
+.btn-action-print:hover {
+  background: var(--color-action-print-hover);
+  color: #ffffff;
+}
+
+/* Info: azul — acciones informativas/neutras que no son Ver ni
+   Editar (ej. "Reenviar credenciales", notificaciones) */
+.btn-action-info {
+  background: var(--color-action-info);
+  color: #ffffff;
+}
+
+.btn-action-info:hover {
+  background: var(--color-action-info-hover);
+  color: #ffffff;
+}
+
+/* Cancelar / Cerrar: gris — acción neutra, siempre reversible */
+.btn-action-cancel,
+.btn-action-close {
+  background: var(--color-action-neutral);
+  color: #ffffff;
+}
+
+.btn-action-cancel:hover,
+.btn-action-close:hover {
+  background: var(--color-action-neutral-hover);
+  color: #ffffff;
+}
+
+/* Filtrar: variante "outline" gris, para no competir visualmente
+   con las acciones de fila (se usa sobre todo junto a filtros-toolbar) */
+.btn-action-filter {
+  background: #ffffff;
+  color: var(--color-text-soft);
+  border: 1.5px solid var(--color-border);
+}
+
+.btn-action-filter:hover {
+  background: #F8FAFC;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* ── Variante solo-ícono: SIN texto, botón cuadrado/circular
+   compacto. Se combina con el color de acción que corresponda,
+   ej: class="btn-action btn-action-view btn-action-icon-only".
+   Usar en tablas con poco espacio (punto 20 del Design System);
+   SIEMPRE con title + aria-label ya que no hay texto visible. ── */
+.btn-action-icon-only {
+  width: var(--action-height);
+  height: var(--action-height);
+  padding: 0;
+}
+
+/* ── Variante solo-ícono neutra (gris): botón circular sin color
+   de acción propio (Nivel 2/3 en tablas y tarjetas con poco
+   espacio). ── */
 .btn-action-icon {
-  width: 36px;
-  height: 36px;
+  width: var(--action-height);
+  height: var(--action-height);
+  padding: 0;
   border: 1px solid var(--color-border);
   background: #F8FAFC;
   color: var(--color-text-soft);
-  border-radius: var(--radius-circle);
+  border-radius: var(--action-radius-icon);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -216,6 +356,186 @@
   background: var(--color-primary-soft-2);
   color: var(--color-primary);
   border-color: #FCA5A5;
+}
+
+/* "Más" (⋮): siempre neutro/gris, nunca cambia de color —
+   es el punto de entrada a acciones secundarias, no una acción
+   en sí misma. Úsese junto a .btn-action-icon:
+   class="btn-action-icon btn-action-more" */
+.btn-action-more {
+  background: #F8FAFC;
+  color: var(--color-text-soft);
+}
+
+.btn-action-more:hover {
+  background: #EEF2F6;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* ============================================================
+   MENÚ "MÁS" GLOBAL (dropdown de acciones secundarias)
+   Reutiliza Bootstrap Dropdown; esto solo aplica el estilo.
+   Estructura esperada:
+     <div class="dropdown">
+       <button class="btn-action btn-action-icon btn-action-more"
+               data-bs-toggle="dropdown" title="Más acciones"
+               aria-label="Más acciones">
+         <i class="bi bi-three-dots-vertical"></i>
+       </button>
+       <ul class="dropdown-menu action-menu">
+         <li><a class="action-menu-item" href="#">
+               <i class="bi bi-pencil"></i> Editar</a></li>
+         <li><a class="action-menu-item" href="#">
+               <i class="bi bi-pause-circle"></i> Suspender</a></li>
+         <li><hr class="action-menu-divider"></li>
+         <li><a class="action-menu-item action-menu-item--danger" href="#">
+               <i class="bi bi-trash"></i> Eliminar</a></li>
+       </ul>
+     </div>
+   Mostrar SOLO las acciones válidas para el estado actual del
+   registro (ej. una cuenta suspendida no debe mostrar "Suspender").
+   ============================================================ */
+.action-menu {
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 0.4rem;
+  min-width: 200px;
+}
+
+.action-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.action-menu-item i {
+  font-size: 1rem;
+  width: 18px;
+  text-align: center;
+  color: var(--color-text-soft);
+}
+
+.action-menu-item:hover {
+  background: #F8FAFC;
+  color: var(--color-text);
+}
+
+.action-menu-item--danger {
+  color: var(--color-danger-strong);
+}
+
+.action-menu-item--danger i {
+  color: var(--color-danger-strong);
+}
+
+.action-menu-item--danger:hover {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-strong);
+}
+
+.action-menu-divider {
+  margin: 0.4rem 0.2rem;
+  border: none;
+  border-top: 1px solid var(--color-border-soft);
+  opacity: 1;
+}
+
+/* ============================================================
+   MODAL DE CONFIRMACIÓN GLOBAL
+   Un único modal para Eliminar/Suspender/Retirar/Rechazar en
+   TODO OperPan. Reutiliza el modal de Bootstrap; el título,
+   descripción, ícono y texto del botón se cambian por JS/contexto,
+   nunca se crea un modal nuevo por módulo.
+   Estructura esperada (una sola instancia en base.html o
+   incluida vía {% include %} donde se necesite):
+     <div class="modal fade confirm-modal" id="confirmModal">
+       <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+           <div class="modal-body confirm-modal-body">
+             <div class="confirm-modal-icon confirm-modal-icon--danger">
+               <i class="bi bi-exclamation-triangle"></i>
+             </div>
+             <h5 class="confirm-modal-title">¿Eliminar registro?</h5>
+             <p class="confirm-modal-text">Esta acción no se puede deshacer.</p>
+           </div>
+           <div class="confirm-modal-footer">
+             <button class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
+             <button class="btn-action btn-action-delete" id="confirmModalAccept">Eliminar</button>
+           </div>
+         </div>
+       </div>
+     </div>
+   La clase modificadora del ícono (--danger/--warning/--success)
+   determina el color según el tipo de acción a confirmar.
+   ============================================================ */
+.confirm-modal .modal-content {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.confirm-modal-body {
+  padding: 2rem 1.75rem 1rem;
+  text-align: center;
+}
+
+.confirm-modal-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+.confirm-modal-icon--danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-strong);
+}
+
+.confirm-modal-icon--warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-hover);
+}
+
+.confirm-modal-icon--success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.confirm-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.confirm-modal-text {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}
+
+.confirm-modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.75rem 1.75rem;
+  border-top: none;
 }
 
 /* ============================================================
