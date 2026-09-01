@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ==========================================
-    // 2. FILTROS DE BÚSQUEDA
+    // 2. FILTROS DE BÚSQUEDA 
     // ==========================================
     const inputBuscar = document.getElementById('buscarCuenta');
     const filtroCargo = document.getElementById('filtroCargo');
@@ -209,43 +209,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const filtroEstadoCuenta = document.getElementById('filtroEstadoCuenta');
     const btnLimpiar = document.getElementById('limpiarFiltrosCuentas');
 
-    if (inputBuscar) {
-        function aplicarFiltros() {
-            const texto = inputBuscar.value.trim().toLowerCase();
-            const cargo = filtroCargo ? filtroCargo.value.toLowerCase() : '';
-            const rol = filtroRol ? filtroRol.value.toLowerCase() : '';
-            const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value : '';
+    function aplicarFiltros() {
+        const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
+        const cargo = filtroCargo ? filtroCargo.value.toLowerCase() : '';
+        const rol = filtroRol ? filtroRol.value.toLowerCase() : '';
+        const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value.trim() : '';
 
-            const filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-id]');
-            filas.forEach(fila => {
-                const d = fila.dataset;
+        const filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-id]');
+        
+        filas.forEach(fila => {
+            const d = fila.dataset;
 
-                const nombreCompleto = [
-                    d.primerNombre || '',
-                    d.segundoNombre || '',
-                    d.primerApellido || '',
-                    d.segundoApellido || ''
-                ].filter(Boolean).join(' ').toLowerCase();
+            const nombreCompleto = [
+                d.primerNombre || '',
+                d.segundoNombre || '',
+                d.primerApellido || '',
+                d.segundoApellido || ''
+            ].filter(Boolean).join(' ').toLowerCase();
 
-                const documento = (d.numeroDocumento || '').toLowerCase();
-                const usuario = (d.username || '').toLowerCase();
-                const cargoFila = (d.cargo || '').toLowerCase();
-                const rolFila = (d.rol || '').toLowerCase();
-                const estadoCuentaFila = d.estadoCuenta || '';
+            const documento = (d.numeroDocumento || '').toLowerCase();
+            const usuario = (d.username || '').toLowerCase();
+            const cargoFila = (d.cargo || '').toLowerCase();
+            const rolFila = (d.rol || '').toLowerCase();
+            const estadoCuentaFila = (d.estadoCuenta || '').trim();
 
-                const coincideTexto = !texto ||
-                    documento.includes(texto) ||
-                    usuario.includes(texto) ||
-                    nombreCompleto.includes(texto);
+            const coincideTexto = !texto ||
+                documento.includes(texto) ||
+                usuario.includes(texto) ||
+                nombreCompleto.includes(texto);
 
-                const coincideCargo = !cargo || cargoFila === cargo;
-                const coincideRol = !rol || rolFila === rol;
-                const coincideEstadoCuenta = !estadoCuenta || estadoCuentaFila === estadoCuenta;
+            // Se usa trim() para evitar espacios fantasma en las comparaciones
+            const coincideCargo = !cargo || cargoFila === cargo.trim();
+            const coincideRol = !rol || rolFila === rol.trim();
+            const coincideEstadoCuenta = !estadoCuenta || estadoCuentaFila === estadoCuenta;
 
-                fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) ? '' : 'none';
-            });
-        }
+            if (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    }
 
+    if (inputBuscar || filtroCargo || filtroRol || filtroEstadoCuenta) {
+        // Escuchamos tanto 'input' como 'change' para asegurar la reactividad
         [inputBuscar, filtroCargo, filtroRol, filtroEstadoCuenta].forEach(el => {
             if (el) {
                 el.addEventListener('input', aplicarFiltros);
@@ -255,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (btnLimpiar) {
             btnLimpiar.addEventListener('click', function() {
-                inputBuscar.value = '';
+                if (inputBuscar) inputBuscar.value = '';
                 if (filtroCargo) filtroCargo.value = '';
                 if (filtroRol) filtroRol.value = '';
                 if (filtroEstadoCuenta) filtroEstadoCuenta.value = '';
