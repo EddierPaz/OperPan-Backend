@@ -11,6 +11,16 @@ from apps.usuarios.models import PerfilEmpleado
 from apps.usuarios.decorators import admin_required
 from .models import Asistencia, DescansoEmpleado, Horario
 
+
+# ---
+
+# La importacion paginator sirve para el historial de asistencia 
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+# ---
+
+
+
 # Gmail API
 from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 
@@ -217,14 +227,35 @@ def _contexto_base():
         "resumen_horarios": resumen_horarios,
     }
 
+
+
+# ---
+
+
+
+# Cambio el 1 de sep para historial de asistencia con filtros y paginación
+
 @login_required
 @admin_required
 def asistencia_dashboard(request):
-    return render(
-        request,
-        "admin/asistencia/asistencia.html",
-        _contexto_base()
-    )
+    # Obtener contexto base (día actual, KPIs, turnos, etc.)
+    context = _contexto_base()
+
+    # Agregar histórico inicial (sin filtros, página 1)
+    historico = Asistencia.objects.select_related('horario__empleado').order_by('-fecha', '-hora_marcada')
+    paginator = Paginator(historico, 12)
+    page_obj = paginator.get_page(1)
+    context['page_obj'] = page_obj
+
+    # También pasar la lista de empleados para el filtro
+    context['empleados'] = PerfilEmpleado.objects.all().order_by('primer_nombre')
+
+    return render(request, 'admin/asistencia/asistencia.html', context)
+
+
+# ---
+
+
 
 def horarios(request):
     if request.method == "POST":
@@ -582,3 +613,85 @@ def cambiar_estado_asistencia(request):
         return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
     except PerfilEmpleado.DoesNotExist:
         return JsonResponse({'error': 'Empleado no encontrado'}, status=404)
+
+
+
+
+
+
+# Historial de Asistencia para administradores con filtros y paginación
+
+
+@login_required
+@admin_required
+def asistencia_historico(request):
+    """
+    Vista para el historial de asistencias con filtros y paginación.
+    Devuelve HTML parcial para actualización vía AJAX.
+    """
+    # Obtener parámetros GET
+    page = request.GET.get('page', 1)
+    busqueda = request.GET.get('busqueda', '').strip()
+    empleados_ids = request.GET.getlist('empleados')  # lista de IDs
+    turno = request.GET.get('turno', '')
+    estado = request.GET.get('estado', '')
+    fecha_unica = request.GET.get('fecha_unica', '')
+    fecha_desde = request.GET.get('fecha_desde', '')
+    fecha_hasta = request.GET.get('fecha_hasta', '')
+
+    # Query base con select_related para optimizar
+    asistencias = Asistencia.objects.select_related('horario__empleado').all()
+
+    # Aplicar filtros
+    if busqueda:
+        # Buscar en nombre del empleado (primer nombre, segundo, apellidos), fecha (como string), y estado
+        asistencias = asistencias.filter(
+            Q(horario__empleado__primer_nombre__icontains=busqueda) |
+            Q(horario__empleado__segundo_nombre__icontains=busqueda) |
+            Q(horario__empleado__primer_apellido__icontains=busqueda) |
+            Q(horario__empleado__segundo_apellido__icontains=busqueda) |
+            Q(fecha__icontains=busqueda) |
+            Q(estado__icontains=busqueda)
+        )
+
+    if empleados_ids:
+        asistencias = asistencias.filter(horario__empleado__id__in=empleados_ids)
+
+    if turno:
+        asistencias = asistencias.filter(horario__turno=turno)
+
+    if estado:
+        asistencias = asistencias.filter(estado=estado)
+
+    if fecha_unica:
+        asistencias = asistencias.filter(fecha=fecha_unica)
+
+    if fecha_desde and fecha_hasta:
+        asistencias = asistencias.filter(fecha__range=[fecha_desde, fecha_hasta])
+    elif fecha_desde:
+        asistencias = asistencias.filter(fecha__gte=fecha_desde)
+    elif fecha_hasta:
+        asistencias = asistencias.filter(fecha__lte=fecha_hasta)
+
+    # Ordenar (más reciente primero)
+    asistencias = asistencias.order_by('-fecha', '-hora_marcada')
+
+    # Paginación (12 por página)
+    paginator = Paginator(asistencias, 12)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # Si es AJAX, devolver solo el parcial
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        context = {
+            'page_obj': page_obj,
+        }
+        return render(request, 'admin/asistencia/historial_cards.html', context)
+    else:
+        # Si no es AJAX, redirigir al dashboard (o renderizar completo)
+        # Normalmente no se usará, pero por si acaso
+        return redirect('asistencia:asistencia_dashboard')

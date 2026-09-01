@@ -1,0 +1,34 @@
+<div class="modal fade" id="modalRangoFechas" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content tarea-modal">
+            <div class="modal-header tarea-detalle-header">
+                <div>
+                    <div class="tarea-detalle-titulo">
+                        <i class="bi bi-calendar-range"></i>
+                        <span>Seleccionar rango de fechas</span>
+                    </div>
+                    <p class="tarea-detalle-subtitulo mb-0">Elige un período para filtrar</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body tarea-detalle-body">
+                <div class="mb-3">
+                    <label for="fechaDesdeInput" class="form-label">Desde:</label>
+                    <input type="date" class="form-control" id="fechaDesdeInput" style="border-color: #A40706;">
+                </div>
+                <div class="mb-3">
+                    <label for="fechaHastaInput" class="form-label">Hasta:</label>
+                    <input type="date" class="form-control" id="fechaHastaInput" style="border-color: #A40706;">
+                </div>
+                <input type="hidden" id="fechaDesdeSeleccionada" value="">
+                <input type="hidden" id="fechaHastaSeleccionada" value="">
+            </div>
+            <div class="modal-footer tarea-detalle-footer">
+                <button type="button" class="tarea-modal-btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="tarea-modal-btn btn-primary-corporate" id="aplicarRangoFechas">
+                    <i class="bi bi-check2"></i> Aplicar filtro
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

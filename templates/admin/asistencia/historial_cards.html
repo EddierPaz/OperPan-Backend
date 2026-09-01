@@ -1,0 +1,83 @@
+{% load static %}
+
+<div id="historialContainer" class="row g-4">
+    {% for asistencia in page_obj %}
+    <div class="col-12 col-md-6 col-lg-4 d-flex">
+        <div class="asistencia-card card border-0 shadow-sm rounded-4 p-3 w-100">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <h5 class="asistencia-empleado fw-bold m-0 text-truncate" title="{{ asistencia.horario.empleado.nombre_completo }}">
+                    {{ asistencia.horario.empleado.nombre_completo }}
+                </h5>
+                {% if asistencia.estado == "PRESENTE" %}
+                    <span class="badge badge-estado badge-presente">Presente</span>
+                {% elif asistencia.estado == "TARDE" %}
+                    <span class="badge badge-estado badge-tarde">Tarde</span>
+                {% elif asistencia.estado == "AUSENTE" %}
+                    <span class="badge badge-estado badge-ausente">Ausente</span>
+                {% else %}
+                    <span class="badge badge-estado badge-sin-registro">Sin registrar</span>
+                {% endif %}
+            </div>
+            <div class="asistencia-info">
+                <div><i class="bi bi-calendar3 me-1"></i> {{ asistencia.fecha|date:"d/m/Y" }}</div>
+                <div><i class="bi bi-clock me-1"></i> Turno {{ asistencia.horario.get_turno_display }}</div>
+                <div><i class="bi bi-clock-history me-1"></i> Prog: {{ asistencia.horario.hora_entrada|time:"H:i" }}</div>
+                <div><i class="bi bi-check-circle me-1"></i> Marc: 
+                    {% if asistencia.hora_marcada %}
+                        {{ asistencia.hora_marcada|time:"H:i" }}
+                    {% else %}
+                        <span class="text-muted">Sin marcar</span>
+                    {% endif %}
+                </div>
+                <div class="mt-1 text-muted small"><i class="bi bi-briefcase me-1"></i> {{ asistencia.horario.empleado.get_cargo_display|default:"Sin cargo" }}</div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
+            <i class="bi bi-inbox fs-3 d-block text-muted mb-2"></i>
+            No se encontraron asistencias con los filtros seleccionados.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Paginación -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Paginación de asistencias" class="mt-4">
+    <ul class="pagination justify-content-center custom-pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="#" data-page="{{ page_obj.previous_page_number }}" aria-label="Anterior">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+                <li class="page-item"><a class="page-link" href="#" data-page="{{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="#" data-page="{{ page_obj.next_page_number }}" aria-label="Siguiente">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

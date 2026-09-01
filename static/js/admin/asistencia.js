@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
     // 1. HELPER: MOSTRAR / OCLUTAR DÍAS CALENDARIO
@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (indice < maxDias) {
                 btn.style.display = "";
             } else {
-                // Si el día que se mostraba queda fuera del rango, se oculta y limpia
                 btn.style.display = "none";
                 if (btn.classList.contains("seleccionado")) {
                     btn.classList.remove("seleccionado");
@@ -78,7 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
             actualizarDiasCalendario(cicloCrear, this.value, inputCrear, labelCrear, textoCrear);
         });
 
-        // Estado inicial
         actualizarDiasCalendario(cicloCrear, turnoSelect.value, inputCrear, labelCrear, textoCrear);
     }
 
@@ -151,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================
     document.addEventListener("click", function (e) {
 
-        // BOTÓN VER HORARIO
         const btnVer = e.target.closest(".btn-ver-horario");
         if (btnVer) {
             const id = btnVer.dataset.id;
@@ -169,9 +166,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("ver-descanso").textContent = data.descanso || "Sin asignar";
                     document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
 
-                    // === MODIFICADO: Mostrar inicio y fin con etiquetas ===
-                    document.getElementById("ver-ciclo-inicio").textContent = data.ciclo_inicio || "No definido";
-                    document.getElementById("ver-ciclo-fin").textContent = data.ciclo_fin || "En curso";
+                    const ciclo = document.getElementById("ver-ciclo");
+                    if (ciclo) {
+                        ciclo.textContent = (data.ciclo_inicio && data.ciclo_fin)
+                            ? data.ciclo_inicio + " — " + data.ciclo_fin
+                            : "Sin definir";
+                    }
 
                     const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
                     modalVer.show();
@@ -182,7 +182,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         }
 
-        // BOTÓN EDITAR HORARIO
         const btnEditar = e.target.closest(".btn-editar-horario");
         if (btnEditar) {
             const id = btnEditar.dataset.id;
@@ -205,10 +204,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
                     }
 
-                    // Ajusta días según turno
                     actualizarDiasCalendario(cicloEditar, data.turno_valor, inputEditar, labelEditar, textoEditar);
 
-                    // Marcar en el calendario la fecha previamente guardada
                     if (cicloEditar) {
                         cicloEditar.querySelectorAll(".dia-btn").forEach(function (b) {
                             b.classList.remove("seleccionado");
@@ -235,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ==========================================
     // 7. FILTROS DE BÚSQUEDA Y SELECCIÓN EN TABLA
     // ==========================================
-    const filas = document.querySelectorAll("#tablaHorarios tbody .fila-horario");
+    const filas = document.querySelectorAll("table.table-custom tbody tr");
     const inputBuscar = document.getElementById("buscarHorario");
     const selectTurno = document.getElementById("filtroTurno");
     const selectEstado = document.getElementById("filtroEstadoHorario");
@@ -247,9 +244,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const estado = selectEstado.value.toLowerCase();
 
             filas.forEach(fila => {
-                const empleado = fila.dataset.empleado || "";
-                const turnoFila = fila.dataset.turno || "";
-                const estadoFila = fila.dataset.estado || "";
+                const celdas = fila.querySelectorAll("td");
+                if (celdas.length < 6) return;
+
+                const empleado = celdas[0].textContent.trim().toLowerCase();
+                const turnoFila = celdas[2].textContent.trim().toLowerCase();
+                const estadoFila = celdas[5].textContent.trim().toLowerCase();
 
                 const coincideTexto = !texto || empleado.includes(texto);
                 const coincideTurno = !turno || turnoFila === turno;
@@ -277,34 +277,205 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     // ==========================================
     // 8. ELIMINAR HORARIO
     // ==========================================
     document.addEventListener("click", function (e) {
-        // BOTÓN ELIMINAR HORARIO
         const btnEliminar = e.target.closest(".btn-eliminar-horario");
         if (btnEliminar) {
             e.preventDefault();
             const id = btnEliminar.dataset.id;
             const nombre = btnEliminar.dataset.empleado || "empleado";
 
-            // Configurar el formulario
             const form = document.getElementById("formEliminarHorario");
             if (form) {
                 form.action = "/asistencia/horarios/" + id + "/eliminar/";
             }
 
-            // Mostrar el nombre del empleado
             const nombreSpan = document.getElementById("eliminar-empleado-nombre");
             if (nombreSpan) {
                 nombreSpan.textContent = nombre;
             }
 
-            // Mostrar el modal
             const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario"));
             modal.show();
         }
     });
+
+    // ==========================================
+    // 9. NUEVA FUNCIONALIDAD: HISTORIAL Y FILTROS
+    // ==========================================
+
+    // Verificar que estamos en la página de asistencia con historial
+    const wrapper = document.getElementById('historialWrapper');
+    if (!wrapper) return; // Si no existe, salir (no estamos en la página adecuada)
+
+    const inputBuscarHistorial = document.getElementById('buscarHistorial');
+    const selectTurnoHistorial = document.getElementById('filtroTurno');
+    const selectEstadoHistorial = document.getElementById('filtroEstado');
+    const selectEmpleadosHistorial = document.getElementById('filtroEmpleados');
+    const btnLimpiarHistorial = document.getElementById('limpiarFiltrosHistorial');
+    const seccionHistorial = document.getElementById('seccionHistorial');
+
+    // Función para cargar historial vía AJAX
+    function cargarHistorial(page = 1) {
+        const busqueda = inputBuscarHistorial.value.trim();
+        const turno = selectTurnoHistorial.value;
+        const estado = selectEstadoHistorial.value;
+        let empleados = [];
+        if (selectEmpleadosHistorial) {
+            empleados = $(selectEmpleadosHistorial).val() || [];
+        }
+
+        const fechaUnica = document.getElementById('fechaUnicaSeleccionada')?.value || '';
+        const fechaDesde = document.getElementById('fechaDesdeSeleccionada')?.value || '';
+        const fechaHasta = document.getElementById('fechaHastaSeleccionada')?.value || '';
+
+        const params = new URLSearchParams();
+        params.append('page', page);
+        if (busqueda) params.append('busqueda', busqueda);
+        if (turno) params.append('turno', turno);
+        if (estado) params.append('estado', estado);
+        if (empleados.length) {
+            empleados.forEach(id => params.append('empleados', id));
+        }
+        if (fechaUnica) params.append('fecha_unica', fechaUnica);
+        if (fechaDesde) params.append('fecha_desde', fechaDesde);
+        if (fechaHasta) params.append('fecha_hasta', fechaHasta);
+
+        const url = window.location.pathname + 'historico/?' + params.toString();
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            if (wrapper) {
+                wrapper.innerHTML = html;
+            }
+            // Actualizar URL
+            if (window.history && window.history.pushState) {
+                const newUrl = window.location.pathname + '?' + params.toString();
+                window.history.pushState({}, '', newUrl);
+            }
+            // Desplazar hacia la sección de historial
+            if (seccionHistorial) {
+                seccionHistorial.scrollIntoView({ behavior: 'smooth' });
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar historial:', error);
+        });
+    }
+
+    // Debounce para búsqueda en tiempo real
+    let timeoutId = null;
+    if (inputBuscarHistorial) {
+        inputBuscarHistorial.addEventListener('input', function() {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                cargarHistorial(1);
+            }, 300);
+        });
+    }
+
+    // Eventos de selects
+    if (selectTurnoHistorial) {
+        selectTurnoHistorial.addEventListener('change', function() {
+            cargarHistorial(1);
+        });
+    }
+    if (selectEstadoHistorial) {
+        selectEstadoHistorial.addEventListener('change', function() {
+            cargarHistorial(1);
+        });
+    }
+    if (selectEmpleadosHistorial) {
+        // Select2 event
+        $(selectEmpleadosHistorial).on('change', function() {
+            cargarHistorial(1);
+        });
+    }
+
+    // Botón limpiar
+    if (btnLimpiarHistorial) {
+        btnLimpiarHistorial.addEventListener('click', function() {
+            if (inputBuscarHistorial) inputBuscarHistorial.value = '';
+            if (selectTurnoHistorial) selectTurnoHistorial.value = '';
+            if (selectEstadoHistorial) selectEstadoHistorial.value = '';
+            if (selectEmpleadosHistorial) {
+                $(selectEmpleadosHistorial).val(null).trigger('change');
+            }
+            const fechaUnicaInput = document.getElementById('fechaUnicaSeleccionada');
+            if (fechaUnicaInput) fechaUnicaInput.value = '';
+            const fechaDesdeInput = document.getElementById('fechaDesdeSeleccionada');
+            if (fechaDesdeInput) fechaDesdeInput.value = '';
+            const fechaHastaInput = document.getElementById('fechaHastaSeleccionada');
+            if (fechaHastaInput) fechaHastaInput.value = '';
+            cargarHistorial(1);
+        });
+    }
+
+    // Delegación de eventos para paginación
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('.page-link[data-page]');
+        if (link) {
+            e.preventDefault();
+            const page = link.getAttribute('data-page');
+            if (page) {
+                cargarHistorial(parseInt(page));
+            }
+        }
+    });
+
+    // Modales de fecha
+    const aplicarFechaUnica = document.getElementById('aplicarFechaUnica');
+    if (aplicarFechaUnica) {
+        aplicarFechaUnica.addEventListener('click', function() {
+            const input = document.getElementById('fechaUnicaInput');
+            if (input && input.value) {
+                document.getElementById('fechaUnicaSeleccionada').value = input.value;
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalFechaUnica'));
+                if (modal) modal.hide();
+                cargarHistorial(1);
+            } else {
+                alert('Por favor selecciona una fecha.');
+            }
+        });
+    }
+
+    const aplicarRango = document.getElementById('aplicarRangoFechas');
+    if (aplicarRango) {
+        aplicarRango.addEventListener('click', function() {
+            const desde = document.getElementById('fechaDesdeInput');
+            const hasta = document.getElementById('fechaHastaInput');
+            if (desde && hasta && desde.value && hasta.value) {
+                if (desde.value <= hasta.value) {
+                    document.getElementById('fechaDesdeSeleccionada').value = desde.value;
+                    document.getElementById('fechaHastaSeleccionada').value = hasta.value;
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalRangoFechas'));
+                    if (modal) modal.hide();
+                    cargarHistorial(1);
+                } else {
+                    alert('La fecha "Desde" debe ser anterior a "Hasta".');
+                }
+            } else {
+                alert('Por favor selecciona ambas fechas.');
+            }
+        });
+    }
+
+    // Inicializar Select2
+    if (typeof $ !== 'undefined' && $.fn.select2 && selectEmpleadosHistorial) {
+        $(selectEmpleadosHistorial).select2({
+            placeholder: 'Seleccionar empleados',
+            allowClear: true,
+            width: '100%'
+        });
+    } else {
+        console.warn('Select2 no disponible, usando múltiple nativo');
+    }
 
 });

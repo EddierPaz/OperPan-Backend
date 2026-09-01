@@ -92,6 +92,40 @@
   color: white;
 }
 
+
+
+
+
+
+
+/* Cambio del 1 de sep para historial de asistencia ── */
+
+.filtro-btn-fecha {
+  flex: 0 0 auto;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  color: #1f2937;
+  padding: 0.55rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.filtro-btn-fecha:hover {
+  background: #edf2f7;
+  border-color: #a40706;
+  color: #a40706;
+}
+
+/* ── --- ── */
+
+
+
+
+
+
 /* ── 2. TARJETAS INTERNAS / MÉTRICAS / CAJAS ── */
 .metric-card,
 .info-box {
@@ -402,39 +436,151 @@
   transform: translateY(-1px);
 }
 
-/* ── 6. MEDIA QUERIES (RESPONSIVE) ── */
-@media (max-width: 768px) {
-  .filtros-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
-  .filtro-buscar,
-  .filtro-select,
-  .filtro-btn-limpiar {
-    flex: 1 1 auto;
-  }
 
-  .accordion-button {
-    grid-template-columns: 1fr auto;
-  }
 
-  .turno-badge {
-    position: static;
-    transform: none;
-    margin-left: 10px;
-  }
 
-  .estado-asistencia-group {
-    flex-direction: column;
+
+
+
+
+
+
+
+
+/* ── 6. NUEVA SECCIÓN: HISTORIAL DE ASISTENCIA ── */
+
+/* Cards de asistencia */
+.asistencia-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #EDF2F7;
+}
+
+.asistencia-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+}
+
+.asistencia-empleado {
+    font-size: 1.1rem;
+    color: #A40706;
+}
+
+.asistencia-info {
+    font-size: 0.9rem;
+    color: #1e293b;
+}
+.asistencia-info div {
+    margin-bottom: 0.25rem;
+}
+.asistencia-info i {
+    color: #64748b;
+    width: 1.2rem;
+}
+
+/* Badges de estado */
+.badge-estado {
+    padding: 0.35rem 0.75rem;
+    border-radius: 40px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.badge-presente {
+    background: #E0F2E9;
+    color: #1E7B48;
+}
+.badge-tarde {
+    background: #FFF3E0;
+    color: #C77A00;
+}
+.badge-ausente {
+    background: #FEF2F0;
+    color: #B91C1C;
+}
+.badge-sin-registro {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+/* Paginación personalizada */
+.custom-pagination .page-link {
+    border: 1px solid #A40706;
+    color: #A40706;
+    background: #ffffff;
+    margin: 0 3px;
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    transition: all 0.2s ease;
+}
+.custom-pagination .page-link:hover {
+    background: #E6F0FA;
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+.custom-pagination .page-item.active .page-link {
+    background: #A40706;
+    border-color: #A40706;
+    color: #ffffff;
+}
+.custom-pagination .page-item.disabled .page-link {
+    border-color: #dee2e6;
+    color: #6c757d;
+    background: #f8f9fa;
+}
+
+/* Calendario en modales (si se usa) */
+.calendario-tabla {
     width: 100%;
-  }
+    border-collapse: collapse;
+}
+.calendario-tabla th {
+    font-weight: 600;
+    color: #64748b;
+    padding: 0.3rem;
+}
+.calendario-tabla td {
+    padding: 0.3rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.calendario-tabla td:hover {
+    background: #E6F0FA;
+}
+.calendario-tabla td.seleccionado {
+    background: #A40706;
+    color: #ffffff;
+    font-weight: 600;
+}
+.calendario-tabla td.otro-mes {
+    color: #adb5bd;
+}
+.calendario-tabla td.hoy {
+    border: 2px solid #A40706;
+}
 
-  .asistencia-detalle-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .asistencia-detalle-bloque-largo {
-    grid-column: 1;
-  }
+/* Ajustes responsive para filtros */
+@media (max-width: 768px) {
+    .filtros-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filtro-buscar,
+    .filtro-select,
+    .filtro-btn-limpiar,
+    .filtro-btn-fecha {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+    #empleado-container {
+        width: 100% !important;
+    }
+    .custom-pagination .page-link {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
 }
