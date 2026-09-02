@@ -211,7 +211,7 @@
                 ? `
                     <a
                         href="/memorandos/${m.id}/descargar/"
-                        class="btn btn-sm btn-primary-corporate"
+                        class="btn-action btn-action-download"
                         target="_blank"
                         title="Descargar PDF"
                     >

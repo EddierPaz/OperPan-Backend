@@ -1,49 +1,49 @@
 <!-- Modal Generar Memorando -->
 <div class="modal fade" id="modalMemorando" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content novedad-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header novedad-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="novedad-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Generar memorando</span>
                     </div>
-                    <p class="novedad-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Redacta y genera un memorando para un empleado
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body novedad-detalle-body">
+            <div class="modal-body modal-detalle-body">
                 <form id="memorandoForm">
                     {% csrf_token %}
 
-                    <div class="novedad-detalle-grid">
+                    <div class="modal-detalle-grid">
                         <!-- Empleado -->
-                        <div class="novedad-detalle-item">
-                            <span class="novedad-detalle-label">Empleado <span class="text-danger">*</span></span>
-                            <span class="novedad-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Empleado <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" id="memorandoEmpleado" required>
                                     <option value="">Seleccionar empleado</option>
                                 </select>
                             </span>
                         </div>
 
-                        <!-- Cargo - Se autocompleta -->
-                        <div class="novedad-detalle-item">
-                            <span class="novedad-detalle-label">Cargo</span>
-                            <span class="novedad-detalle-value">
+                        <!-- Cargo -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Cargo</span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" id="memorandoCargo" readonly 
                                        placeholder="Se autocompleta" style="background-color: #f8fafc;">
                             </span>
                         </div>
 
-                        <!-- Tipo de memorando -->
-                        <div class="novedad-detalle-item">
-                            <span class="novedad-detalle-label">Tipo de memorando <span class="text-danger">*</span></span>
-                            <span class="novedad-detalle-value">
+                        <!-- Tipo -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tipo <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" id="memorandoTipo" required>
                                     <option value="">Seleccionar tipo</option>
                                     <option value="llamado_atencion">Llamado de atención</option>
@@ -57,18 +57,16 @@
                             </span>
                         </div>
 
-                        <!-- Asunto -->
-                        <div class="novedad-detalle-item novedad-detalle-item-full">
-                            <span class="novedad-detalle-label">Asunto <span class="text-danger">*</span></span>
-                            <span class="novedad-detalle-value">
+                        <div class="modal-detalle-item" style="grid-column: span 2;">
+                            <span class="modal-detalle-label">Asunto <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" id="memorandoAsunto" 
                                        placeholder="Escriba el asunto del memorando" required>
                             </span>
                         </div>
 
-                        <!-- Contenido -->
-                        <div class="novedad-detalle-bloque-largo">
-                            <span class="novedad-detalle-bloque-largo-label">Contenido <span class="text-danger">*</span></span>
+                        <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
+                            <span class="modal-detalle-bloque-largo-label">Contenido <span class="text-danger">*</span></span>
                             <textarea class="form-control" id="memorandoContenido" rows="8" 
                                       placeholder="Redacte el contenido completo del memorando..." required></textarea>
                         </div>
@@ -76,11 +74,11 @@
                 </form>
             </div>
 
-            <div class="modal-footer novedad-detalle-footer">
-                <button type="reset" class="novedad-modal-btn btn-outline-corporate" form="memorandoForm">
+            <div class="modal-footer modal-detalle-footer">
+                <button type="reset" class="btn-action btn-action-cancel" form="memorandoForm">
                     <i class="bi bi-eraser"></i> Limpiar campos
                 </button>
-                <button type="submit" form="memorandoForm" class="novedad-modal-btn btn btn-primary-corporate" id="memorandoBtnGenerar">
+                <button type="submit" form="memorandoForm" class="btn-action btn-action-save" id="memorandoBtnGenerar">
                     <i class="bi bi-file-earmark-pdf me-2"></i> Generar memorando
                 </button>
             </div>

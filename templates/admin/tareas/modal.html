@@ -235,19 +235,10 @@
 
                     <!-- Turno -->
                     <div class="modal-detalle-item">
-                        <span class="modal-detalle-label">Turno <span class="text-danger">*</span></span>
+                        <span class="modal-detalle-label"><i class="bi bi-clock me-1"></i> Turno</span>
                         <span class="modal-detalle-value">
-                            <input type="text" class="form-control bg-light" id="id_turno_display" readonly disabled placeholder="—">
-                            <select class="form-select" name="turno_asociado" id="id_turno_asociado" required style="display:none;">
-                                <option value="">Seleccionar</option>
-                                {% for value, label in form.turno_asociado.field.choices %}
-                                    {% if value %}
-                                    <option value="{{ value }}" {% if form.turno_asociado.value == value %}selected{% endif %}>{{ label }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
+                            {{ tarea_detalle.get_turno_asociado_display|default:tarea_detalle.turno_asociado|default:"—" }}
                         </span>
-                        {% if form.turno_asociado.errors %}<div class="invalid-feedback d-block">{{ form.turno_asociado.errors }}</div>{% endif %}
                     </div>
 
                     <!-- Fecha y Hora Límite -->
@@ -288,9 +279,7 @@
 </div>
 {% endif %}
 
-{# ==================== MODAL ELIMINAR TAREA ====================
-   Usa el modal de confirmación global (.confirm-modal) de
-   components.css en vez de un modal propio del módulo. #}
+{# ==================== MODAL ELIMINAR TAREA ==================== #}
 <div class="modal fade confirm-modal" id="confirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

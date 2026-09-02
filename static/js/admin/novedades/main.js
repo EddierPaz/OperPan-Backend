@@ -261,7 +261,7 @@ function renderPermisoDetalle(data) {
                         <a
                             href="${data.archivo}"
                             target="_blank"
-                            class="btn btn-sm btn-primary-corporate"
+                            class="btn-action btn-action-print"
                         >
                             <i class="bi bi-paperclip me-1"></i>
                             Ver archivo
@@ -394,7 +394,7 @@ function renderIncapacidadDetalle(data) {
                         <a
                             href="${data.archivo}"
                             target="_blank"
-                            class="btn btn-sm btn-primary-corporate"
+                            class="btn-action btn-action-print"
                         >
                             <i class="bi bi-paperclip me-1"></i>
                             Ver archivo
@@ -579,7 +579,7 @@ function renderCertificadoDetalle(data) {
                         <a
                             href="${data.archivo}"
                             target="_blank"
-                            class="btn btn-sm btn-primary-corporate"
+                            class="btn-action btn-action-print"
                         >
                             <i class="bi bi-paperclip me-1"></i>
                             Ver archivo
