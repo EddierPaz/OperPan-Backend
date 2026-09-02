@@ -1,0 +1,45 @@
+<div class="modal fade" id="modalDetalleHorario" tabindex="-1" aria-labelledby="modalDetalleHorarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-detalle">
+            <div class="modal-detalle-header">
+                <div>
+                    <div class="modal-detalle-titulo" id="modalDetalleHorarioLabel">
+                        <i class="bi bi-calendar-week"></i>
+                        <span>Detalle de horario</span>
+                    </div>
+                    <p class="modal-detalle-subtitulo" id="modalHorarioSubtitulo">Histórico</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-detalle-body">
+                <!-- Metadatos -->
+                <div class="modal-detalle-grid mb-3">
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha inicio</span>
+                        <span class="modal-detalle-value" id="modalHorarioInicio">--</span>
+                    </div>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha fin</span>
+                        <span class="modal-detalle-value" id="modalHorarioFin">--</span>
+                    </div>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-value" id="modalHorarioEstado">--</span>
+                    </div>
+                </div>
+
+                <!-- Representación visual del horario (se llena vía AJAX) -->
+                <div id="modalHorarioDetalleVisual">
+                    <!-- Aquí se inyecta el HTML de _horario_detalle.html -->
+                </div>
+            </div>
+
+            <div class="modal-detalle-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

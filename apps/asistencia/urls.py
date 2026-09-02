@@ -48,16 +48,22 @@ urlpatterns = [
     ),
 
     path(
-    "asistencia/empleado/<int:empleado_id>/",
-    views.asistencia_empleado_admin,
-    name="asistencia_empleado_admin"
+        "asistencia/empleado/<int:empleado_id>/",
+        views.asistencia_empleado_admin,
+        name="asistencia_empleado_admin"
     ),
 
     path(
-    "cambiar-estado-asistencia/",
-    views.cambiar_estado_asistencia,
-    name="cambiar_estado_asistencia"
-    )
+        "cambiar-estado-asistencia/",
+        views.cambiar_estado_asistencia,
+        name="cambiar_estado_asistencia"
+    ),  # <--- COMA AQUÍ
 
+    path('empleado/horario/', 
+         views.empleado_horario, 
+         name='empleado_horario'),
 
+    path('empleado/horario/<int:id>/detalle/', 
+         views.empleado_horario_detalle, 
+         name='empleado_horario_detalle'),
 ]
