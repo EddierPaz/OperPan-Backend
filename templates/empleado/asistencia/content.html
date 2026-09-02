@@ -1,0 +1,180 @@
+{% load static %}
+
+<!-- Título y fecha -->
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h3><i class="bi bi-calendar-check me-2"></i>Asistencia de hoy</h3>
+    <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
+</div>
+
+<!-- Tarjetas KPI -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">Días con asistencia</span>
+                <h3 class="mt-1 mb-0">{{ dias_asistencia }}</h3>
+            </div>
+            <div class="icono-circular bg-success-subtle text-success">
+                <i class="bi bi-check-circle-fill fs-4"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">Días sin asistencia</span>
+                <h3 class="mt-1 mb-0">{{ dias_sin_asistencia }}</h3>
+            </div>
+            <div class="icono-circular bg-danger-subtle text-danger">
+                <i class="bi bi-x-circle-fill fs-4"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div>
+                <span class="text-muted">Retardos</span>
+                <h3 class="mt-1 mb-0">{{ retardos }}</h3>
+            </div>
+            <div class="icono-circular bg-warning-subtle text-warning">
+                <i class="bi bi-hourglass-split fs-4"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estado de hoy -->
+<div class="employee-card p-3 mb-4">
+    <h5 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Estado de hoy</h5>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="d-flex flex-wrap gap-3">
+                <span class="text-muted">Turno:</span>
+                <span class="fw-semibold">{{ estado_hoy.turno|default:"No asignado" }}</span>
+            </div>
+            <div class="d-flex flex-wrap gap-3">
+                <span class="text-muted">Entrada programada:</span>
+                <span class="fw-semibold">{{ estado_hoy.hora_entrada_prog|time:"H:i"|default:"--:--" }}</span>
+            </div>
+            <div class="d-flex flex-wrap gap-3">
+                <span class="text-muted">Salida programada:</span>
+                <span class="fw-semibold">{{ estado_hoy.hora_salida_prog|time:"H:i"|default:"--:--" }}</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex flex-wrap gap-3">
+                <span class="text-muted">Estado:</span>
+                {% if estado_hoy.estado == 'PRESENTE' %}
+                    <span class="badge-status badge-presente">Presente</span>
+                {% elif estado_hoy.estado == 'TARDE' %}
+                    <span class="badge-status badge-tarde">Tarde</span>
+                {% elif estado_hoy.estado == 'AUSENTE' %}
+                    <span class="badge-status badge-ausente">Ausente</span>
+                {% elif estado_hoy.estado == 'DESCANSO' %}
+                    <span class="badge-status badge-descanso">Descanso</span>
+                {% elif estado_hoy.estado == 'SIN_HORARIO' %}
+                    <span class="badge-status badge-secondary">Sin horario</span>
+                {% else %}
+                    <span class="badge-status badge-secondary">Sin información</span>
+                {% endif %}
+                {% if estado_hoy.tardanza_minutos %}
+                    <span class="text-warning">({{ estado_hoy.tardanza_minutos }} min de retraso)</span>
+                {% endif %}
+            </div>
+            {% if estado_hoy.hora_entrada_real %}
+                <div class="d-flex flex-wrap gap-3">
+                    <span class="text-muted">Entrada real:</span>
+                    <span class="fw-semibold">{{ estado_hoy.hora_entrada_real|time:"H:i" }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Historial -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3 mt-4">
+    <h3 class="mb-0 fs-4 fw-bold">
+        <i class="bi bi-clock-history me-2"></i>Historial reciente
+    </h3>
+    <div class="historial-filter-bar">
+        <a href="?filtro=semana" class="btn-filter {% if filtro == 'semana' or not filtro %}active{% endif %}">Esta semana</a>
+        <a href="?filtro=mes" class="btn-filter {% if filtro == 'mes' %}active{% endif %}">Este mes</a>
+    </div>
+</div>
+
+<div class="employee-card p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0" id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Entrada</th>
+                    <th>Registro</th>
+                    <th class="text-end">Estado</th>
+                    <th class="text-end">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistencia in asistencias %}
+                <tr>
+                    <td class="fw-semibold text-dark">{{ asistencia.fecha|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if asistencia.hora_marcada %}
+                            {{ asistencia.hora_marcada|time:"H:i" }}
+                        {% else %}
+                            <span class="text-muted">--:--</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if asistencia.hora_marcada %}
+                            <span class="badge-registro registrada"><i class="bi bi-check-circle-fill me-1"></i>Registrada</span>
+                        {% else %}
+                            <span class="badge-registro no-registrada"><i class="bi bi-x-circle-fill me-1"></i>No registrada</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if asistencia.estado == 'PRESENTE' %}
+                            <span class="badge-status badge-presente">Presente</span>
+                        {% elif asistencia.estado == 'TARDE' %}
+                            <span class="badge-status badge-tarde">Tarde</span>
+                        {% elif asistencia.estado == 'AUSENTE' %}
+                            <span class="badge-status badge-ausente">Ausente</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn-action btn-action-view btn-action-icon-only"
+                                data-bs-toggle="modal" data-bs-target="#modalDetalleAsistencia"
+                                data-fecha="{{ asistencia.fecha|date:'d/m/Y' }}"
+                                data-hora-registro="{% if asistencia.hora_marcada %}{{ asistencia.hora_marcada|time:'H:i' }}{% else %}--:--{% endif %}"
+                                data-turno="{% if horario %}{{ horario.get_turno_display }}{% else %}No asignado{% endif %}"
+                                data-entrada-prog="{% if horario %}{{ horario.hora_entrada|time:'H:i' }}{% else %}--:--{% endif %}"
+                                data-estado="{{ asistencia.estado }}"
+                                data-es-descanso="false"
+                                data-nombre="{{ request.user.perfil.nombre_completo }}"
+                                data-documento="{{ request.user.perfil.identificacion }}"
+                                data-cargo="{{ request.user.perfil.get_cargo_display }}"
+                                data-salida-prog="{% if horario %}{{ horario.hora_salida|time:'H:i' }}{% else %}--:--{% endif %}"
+                                data-salida-real="--:--"
+                                data-tardanza="{% if asistencia.estado == 'TARDE' and horario.hora_entrada %}{% with prog=horario.hora_entrada real=asistencia.hora_marcada %}{% if real > prog %}{{ real|time:'H:i' }}{% else %}0{% endif %}{% endwith %}{% else %}0{% endif %}"
+                                title="Ver detalle" aria-label="Ver detalle">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        <i class="bi bi-inbox fs-3 d-block mb-2 text-secondary"></i>
+                        No tienes asistencias registradas en este período.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="p-3 bg-light border-top text-center">
+        <a href="?filtro=mes" class="btn-action btn-action-create btn-sm px-4">
+            <i class="bi bi-calendar-week me-1"></i> Ver mes completo
+        </a>
+    </div>
+</div>

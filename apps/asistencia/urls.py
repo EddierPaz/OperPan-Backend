@@ -48,12 +48,13 @@ urlpatterns = [
     ),
 
     path(
-    "asistencia/empleado/<int:empleado_id>/",
-    views.asistencia_empleado_admin,
-    name="asistencia_empleado_admin"
+        "asistencia/empleado/<int:empleado_id>/",
+        views.asistencia_empleado_admin,
+        name="asistencia_empleado_admin"
     ),
 
     path(
+<<<<<<< HEAD
     "cambiar-estado-asistencia/",
     views.cambiar_estado_asistencia,
     name="cambiar_estado_asistencia"
@@ -66,5 +67,18 @@ urlpatterns = [
         views.asistencia_historico,
         name="asistencia_historico"
     ),
+=======
+        "cambiar-estado-asistencia/",
+        views.cambiar_estado_asistencia,
+        name="cambiar_estado_asistencia"
+    ),  # <--- COMA AQUÍ
 
+    path('empleado/horario/', 
+         views.empleado_horario, 
+         name='empleado_horario'),
+>>>>>>> e3f28018daa8207ad4c45fd6f22edfe291a38f0d
+
+    path('empleado/horario/<int:id>/detalle/', 
+         views.empleado_horario_detalle, 
+         name='empleado_horario_detalle'),
 ]

@@ -46,6 +46,12 @@
                             Asistencia
                         </a>
                     </li>
+                    <li class="{% block active_horario %}{% endblock %}">
+                        <a href="{% url 'asistencia:empleado_horario' %}">
+                            <i class="bi bi-calendar-week"></i>
+                            Horario
+                        </a>
+                    </li>
                     <li class="{% block active_solicitudes %}{% endblock %}">
                         <a href="{% url 'novedades:solicitudes_empleado' %}">
                             <i class="bi bi-envelope-paper"></i>

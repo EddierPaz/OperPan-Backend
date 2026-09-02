@@ -1,0 +1,68 @@
+{% load static %}
+
+<div class="d-flex align-items-center gap-2 mb-3 mt-4">
+    <h3 class="mb-0 fs-4 fw-bold">
+        <i class="bi bi-calendar-week me-1"></i>
+        Mi horario de trabajo
+    </h3>
+</div>
+
+{% if horario_actual %}
+    <!-- Representación del horario actual -->
+    {% include "empleado/horario/_horario_detalle.html" with horario=horario_actual calendario=calendario %}
+{% else %}
+    <div class="alert alert-warning mb-0">No tienes un horario asignado actualmente.</div>
+{% endif %}
+
+<!-- Historial de horarios -->
+<div class="mt-5">
+    <h4 class="fw-bold mb-3"><i class="bi bi-clock-history me-2"></i>Historial de horarios</h4>
+    {% if historial_horarios %}
+        <div class="employee-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Turno</th>
+                            <th>Estado</th>
+                            <th class="text-end">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in historial_horarios %}
+                        <tr>
+                            <td>{{ h.ciclo_inicio|date:"d/m/Y"|default:"N/A" }}</td>
+                            <td>{{ h.vigencia_fin|date:"d/m/Y"|default:"Indefinido" }}</td>
+                            <td>{{ h.get_turno_display }}</td>
+                            <td>
+                                {% if h.vigencia_estado == 'activo' %}
+                                    <span class="badge badge-active">Activo</span>
+                                {% elif h.vigencia_estado == 'por_vencer' %}
+                                    <span class="badge badge-pendiente">Por vencer</span>
+                                {% elif h.vigencia_estado == 'vencido' %}
+                                    <span class="badge badge-rechazado">Vencido</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <button type="button" 
+                                        class="btn-action btn-action-view btn-action-icon-only btn-ver-horario"
+                                        data-horario-id="{{ h.id }}"
+                                        data-url="{% url 'asistencia:empleado_horario_detalle' h.id %}"
+                                        title="Ver detalle" aria-label="Ver detalle">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-muted">No hay horarios anteriores registrados.</div>
+    {% endif %}
+</div>

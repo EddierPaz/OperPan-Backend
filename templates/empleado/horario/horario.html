@@ -1,20 +1,23 @@
 {% extends 'empleado/base/base.html' %}
 {% load static %}
 
-{% block title %}OperPan | Mis Asistencia{% endblock %}
+{% block title %}OperPan | Mi horario{% endblock %}
 {% block section_subtitle %}Panel de Empleado{% endblock %}
-{% block section_title %}Mis asistencias y horario{% endblock %}
-{% block active_asistencia %}active{% endblock %}
+{% block section_title %}Mi horario de trabajo{% endblock %}
+{% block active_horario %}active{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/empleado/asistencia.css' %}">
+<link rel="stylesheet" href="{% static 'css/empleado/horario.css' %}">
 {% endblock %}
 
 {% block content %}
 <main class="dashboard-container">
-
-    {% include "empleado/asistencia/content.html" %}
-    {% include "empleado/asistencia/modal.html" %}
+    <!-- Contenido principal -->
+    {% include "empleado/horario/content.html" %}
+    
+    <!-- Modal para detalle histórico -->
+    {% include "empleado/horario/modal.html" %}
 
     <footer>
         <i class="bi bi-shield-check"></i> Sistema de gestión de asistencia - Trazabilidad garantizada
@@ -33,5 +36,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/empleado/asistencia.js' %}"></script>
+<script src="{% static 'js/empleado/horario.js' %}"></script>
 {% endblock %}
