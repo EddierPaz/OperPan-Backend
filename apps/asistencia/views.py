@@ -11,6 +11,9 @@ from apps.usuarios.models import PerfilEmpleado
 from apps.usuarios.decorators import admin_required
 from .models import Asistencia, DescansoEmpleado, Horario
 
+# Importación para Busqueda de filtro
+from django.db.models import Q
+
 
 # ---
 
@@ -618,8 +621,8 @@ def cambiar_estado_asistencia(request):
 
 
 
-
 # Historial de Asistencia para administradores con filtros y paginación
+
 
 
 @login_required
@@ -632,7 +635,10 @@ def asistencia_historico(request):
     # Obtener parámetros GET
     page = request.GET.get('page', 1)
     busqueda = request.GET.get('busqueda', '').strip()
-    empleados_ids = request.GET.getlist('empleados')  # lista de IDs
+    
+    # CORRECCIÓN: El JS envía 'empleado' (singular), no 'empleados' (lista)
+    empleado_id = request.GET.get('empleado', '') 
+    
     turno = request.GET.get('turno', '')
     estado = request.GET.get('estado', '')
     fecha_unica = request.GET.get('fecha_unica', '')
@@ -654,8 +660,9 @@ def asistencia_historico(request):
             Q(estado__icontains=busqueda)
         )
 
-    if empleados_ids:
-        asistencias = asistencias.filter(horario__empleado__id__in=empleados_ids)
+    # CORRECCIÓN: Filtro por empleado individual
+    if empleado_id:
+        asistencias = asistencias.filter(horario__empleado__id=empleado_id)
 
     if turno:
         asistencias = asistencias.filter(horario__turno=turno)

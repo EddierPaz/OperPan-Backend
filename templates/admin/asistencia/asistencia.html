@@ -8,40 +8,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin/asistencia.css' %}">
-<!-- Select2 CSS (para filtro de empleados múltiple) -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    /* Ajustes específicos para Select2 dentro del proyecto */
-    .select2-container--default .select2-selection--multiple {
-        border-color: #edf2f7 !important;
-        background: #f8fafc !important;
-        border-radius: 999px !important;
-        padding: 0.25rem 0.5rem;
-    }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        background: #A40706 !important;
-        color: #fff !important;
-        border: none !important;
-        border-radius: 20px !important;
-        padding: 0.1rem 0.6rem;
-        font-size: 0.8rem;
-    }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-        color: #fff !important;
-        margin-right: 0.3rem;
-    }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-        color: #f8d7da !important;
-    }
-    .select2-container {
-        min-width: 200px;
-    }
-    @media (max-width: 768px) {
-        .select2-container {
-            width: 100% !important;
-        }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -56,19 +22,25 @@
       <span class="text-muted small">Total: {{ page_obj.paginator.count|default:0 }} registros</span>
     </div>
 
-    <!-- Filtros -->
-    <div class="filtros-toolbar mb-4" id="filtrosHistorial">
+    <!-- Filtros: Primera fila -->
+    <div class="filtros-toolbar mb-3" id="filtrosHistorial">
       <div class="filtro-buscar">
         <i class="bi bi-search"></i>
         <input type="text" id="buscarHistorial" placeholder="Buscar por nombre, fecha o estado..." autocomplete="off">
       </div>
-      <div class="filtro-select" id="empleado-container">
-        <select id="filtroEmpleados" multiple style="width:100%;">
+      <!-- EMPLEADO (ID correcto: filtroEmpleado) -->
+      <div class="filtro-select-empleado">
+        <select id="filtroEmpleado" class="form-select">
+          <option value="">Todos los empleados</option>
           {% for emp in empleados %}
             <option value="{{ emp.id }}">{{ emp.nombre_completo }}</option>
           {% endfor %}
         </select>
       </div>
+    </div>
+
+    <!-- Filtros: Segunda fila -->
+    <div class="filtros-toolbar mb-4" id="filtrosHistorial2">
       <select id="filtroTurno" class="filtro-select">
         <option value="">Todos los turnos</option>
         <option value="MANANA">Mañana</option>
@@ -102,11 +74,12 @@
   {% include "admin/asistencia/modal_fecha_unica.html" %}
   {% include "admin/asistencia/modal_rango_fechas.html" %}
 
+  <!-- Modal de detalle de asistencia -->
+  {% include "admin/asistencia/modal_detalle_asistencia.html" %}
+
 </main>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Select2 JS (para filtro de empleados múltiple) -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{% static 'js/admin/asistencia.js' %}"></script>
 {% endblock %}

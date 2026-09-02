@@ -57,7 +57,14 @@ urlpatterns = [
     "cambiar-estado-asistencia/",
     views.cambiar_estado_asistencia,
     name="cambiar_estado_asistencia"
-    )
+    ),
 
+    # NUEVA RUTA PARA HISTORIAL
+        # Esta función se encuentra al final del documento views.py 
+    path(
+        "historico/",
+        views.asistencia_historico,
+        name="asistencia_historico"
+    ),
 
 ]

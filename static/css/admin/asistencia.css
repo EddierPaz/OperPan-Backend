@@ -1,512 +1,333 @@
 /* ==============================================
    MÓDULO DE ASISTENCIA Y HORARIOS (ADMIN)
+   SOLO ESTILOS ESPECÍFICOS
    ============================================== */
 
-/* ── 1. BARRA DE FILTROS ── */
-.filtros-toolbar {
-  background: #ffffff;
-  border: 1px solid #edf2f7;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  padding: 0.85rem 1rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.filtro-buscar {
-  position: relative;
-  flex: 1 1 260px;
-}
-
-.filtro-buscar i {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 0.9rem;
-  pointer-events: none;
-}
-
-.filtro-buscar input {
-  width: 100%;
-  border: 1px solid #edf2f7;
-  background: #f8fafc;
-  border-radius: 999px;
-  padding: 0.55rem 1rem 0.55rem 2.25rem;
-  font-size: 0.9rem;
-  color: #1f2937;
-  transition: 0.2s;
-}
-
-.filtro-buscar input::placeholder {
-  color: #94a3b8;
-}
-
-.filtro-buscar input:focus {
-  outline: none;
-  border-color: #a40706;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-.filtro-select {
-  flex: 0 1 190px;
-  border: 1px solid #edf2f7;
-  background: #f8fafc;
-  border-radius: 999px;
-  padding: 0.55rem 2rem 0.55rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #1f2937;
-  transition: 0.2s;
-}
-
-.filtro-select:focus {
-  outline: none;
-  border-color: #a40706;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-.filtro-btn-limpiar {
-  flex: 0 0 auto;
-  background: #555;
-  border: 1.5px solid #555;
-  color: #ffffff;
-  padding: 0.55rem 1.5rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.filtro-btn-limpiar:hover {
-  background: #444444;
-  border-color: #444444;
-  color: white;
-}
-
-
-
-
-
-
-
-/* Cambio del 1 de sep para historial de asistencia ── */
-
-.filtro-btn-fecha {
-  flex: 0 0 auto;
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
-  color: #1f2937;
-  padding: 0.55rem 1.2rem;
-  border-radius: 999px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-.filtro-btn-fecha:hover {
-  background: #edf2f7;
-  border-color: #a40706;
-  color: #a40706;
-}
-
-/* ── --- ── */
-
-
-
-
-
-
-/* ── 2. TARJETAS INTERNAS / MÉTRICAS / CAJAS ── */
-.metric-card,
-.info-box {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 1.25rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  border: 1px solid #edf2f7;
-  height: 100%;
-}
-
-.info-box span.text-muted {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #64748b;
-  display: block;
-}
-
-.info-box h5 {
-  margin-top: 0.5rem;
-  margin-bottom: 0;
-  font-weight: 700;
-  color: #000000;
-}
-
-#descansoLabel {
-  font-size: 0.85rem;
-  margin-top: 0.5rem;
-}
-
-/* ── 3. CALENDARIO Y DÍAS ── */
-.calendario-wrapper {
-  width: 100%;
-}
-
-.dias-semana {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.dia-semana {
-  text-align: center;
-  font-weight: 700;
-  color: #6c757d;
-}
-
-.calendario-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  width: 100%;
-}
-
-.dias-calendario {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.dia-btn {
-  width: 100%;
-  min-height: 56px;
-  border: none;
-  border-radius: 12px;
-  background: #f5f7fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-.dia-btn:hover {
-  border-color: #a40706;
-  color: #a40706;
-  transform: translateY(-2px);
-}
-
-.dia-btn.seleccionado {
-  background: #b91c1c;
-  border-color: #b91c1c;
-  color: white;
-}
-
-.dia-btn.selected {
-  background: #dc3545;
-  color: white;
-}
-
-.dia-btn--ultimo {
-  border-style: dashed;
-  border-color: #a40706;
-  color: #a40706;
-}
-
-.dia-btn--ultimo:hover {
-  background: #a40706;
-  color: white;
-}
-
-.dia-vacio {
-  width: 100%;
-  min-height: 56px;
-}
-
-/* ── 4. ACORDEÓN DE TURNOS ── */
+/* ── ACORDEÓN DE TURNOS ── */
 .accordion-item {
-  border: none;
-  border-left: 5px solid #a40706;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-bottom: 18px;
+    border: none;
+    border-left: 5px solid #a40706;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 18px;
 }
-
 .accordion-button {
-  display: grid !important;
-  grid-template-columns: 1fr auto 30px;
-  align-items: center;
-  position: relative;
+    display: grid !important;
+    grid-template-columns: 1fr auto 30px;
+    align-items: center;
+    position: relative;
 }
-
 .accordion-button:not(.collapsed) {
-  background: #fff;
-  color: #a40706;
-  box-shadow: none;
+    background: #fff;
+    color: #a40706;
+    box-shadow: none;
 }
-
 .accordion-button:focus {
-  box-shadow: none;
-  border: none;
+    box-shadow: none;
+    border: none;
 }
-
 .accordion-body {
-  border-top: 1px solid #ececec;
+    border-top: 1px solid #ececec;
 }
-
 .turno-badge {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #a40706;
-  color: #fff;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #a40706;
+    color: #fff;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
-.turno-info {
-  display: flex;
-  align-items: center;
+/* ── CALENDARIO ── */
+.calendario-wrapper {
+    width: 100%;
+}
+.dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.dia-semana {
+    text-align: center;
+    font-weight: 700;
+    color: #6c757d;
+}
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+.dias-calendario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+.dia-btn {
+    width: 100%;
+    min-height: 56px;
+    border: none;
+    border-radius: 12px;
+    background: #f5f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: 0.2s;
+}
+.dia-btn:hover {
+    border-color: #a40706;
+    color: #a40706;
+    transform: translateY(-2px);
+}
+.dia-btn.seleccionado {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: white;
+}
+.dia-btn.selected {
+    background: #dc3545;
+    color: white;
+}
+.dia-btn--ultimo {
+    border-style: dashed;
+    border-color: #a40706;
+    color: #a40706;
+}
+.dia-btn--ultimo:hover {
+    background: #a40706;
+    color: white;
+}
+.dia-vacio {
+    width: 100%;
+    min-height: 56px;
 }
 
-/* ── 5. MODALES ── */
-.asistencia-modal {
-  border: none;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
-}
-
-/* Header Detalle */
-.asistencia-detalle-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #edf2f7;
-  background: #ffffff;
-}
-
-.asistencia-detalle-titulo {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: #a40706;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.asistencia-detalle-titulo i {
-  font-size: 1.25rem;
-}
-
-.asistencia-detalle-subtitulo {
-  margin-top: 0.25rem;
-  margin-left: 1.85rem;
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-/* Cuerpo Detalle */
-.asistencia-detalle-body {
-  padding: 1.5rem;
-  background: #ffffff;
-}
-
-.asistencia-detalle-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.asistencia-detalle-item {
-  padding: 0.9rem 1rem;
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
-  border-radius: 12px;
-}
-
-.asistencia-detalle-label {
-  display: block;
-  margin-bottom: 0.25rem;
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.asistencia-detalle-value {
-  display: block;
-  color: #1e293b;
-  font-size: 0.92rem;
-  font-weight: 600;
-  word-break: break-word;
-}
-
-/* ESTILOS DE INPUTS Y SELECTS IGUALES A CUENTAS */
-.asistencia-detalle-value .form-control,
-.asistencia-detalle-value .form-select,
-.asistencia-detalle-value input[type="time"],
-.asistencia-detalle-value input[type="text"],
-.asistencia-detalle-value input[type="date"] {
-  font-family: inherit;
-  font-weight: 400;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.9rem;
-  color: #1e293b;
-}
-
-.asistencia-detalle-value .form-control:focus,
-.asistencia-detalle-value .form-select:focus,
-.asistencia-detalle-value input[type="time"]:focus,
-.asistencia-detalle-value input[type="text"]:focus,
-.asistencia-detalle-value input[type="date"]:focus {
-  border-color: #a40706;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-  outline: none;
-}
-
-/* BLOQUE LARGO (títulos de sección adaptados al estilo de cuentas) */
-.asistencia-detalle-bloque-largo {
-  grid-column: 1 / -1;
-  padding: 0.5rem 1rem;
-  background: #ffffff;
-  border: none;
-  border-bottom: 2px solid #a40706;
-  border-radius: 0;
-}
-
-.asistencia-detalle-bloque-largo-label {
-  display: block;
-  margin-bottom: 0;
-  color: #a40706;
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.asistencia-detalle-bloque-largo-texto {
-  margin: 0;
-  color: #334155;
-  line-height: 1.6;
-}
-
-/* Footer Detalle */
-.asistencia-detalle-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #edf2f7;
-  background: #ffffff;
-  gap: 0.6rem;
-}
-
-/* Botones Modales General */
-.asistencia-modal-btn {
-  border: none;
-  border-radius: 25px;
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.asistencia-modal-btn-aprobar {
-  background: #198754;
-  color: #ffffff;
-}
-
-.asistencia-modal-btn-aprobar:hover {
-  background: #157347;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ── 6. NUEVA SECCIÓN: HISTORIAL DE ASISTENCIA ── */
-
-/* Cards de asistencia */
+/* ── TARJETAS DE ASISTENCIA (historial) ── */
 .asistencia-card {
     background: #ffffff;
     border-radius: 20px;
-    padding: 1.2rem;
+    padding: 1.5rem 1.2rem;  /* Aumento padding vertical */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid #EDF2F7;
 }
-
 .asistencia-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
 }
-
 .asistencia-empleado {
     font-size: 1.1rem;
-    color: #A40706;
+    color: #000000;  /* Negro */
+    margin: 0;
 }
 
-.asistencia-info {
-    font-size: 0.9rem;
-    color: #1e293b;
-}
-.asistencia-info div {
-    margin-bottom: 0.25rem;
-}
-.asistencia-info i {
-    color: #64748b;
-    width: 1.2rem;
-}
-
-/* Badges de estado */
-.badge-estado {
-    padding: 0.35rem 0.75rem;
-    border-radius: 40px;
+/* Badge de cargo (primera fila) */
+.badge-cargo {
+    background: var(--color-surface-subtle);
+    color: var(--color-text-soft);
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
     font-size: 0.75rem;
+    border: 1px solid var(--color-border-soft);
+}
+
+/* Badges de turno, fecha y estado (segunda fila) */
+.badge-turno {
+    background: var(--color-border-soft);
+    color: var(--color-text-soft);
+    font-weight: 500;
+    padding: 0.5rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    display: inline-block;
+    text-align: center;
+}
+.badge-fecha {
+    background: #E6F0FA;
+    color: #1A5D9C;
     font-weight: 600;
+    padding: 0.5rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: inline-block;
+    text-align: center;
+}
+.badge-estado {
+    padding: 0.5rem 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    display: inline-block;
+    text-align: center;
 }
 .badge-presente {
-    background: #E0F2E9;
-    color: #1E7B48;
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
 }
 .badge-tarde {
-    background: #FFF3E0;
-    color: #C77A00;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
 }
 .badge-ausente {
-    background: #FEF2F0;
-    color: #B91C1C;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
 }
 .badge-sin-registro {
-    background: #e9ecef;
-    color: #6c757d;
+    background: var(--color-surface-subtle);
+    color: var(--color-text-muted);
 }
 
-/* Paginación personalizada */
+/* Tercera fila: Programada y Marcada (con fondos distintos) */
+.badge-hora-programada {
+    background: #F1F5F9;
+    color: #1E293B;
+    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    border: none;
+}
+.badge-hora-marcada {
+    background: #E2E8F0;
+    color: #1E293B;
+    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    border: none;
+}
+
+/* Espaciado entre filas (ya aplicado con py-1 en el HTML y margin) */
+.asistencia-card .row,
+.asistencia-card .d-flex {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+}
+
+/* ── FILTROS REORGANIZADOS ── */
+.filtros-toolbar {
+    background: #ffffff;
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+.filtro-buscar {
+    position: relative;
+    flex: 1 1 260px;
+}
+.filtro-buscar i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-placeholder-icon);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+.filtro-buscar input {
+    width: 100%;
+    border: 1px solid var(--color-border-soft);
+    background: #F8FAFC;
+    border-radius: var(--radius-full);
+    padding: 0.55rem 1rem 0.55rem 2.25rem;
+    font-size: 0.9rem;
+    color: #1F2937;
+    transition: 0.2s;
+}
+.filtro-buscar input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #ffffff;
+    box-shadow: var(--shadow-focus-soft);
+}
+.filtro-select-empleado {
+    flex: 1 1 220px;
+}
+.filtro-select-empleado select {
+    width: 100%;
+    border: 1px solid var(--color-border-soft);
+    background: #F8FAFC;
+    border-radius: var(--radius-full);
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1F2937;
+    transition: 0.2s;
+}
+.filtro-select-empleado select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #ffffff;
+    box-shadow: var(--shadow-focus-soft);
+}
+.filtro-select {
+    flex: 0 1 190px;
+    border: 1px solid var(--color-border-soft);
+    background: #F8FAFC;
+    border-radius: var(--radius-full);
+    padding: 0.55rem 2rem 0.55rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1F2937;
+    transition: 0.2s;
+}
+.filtro-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: #ffffff;
+    box-shadow: var(--shadow-focus-soft);
+}
+.filtro-btn-limpiar {
+    flex: 0 0 auto;
+    background: #555555;
+    border: 1.5px solid #555555;
+    color: #ffffff;
+    padding: 0.55rem 1.5rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.filtro-btn-limpiar:hover {
+    background: #444444;
+    border-color: #444444;
+    color: white;
+}
+.filtro-btn-fecha {
+    flex: 0 0 auto;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    color: #1f2937;
+    padding: 0.55rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.filtro-btn-fecha:hover {
+    background: #edf2f7;
+    border-color: #a40706;
+    color: #a40706;
+}
+
+/* ── PAGINACIÓN PERSONALIZADA ── */
 .custom-pagination .page-link {
     border: 1px solid #A40706;
     color: #A40706;
@@ -532,55 +353,68 @@
     background: #f8f9fa;
 }
 
-/* Calendario en modales (si se usa) */
-.calendario-tabla {
-    width: 100%;
-    border-collapse: collapse;
-}
-.calendario-tabla th {
-    font-weight: 600;
-    color: #64748b;
-    padding: 0.3rem;
-}
-.calendario-tabla td {
-    padding: 0.3rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-.calendario-tabla td:hover {
-    background: #E6F0FA;
-}
-.calendario-tabla td.seleccionado {
-    background: #A40706;
-    color: #ffffff;
-    font-weight: 600;
-}
-.calendario-tabla td.otro-mes {
-    color: #adb5bd;
-}
-.calendario-tabla td.hoy {
-    border: 2px solid #A40706;
-}
-
-/* Ajustes responsive para filtros */
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
     .filtros-toolbar {
         flex-direction: column;
         align-items: stretch;
     }
     .filtro-buscar,
+    .filtro-select-empleado,
     .filtro-select,
     .filtro-btn-limpiar,
     .filtro-btn-fecha {
         flex: 1 1 auto;
         width: 100%;
     }
-    #empleado-container {
-        width: 100% !important;
+    .filtro-select-empleado select {
+        border-radius: 999px;
     }
     .custom-pagination .page-link {
         padding: 0.3rem 0.6rem;
         font-size: 0.8rem;
+    }
+    .filtro-select-empleado select,
+    .filtro-select {
+        background: #ffffff;
+    }
+    /* Ajuste de padding en cards para móvil */
+    .asistencia-card {
+        padding: 1.2rem 0.8rem;
+    }
+}
+
+
+/* ── RESPONSIVE DE LAS CARDS (Nuevos requisitos) ── */
+
+/* 1. En 1640px o menos: Dejar de mostrar 3 columnas y pasar a 2 */
+@media (max-width: 1640px) {
+    .col-lg-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* 2. En 992px o menos: Mantener 2 columnas (para que no se rompa en tablets) */
+@media (max-width: 992px) {
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* 3. En 430px o menos: Las cards pasan a 1 columna y los horarios se apilan verticalmente */
+@media (max-width: 430px) {
+    .col-12,
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    
+    /* La fila de Programada y Marcada deja de ser una fila y se vuelve columna */
+    .asistencia-horarios {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }

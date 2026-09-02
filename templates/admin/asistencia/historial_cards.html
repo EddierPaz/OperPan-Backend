@@ -3,11 +3,34 @@
 <div id="historialContainer" class="row g-4">
     {% for asistencia in page_obj %}
     <div class="col-12 col-md-6 col-lg-4 d-flex">
-        <div class="asistencia-card card border-0 shadow-sm rounded-4 p-3 w-100">
-            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+        <div class="asistencia-card card border-0 shadow-sm rounded-4 p-3 w-100"
+             data-id="{{ asistencia.id }}"
+             data-empleado="{{ asistencia.horario.empleado.nombre_completo }}"
+             data-fecha="{{ asistencia.fecha|date:'d/m/Y' }}"
+             data-turno="{{ asistencia.horario.get_turno_display }}"
+             data-estado="{{ asistencia.get_estado_display|default:'Sin registrar' }}"
+             data-estado-clase="{% if asistencia.estado == 'PRESENTE' %}presente{% elif asistencia.estado == 'TARDE' %}tarde{% elif asistencia.estado == 'AUSENTE' %}ausente{% else %}sin-registro{% endif %}"
+             data-hora-programada="{{ asistencia.horario.hora_entrada|time:'H:i' }}"
+             data-hora-marcada="{% if asistencia.hora_marcada %}{{ asistencia.hora_marcada|time:'H:i' }}{% else %}Sin marcar{% endif %}"
+             data-cargo="{{ asistencia.horario.empleado.get_cargo_display|default:'Sin cargo' }}">
+
+            <!-- FILA 1: Nombre + Cargo -->
+            <div class="d-flex justify-content-between align-items-center mb-2 py-1">
                 <h5 class="asistencia-empleado fw-bold m-0 text-truncate" title="{{ asistencia.horario.empleado.nombre_completo }}">
                     {{ asistencia.horario.empleado.nombre_completo }}
                 </h5>
+                <span class="badge badge-cargo ms-2">{{ asistencia.horario.empleado.get_cargo_display|default:"Sin cargo" }}</span>
+            </div>
+
+            <!-- FILA 2 (NUEVA): Fecha destacada -->
+            <div class="mb-2 py-1">
+                <span class="badge badge-fecha w-auto d-block">{{ asistencia.fecha|date:"d/m/Y" }}</span>
+            </div>
+
+            <!-- FILA 3: Turno + Estado -->
+            <div class="d-flex justify-content-between mb-2 py-1">
+                <span class="badge badge-turno">{{ asistencia.horario.get_turno_display }}</span>
+                
                 {% if asistencia.estado == "PRESENTE" %}
                     <span class="badge badge-estado badge-presente">Presente</span>
                 {% elif asistencia.estado == "TARDE" %}
@@ -18,18 +41,24 @@
                     <span class="badge badge-estado badge-sin-registro">Sin registrar</span>
                 {% endif %}
             </div>
-            <div class="asistencia-info">
-                <div><i class="bi bi-calendar3 me-1"></i> {{ asistencia.fecha|date:"d/m/Y" }}</div>
-                <div><i class="bi bi-clock me-1"></i> Turno {{ asistencia.horario.get_turno_display }}</div>
-                <div><i class="bi bi-clock-history me-1"></i> Prog: {{ asistencia.horario.hora_entrada|time:"H:i" }}</div>
-                <div><i class="bi bi-check-circle me-1"></i> Marc: 
+
+            <!-- FILA 4: Programada y Marcada (Se apila verticalmente en pantallas de 430px o menos) -->
+            <div class="d-flex justify-content-between py-1 asistencia-horarios">
+                <span class="badge badge-hora-programada"><i class="bi bi-clock-history me-1"></i> Programada: {{ asistencia.horario.hora_entrada|time:"H:i" }}</span>
+                <span class="badge badge-hora-marcada"><i class="bi bi-check-circle me-1"></i> Marcada: 
                     {% if asistencia.hora_marcada %}
                         {{ asistencia.hora_marcada|time:"H:i" }}
                     {% else %}
                         <span class="text-muted">Sin marcar</span>
                     {% endif %}
-                </div>
-                <div class="mt-1 text-muted small"><i class="bi bi-briefcase me-1"></i> {{ asistencia.horario.empleado.get_cargo_display|default:"Sin cargo" }}</div>
+                </span>
+            </div>
+
+            <!-- FILA 5: Botón Ver detalles -->
+            <div class="mt-2 text-end py-1">
+                <button class="btn-action btn-action-view btn-ver-detalle" data-bs-toggle="modal" data-bs-target="#modalDetalleAsistencia">
+                    <i class="bi bi-eye"></i> Ver detalles
+                </button>
             </div>
         </div>
     </div>
