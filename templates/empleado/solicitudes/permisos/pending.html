@@ -19,17 +19,17 @@
                         </div>
                         <div class="pending-actions">
                             <button type="button"
-                                    class="pending-actions-btn"
+                                    class="btn-action btn-action-icon"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
                                     title="Opciones">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
 
-                            <ul class="dropdown-menu dropdown-menu-end pending-dropdown">
+                            <ul class="dropdown-menu dropdown-menu-end action-menu">
                                 <li>
                                     <button type="button"
-                                            class="dropdown-item btn-editar-solicitud"
+                                            class="action-menu-item btn-editar-solicitud"
                                             data-url="{% url 'novedades:editar_permiso' p.id %}"
                                             data-id="{{ p.id }}"
                                             data-tipo="permiso"
@@ -40,10 +40,10 @@
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li><hr class="action-menu-divider"></li>
                                 <li>
                                     <button type="button"
-                                            class="dropdown-item text-danger btn-eliminar-solicitud"
+                                            class="action-menu-item action-menu-item--danger btn-eliminar-solicitud"
                                             data-url="{% url 'novedades:eliminar_permiso' p.id %}">
                                         <i class="bi bi-trash3"></i>
                                         Eliminar

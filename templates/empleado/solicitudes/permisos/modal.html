@@ -1,9 +1,9 @@
 <!-- empleado/solicitudes/permisos/modal.html -->
 <div id="formPermiso" class="dynamic-form" style="display: none;">
-    <div class="novedad-detalle-grid mt-3">
-        <div class="novedad-detalle-item">
-            <span class="novedad-detalle-label">Tipo de permiso <span class="text-danger">*</span></span>
-            <span class="novedad-detalle-value">
+    <div class="modal-detalle-grid mt-3">
+        <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Tipo de permiso <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
                 <select class="form-select" id="permisoTipo" name="permiso-tipo">
                     <option value="personal" {% if permiso_form.tipo.value == 'personal' %}selected{% endif %}>Personal</option>
                     <option value="medico" {% if permiso_form.tipo.value == 'medico' %}selected{% endif %}>Médico</option>
@@ -16,27 +16,27 @@
                 {% endif %}
             </span>
         </div>
-        <div class="novedad-detalle-item">
-            <span class="novedad-detalle-label">Fecha inicio <span class="text-danger">*</span></span>
-            <span class="novedad-detalle-value">
+        <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Fecha inicio <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
                 <input type="date" class="form-control" id="permisoFechaInicio" name="permiso-fecha_inicio" value="{{ permiso_form.fecha_inicio.value|default:'' }}">
                 {% if permiso_form.fecha_inicio.errors %}
                     <div class="text-danger small">{{ permiso_form.fecha_inicio.errors }}</div>
                 {% endif %}
             </span>
         </div>
-        <div class="novedad-detalle-item">
-            <span class="novedad-detalle-label">Fecha fin <span class="text-danger">*</span></span>
-            <span class="novedad-detalle-value">
+        <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Fecha fin <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
                 <input type="date" class="form-control" id="permisoFechaFin" name="permiso-fecha_fin" value="{{ permiso_form.fecha_fin.value|default:'' }}">
                 {% if permiso_form.fecha_fin.errors %}
                     <div class="text-danger small">{{ permiso_form.fecha_fin.errors }}</div>
                 {% endif %}
             </span>
         </div>
-        <div class="novedad-detalle-item" id="nuevoHorarioGroup" style="display: none;">
-            <span class="novedad-detalle-label">Nuevo horario <span class="text-danger">*</span></span>
-            <span class="novedad-detalle-value">
+        <div class="modal-detalle-item" id="nuevoHorarioGroup" style="display: none;">
+            <span class="modal-detalle-label">Nuevo horario <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
                 <select class="form-select" id="cambioTurnoSolicitado" name="permiso-nuevo_horario">
                     <option value="Mañana" {% if permiso_form.nuevo_horario.value == 'Mañana' %}selected{% endif %}>Mañana (6:00 - 14:00)</option>
                     <option value="Tarde" {% if permiso_form.nuevo_horario.value == 'Tarde' %}selected{% endif %}>Tarde (14:00 - 22:00)</option>
@@ -47,15 +47,15 @@
                 {% endif %}
             </span>
         </div>
-        <div class="novedad-detalle-bloque-largo">
-            <span class="novedad-detalle-bloque-largo-label">Motivo</span>
+        <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
+            <span class="modal-detalle-bloque-largo-label">Motivo</span>
             <textarea class="form-control" rows="2" id="permisoMotivo" name="permiso-justificacion" placeholder="Explique el motivo del permiso">{{ permiso_form.justificacion.value|default:'' }}</textarea>
             {% if permiso_form.justificacion.errors %}
                 <div class="text-danger small">{{ permiso_form.justificacion.errors }}</div>
             {% endif %}
         </div>
-        <div class="novedad-detalle-bloque-largo">
-            <span class="novedad-detalle-bloque-largo-label">Adjuntar soporte <span class="text-muted">(opcional)</span></span>
+        <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
+            <span class="modal-detalle-bloque-largo-label">Adjuntar soporte <span class="text-muted">(opcional)</span></span>
             <input type="file" class="form-control" id="permisoAdjunto" name="permiso-archivo" accept=".pdf,.jpg,.png,.jpeg">
             <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB).</small>
             {% if permiso_form.archivo.errors %}

@@ -1,134 +1,152 @@
 {% if tarea_detalle %}
-<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true" data-bs-backdrop="static">
+<div class="modal fade" id="taskDetailModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title" id="taskDetailModalLabel">Detalle de tarea</h5>
+        <div class="modal-content modal-detalle">
+
+            <div class="modal-detalle-header">
+                <div>
+                    <div class="modal-detalle-titulo">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>Detalle de tarea</span>
+                    </div>
+                    <p class="modal-detalle-subtitulo mb-0">{{ tarea_detalle.titulo }}</p>
+                </div>
                 <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
             </div>
-            <div class="modal-body pt-0">
-                <div class="mb-4">
-                    <h4 class="mb-2">{{ tarea_detalle.titulo }}</h4>
 
-                    <!-- Prioridad + Estado -->
-                    <div class="mb-2">
-                        {% if tarea_detalle.prioridad == 'ALTA' %}
-                            <span class="badge bg-danger">Alta prioridad</span>
-                        {% elif tarea_detalle.prioridad == 'MEDIA' %}
-                            <span class="badge bg-warning text-dark">Media prioridad</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Baja prioridad</span>
-                        {% endif %}
+            <div class="modal-detalle-body">
+                <div class="modal-detalle-grid">
 
-                        {% if tarea_detalle.esta_vencida %}
-                            <span class="badge bg-danger ms-1">Vencida</span>
-                        {% elif tarea_detalle.estado == 'PENDIENTE' %}
-                            <span class="badge bg-warning text-dark ms-1">{{ tarea_detalle.get_estado_display }}</span>
-                        {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                            <span class="badge bg-info ms-1">{{ tarea_detalle.get_estado_display }}</span>
-                        {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                            <span class="badge bg-success ms-1">{{ tarea_detalle.get_estado_display }}</span>
-                        {% endif %}
-                    </div>
-
-                    <p class="text-muted">{{ tarea_detalle.descripcion }}</p>
-
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <small class="text-muted"><i class="bi bi-calendar-plus"></i> Asignación: </small>
-                            <span>{{ tarea_detalle.fecha_asignacion|date:"d/m/Y H:i" }}</span>
-                        </div>
-                        <div class="col-md-6">
-                            <small class="text-muted"><i class="bi bi-calendar-event"></i> Fecha límite: </small>
-                            <span>{{ tarea_detalle.fecha_limite|date:"Y-m-d" }}</span>
-                            {% if tarea_detalle.hora_limite %}
-                                <span>{{ tarea_detalle.hora_limite|time:"H:i" }}</span>
+                    <!-- Prioridad -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Prioridad</span>
+                        <span class="modal-detalle-value">
+                            {% if tarea_detalle.prioridad == 'ALTA' %}
+                                <span class="badge badge-rechazado">Alta</span>
+                            {% elif tarea_detalle.prioridad == 'MEDIA' %}
+                                <span class="badge badge-pendiente">Media</span>
+                            {% else %}
+                                <span class="badge badge-aprobado">Baja</span>
                             {% endif %}
-                        </div>
+                        </span>
                     </div>
 
-                    <div class="mt-2">
-                        <small class="text-muted"><i class="bi bi-info-circle"></i> Estado actual: </small>
-                        {% if tarea_detalle.esta_vencida %}
-                            <span class="badge bg-danger">Vencida</span>
-                        {% elif tarea_detalle.estado == 'PENDIENTE' %}
-                            <span class="badge bg-warning text-dark">{{ tarea_detalle.get_estado_display }}</span>
-                        {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                            <span class="badge bg-info">{{ tarea_detalle.get_estado_display }}</span>
-                        {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                            <span class="badge bg-success">{{ tarea_detalle.get_estado_display }}</span>
-                        {% endif %}
+                    <!-- Estado -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-value">
+                            {% if tarea_detalle.esta_vencida %}
+                                <span class="badge badge-rechazado">Vencida</span>
+                            {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                                <span class="badge badge-pendiente">Pendiente</span>
+                            {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                                <span class="badge badge-pendiente">En progreso</span>
+                            {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                                <span class="badge badge-aprobado">Finalizada</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-label">Descripción</span>
+                        <span class="modal-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
+                    </div>
+
+                    <!-- Fecha asignación -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label"><i class="bi bi-calendar-plus me-1"></i> Asignación</span>
+                        <span class="modal-detalle-value">{{ tarea_detalle.fecha_asignacion|date:"d/m/Y H:i" }}</span>
+                    </div>
+
+                    <!-- Fecha límite -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label"><i class="bi bi-calendar-event me-1"></i> Fecha límite</span>
+                        <span class="modal-detalle-value">
+                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
+                            {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
+                        </span>
                     </div>
 
                     {% if tarea_detalle.ultimo_cambio_por %}
-                    <div class="mt-2">
-                        <small class="text-muted"><i class="bi bi-person"></i> Último cambio por: </small>
-                        <span>{{ tarea_detalle.ultimo_cambio_por.perfil.nombre_completo|default:tarea_detalle.ultimo_cambio_por.username }}</span>
-                        <span class="text-muted">({{ tarea_detalle.fecha_actualizacion|date:"d/m/Y H:i" }})</span>
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-label"><i class="bi bi-person me-1"></i> Último cambio por</span>
+                        <span class="modal-detalle-value">
+                            {{ tarea_detalle.ultimo_cambio_por.perfil.nombre_completo|default:tarea_detalle.ultimo_cambio_por.username }}
+                            <span class="text-muted fw-normal">({{ tarea_detalle.fecha_actualizacion|date:"d/m/Y H:i" }})</span>
+                        </span>
                     </div>
                     {% endif %}
-                </div>
 
-                {# ============================================================ #}
-                {# ============ ACCIONES EN MODAL (EMPLEADO) ============ #}
-                {# ============================================================ #}
-                
-                {# 🔴 Si está VENCIDA: No se puede modificar #}
-                {% if tarea_detalle.esta_vencida %}
-                    <hr />
-                    <div class="alert alert-danger">
-                        <i class="bi bi-exclamation-triangle-fill"></i> Esta tarea está vencida. No se puede modificar.
-                    </div>
-
-                {# ✅ Si está FINALIZADA: Mostrar evidencia #}
-                {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                    <hr />
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle-fill"></i> Esta tarea ya está finalizada.
-                        {% if tarea_detalle.evidencia %}
-                            <br>
-                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline mt-2 d-inline-block">
-                                <i class="bi bi-paperclip"></i> Ver evidencia adjunta
-                            </a>
-                        {% endif %}
-                    </div>
-
-                {# 🟡 Si está PENDIENTE: Mostrar botón "Iniciar" #}
-                {% elif tarea_detalle.estado == 'PENDIENTE' and puede_cambiar %}
-                    <hr />
-                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
-                    <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea_detalle.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary-corporate text-white">
-                            <i class="bi bi-play-fill"></i> Marcar en progreso
-                        </button>
-                    </form>
-
-                {# 🟢 Si está EN_PROGRESO: Mostrar botón "Finalizar" con evidencia #}
-                {% elif tarea_detalle.estado == 'EN_PROGRESO' and puede_cambiar %}
-                    <hr />
-                    <h6><i class="bi bi-pencil-square"></i> Cambiar estado</h6>
-                    <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea_detalle.pk %}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Evidencia (opcional)</label>
-                            <input type="file" name="evidencia" class="form-control" accept="image/*,.pdf">
-                            <small class="text-muted">Puedes adjuntar una foto o documento que respalde la finalización.</small>
+                    {# ============================================================ #}
+                    {# ============ ACCIONES EN MODAL (EMPLEADO) ============ #}
+                    {# ============================================================ #}
+                    
+                    {% if tarea_detalle.esta_vencida %}
+                        {# 🔴 VENCIDA #}
+                        <div class="modal-detalle-item modal-detalle-rechazo" style="grid-column: 1 / -1;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Esta tarea está vencida. No se puede modificar.
                         </div>
-                        <button type="submit" class="btn btn-primary-corporate text-white">
-                            <i class="bi bi-check2-circle"></i> Finalizar tarea
-                        </button>
-                    </form>
-                {% endif %}
-                {# ============ FIN ACCIONES EN MODAL ============ #}
-                
+
+                    {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                        {# ✅ FINALIZADA #}
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-value text-success">
+                                <i class="bi bi-check-circle-fill me-1"></i> Tarea finalizada
+                            </span>
+                            {% if tarea_detalle.evidencia %}
+                                <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download mt-2">
+                                    <i class="bi bi-paperclip"></i> Ver evidencia adjunta
+                                </a>
+                            {% else %}
+                                <p class="modal-detalle-value">El empleado no adjuntó evidencia.</p>
+                            {% endif %}
+                        </div>
+
+                    {% elif tarea_detalle.estado == 'PENDIENTE' and puede_cambiar %}
+                        {# 🟡 PENDIENTE #}
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-value">
+                                <i class="bi bi-play-fill me-1"></i> Cambiar estado
+                            </span>
+                            <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea_detalle.pk %}" class="mt-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action btn-action-info">
+                                    <i class="bi bi-play-fill"></i> Marcar en progreso
+                                </button>
+                            </form>
+                        </div>
+
+                    {% elif tarea_detalle.estado == 'EN_PROGRESO' and puede_cambiar %}
+                        {# 🟢 EN_PROGRESO #}
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-value">
+                                <i class="bi bi-check2-circle me-1"></i> Cambiar estado
+                            </span>
+                            <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea_detalle.pk %}" enctype="multipart/form-data" class="mt-2">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <span class="modal-detalle-label">Evidencia (opcional)</span>
+                                    <input type="file" name="evidencia" class="form-control" accept="image/*,.pdf">
+                                    <small class="text-muted">Puedes adjuntar una foto o documento que respalde la finalización.</small>
+                                </div>
+                                <button type="submit" class="btn-action btn-action-approve">
+                                    <i class="bi bi-check2-circle"></i> Finalizar tarea
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    {# ============ FIN ACCIONES EN MODAL ============ #}
+
+                </div>
             </div>
 
-            <div class="modal-footer border-0">
-                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn btn-outline-corporate">
+            <div class="modal-detalle-footer">
+                <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn-action btn-action-cancel">
                     Cerrar
                 </a>
             </div>
+
         </div>
     </div>
 </div>

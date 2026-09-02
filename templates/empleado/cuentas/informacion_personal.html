@@ -13,7 +13,7 @@
                 </span>
             </div>
         </div>
-        <button type="button" class="btn btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
+        <button type="button" class="btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
             <i class="bi bi-pencil-square"></i> Editar perfil
         </button>
     </div>
@@ -38,75 +38,74 @@
 
         <div class="info-card">
             <h6 class="card-title"><i class="bi bi-person-badge me-2"></i>Datos personales</h6>
-            <div class="usuarios-detalle-grid">
-                <div class="usuarios-detalle-bloque-largo">
-                    <span class="usuarios-detalle-bloque-largo-label">Nombre completo</span>
-                    <p class="usuarios-detalle-bloque-largo-texto">{{ perfil.nombre_completo }}</p>
+            <div class="modal-detalle-grid">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Nombre completo</span>
+                    <span class="modal-detalle-value">{{ perfil.nombre_completo }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Documento</span>
-                    <span class="usuarios-detalle-value">{{ perfil.numero_documento }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Documento</span>
+                    <span class="modal-detalle-value">{{ perfil.numero_documento }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Tipo de documento</span>
-                    <span class="usuarios-detalle-value">{{ perfil.get_tipo_documento_display }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Tipo de documento</span>
+                    <span class="modal-detalle-value">{{ perfil.get_tipo_documento_display }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Fecha de nacimiento</span>
-                    <span class="usuarios-detalle-value">{{ perfil.fecha_nacimiento }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Fecha de nacimiento</span>
+                    <span class="modal-detalle-value">{{ perfil.fecha_nacimiento }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Género</span>
-                    <span class="usuarios-detalle-value">{{ perfil.get_genero_display }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Género</span>
+                    <span class="modal-detalle-value">{{ perfil.get_genero_display }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Estado civil</span>
-                    <span class="usuarios-detalle-value">{{ perfil.get_estado_civil_display }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Estado civil</span>
+                    <span class="modal-detalle-value">{{ perfil.get_estado_civil_display }}</span>
                 </div>
             </div>
         </div>
 
         <div class="info-card">
             <h6 class="card-title"><i class="bi bi-envelope me-2"></i>Información de contacto</h6>
-            <div class="usuarios-detalle-grid">
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label"><i class="bi bi-telephone"></i>Teléfono</span>
-                    <span class="usuarios-detalle-value">{{ perfil.telefono }}</span>
+            <div class="modal-detalle-grid">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label"><i class="bi bi-telephone"></i>Teléfono</span>
+                    <span class="modal-detalle-value">{{ perfil.telefono }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label"><i class="bi bi-envelope-at"></i>Correo electrónico</span>
-                    <span class="usuarios-detalle-value">{{ perfil.correo }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label"><i class="bi bi-envelope-at"></i>Correo electrónico</span>
+                    <span class="modal-detalle-value">{{ perfil.correo }}</span>
                 </div>
-                <div class="usuarios-detalle-bloque-largo">
-                    <span class="usuarios-detalle-bloque-largo-label"><i class="bi bi-geo-alt"></i> Dirección</span>
-                    <p class="usuarios-detalle-bloque-largo-texto">{{ perfil.direccion }}</p>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label"><i class="bi bi-geo-alt"></i> Dirección</span>
+                    <p class="modal-detalle-value">{{ perfil.direccion }}</p>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label"><i class="bi bi-pin-map"></i>Ciudad</span>
-                    <span class="usuarios-detalle-value">{{ perfil.ciudad }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label"><i class="bi bi-pin-map"></i>Ciudad</span>
+                    <span class="modal-detalle-value">{{ perfil.ciudad }}</span>
                 </div>
             </div>
         </div>
 
         <div class="info-card info-card-emergencia">
             <h6 class="card-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Contacto de emergencia</h6>
-            <div class="usuarios-detalle-grid">
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Nombre</span>
-                    <span class="usuarios-detalle-value">{{ perfil.contacto_emergencia }}</span>
+            <div class="modal-detalle-grid">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Nombre</span>
+                    <span class="modal-detalle-value">{{ perfil.contacto_emergencia }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Parentesco</span>
-                    <span class="usuarios-detalle-value">{{ perfil.parentesco_emergencia }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Parentesco</span>
+                    <span class="modal-detalle-value">{{ perfil.parentesco_emergencia }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Teléfono</span>
-                    <span class="usuarios-detalle-value">{{ perfil.telefono_emergencia }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Teléfono</span>
+                    <span class="modal-detalle-value">{{ perfil.telefono_emergencia }}</span>
                 </div>
             </div>
         </div>
     </div><!-- /tab personal -->
-
 
     <!-- ============================================================ -->
     <!-- TAB 2: LABORAL (SOLO LECTURA)                                 -->
@@ -114,47 +113,46 @@
     <div class="tab-pane" id="laboral">
         <div class="info-card">
             <h6 class="card-title"><i class="bi bi-briefcase-fill me-2"></i>Información laboral</h6>
-            <div class="usuarios-detalle-grid">
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Cargo</span>
-                    <span class="usuarios-detalle-value">{{ perfil.get_cargo_display }}</span>
+            <div class="modal-detalle-grid">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Cargo</span>
+                    <span class="modal-detalle-value">{{ perfil.get_cargo_display }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Fecha de ingreso</span>
-                    <span class="usuarios-detalle-value">{{ perfil.fecha_ingreso }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Fecha de ingreso</span>
+                    <span class="modal-detalle-value">{{ perfil.fecha_ingreso }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Estado</span>
-                    <span class="badge badge-active">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Estado</span>
+                    <span class="modal-detalle-value">
                         {% if perfil.estado == 'activo' %}
-                            <span class="badge-active">{{ perfil.get_estado_display }}</span>
+                            <span class="badge badge-active">{{ perfil.get_estado_display }}</span>
                         {% elif perfil.estado == 'vacaciones' %}
-                            <span class="badge-pendiente">{{ perfil.get_estado_display }}</span>
+                            <span class="badge badge-pendiente">{{ perfil.get_estado_display }}</span>
                         {% else %}
-                            <span class="badge-pendiente">{{ perfil.get_estado_display }}</span>
+                            <span class="badge badge-pendiente">{{ perfil.get_estado_display }}</span>
                         {% endif %}
                     </span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">EPS</span>
-                    <span class="usuarios-detalle-value">{{ perfil.eps }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">EPS</span>
+                    <span class="modal-detalle-value">{{ perfil.eps }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">ARL</span>
-                    <span class="usuarios-detalle-value">{{ perfil.arl }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">ARL</span>
+                    <span class="modal-detalle-value">{{ perfil.arl }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Fondo de pensión</span>
-                    <span class="usuarios-detalle-value">{{ perfil.fondo_pension }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Fondo de pensión</span>
+                    <span class="modal-detalle-value">{{ perfil.fondo_pension }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Tipo de sangre</span>
-                    <span class="usuarios-detalle-value">{{ perfil.tipo_sangre }}</span>
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Tipo de sangre</span>
+                    <span class="modal-detalle-value">{{ perfil.tipo_sangre }}</span>
                 </div>
             </div>
         </div>
     </div><!-- /tab laboral -->
-
 
     <!-- ============================================================ -->
     <!-- TAB 3: SEGURIDAD (SOLO LECTURA + ACCIÓN)                      -->
@@ -162,27 +160,27 @@
     <div class="tab-pane" id="seguridad">
         <div class="info-card">
             <h6 class="card-title"><i class="bi bi-shield-lock-fill me-2"></i>Seguridad de la cuenta</h6>
-            <div class="usuarios-detalle-grid mb-3">
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Usuario</span>
-                    <span class="usuarios-detalle-value">{{ request.user.username }}</span>
+            <div class="modal-detalle-grid mb-3">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Usuario</span>
+                    <span class="modal-detalle-value">{{ request.user.username }}</span>
                 </div>
-                <div class="usuarios-detalle-item">
-                    <span class="usuarios-detalle-label">Estado de la cuenta</span>
-                    <span class="badge badge-active">
+                <div class="modal-detalle-item">
+                    <span class="modal-detalle-label">Estado de la cuenta</span>
+                    <span class="modal-detalle-value">
                         {% if request.user.estado_cuenta == 'ACTIVA' %}
-                            <span class="badge-active">Activa</span>
+                            <span class="badge badge-active">Activa</span>
                         {% elif request.user.estado_cuenta == 'PENDIENTE' %}
-                            <span class="badge-pendiente">Pendiente de activación</span>
+                            <span class="badge badge-pendiente">Pendiente de activación</span>
                         {% elif request.user.estado_cuenta == 'SUSPENDIDA' %}
-                            <span class="badge-danger">Suspendida</span>
+                            <span class="badge badge-rechazado">Suspendida</span>
                         {% else %}
-                            <span class="badge-pendiente">{{ request.user.get_estado_cuenta_display }}</span>
+                            <span class="badge badge-pendiente">{{ request.user.get_estado_cuenta_display }}</span>
                         {% endif %}
                     </span>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#cambiarPasswordModal">
+            <button type="button" class="btn-primary-corporate" data-bs-toggle="modal" data-bs-target="#cambiarPasswordModal">
                 <i class="bi bi-key"></i> Cambiar contraseña
             </button>
         </div>
@@ -196,24 +194,22 @@
 <!-- ============================================================ -->
 <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content usuarios-modal">
+        <div class="modal-content modal-detalle">
             <form method="POST" action="{% url 'employee_profile_update' %}">
                 {% csrf_token %}
 
-                <div class="usuarios-detalle-header d-flex justify-content-between align-items-start">
-                    <div class="d-flex gap-2">
-                        <span class="usuarios-modal-icono"><i class="bi bi-pencil-square"></i></span>
-                        <div>
-                            <div class="usuarios-detalle-titulo" id="editarPerfilModalLabel">Editar perfil</div>
-                            <div class="usuarios-detalle-subtitulo mb-0">Actualiza tus datos de contacto y personales</div>
+                <div class="modal-detalle-header">
+                    <div>
+                        <div class="modal-detalle-titulo" id="editarPerfilModalLabel">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Editar perfil</span>
                         </div>
+                        <p class="modal-detalle-subtitulo mb-0">Actualiza tus datos de contacto y personales</p>
                     </div>
-                    <button type="button" class="usuarios-modal-close" data-bs-dismiss="modal" aria-label="Cerrar">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
-                <div class="usuarios-detalle-body">
+                <div class="modal-detalle-body">
 
                     <div class="usuarios-modal-tabs">
                         <button type="button" class="usuarios-modal-tab-btn active" data-modal-tab="datosBasicos">Datos básicos</button>
@@ -222,92 +218,90 @@
                     </div>
 
                     <div class="usuarios-modal-tab-pane active" id="datosBasicos">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_genero" class="form-label usuarios-detalle-label">Género</label>
+                        <div class="modal-detalle-grid">
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Género</span>
+                                <span class="modal-detalle-value">
                                     <select id="id_genero" name="genero" class="form-select">
                                         <option value="M" {% if perfil.genero == 'M' %}selected{% endif %}>Masculino</option>
                                         <option value="F" {% if perfil.genero == 'F' %}selected{% endif %}>Femenino</option>
                                         <option value="O" {% if perfil.genero == 'O' %}selected{% endif %}>Otro</option>
                                     </select>
-                                </div>
+                                </span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_estado_civil" class="form-label usuarios-detalle-label">Estado civil</label>
-                                    <span class="usuarios-detalle-value">
-                                        <select id="id_estado_civil" name="estado_civil" class="form-select">
-                                            <option value="soltero" {% if perfil.estado_civil == 'soltero' %}selected{% endif %}>Soltero</option>
-                                            <option value="casado" {% if perfil.estado_civil == 'casado' %}selected{% endif %}>Casado</option>
-                                            <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %}selected{% endif %}>Unión Libre</option>
-                                            <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %}selected{% endif %}>Divorciado</option>
-                                            <option value="viudo" {% if perfil.estado_civil == 'viudo' %}selected{% endif %}>Viudo</option>
-                                        </select>
-                                    </span>
-                                </div>
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Estado civil</span>
+                                <span class="modal-detalle-value">
+                                    <select id="id_estado_civil" name="estado_civil" class="form-select">
+                                        <option value="soltero" {% if perfil.estado_civil == 'soltero' %}selected{% endif %}>Soltero</option>
+                                        <option value="casado" {% if perfil.estado_civil == 'casado' %}selected{% endif %}>Casado</option>
+                                        <option value="union_libre" {% if perfil.estado_civil == 'union_libre' %}selected{% endif %}>Unión Libre</option>
+                                        <option value="divorciado" {% if perfil.estado_civil == 'divorciado' %}selected{% endif %}>Divorciado</option>
+                                        <option value="viudo" {% if perfil.estado_civil == 'viudo' %}selected{% endif %}>Viudo</option>
+                                    </select>
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     <div class="usuarios-modal-tab-pane" id="contacto">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_telefono" class="form-label usuarios-detalle-label">Teléfono</label>
+                        <div class="modal-detalle-grid">
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Teléfono</span>
+                                <span class="modal-detalle-value">
                                     <input type="text" id="id_telefono" name="telefono" class="form-control" value="{{ perfil.telefono }}">
-                                </div>
+                                </span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_correo" class="form-label usuarios-detalle-label">Correo electrónico</label>
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Correo electrónico</span>
+                                <span class="modal-detalle-value">
                                     <input type="email" id="id_correo" name="correo" class="form-control" value="{{ perfil.correo }}">
-                                </div>
+                                </span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_direccion" class="form-label usuarios-detalle-label">Dirección</label>
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Dirección</span>
+                                <span class="modal-detalle-value">
                                     <input type="text" id="id_direccion" name="direccion" class="form-control" value="{{ perfil.direccion }}">
-                                </div>
+                                </span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_ciudad" class="form-label usuarios-detalle-label">Ciudad</label>
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Ciudad</span>
+                                <span class="modal-detalle-value">
                                     <input type="text" id="id_ciudad" name="ciudad" class="form-control" value="{{ perfil.ciudad }}">
-                                </div>
+                                </span>
                             </div>
                         </div>
                     </div>
 
                     <div class="usuarios-modal-tab-pane" id="contactoEmergencia">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_contacto_emergencia" class="form-label usuarios-detalle-label">Nombre del contacto</label>
+                        <div class="modal-detalle-grid">
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Nombre del contacto</span>
+                                <span class="modal-detalle-value">
                                     <input type="text" id="id_contacto_emergencia" name="contacto_emergencia" class="form-control" value="{{ perfil.contacto_emergencia }}">
-                                </div>
+                                </span>
                             </div>
-                            <div class="col-md-4">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_parentesco_emergencia" class="form-label usuarios-detalle-label">Parentesco</label>
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Parentesco</span>
+                                <span class="modal-detalle-value">
                                     <input type="text" id="id_parentesco_emergencia" name="parentesco_emergencia" class="form-control" value="{{ perfil.parentesco_emergencia }}">
-                                </div>
+                                </span>
                             </div>
-                            <div class="col-md-4">
-                                <div class="usuarios-detalle-item">
-                                    <label for="id_telefono_emergencia" class="form-label usuarios-detalle-label">Teléfono</label>
+                            <div class="modal-detalle-item">
+                                <span class="modal-detalle-label">Teléfono</span>
+                                <span class="modal-detalle-value">
                                     <input type="text" id="id_telefono_emergencia" name="telefono_emergencia" class="form-control" value="{{ perfil.telefono_emergencia }}">
-                                </div>
+                                </span>
                             </div>
                         </div>
                     </div>
-
                 </div>
-                <div class="usuarios-detalle-footer d-flex justify-content-end">
-                    <button type="button" class="usuarios-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+
+                <div class="modal-detalle-footer">
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar cambios
                     </button>
-                    <button type="submit" class="usuarios-modal-btn btn-primary-corporate">
+                    <button type="submit" class="btn-action btn-action-save">
                         <i class="bi bi-check-circle"></i> Guardar cambios
                     </button>
                 </div>
@@ -322,58 +316,67 @@
 <!-- ============================================================ -->
 <div class="modal fade" id="cambiarPasswordModal" tabindex="-1" aria-labelledby="cambiarPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuarios-modal">
+        <div class="modal-content modal-detalle">
             <form method="POST" action="{% url 'employee_password_update' %}" id="formCambiarPassword" novalidate>
                 {% csrf_token %}
 
-                <div class="usuarios-detalle-header d-flex justify-content-between align-items-start">
-                    <div class="d-flex gap-2">
-                        <span class="usuarios-modal-icono"><i class="bi bi-key"></i></span>
-                        <div>
-                            <div class="usuarios-detalle-titulo" id="cambiarPasswordModalLabel">Cambiar contraseña</div>
-                            <div class="usuarios-detalle-subtitulo mb-0">Tu nueva contraseña quedará activa de inmediato</div>
+                <div class="modal-detalle-header">
+                    <div>
+                        <div class="modal-detalle-titulo" id="cambiarPasswordModalLabel">
+                            <i class="bi bi-key"></i>
+                            <span>Cambiar contraseña</span>
                         </div>
+                        <p class="modal-detalle-subtitulo mb-0">Tu nueva contraseña quedará activa de inmediato</p>
                     </div>
-                    <button type="button" class="usuarios-modal-close" data-bs-dismiss="modal" aria-label="Cerrar">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
 
-                <div class="usuarios-detalle-body">
-                    <div class="mb-3 usuarios-detalle-item">
-                        <label for="id_password_actual" class="form-label usuarios-detalle-label">Contraseña actual</label>
-                        <div class="input-group usuarios-modal-input-password">
-                            <input type="password" id="id_password_actual" name="password_actual" class="form-control" required>
-                            <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar contraseña actual">
-                                <i class="bi bi-eye"></i>
-                            </button>
+                <div class="modal-detalle-body">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-label">Contraseña actual</span>
+                            <span class="modal-detalle-value">
+                                <div class="input-group usuarios-modal-input-password">
+                                    <input type="password" id="id_password_actual" name="password_actual" class="form-control" required>
+                                    <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar contraseña actual">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </span>
+                            <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_actual"></div>
                         </div>
-                        <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_actual"></div>
-                    </div>
-                    <div class="mb-3 usuarios-detalle-item">
-                        <label for="id_password_nueva" class="form-label usuarios-detalle-label">Nueva contraseña</label>
-                        <div class="input-group usuarios-modal-input-password">
-                            <input type="password" id="id_password_nueva" name="password_nueva" class="form-control" minlength="8" required>
-                            <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar nueva contraseña">
-                                <i class="bi bi-eye"></i>
-                            </button>
+
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-label">Nueva contraseña</span>
+                            <span class="modal-detalle-value">
+                                <div class="input-group usuarios-modal-input-password">
+                                    <input type="password" id="id_password_nueva" name="password_nueva" class="form-control" minlength="8" required>
+                                    <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar nueva contraseña">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </span>
+                            <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_nueva"></div>
                         </div>
-                        <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_nueva"></div>
-                    </div>
-                    <div class="mb-2 usuarios-detalle-item">
-                        <label for="id_password_confirmar" class="form-label usuarios-detalle-label">Confirmar nueva contraseña</label>
-                        <div class="input-group usuarios-modal-input-password">
-                            <input type="password" id="id_password_confirmar" name="password_confirmar" class="form-control" minlength="8" required>
-                            <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar confirmación de contraseña">
-                                <i class="bi bi-eye"></i>
-                            </button>
+
+                        <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                            <span class="modal-detalle-label">Confirmar nueva contraseña</span>
+                            <span class="modal-detalle-value">
+                                <div class="input-group usuarios-modal-input-password">
+                                    <input type="password" id="id_password_confirmar" name="password_confirmar" class="form-control" minlength="8" required>
+                                    <button type="button" class="btn btn-toggle-password" tabindex="-1" aria-label="Mostrar confirmación de contraseña">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </span>
+                            <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_confirmar"></div>
                         </div>
-                        <div class="usuarios-modal-invalid-feedback" data-feedback-for="password_confirmar"></div>
                     </div>
                 </div>
-                <div class="usuarios-detalle-footer d-flex justify-content-end">
-                    <button type="button" class="usuarios-modal-btn btn-outline-corporate" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="usuarios-modal-btn btn-primary-corporate">
+
+                <div class="modal-detalle-footer">
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-action btn-action-save">
                         <i class="bi bi-check-circle"></i> Actualizar contraseña
                     </button>
                 </div>
