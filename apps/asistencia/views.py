@@ -23,20 +23,32 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 
-def construir_calendario(horario, fecha_inicio=None, dias=15, hoy=None, asistencias=None):
+def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asistencias=None, mostrar_relleno=True):
     if fecha_inicio is None:
-        fecha_inicio = timezone.localdate()
+        fecha_inicio = horario.ciclo_inicio or timezone.localdate()
     if hoy is None:
         hoy = timezone.localdate()
-    
+    if dias is None:
+        dias = dias_ciclo(horario.turno)
+
     descanso = regenerar_descanso_si_vencido(horario, fecha_inicio)
     asistencias_dict = {a.fecha: a.estado for a in asistencias} if asistencias else {}
-    
+
     calendario = []
+
+    # Solo rellenamos con vacíos si se pide alinear con el calendario
+    if mostrar_relleno:
+        for _ in range(fecha_inicio.weekday()):
+            calendario.append(None)
+
     for i in range(dias):
         fecha = fecha_inicio + timedelta(days=i)
         es_descanso = descanso and fecha == descanso.fecha
-        
+
+        # Inicializamos las variables por defecto para evitar NameError
+        estado = None
+        estado_texto = 'Pendiente'
+
         if es_descanso:
             estado = 'DESCANSO'
             estado_texto = 'Descanso'
@@ -49,13 +61,15 @@ def construir_calendario(horario, fecha_inicio=None, dias=15, hoy=None, asistenc
         else:
             estado = None
             estado_texto = 'Pendiente'
-        
+
         calendario.append({
             'numero': fecha.day,
             'fecha': fecha,
             'es_descanso': es_descanso,
             'estado': estado,
             'estado_texto': estado_texto,
+            'hora_entrada': horario.hora_entrada,
+            'hora_salida': horario.hora_salida,
         })
     return calendario
 
@@ -121,7 +135,7 @@ def regenerar_descanso_si_vencido(horario, hoy):
         nueva_fecha = _proxima_fecha_con_dia_semana(base, dia_objetivo)
     else:
         dia_objetivo = _siguiente_dia_habil(fecha_anterior.weekday())
-        base = fecha_anterior + timedelta(days=1)
+        base = fecha_anterior + timedelta(days=dias_ciclo(horario.turno))  
         nueva_fecha = _proxima_fecha_con_dia_semana(base, dia_objetivo)
 
     DescansoEmpleado.objects.filter(horario=horario).exclude(id=descanso.id).delete()
@@ -311,13 +325,26 @@ def horarios(request):
         ).exists():
             messages.error(
                 request,
-                f"El empleado {empleado} ya tiene un horario activo asignado."
+                f"El empleado {empleado.nombre_completo()} ya tiene un horario activo asignado."
             )
             return redirect("asistencia:horarios")
 
         # Convertir strings de hora a objetos time de Python de forma segura
-        hora_entrada_obj = datetime.strptime(hora_entrada_str, '%H:%M').time() if hora_entrada_str else None
-        hora_salida_obj = datetime.strptime(hora_salida_str, '%H:%M').time() if hora_salida_str else None
+        hora_entrada_obj = (
+            datetime.strptime(hora_entrada_str, '%H:%M').time()
+            if hora_entrada_str else None
+        )
+
+        hora_salida_obj = (
+            datetime.strptime(hora_salida_str, '%H:%M').time()
+            if hora_salida_str else None
+        )
+
+        # =====================================================
+        # PERÍODO DEL HORARIO
+        # =====================================================
+        fecha_inicio = timezone.localdate()
+        fecha_fin = fecha_inicio + timedelta(days=dias_ciclo(turno) - 1)
 
         horario = Horario.objects.create(
             empleado=empleado,
@@ -325,11 +352,13 @@ def horarios(request):
             hora_entrada=hora_entrada_obj,
             hora_salida=hora_salida_obj,
             estado=True,
-            ciclo_inicio=timezone.localdate(),
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            ciclo_inicio=fecha_inicio,
         )
-        
+
         # =====================================================
-        # NOTIFICACIÓN AL EMPLEADO (Usando el objeto ya guardado)
+        # NOTIFICACIÓN AL EMPLEADO
         # =====================================================
         contexto = {
             'empleado_nombre': empleado.nombre_completo(),
@@ -338,6 +367,7 @@ def horarios(request):
             'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
             'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
         }
+
         enviar_notificacion(
             destinatario=empleado.correo,
             asunto="🕒 Nuevo horario asignado",
@@ -357,7 +387,7 @@ def horarios(request):
 
     return render(
         request,
-        "admin/horario/horario.html",  
+        "admin/horario/horario.html",
         _contexto_base()
     )
 
@@ -585,7 +615,14 @@ def empleado_horario(request):
     calendario = []
     if horario_actual:
         regenerar_descanso_si_vencido(horario_actual, hoy)
-        calendario = construir_calendario(horario_actual, hoy)
+        fecha_inicio = horario_actual.fecha_inicio or horario_actual.ciclo_inicio or hoy
+
+        calendario = construir_calendario(
+            horario_actual,
+            fecha_inicio=fecha_inicio,
+            dias=dias_ciclo(horario_actual.turno),
+            hoy=hoy
+    )
         horario_actual.proximo_descanso = DescansoEmpleado.objects.filter(
             horario=horario_actual, es_descanso=True
         ).order_by('-fecha').first()
@@ -636,16 +673,20 @@ def empleado_horario(request):
 def empleado_horario_detalle(request, id):
     horario = get_object_or_404(Horario, id=id, empleado=request.user.perfil)
     hoy = timezone.localdate()
-    fecha_inicio = horario.ciclo_inicio or horario.fecha_creacion.date()
     
-    # Obtener asistencias de este horario en el rango del ciclo
+    # AQUí ESTABLECES LA FECHA DE INICIO REAL DE TU CICLO/HORARIO (ej. 29)
+    fecha_inicio = horario.ciclo_inicio or horario.fecha_creacion.date()
+    dias = dias_ciclo(horario.turno)
+
     asistencias = Asistencia.objects.filter(
         horario=horario,
         fecha__gte=fecha_inicio,
-        fecha__lt=fecha_inicio + timedelta(days=15)
+        fecha__lt=fecha_inicio + timedelta(days=dias)
     )
+
+    # Le pasamos explícitamente el fecha_inicio del ciclo
+    calendario = construir_calendario(horario, fecha_inicio, dias=dias, hoy=hoy, asistencias=asistencias)
     
-    calendario = construir_calendario(horario, fecha_inicio, dias=15, hoy=hoy, asistencias=asistencias)
     horario.proximo_descanso = DescansoEmpleado.objects.filter(
         horario=horario, es_descanso=True
     ).order_by('-fecha').first()
@@ -659,7 +700,7 @@ def empleado_horario_detalle(request, id):
     }, request=request)
     
     metadatos = {
-        'fecha_inicio': horario.ciclo_inicio.strftime('%d/%m/%Y') if horario.ciclo_inicio else 'N/A',
+        'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
         'fecha_fin': fin.strftime('%d/%m/%Y') if fin else 'Indefinido',
         'estado': vigencia_estado,
         'turno': horario.get_turno_display(),
@@ -667,7 +708,6 @@ def empleado_horario_detalle(request, id):
     }
     
     return JsonResponse({'html': html, 'metadatos': metadatos})
-
 # Funcionalidades para Dashboards
 
 # ============================================================

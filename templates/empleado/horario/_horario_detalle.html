@@ -1,106 +1,139 @@
 {% load static %}
 
-<div class="horario-detalle">
-    <!-- Información resumida (turno, horas, descanso) -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="info-box">
-                <span class="text-muted">Turno</span>
-                <h5 class="mt-2 mb-0">{{ horario.get_turno_display }}</h5>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="info-box">
-                <span class="text-muted">Horario</span>
-                <h5 class="mt-2 mb-0">{{ horario.hora_entrada|time:"H:i" }} - {{ horario.hora_salida|time:"H:i" }}</h5>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="info-box">
-                <span class="text-muted">Próximo descanso</span>
-                <h5 class="mt-2 mb-0">
-                    {% if horario.proximo_descanso %}
-                        {{ horario.proximo_descanso.fecha|date:"d/m/Y" }}
-                    {% else %}
-                        Sin asignar
-                    {% endif %}
-                </h5>
-            </div>
+<!-- Fila principal de información -->
+<div class="row g-3 mb-4">
+
+    <!-- Turno -->
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="text-muted">Turno</span>
+            <h5 class="mt-2 mb-0">
+                {{ horario.get_turno_display }}
+            </h5>
         </div>
     </div>
 
-    <!-- Calendario -->
-    <div class="employee-card p-4">
-        <!-- Días de la semana -->
-        <div class="dias-semana">
-            <div>Lun</div>
-            <div>Mar</div>
-            <div>Mié</div>
-            <div>Jue</div>
-            <div>Vie</div>
-            <div>Sáb</div>
-            <div>Dom</div>
+    <!-- Horario -->
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="text-muted">Horario</span>
+            <h5 class="mt-2 mb-0">
+                {% if horario.hora_entrada and horario.hora_salida %}
+                    {{ horario.hora_entrada|time:"H:i" }} -
+                    {{ horario.hora_salida|time:"H:i" }}
+                {% else %}
+                    Sin definir
+                {% endif %}
+            </h5>
         </div>
+    </div>
 
-        <!-- Rejilla del calendario -->
-        <div class="calendario-grid">
-            {% for dia in calendario %}
-                {% if dia %}
-                    {# Determinar clase CSS según estado #}
-                    {% with estado=dia.estado %}
-                        {% if estado == 'DESCANSO' %}
-                            <div class="dia-card dia-card-descanso">
-                        {% elif estado == 'PRESENTE' %}
-                            <div class="dia-card dia-card-presente">
-                        {% elif estado == 'TARDE' %}
-                            <div class="dia-card dia-card-tarde">
-                        {% elif estado == 'AUSENTE' %}
-                            <div class="dia-card dia-card-ausente">
-                        {% else %}
-                            <div class="dia-card dia-card-futuro">
-                        {% endif %}
-                    {% endwith %}
-                            <div>
-                                <div>{{ dia.numero }}</div>
-                                {% if estado == 'DESCANSO' %}
-                                    <small>Descanso</small>
-                                {% endif %}
+    <!-- Vigencia -->
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="text-muted">Vigencia</span>
+            <h5 class="mt-2 mb-0">
+                {% if horario.fecha_inicio and horario.fecha_fin %}
+                    {{ horario.fecha_inicio|date:"d/m/Y" }} - {{ horario.fecha_fin|date:"d/m/Y" }}
+                {% elif horario.fecha_inicio %}
+                    Desde {{ horario.fecha_inicio|date:"d/m/Y" }}
+                {% elif horario.ciclo_inicio and horario.fecha_fin %}
+                    {{ horario.ciclo_inicio|date:"d/m/Y" }} - {{ horario.fecha_fin|date:"d/m/Y" }}
+                {% elif horario.ciclo_inicio %}
+                    Desde {{ horario.ciclo_inicio|date:"d/m/Y" }}
+                {% else %}
+                    No definida
+                {% endif %}
+            </h5>
+        </div>
+    </div>
+
+    <!-- Próximo descanso -->
+    <div class="col-md-3">
+        <div class="info-box">
+            <span class="text-muted">Próximo descanso</span>
+            <h5 class="mt-2 mb-0">
+                {% if horario.proximo_descanso %}
+                    {{ horario.proximo_descanso.fecha|date:"d/m/Y" }}
+                {% else %}
+                    Sin asignar
+                {% endif %}
+            </h5>
+        </div>
+    </div>
+
+</div>
+
+<!-- Calendario -->
+<div class="employee-card p-4">
+
+    <!-- Días de la semana -->
+    <div class="dias-semana">
+        <div>Lun</div>
+        <div>Mar</div>
+        <div>Mié</div>
+        <div>Jue</div>
+        <div>Vie</div>
+        <div>Sáb</div>
+        <div>Dom</div>
+    </div>
+
+    <!-- Rejilla del calendario -->
+    <div class="calendario-grid">
+        {% for dia in calendario %}
+            {% if dia %}
+                {% with estado=dia.estado %}
+                    <div class="dia-card 
+                        {% if estado == 'DESCANSO' %}dia-card-descanso
+                        {% elif estado == 'PRESENTE' %}dia-card-presente
+                        {% elif estado == 'TARDE' %}dia-card-tarde
+                        {% elif estado == 'AUSENTE' %}dia-card-ausente
+                        {% else %}dia-card-futuro{% endif %}">
+
+                        <div>
+                            <div class="fw-bold">
+                                {{ dia.numero }}
                             </div>
                         </div>
-                {% else %}
-                    <div></div>
-                {% endif %}
-            {% endfor %}
-        </div>
+                    </div>
+                {% endwith %}
+            {% else %}
+                <div class="dia-card-vacio"></div>
+            {% endif %}
+        {% endfor %}
     </div>
 </div>
-<!-- Leyenda de colores -->
-<div class="leyenda-container mt-4 pt-3 border-top">
-    <div class="row g-2">
-        <div class="col-auto">
-            <span class="leyenda-item">
-                <span class="leyenda-color leyenda-presente"></span> Presente
-            </span>
-        </div>
-        <div class="col-auto">
-            <span class="leyenda-item">
-                <span class="leyenda-color leyenda-tarde"></span> Tarde
-            </span>
-        </div>
-        <div class="col-auto">
-            <span class="leyenda-item">
-                <span class="leyenda-color leyenda-ausente"></span> Ausente
-            </span>
-        </div>
-        <div class="col-auto">
-            <span class="leyenda-item">
-                <span class="leyenda-color leyenda-descanso"></span> Descanso
-            </span>
-        </div>
-        <div class="col-auto">
-            <span class="leyenda-item">
-                <span class="leyenda-color leyenda-futuro"></span> Pendiente
-            </span>
-        </div>
+
+<!-- Leyenda -->
+<div class="row g-2 mt-3">
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-presente"></span>
+            Presente
+        </span>
+    </div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-tarde"></span>
+            Tarde
+        </span>
+    </div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-ausente"></span>
+            Ausente
+        </span>
+    </div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-descanso"></span>
+            Descanso
+        </span>
+    </div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-futuro"></span>
+            Pendiente
+        </span>
     </div>
 </div>
