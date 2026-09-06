@@ -80,8 +80,6 @@
         }
 
         // ==================== CERRAR MODALES CON URL CLEAN ====================
-        // Cuando se cierra un modal que está en la URL (detalle o eliminar)
-        // se limpia el parámetro de la URL sin recargar
         const closeButtons = document.querySelectorAll('.btn-close[href]');
         closeButtons.forEach(function(btn) {
             btn.addEventListener('click', function(e) {
@@ -92,7 +90,6 @@
                     url.searchParams.delete('delete');
                     window.history.pushState({}, '', url.toString());
                 }
-                // Cerrar el modal manualmente
                 const modal = btn.closest('.modal');
                 if (modal) {
                     const bsModal = bootstrap.Modal.getInstance(modal);
@@ -100,6 +97,18 @@
                 }
             });
         });
+
+        // ==================== FECHA MÍNIMA PARA EL CAMPO fecha_limite ====================
+        const fechaInput = document.getElementById('id_fecha_limite');
+        if (fechaInput) {
+            const hoy = new Date();
+            const manana = new Date(hoy);
+            manana.setDate(hoy.getDate() + 1);
+            const year = manana.getFullYear();
+            const month = String(manana.getMonth() + 1).padStart(2, '0');
+            const day = String(manana.getDate()).padStart(2, '0');
+            fechaInput.min = `${year}-${month}-${day}`;
+        }
     });
 </script>
 {% endblock %}

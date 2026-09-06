@@ -55,7 +55,7 @@ class TaskForm(forms.ModelForm):
     def clean_fecha_limite(self):
         fecha = self.cleaned_data.get('fecha_limite')
         hoy = timezone.now().date()
-        if fecha and fecha < hoy:
+        if fecha and fecha <= hoy:
             raise forms.ValidationError("La fecha límite no puede ser en el pasado.")
         return fecha
 
