@@ -199,7 +199,7 @@
                                     ${c.proposito || 'Sin propósito especificado.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
-                                    <button type="button" class="solicitud-btn-detalle" onclick="window.verDetalleCertificado(${c.id})">
+                                    <button type="button" class="btn-action btn-action-view" onclick="window.verDetalleCertificado(${c.id})">
                                         <i class="bi bi-eye me-1"></i> Ver detalles
                                     </button>
                                 </div>
@@ -304,7 +304,7 @@
                         <td data-label="Fecha">${fechaFormateada}</td>
                         <td data-label="Estado">${badgeEstado}</td>
                         <td data-label="Acciones">
-                            <button class="btn btn-sm btn-primary-corporate" onclick="window.verDetalleHistorialCertificado(${certificado.id})" title="Ver detalles">
+                            <button class="btn-action btn-action-view" onclick="window.verDetalleHistorialCertificado(${certificado.id})" title="Ver detalles">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </td>

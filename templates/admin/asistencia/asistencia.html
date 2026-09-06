@@ -15,6 +15,68 @@
 
   {% include "admin/asistencia/resumen_hoy.html" %}
 
+  <!-- Sección Historial de Asistencia -->
+  <div id="seccionHistorial">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <h3><i class="bi bi-clock-history me-2"></i>Historial de Asistencia</h3>
+      <span class="text-muted small">Total: {{ page_obj.paginator.count|default:0 }} registros</span>
+    </div>
+
+    <!-- Filtros: Primera fila -->
+    <div class="filtros-toolbar mb-3" id="filtrosHistorial">
+      <div class="filtro-buscar">
+        <i class="bi bi-search"></i>
+        <input type="text" id="buscarHistorial" placeholder="Buscar por nombre, fecha o estado..." autocomplete="off">
+      </div>
+      <!-- EMPLEADO (ID correcto: filtroEmpleado) -->
+      <div class="filtro-select-empleado">
+        <select id="filtroEmpleado" class="form-select">
+          <option value="">Todos los empleados</option>
+          {% for emp in empleados %}
+            <option value="{{ emp.id }}">{{ emp.nombre_completo }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Filtros: Segunda fila -->
+    <div class="filtros-toolbar mb-4" id="filtrosHistorial2">
+      <select id="filtroTurno" class="filtro-select">
+        <option value="">Todos los turnos</option>
+        <option value="MANANA">Mañana</option>
+        <option value="TARDE">Tarde</option>
+        <option value="FIJO">Fijo</option>
+      </select>
+      <select id="filtroEstado" class="filtro-select">
+        <option value="">Todos los estados</option>
+        <option value="PRESENTE">Presente</option>
+        <option value="TARDE">Tarde</option>
+        <option value="AUSENTE">Ausente</option>
+      </select>
+      <button class="btn btn-outline-secondary filtro-btn-fecha" id="btnFechaUnica" data-bs-toggle="modal" data-bs-target="#modalFechaUnica">
+        <i class="bi bi-calendar"></i> Fecha única
+      </button>
+      <button class="btn btn-outline-secondary filtro-btn-fecha" id="btnRangoFechas" data-bs-toggle="modal" data-bs-target="#modalRangoFechas">
+        <i class="bi bi-calendar-range"></i> Rango
+      </button>
+      <button type="button" id="limpiarFiltrosHistorial" class="filtro-btn-limpiar">
+        Limpiar campos
+      </button>
+    </div>
+
+    <!-- Contenedor de cards (carga inicial) -->
+    <div id="historialWrapper">
+      {% include "admin/asistencia/historial_cards.html" %}
+    </div>
+  </div>
+
+  <!-- Modales de fecha -->
+  {% include "admin/asistencia/modal_fecha_unica.html" %}
+  {% include "admin/asistencia/modal_rango_fechas.html" %}
+
+  <!-- Modal de detalle de asistencia -->
+  {% include "admin/asistencia/modal_detalle_asistencia.html" %}
+
 </main>
 {% endblock %}
 

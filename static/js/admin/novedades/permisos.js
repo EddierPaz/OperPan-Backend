@@ -71,7 +71,7 @@
                                     ${p.justificacion ? p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
-                                    <button class="solicitud-btn-detalle verPermisoBtn" data-id="${p.id}">
+                                    <button class="btn-action btn-action-view verPermisoBtn" data-id="${p.id}">
                                         <i class="bi bi-eye me-1"></i> Ver detalles
                                     </button>
                                 </div>
@@ -247,7 +247,7 @@
                         <td data-label="Estado">${badge}</td>
                         <td data-label="Aprobado por">${p.decision_por || p.aprobado_por || '—'}</td>
                         <td data-label="Acciones">
-                            <button class="btn btn-sm btn-primary-corporate verHistorialPermisoBtn" data-id="${p.id}" title="Ver detalles">
+                            <button class="btn-action btn-action-view verHistorialPermisoBtn" data-id="${p.id}" title="Ver detalles">
                                 <i class="bi bi-eye"></i> 
                             </button>
                         </td>

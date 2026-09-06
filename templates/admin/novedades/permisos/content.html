@@ -1,5 +1,7 @@
 <!-- KPIs Mensuales -->
-<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+<div
+    class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2"
+>
     <h3>
         <i class="bi bi-calendar2-check-fill me-2"></i>
         Permisos este mes
@@ -9,7 +11,9 @@
 <div class="row g-3 mb-4">
     <!-- Pendientes -->
     <div class="col-md-4 col-6">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div
+            class="stat-card d-flex justify-content-between align-items-center"
+        >
             <div>
                 <span class="text-muted">Pendientes</span>
                 <h3 class="mt-1" id="permisosKpiPendientes">0</h3>
@@ -22,7 +26,9 @@
 
     <!-- Aprobadas -->
     <div class="col-md-4 col-6">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div
+            class="stat-card d-flex justify-content-between align-items-center"
+        >
             <div>
                 <span class="text-muted">Aprobadas</span>
                 <h3 class="mt-1" id="permisosKpiAprobados">0</h3>
@@ -35,7 +41,9 @@
 
     <!-- Rechazadas -->
     <div class="col-md-4 col-6">
-        <div class="stat-card d-flex justify-content-between align-items-center">
+        <div
+            class="stat-card d-flex justify-content-between align-items-center"
+        >
             <div>
                 <span class="text-muted">Rechazadas</span>
                 <h3 class="mt-1" id="permisosKpiRechazados">0</h3>
@@ -48,21 +56,23 @@
 </div>
 
 <!-- Bandeja de Permisos Pendientes -->
-<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+<div
+    class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2"
+>
     <h3 class="mb-0">
         <i class="bi bi-inbox-fill me-2"></i>
         Bandeja de permisos pendientes
     </h3>
 </div>
 
-<div class="card-modern mb-4">
-    <div class="p-3" id="permisosSolicitudesContainer">
-        <!-- Renderizado dinámico vía JS -->
-    </div>
+<div class="p-3" id="permisosSolicitudesContainer">
+    <!-- Renderizado dinámico vía JS -->
 </div>
 
 <!-- Historial de Permisos -->
-<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+<div
+    class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2"
+>
     <h3 class="mb-0">
         <i class="bi bi-clock-history me-2"></i>
         Historial completo de permisos
@@ -73,7 +83,11 @@
 <div class="filtros-toolbar">
     <div class="filtro-buscar">
         <i class="bi bi-search"></i>
-        <input type="text" id="buscarPermiso" placeholder="Buscar por documento, usuario o nombre...">
+        <input
+            type="text"
+            id="buscarPermiso"
+            placeholder="Buscar por documento, usuario o nombre..."
+        />
     </div>
 
     <select id="permisosFiltroEstado" class="filtro-select">
@@ -108,7 +122,10 @@
             </tbody>
         </table>
 
-        <div id="permisosSinResultados" class="text-center text-muted py-4 d-none">
+        <div
+            id="permisosSinResultados"
+            class="text-center text-muted py-4 d-none"
+        >
             <i class="bi bi-search fs-2 mb-2 d-block"></i>
             No se encontraron permisos que coincidan con la búsqueda.
         </div>

@@ -15,4 +15,5 @@ urlpatterns = [
     path('admi/users/<int:user_id>/enviar-credenciales/', views.user_send_credentials, name='user_send_credentials'),
     path('employee/profile/', views.employee_profile, name='employee_profile'),
     path('employee/profile/update/', views.employee_profile_update, name='employee_profile_update'),
+    path('perfil/cambiar-password/', views.employee_password_update, name='employee_password_update'),
 ]

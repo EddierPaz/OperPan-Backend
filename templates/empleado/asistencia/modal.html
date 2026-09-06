@@ -1,0 +1,89 @@
+<div class="modal fade" id="modalDetalleAsistencia" tabindex="-1" aria-labelledby="modalDetalleAsistenciaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-detalle">
+            <div class="modal-detalle-header">
+                <div>
+                    <div class="modal-detalle-titulo" id="modalDetalleAsistenciaLabel">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Detalle de asistencia</span>
+                    </div>
+                    <p class="modal-detalle-subtitulo" id="modalFecha">--/--/----</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-detalle-body">
+                <!-- Sección normal (día laboral) -->
+                <div id="seccionDiaNormal">
+                    <div class="modal-detalle-grid">
+                        <!-- Empleado -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Empleado</span>
+                            <span class="modal-detalle-value" id="modalNombre">--</span>
+                        </div>
+                        <!-- Documento -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Documento</span>
+                            <span class="modal-detalle-value" id="modalDocumento">--</span>
+                        </div>
+                        <!-- Cargo -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Cargo</span>
+                            <span class="modal-detalle-value" id="modalCargo">--</span>
+                        </div>
+                        <!-- Jornada (turno) -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Jornada</span>
+                            <span class="modal-detalle-value" id="modalTurno">--</span>
+                        </div>
+                        <!-- Entrada programada -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Entrada programada</span>
+                            <span class="modal-detalle-value" id="modalEntradaProg">--:--</span>
+                        </div>
+                        <!-- Salida programada -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Salida programada</span>
+                            <span class="modal-detalle-value" id="modalSalidaProg">--:--</span>
+                        </div>
+                        <!-- Entrada real -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Entrada real</span>
+                            <span class="modal-detalle-value" id="modalEntradaReal">--:--</span>
+                        </div>
+                        <!-- Salida real -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Salida real</span>
+                            <span class="modal-detalle-value" id="modalSalidaReal">--:--</span>
+                        </div>
+                        <!-- Estado -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Estado</span>
+                            <span class="modal-detalle-value" id="modalEstadoBadge">--</span>
+                        </div>
+                        <!-- Tardanza -->
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tardanza</span>
+                            <span class="modal-detalle-value" id="modalTardanza">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de descanso -->
+                <div id="seccionDiaDescanso" class="d-none">
+                    <div class="modal-detalle-bloque-largo text-center">
+                        <div class="fs-1 mb-2">💤</div>
+                        <span class="modal-detalle-value fs-5 mb-1">Día de descanso</span>
+                        <p class="modal-detalle-bloque-largo-texto text-muted">No estaba programado para trabajar este día.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-detalle-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

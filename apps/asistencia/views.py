@@ -6,13 +6,72 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-
 from apps.usuarios.models import PerfilEmpleado
 from apps.usuarios.decorators import admin_required
 from .models import Asistencia, DescansoEmpleado, Horario
 
-# Gmail API
+# Importación para Busqueda de filtro
+from django.db.models import Q
+
+
+# ---
+
+# La importacion paginator sirve para el historial de asistencia 
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.template.loader import render_to_string
+from django.db.models import Q
 from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
+
+def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asistencias=None, mostrar_relleno=True):
+    if fecha_inicio is None:
+        fecha_inicio = horario.ciclo_inicio or timezone.localdate()
+    if hoy is None:
+        hoy = timezone.localdate()
+    if dias is None:
+        dias = dias_ciclo(horario.turno)
+
+    descanso = regenerar_descanso_si_vencido(horario, fecha_inicio)
+    asistencias_dict = {a.fecha: a.estado for a in asistencias} if asistencias else {}
+
+    calendario = []
+
+    # Solo rellenamos con vacíos si se pide alinear con el calendario
+    if mostrar_relleno:
+        for _ in range(fecha_inicio.weekday()):
+            calendario.append(None)
+
+    for i in range(dias):
+        fecha = fecha_inicio + timedelta(days=i)
+        es_descanso = descanso and fecha == descanso.fecha
+
+        # Inicializamos las variables por defecto para evitar NameError
+        estado = None
+        estado_texto = 'Pendiente'
+
+        if es_descanso:
+            estado = 'DESCANSO'
+            estado_texto = 'Descanso'
+        elif fecha in asistencias_dict:
+            estado = asistencias_dict[fecha]
+            estado_texto = 'Presente' if estado == 'PRESENTE' else 'Tardanza'
+        elif fecha < hoy:
+            estado = 'AUSENTE'
+            estado_texto = 'Ausente'
+        else:
+            estado = None
+            estado_texto = 'Pendiente'
+
+        calendario.append({
+            'numero': fecha.day,
+            'fecha': fecha,
+            'es_descanso': es_descanso,
+            'estado': estado,
+            'estado_texto': estado_texto,
+            'hora_entrada': horario.hora_entrada,
+            'hora_salida': horario.hora_salida,
+        })
+    return calendario
 
 def dias_ciclo(turno):
     """Devuelve la duración informativa del ciclo según el turno."""
@@ -76,7 +135,7 @@ def regenerar_descanso_si_vencido(horario, hoy):
         nueva_fecha = _proxima_fecha_con_dia_semana(base, dia_objetivo)
     else:
         dia_objetivo = _siguiente_dia_habil(fecha_anterior.weekday())
-        base = fecha_anterior + timedelta(days=1)
+        base = fecha_anterior + timedelta(days=dias_ciclo(horario.turno))  
         nueva_fecha = _proxima_fecha_con_dia_semana(base, dia_objetivo)
 
     DescansoEmpleado.objects.filter(horario=horario).exclude(id=descanso.id).delete()
@@ -98,6 +157,18 @@ def ciclo_fin(horario):
     return horario.ciclo_inicio + timedelta(
         days=dias_ciclo(horario.turno) - 1
     )
+
+def estado_vigencia_horario(horario, hoy, fin):
+    """Determina el estado de vigencia mostrado en la tabla/modal."""
+    if not horario.estado:
+        return "inactivo"
+    if fin is None:
+        return "activo"
+    if fin < hoy:
+        return "vencido"
+    if (fin - hoy).days <= 2:
+        return "por_vencer"
+    return "activo"
 
 
 def _contexto_base():
@@ -126,6 +197,8 @@ def _contexto_base():
     horarios = []
     for horario in horarios_qs:
         horario.proximo_descanso = regenerar_descanso_si_vencido(horario, hoy)
+        horario.vigencia_fin = ciclo_fin(horario)
+        horario.vigencia_estado = estado_vigencia_horario(horario, hoy, horario.vigencia_fin)
         horarios.append(horario)
 
     # 2. ORDENAR: Por la fecha de descanso más cercana (ascendente). 
@@ -203,14 +276,35 @@ def _contexto_base():
         "resumen_horarios": resumen_horarios,
     }
 
+
+
+# ---
+
+
+
+# Cambio el 1 de sep para historial de asistencia con filtros y paginación
+
 @login_required
 @admin_required
 def asistencia_dashboard(request):
-    return render(
-        request,
-        "admin/asistencia/asistencia.html",
-        _contexto_base()
-    )
+    # Obtener contexto base (día actual, KPIs, turnos, etc.)
+    context = _contexto_base()
+
+    # Agregar histórico inicial (sin filtros, página 1)
+    historico = Asistencia.objects.select_related('horario__empleado').order_by('-fecha', '-hora_marcada')
+    paginator = Paginator(historico, 12)
+    page_obj = paginator.get_page(1)
+    context['page_obj'] = page_obj
+
+    # También pasar la lista de empleados para el filtro
+    context['empleados'] = PerfilEmpleado.objects.all().order_by('primer_nombre')
+
+    return render(request, 'admin/asistencia/asistencia.html', context)
+
+
+# ---
+
+
 
 def horarios(request):
     if request.method == "POST":
@@ -231,13 +325,26 @@ def horarios(request):
         ).exists():
             messages.error(
                 request,
-                f"El empleado {empleado} ya tiene un horario activo asignado."
+                f"El empleado {empleado.nombre_completo()} ya tiene un horario activo asignado."
             )
             return redirect("asistencia:horarios")
 
         # Convertir strings de hora a objetos time de Python de forma segura
-        hora_entrada_obj = datetime.strptime(hora_entrada_str, '%H:%M').time() if hora_entrada_str else None
-        hora_salida_obj = datetime.strptime(hora_salida_str, '%H:%M').time() if hora_salida_str else None
+        hora_entrada_obj = (
+            datetime.strptime(hora_entrada_str, '%H:%M').time()
+            if hora_entrada_str else None
+        )
+
+        hora_salida_obj = (
+            datetime.strptime(hora_salida_str, '%H:%M').time()
+            if hora_salida_str else None
+        )
+
+        # =====================================================
+        # PERÍODO DEL HORARIO
+        # =====================================================
+        fecha_inicio = timezone.localdate()
+        fecha_fin = fecha_inicio + timedelta(days=dias_ciclo(turno) - 1)
 
         horario = Horario.objects.create(
             empleado=empleado,
@@ -245,11 +352,13 @@ def horarios(request):
             hora_entrada=hora_entrada_obj,
             hora_salida=hora_salida_obj,
             estado=True,
-            ciclo_inicio=timezone.localdate(),
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            ciclo_inicio=fecha_inicio,
         )
-        
+
         # =====================================================
-        # NOTIFICACIÓN AL EMPLEADO (Usando el objeto ya guardado)
+        # NOTIFICACIÓN AL EMPLEADO
         # =====================================================
         contexto = {
             'empleado_nombre': empleado.nombre_completo(),
@@ -258,6 +367,7 @@ def horarios(request):
             'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
             'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
         }
+
         enviar_notificacion(
             destinatario=empleado.correo,
             asunto="🕒 Nuevo horario asignado",
@@ -277,7 +387,7 @@ def horarios(request):
 
     return render(
         request,
-        "admin/horario/horario.html",  
+        "admin/horario/horario.html",
         _contexto_base()
     )
 
@@ -291,6 +401,7 @@ def horario_json(request, id):
     hoy = timezone.localdate()
     descanso = regenerar_descanso_si_vencido(horario, hoy)
     fin = ciclo_fin(horario)
+    vigencia_estado = estado_vigencia_horario(horario, hoy, fin)
 
     return JsonResponse({
         "empleado": horario.empleado.nombre_completo(),
@@ -300,6 +411,7 @@ def horario_json(request, id):
         "hora_entrada": horario.hora_entrada.strftime("%H:%M"),
         "hora_salida": horario.hora_salida.strftime("%H:%M"),
         "estado": horario.estado,
+        "vigencia_estado": vigencia_estado,
         "descanso": descanso.fecha.strftime("%d/%m/%Y") if descanso else None,
         "descanso_fecha": descanso.fecha.strftime("%Y-%m-%d") if descanso else None,
         "ciclo_inicio": horario.ciclo_inicio.strftime("%d/%m/%Y") if horario.ciclo_inicio else None,
@@ -419,74 +531,183 @@ def asistencia_empleado(request):
     perfil = request.user.perfil
     hoy = timezone.localdate()
     
-    # 1. Capturar el filtro (default 'semana')
     filtro = request.GET.get('filtro', 'semana')
-    
-    # 2. Definir fecha de inicio según filtro
     if filtro == 'mes':
         fecha_inicio = hoy - timedelta(days=30)
     else:
-        # Asumimos semana (7 días atrás)
         fecha_inicio = hoy - timedelta(days=7)
 
-    horario = (
-        Horario.objects
-        .filter(empleado=perfil, estado=True)
-        .order_by("-id")
-        .first()
-    )
-
-    proximo_descanso = None
-    calendario = []
-    asistencias = []
-    dias_asistencia = 0
-    dias_sin_asistencia = 0
-    retardos = 0
+    horario = Horario.objects.filter(empleado=perfil, estado=True).order_by("-id").first()
+    
+    # Estado de hoy
+    estado_hoy = {
+        'tiene_jornada': False,
+        'turno': None,
+        'hora_entrada_prog': None,
+        'hora_salida_prog': None,
+        'hora_entrada_real': None,
+        'hora_salida_real': None,
+        'estado': None,  # PRESENTE, TARDE, AUSENTE, DESCANSO, SIN_HORARIO
+        'es_descanso': False,
+        'tardanza_minutos': None,
+    }
 
     if horario:
-        proximo_descanso = regenerar_descanso_si_vencido(horario, hoy)
+        # Verificar si hoy es descanso
+        descanso = regenerar_descanso_si_vencido(horario, hoy)
+        es_descanso_hoy = descanso and descanso.fecha == hoy
 
-        for _ in range(hoy.weekday()):
-            calendario.append(None)
+        estado_hoy['tiene_jornada'] = True
+        estado_hoy['turno'] = horario.get_turno_display()
+        estado_hoy['hora_entrada_prog'] = horario.hora_entrada
+        estado_hoy['hora_salida_prog'] = horario.hora_salida
 
-        for i in range(dias_ciclo(horario.turno)):
-            fecha = hoy + timedelta(days=i)
-            calendario.append({
-                "numero": fecha.day,
-                "fecha": fecha,
-                "es_descanso": (
-                    proximo_descanso is not None
-                    and fecha == proximo_descanso.fecha
-                ),
-            })
+        if es_descanso_hoy:
+            estado_hoy['estado'] = 'DESCANSO'
+            estado_hoy['es_descanso'] = True
+        else:
+            # Buscar asistencia de hoy
+            asistencia_hoy = Asistencia.objects.filter(horario=horario, fecha=hoy).first()
+            if asistencia_hoy:
+                estado_hoy['hora_entrada_real'] = asistencia_hoy.hora_marcada
+                estado_hoy['estado'] = asistencia_hoy.estado
+                if asistencia_hoy.estado == 'TARDE' and horario.hora_entrada:
+                    # Calcular tardanza en minutos
+                    entrada_prog = datetime.combine(hoy, horario.hora_entrada)
+                    entrada_real = datetime.combine(hoy, asistencia_hoy.hora_marcada)
+                    if entrada_real > entrada_prog:
+                        diff = entrada_real - entrada_prog
+                        estado_hoy['tardanza_minutos'] = int(diff.total_seconds() // 60)
+            else:
+                estado_hoy['estado'] = 'AUSENTE'
+    else:
+        estado_hoy['estado'] = 'SIN_HORARIO'
 
-        asistencias = (
-            Asistencia.objects
-            .filter(horario=horario, fecha__gte=fecha_inicio)
-            .order_by("-fecha")
-        )
-
+    # Obtener asistencias para el historial
+    asistencias = []
+    dias_asistencia = 0
+    retardos = 0
+    if horario:
+        asistencias = Asistencia.objects.filter(horario=horario, fecha__gte=fecha_inicio).order_by('-fecha')
         dias_asistencia = asistencias.count()
-        retardos = asistencias.filter(estado="TARDE").count()
-        dias_sin_asistencia = max(0, 30 - dias_asistencia)
+        retardos = asistencias.filter(estado='TARDE').count()
+    dias_sin_asistencia = max(0, 30 - dias_asistencia)  # aproximado
 
-    return render(
-        request,
-        "empleado/asistencia/asistencia.html",
-        {
-            "fecha_hoy": hoy,
-            "horario": horario,
-            "proximo_descanso": proximo_descanso,
-            "calendario": calendario,
-            "asistencias": asistencias,
-            "dias_asistencia": dias_asistencia,
-            "dias_sin_asistencia": dias_sin_asistencia,
-            "retardos": retardos,
-            "filtro": filtro,  
-        }
+    return render(request, 'empleado/asistencia/asistencia.html', {
+        'fecha_hoy': hoy,
+        'horario': horario,
+        'estado_hoy': estado_hoy,
+        'asistencias': asistencias,
+        'dias_asistencia': dias_asistencia,
+        'dias_sin_asistencia': dias_sin_asistencia,
+        'retardos': retardos,
+        'filtro': filtro,
+    })
+
+
+@login_required
+def empleado_horario(request):
+    perfil = request.user.perfil
+    hoy = timezone.localdate()
+    
+    horario_actual = Horario.objects.filter(empleado=perfil, estado=True).order_by("-id").first()
+    
+    calendario = []
+    if horario_actual:
+        regenerar_descanso_si_vencido(horario_actual, hoy)
+        fecha_inicio = horario_actual.fecha_inicio or horario_actual.ciclo_inicio or hoy
+
+        calendario = construir_calendario(
+            horario_actual,
+            fecha_inicio=fecha_inicio,
+            dias=dias_ciclo(horario_actual.turno),
+            hoy=hoy
+    )
+        horario_actual.proximo_descanso = DescansoEmpleado.objects.filter(
+            horario=horario_actual, es_descanso=True
+        ).order_by('-fecha').first()
+        
+        # --- OBTENER ASISTENCIAS PARA EL RANGO DE FECHAS ---
+        fechas_calendario = [dia['fecha'] for dia in calendario if dia]
+        asistencias = Asistencia.objects.filter(
+            horario=horario_actual,
+            fecha__in=fechas_calendario
+        )
+        # Crear un dict para acceso rápido: {fecha: estado}
+        asistencias_por_fecha = {a.fecha: a.estado for a in asistencias}
+
+        # En la vista, después de obtener asistencias_por_fecha
+        for dia in calendario:
+            if dia:
+                fecha = dia['fecha']
+                if dia['es_descanso']:
+                    dia['estado'] = 'DESCANSO'
+                    dia['estado_texto'] = 'Descanso'
+                elif fecha in asistencias_por_fecha:
+                    estado = asistencias_por_fecha[fecha]
+                    dia['estado'] = estado
+                    dia['estado_texto'] = 'Presente' if estado == 'PRESENTE' else 'Tardanza'
+                elif fecha < hoy:
+                    # Día pasado sin registro = Ausente (ROJO)
+                    dia['estado'] = 'AUSENTE'
+                    dia['estado_texto'] = 'Ausente'
+                else:
+                    # Día futuro o actual sin registro = Pendiente (BLANCO)
+                    dia['estado'] = None
+                    dia['estado_texto'] = 'Pendiente'
+            # Si dia es None (relleno de inicio de semana), se mantiene None
+    
+    historial_horarios = Horario.objects.filter(empleado=perfil).order_by('-fecha_creacion')
+    for h in historial_horarios:
+        h.vigencia_fin = ciclo_fin(h) if h.ciclo_inicio else None
+        h.vigencia_estado = estado_vigencia_horario(h, hoy, h.vigencia_fin)
+    
+    return render(request, 'empleado/horario/horario.html', {
+        'horario_actual': horario_actual,
+        'calendario': calendario,
+        'historial_horarios': historial_horarios,
+        'hoy': hoy,
+    })
+
+@login_required
+def empleado_horario_detalle(request, id):
+    horario = get_object_or_404(Horario, id=id, empleado=request.user.perfil)
+    hoy = timezone.localdate()
+    
+    # AQUí ESTABLECES LA FECHA DE INICIO REAL DE TU CICLO/HORARIO (ej. 29)
+    fecha_inicio = horario.ciclo_inicio or horario.fecha_creacion.date()
+    dias = dias_ciclo(horario.turno)
+
+    asistencias = Asistencia.objects.filter(
+        horario=horario,
+        fecha__gte=fecha_inicio,
+        fecha__lt=fecha_inicio + timedelta(days=dias)
     )
 
-
+    # Le pasamos explícitamente el fecha_inicio del ciclo
+    calendario = construir_calendario(horario, fecha_inicio, dias=dias, hoy=hoy, asistencias=asistencias)
+    
+    horario.proximo_descanso = DescansoEmpleado.objects.filter(
+        horario=horario, es_descanso=True
+    ).order_by('-fecha').first()
+    
+    fin = ciclo_fin(horario)
+    vigencia_estado = estado_vigencia_horario(horario, hoy, fin)
+    
+    html = render_to_string('empleado/horario/_horario_detalle.html', {
+        'horario': horario,
+        'calendario': calendario,
+    }, request=request)
+    
+    metadatos = {
+        'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
+        'fecha_fin': fin.strftime('%d/%m/%Y') if fin else 'Indefinido',
+        'estado': vigencia_estado,
+        'turno': horario.get_turno_display(),
+        'horas': f"{horario.hora_entrada.strftime('%H:%M')} - {horario.hora_salida.strftime('%H:%M')}",
+    }
+    
+    return JsonResponse({'html': html, 'metadatos': metadatos})
 # Funcionalidades para Dashboards
 
 # ============================================================
@@ -566,3 +787,89 @@ def cambiar_estado_asistencia(request):
         return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
     except PerfilEmpleado.DoesNotExist:
         return JsonResponse({'error': 'Empleado no encontrado'}, status=404)
+
+
+
+
+
+# Historial de Asistencia para administradores con filtros y paginación
+
+
+
+@login_required
+@admin_required
+def asistencia_historico(request):
+    """
+    Vista para el historial de asistencias con filtros y paginación.
+    Devuelve HTML parcial para actualización vía AJAX.
+    """
+    # Obtener parámetros GET
+    page = request.GET.get('page', 1)
+    busqueda = request.GET.get('busqueda', '').strip()
+    
+    # CORRECCIÓN: El JS envía 'empleado' (singular), no 'empleados' (lista)
+    empleado_id = request.GET.get('empleado', '') 
+    
+    turno = request.GET.get('turno', '')
+    estado = request.GET.get('estado', '')
+    fecha_unica = request.GET.get('fecha_unica', '')
+    fecha_desde = request.GET.get('fecha_desde', '')
+    fecha_hasta = request.GET.get('fecha_hasta', '')
+
+    # Query base con select_related para optimizar
+    asistencias = Asistencia.objects.select_related('horario__empleado').all()
+
+    # Aplicar filtros
+    if busqueda:
+        # Buscar en nombre del empleado (primer nombre, segundo, apellidos), fecha (como string), y estado
+        asistencias = asistencias.filter(
+            Q(horario__empleado__primer_nombre__icontains=busqueda) |
+            Q(horario__empleado__segundo_nombre__icontains=busqueda) |
+            Q(horario__empleado__primer_apellido__icontains=busqueda) |
+            Q(horario__empleado__segundo_apellido__icontains=busqueda) |
+            Q(fecha__icontains=busqueda) |
+            Q(estado__icontains=busqueda)
+        )
+
+    # CORRECCIÓN: Filtro por empleado individual
+    if empleado_id:
+        asistencias = asistencias.filter(horario__empleado__id=empleado_id)
+
+    if turno:
+        asistencias = asistencias.filter(horario__turno=turno)
+
+    if estado:
+        asistencias = asistencias.filter(estado=estado)
+
+    if fecha_unica:
+        asistencias = asistencias.filter(fecha=fecha_unica)
+
+    if fecha_desde and fecha_hasta:
+        asistencias = asistencias.filter(fecha__range=[fecha_desde, fecha_hasta])
+    elif fecha_desde:
+        asistencias = asistencias.filter(fecha__gte=fecha_desde)
+    elif fecha_hasta:
+        asistencias = asistencias.filter(fecha__lte=fecha_hasta)
+
+    # Ordenar (más reciente primero)
+    asistencias = asistencias.order_by('-fecha', '-hora_marcada')
+
+    # Paginación (12 por página)
+    paginator = Paginator(asistencias, 12)
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    # Si es AJAX, devolver solo el parcial
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        context = {
+            'page_obj': page_obj,
+        }
+        return render(request, 'admin/asistencia/historial_cards.html', context)
+    else:
+        # Si no es AJAX, redirigir al dashboard (o renderizar completo)
+        # Normalmente no se usará, pero por si acaso
+        return redirect('asistencia:asistencia_dashboard')

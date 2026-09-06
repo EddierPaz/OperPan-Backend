@@ -189,7 +189,7 @@
                                     ${i.descripcion || 'Sin descripción.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
-                                    <button type="button" class="solicitud-btn-detalle" onclick="window.verDetalleIncapacidad(${i.id})">
+                                    <button type="button" class="btn-action btn-action-view" onclick="window.verDetalleIncapacidad(${i.id})">
                                         <i class="bi bi-eye me-1"></i> Ver detalles
                                     </button>
                                 </div>
@@ -253,7 +253,7 @@
                         <td data-label="Estado">${badge}</td>
                         <td data-label="Aprobado por">${i.decision_por || i.aprobado_por || '—'}</td>
                         <td data-label="Acciones">
-                            <button class="btn btn-sm btn-primary-corporate" onclick="window.verDetalleHistorialIncapacidad(${i.id})" title="Ver detalles">
+                            <button class="btn-action btn-action-view" onclick="window.verDetalleHistorialIncapacidad(${i.id})" title="Ver detalles">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </td>

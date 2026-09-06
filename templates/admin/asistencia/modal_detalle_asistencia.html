@@ -1,0 +1,50 @@
+<div class="modal fade" id="modalDetalleAsistencia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content modal-detalle">
+            <div class="modal-detalle-header">
+                <div>
+                    <div class="modal-detalle-titulo">
+                        <i class="bi bi-info-circle-fill"></i>
+                        <span>Detalle de Asistencia</span>
+                    </div>
+                    <p class="modal-detalle-subtitulo mb-0" id="detalleEmpleadoNombre"></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-detalle-body">
+                <div class="modal-detalle-grid">
+                    <!-- Estado y Fecha -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-value" id="detalleEstado"></span>
+                    </div>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha</span>
+                        <span class="modal-detalle-value" id="detalleFecha"></span>
+                    </div>
+                    <!-- Turno y Cargo -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Turno</span>
+                        <span class="modal-detalle-value" id="detalleTurno"></span>
+                    </div>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Cargo</span>
+                        <span class="modal-detalle-value" id="detalleCargo"></span>
+                    </div>
+                    <!-- Horas -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Hora Programada</span>
+                        <span class="modal-detalle-value" id="detalleHoraProgramada"></span>
+                    </div>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Hora Marcada</span>
+                        <span class="modal-detalle-value" id="detalleHoraMarcada"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-detalle-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

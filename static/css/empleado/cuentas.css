@@ -1,291 +1,495 @@
 /* ============================================================
-   ESTILOS PARA INFORMACIÓN PERSONAL (REDISEÑO MODERNO)
+   CUENTAS.CSS - MÓDULO "MI PERFIL" (EMPLEADO) - OPERPAN
+   Reutiliza el sistema de tarjetas/modal "usuarios-detalle-*" /
+   "usuarios-modal-*" para que la ficha de perfil y sus modales
+   compartan el lenguaje visual del resto de la app (mismo
+   patrón que el modal "Nueva Solicitud").
+   No redefine .btn-primary-corporate, .btn-outline-corporate,
+   .form-control, .form-select, .form-label, .badge-active,
+   .badge-pendiente ni .badge-rechazado, ya definidos en
+   components.css. Requiere variables.css y components.css
+   cargados antes.
    ============================================================ */
 
-/* --- Avatar con degradado --- */
-.employee-avatar-large {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #A40706, #D94A4A);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 2.2rem;
-    color: white;
-    box-shadow: 0 4px 12px rgba(164, 7, 6, 0.3);
-    flex-shrink: 0;
-}
-
-/* --- Header del perfil --- */
+/* ============================================================
+   HEADER DEL PERFIL
+   ============================================================ */
 .profile-header {
-    padding: 0.5rem 0 1rem 0;
-    border-bottom: 1px solid #EDF2F7;
+  padding: 0.5rem 0 1rem 0;
+  border-bottom: 1px solid var(--color-border-soft);
 }
 
 .profile-info h4 {
-    font-weight: 700;
-    color: #1E293B;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
-/* --- Badge de rol --- */
+.employee-avatar-large {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--color-primary), #D94A4A);
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: var(--color-white);
+  box-shadow: 0 4px 12px rgba(164, 7, 6, 0.3);
+  flex-shrink: 0;
+}
+
 .badge-role {
-    background: #A40706;
-    color: white;
-    padding: 0.3rem 1rem;
-    border-radius: 40px;
-    font-size: 0.8rem;
-    display: inline-block;
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.3rem 1rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  display: inline-block;
 }
 
-/* --- Botón Editar moderno --- */
-.btn-editar {
-    background: white;
-    color: #A40706;
-    border: 1.5px solid #A40706;
-    border-radius: 50px;
-    padding: 0.6rem 1.8rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    white-space: nowrap;
+.badge-estado {
+  padding: 0.3rem 0.9rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.btn-editar:hover {
-    background: #A40706;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.35);
+.badge-estado i {
+  font-size: 0.5rem;
 }
 
-.btn-editar.active {
-    background: #8a0504;
-    color: white;
-    border-color: #8a0504;
-    cursor: not-allowed;
-    opacity: 0.9;
+.badge-estado.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
-/* --- Pestañas Modernas --- */
+.badge-estado.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.badge-estado.badge-info {
+  background: rgba(2, 132, 199, 0.12);
+  color: var(--color-info-hover);
+}
+
+.badge-danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  padding: 0.2rem 0.8rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* ============================================================
+   PESTAÑAS PRINCIPALES (Información personal / Laboral / Seguridad)
+   ============================================================ */
 .custom-tabs-modern {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #E9ECF3;
-    padding-bottom: 0;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--color-border-soft);
+  flex-wrap: wrap;
 }
 
 .custom-tabs-modern .tab-btn-custom {
-    background: transparent;
-    border: none;
-    padding: 0.7rem 1.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #64748B;
-    transition: all 0.3s ease;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
 }
 
 .custom-tabs-modern .tab-btn-custom i {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
 .custom-tabs-modern .tab-btn-custom:hover {
-    color: #A40706;
+  color: var(--color-primary);
 }
 
 .custom-tabs-modern .tab-btn-custom.active {
-    color: #A40706;
-    border-bottom-color: #A40706;
-}
-/*Linea 106-142 son los estilos de las pestañas corporativas*/
-/* --- Pestañas con estilo corporativo --- */
-.custom-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
 
-.custom-tabs .btn-primary-corporate {
-    background: white !important;
-    color: #A40706 !important;
-    border: 1.5px solid #A40706 !important;
-    padding: 0.6rem 1.5rem !important;
-    font-weight: 600 !important;
-    font-size: 0.9rem !important;
-    border-radius: 40px !important;
-    transition: all 0.3s ease !important;
-    cursor: pointer !important;
+/* Ocultar pestañas inactivas (solo dentro de la ficha de perfil) */
+.employee-card > .tab-pane {
+  display: none;
 }
 
-.custom-tabs .btn-primary-corporate:hover {
-    background: #A40706 !important;
-    color: white !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.35) !important;
-}
-
-.custom-tabs .btn-primary-corporate.active {
-    background: #A40706 !important;
-    color: white !important;
-    border-color: #A40706 !important;
-    box-shadow: 0 4px 16px rgba(164, 7, 6, 0.35) !important;
-}
-
-.custom-tabs .btn-primary-corporate i {
-    margin-right: 8px !important;
-}
-
-/* --- Tarjetas de información (Cards) --- */
-.info-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 1.8rem 1.5rem;
-    margin-bottom: 2rem;
-    border: 1px solid #e9eef3;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    transition: box-shadow 0.3s ease;
-}
-
-.info-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-.info-card .card-title {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 2px solid #f0f2f5;
-}
-
-/* --- Etiquetas de campos --- */
-.field-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    display: block;
-    margin-bottom: 0.1rem;
-}
-
-/* --- Valores de campos --- */
-.field-value {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #1e293b;
-    padding: 0.3rem 0;
-    min-height: 2.2rem;
-}
-
-/* --- Campos editables (con indicador visual) --- */
-.editable-hint {
-    border-left: 3px solid #a40706;
-    padding-left: 0.75rem !important;
-}
-
-/* --- Badges de estado --- */
-.badge-success {
-    background: #D1FAE5;
-    color: #065F46;
-    padding: 0.2rem 0.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-.badge-warning {
-    background: #FEF3C7;
-    color: #92400E;
-    padding: 0.2rem 0.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-.badge-info {
-    background: #DBEAFE;
-    color: #1E40AF;
-    padding: 0.2rem 0.8rem;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-/* --- Animación al cambiar de pestaña --- */
-.tab-pane {
-    animation: fadeIn 0.25s ease;
+.employee-card > .tab-pane.active {
+  display: block;
+  animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* --- Ícono de lápiz en campos editables --- */
-.bi-pencil {
-    opacity: 0.5;
-    transition: opacity 0.2s ease;
-}
-
-.bi-pencil:hover {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
     opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* --- Responsive para móvil --- */
+/* ============================================================
+   TARJETAS CONTENEDORAS (Datos personales, Contacto, Laboral...)
+   ============================================================ */
+.info-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border-soft);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.info-card .card-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--color-border-soft);
+}
+
+.info-card-emergencia {
+  border-left: 4px solid var(--color-warning-hover);
+  background: #FFFBF5;
+}
+
+.info-card-emergencia .card-title {
+  color: var(--color-warning-hover);
+  border-bottom-color: var(--color-warning-bg);
+}
+
+/* ============================================================
+   USUARIOS · DETALLE
+   Componente compartido de solo lectura: etiqueta + valor en caja.
+   ============================================================ */
+.usuarios-detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.usuarios-detalle-item {
+  padding: 0.9rem 1rem;
+  background: #F8FAFC;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.usuarios-detalle-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.usuarios-detalle-label i {
+  margin-right: 4px;
+}
+
+.usuarios-detalle-value {
+  display: block;
+  color: var(--color-text);
+  font-size: 0.92rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.usuarios-detalle-bloque-largo {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.usuarios-detalle-bloque-largo-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.usuarios-detalle-bloque-largo-texto {
+  margin: 0;
+  color: var(--color-text-soft);
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+/* ============================================================
+   USUARIOS · MODAL
+   Chrome de modal compartido: header con icono circular + título
+   + subtítulo + botón X, cuerpo, footer y botones en píldora.
+   Mismo patrón visual que el modal "Nueva Solicitud".
+   ============================================================ */
+.usuarios-modal {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+}
+
+.usuarios-detalle-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-soft);
+  background: var(--color-white);
+}
+
+.usuarios-detalle-titulo {
+  color: var(--color-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.usuarios-detalle-subtitulo {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.usuarios-detalle-body {
+  padding: 1.5rem;
+  background: var(--color-white);
+}
+
+.usuarios-detalle-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border-soft);
+  background: var(--color-white);
+  gap: 0.6rem;
+}
+
+/* --- Icono circular en el header del modal --- */
+.usuarios-modal-icono {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-circle);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+/* --- Botón de cerrar (X) del modal --- */
+.usuarios-modal-close {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.usuarios-modal-close:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* --- Etiquetas estilo "Nueva Solicitud": mayúscula, pequeña, espaciada --- */
+.usuarios-modal-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 0.5rem;
+}
+
+.usuarios-modal-label .campo-requerido {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+/* --- Pestañas internas del modal "Editar perfil" --- */
+.usuarios-modal-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 2px solid var(--color-border-soft);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.usuarios-modal-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+}
+
+.usuarios-modal-tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.usuarios-modal-tab-pane {
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.usuarios-modal-tab-pane.active {
+  display: block;
+}
+
+/* --- Botones del modal (píldora) --- */
+.usuarios-modal-btn {
+  border: none;
+  border-radius: 25px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.usuarios-modal-btn-guardar {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.usuarios-modal-btn-guardar:hover {
+  background: var(--color-primary-hover);
+  color: var(--color-white);
+  transform: translateY(-1px);
+}
+
+.usuarios-modal-btn-cancelar {
+  background: #F1F5F9;
+  color: var(--color-text-muted);
+}
+
+.usuarios-modal-btn-cancelar:hover {
+  background: #E2E8F0;
+  color: var(--color-text);
+}
+
+.usuarios-modal-btn-aprobar {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.usuarios-modal-btn-aprobar:hover {
+  background: var(--color-success-hover);
+  color: var(--color-white);
+  transform: translateY(-1px);
+}
+
+/* --- Campo de contraseña con botón mostrar/ocultar --- */
+.usuarios-modal-input-password .btn-toggle-password {
+  border: 1.5px solid var(--color-border);
+  border-left: none;
+  background: var(--color-white);
+  color: var(--color-text-muted);
+}
+
+.usuarios-modal-input-password .btn-toggle-password:hover {
+  background: var(--color-bg);
+}
+
+.usuarios-modal-invalid-feedback {
+  color: var(--color-danger-text);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  display: none;
+}
+
+.usuarios-modal-invalid-feedback.visible {
+  display: block;
+}
+
+.usuarios-modal-input-password.is-invalid-custom .form-control {
+  border-color: var(--color-danger);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 576px) {
-    .profile-header {
-        flex-direction: column !important;
-        text-align: center;
-        gap: 0.5rem !important;
-    }
-    .profile-info {
-        text-align: center;
-    }
-    .btn-editar {
-        width: 100%;
-        justify-content: center;
-    }
-    .employee-avatar-large {
-        width: 70px;
-        height: 70px;
-        font-size: 2rem;
-    }
-    .custom-tabs-modern .tab-btn-custom {
-        flex: 1;
-        text-align: center;
-        padding: 0.6rem 0.8rem;
-        font-size: 0.8rem;
-    }
-    .info-card {
-        padding: 1rem;
-    }
-    .field-value {
-        font-size: 0.9rem;
-    }
-    #accionesEdicionPersonal .d-flex,
-    #accionesEdicionSeguridad .d-flex {
-        flex-direction: column;
-        width: 100%;
-    }
-    #accionesEdicionPersonal button,
-    #accionesEdicionSeguridad button {
-        width: 100%;
-        justify-content: center;
-    }
+  .profile-header {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 0.5rem !important;
+  }
+
+  .profile-info {
+    text-align: center;
+  }
+
+  .profile-info .d-flex {
+    justify-content: center;
+  }
+
+  .employee-avatar-large {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .custom-tabs-modern .tab-btn-custom {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+  }
+
+  .usuarios-detalle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usuarios-modal-tabs {
+    gap: 0;
+  }
+
+  .usuarios-modal-tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem 0.4rem;
+    font-size: 0.78rem;
+  }
 }

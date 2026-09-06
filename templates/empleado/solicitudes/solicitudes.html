@@ -65,7 +65,8 @@
             <i class="bi bi-file-earmark-text me-2"></i>
             Mis solicitudes
         </h3>
-        <button class="btn btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalSolicitud">
+        <!-- ✅ btn-primary-corporate -->
+        <button class="btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalSolicitud">
             <i class="bi bi-plus-circle me-2"></i>
             Nueva solicitud
         </button>
@@ -82,7 +83,6 @@
     <div class="solicitudes-historial-section mt-4" id="historial">
 
         <div class="filtros-container mb-3">
-            <!-- Filtro por Tipo -->
             <div class="filtros-row">
                 <span class="filtro-label">
                     <i class="bi bi-filter"></i> Tipo:
@@ -100,7 +100,6 @@
                 </div>
             </div>
 
-            <!-- Filtro por Estado -->
             <div class="filtros-row mt-3">
                 <span class="filtro-label">
                     <i class="bi bi-clipboard-check"></i> Estado:
@@ -143,18 +142,22 @@
     </footer>
 </main>
 
-<!-- Modal: Nueva Solicitud -->
+<!-- ============================================================ -->
+<!-- MODAL: NUEVA SOLICITUD                                        -->
+<!-- ============================================================ -->
 <div class="modal fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content novedad-modal">
+        <!-- ✅ modal-detalle -->
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header novedad-detalle-header">
+            <!-- ✅ modal-detalle-header -->
+            <div class="modal-detalle-header">
                 <div>
-                    <div class="novedad-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-plus-circle-fill"></i>
                         <span>Nueva Solicitud</span>
                     </div>
-                    <p class="novedad-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Crea una nueva solicitud de permiso, incapacidad o certificado
                     </p>
                 </div>
@@ -163,11 +166,12 @@
 
             <form method="post" enctype="multipart/form-data" id="solicitudForm" action="{% url 'novedades:solicitudes_empleado' %}">
                 {% csrf_token %}
-                <div class="modal-body novedad-detalle-body">
+                <!-- ✅ modal-detalle-body -->
+                <div class="modal-detalle-body">
 
-                    <div class="novedad-detalle-item mb-3">
-                        <span class="novedad-detalle-label">Tipo de solicitud <span class="text-danger">*</span></span>
-                        <span class="novedad-detalle-value">
+                    <div class="modal-detalle-item mb-3">
+                        <span class="modal-detalle-label">Tipo de solicitud <span class="text-danger">*</span></span>
+                        <span class="modal-detalle-value">
                             <select class="form-select" id="tipoSolicitud" name="tipo_solicitud" required>
                                 <option value="">Seleccionar tipo</option>
                                 <option value="permiso" {% if request.POST.tipo_solicitud == 'permiso' %}selected{% endif %}>Permiso</option>
@@ -193,11 +197,12 @@
 
                 </div>
 
-                <div class="modal-footer novedad-detalle-footer">
-                    <button type="reset" class="novedad-modal-btn btn btn-outline-corporate">
+                <!-- ✅ modal-detalle-footer -->
+                <div class="modal-detalle-footer">
+                    <button type="reset" class="btn-action btn-action-cancel">
                         <i class="bi bi-eraser"></i> Limpiar campos
                     </button>
-                    <button type="submit" class="novedad-modal-btn btn btn-primary-corporate">
+                    <button type="submit" class="btn-action btn-action-save">
                         <i class="bi bi-send"></i> Enviar solicitud
                     </button>
                 </div>
@@ -207,52 +212,57 @@
     </div>
 </div>
 
-<!-- Modal: Detalle de Solicitud -->
+<!-- ============================================================ -->
+<!-- MODAL: DETALLE DE SOLICITUD                                   -->
+<!-- ============================================================ -->
 <div class="modal fade" id="modalDetalleSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content novedad-modal">
+        <!-- ✅ modal-detalle -->
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header novedad-detalle-header">
+            <!-- ✅ modal-detalle-header -->
+            <div class="modal-detalle-header">
                 <div>
-                    <div class="novedad-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-file-earmark-text-fill" id="detalleIcono"></i>
                         <span id="detalleTitulo">Detalle de solicitud</span>
                     </div>
-                    <p class="novedad-detalle-subtitulo mb-0" id="detalleSubtitulo">
+                    <p class="modal-detalle-subtitulo mb-0" id="detalleSubtitulo">
                         Información completa de la solicitud
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body novedad-detalle-body">
-                <div class="novedad-detalle-grid">
-                    <div class="novedad-detalle-item">
-                        <span class="novedad-detalle-label">Estado</span>
-                        <span class="novedad-detalle-value">
+            <!-- ✅ modal-detalle-body -->
+            <div class="modal-detalle-body">
+                <div class="modal-detalle-grid">
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-value">
                             <span class="novedad-detalle-estado" id="detalleEstadoBadge">Pendiente</span>
                         </span>
                     </div>
-                    <div class="novedad-detalle-item">
-                        <span class="novedad-detalle-label">Tipo</span>
-                        <span class="novedad-detalle-value" id="detalleTipo">—</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Tipo</span>
+                        <span class="modal-detalle-value" id="detalleTipo">—</span>
                     </div>
-                    <div class="novedad-detalle-item novedad-detalle-item-full" id="detalleFechasContainer" style="display:none;">
-                        <span class="novedad-detalle-label">Período</span>
-                        <span class="novedad-detalle-value" id="detalleFechas">—</span>
+                    <div class="modal-detalle-item" style="grid-column: span 2;" id="detalleFechasContainer" style="display:none;">
+                        <span class="modal-detalle-label">Período</span>
+                        <span class="modal-detalle-value" id="detalleFechas">—</span>
                     </div>
-                    <div class="novedad-detalle-bloque-largo" id="detalleMotivoContainer">
-                        <span class="novedad-detalle-bloque-largo-label">Motivo / Descripción</span>
-                        <p class="novedad-detalle-bloque-largo-texto" id="detalleMotivo">—</p>
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja" id="detalleMotivoContainer">
+                        <span class="modal-detalle-bloque-largo-label">Motivo / Descripción</span>
+                        <p class="modal-detalle-bloque-largo-texto" id="detalleMotivo">—</p>
                     </div>
-                    <div class="novedad-detalle-bloque-largo" id="detalleRechazoContainer" style="display:none;">
-                        <span class="novedad-detalle-bloque-largo-label" style="color: var(--color-danger);">Motivo del rechazo</span>
-                        <p class="novedad-detalle-bloque-largo-texto" style="color: var(--color-danger-text);" id="detalleMotivoRechazo">—</p>
+                    <div class="modal-detalle-bloque-largo modal-detalle-rechazo" id="detalleRechazoContainer" style="display:none;">
+                        <span class="modal-detalle-bloque-largo-label">Motivo del rechazo</span>
+                        <p class="modal-detalle-bloque-largo-texto" id="detalleMotivoRechazo">—</p>
                     </div>
-                    <div class="novedad-detalle-bloque-largo" id="detalleArchivoContainer" style="display:none;">
-                        <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
-                        <p class="novedad-detalle-bloque-largo-texto">
-                            <a href="#" id="detalleArchivoLink" target="_blank" class="btn btn-sm btn-primary-corporate">
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja" id="detalleArchivoContainer" style="display:none;">
+                        <span class="modal-detalle-bloque-largo-label">Archivo adjunto</span>
+                        <p class="modal-detalle-bloque-largo-texto">
+                            <a href="#" id="detalleArchivoLink" target="_blank" class="btn-action btn-action-download">
                                 <i class="bi bi-paperclip me-1"></i> Ver archivo
                             </a>
                         </p>
@@ -260,18 +270,19 @@
                 </div>
             </div>
 
-            <div class="modal-footer novedad-detalle-footer">
-                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+            <!-- ✅ modal-detalle-footer -->
+            <div class="modal-detalle-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     Cerrar
                 </button>
                 <div id="detalleAccionesContainer">
-                    <button type="button" class="novedad-modal-btn novedad-modal-btn-editar" id="detalleEditarBtn" style="display:none;">
+                    <button type="button" class="btn-action btn-action-edit" id="detalleEditarBtn" style="display:none;">
                         <i class="bi bi-pencil"></i> Editar
                     </button>
-                    <button type="button" class="novedad-modal-btn novedad-modal-btn-eliminar" id="detalleEliminarBtn" style="display:none;">
+                    <button type="button" class="btn-action btn-action-delete" id="detalleEliminarBtn" style="display:none;">
                         <i class="bi bi-trash3"></i> Eliminar
                     </button>
-                    <button type="button" class="novedad-modal-btn btn-primary-corporate" id="detalleDescargarBtn" style="display:none;">
+                    <button type="button" class="btn-action btn-action-download" id="detalleDescargarBtn" style="display:none;">
                         <i class="bi bi-download"></i> Descargar
                     </button>
                 </div>
@@ -281,43 +292,48 @@
     </div>
 </div>
 
-<!-- Modal: Confirmar Eliminación -->
-<div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" aria-hidden="true">
+<!-- ============================================================ -->
+<!-- MODAL: CONFIRMAR ELIMINACIÓN                                  -->
+<!-- ============================================================ -->
+<div class="modal fade confirm-modal" id="modalConfirmarEliminar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> Confirmar eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center py-4">
-                <div class="icono-circular mx-auto mb-3" style="width: 60px; height: 60px;">
-                    <i class="bi bi-trash3 fs-3"></i>
+
+            <div class="modal-body confirm-modal-body">
+                <div class="confirm-modal-icon confirm-modal-icon--danger">
+                    <i class="bi bi-x-lg"></i>
                 </div>
-                <p class="mb-1 fw-bold">¿Estás seguro de que deseas eliminar esta solicitud?</p>
-                <p class="text-muted small mb-0">Esta acción no se puede deshacer.</p>
+                <h5 class="confirm-modal-title">¿Estás seguro de que deseas eliminar esta solicitud?</h5>
+                <p class="confirm-modal-text">Esta acción no se puede deshacer.</p>
             </div>
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="btn-outline-corporate px-4" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn-action btn-action-delete px-4" id="btnConfirmarEliminacion">
+
+            <div class="confirm-modal-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-action btn-action-delete" id="btnConfirmarEliminacion">
                     <i class="bi bi-trash3"></i> Sí, eliminar
                 </button>
             </div>
+
         </div>
     </div>
 </div>
 
-<!-- Modal: Editar Solicitud -->
+<!-- ============================================================ -->
+<!-- MODAL: EDITAR SOLICITUD                                       -->
+<!-- ============================================================ -->
 <div class="modal fade" id="modalEditarSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content novedad-modal">
+        <!-- ✅ modal-detalle -->
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header novedad-detalle-header">
+            <!-- ✅ modal-detalle-header -->
+            <div class="modal-detalle-header">
                 <div>
-                    <div class="novedad-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-pencil-square"></i>
                         <span>Editar Solicitud</span>
                     </div>
-                    <p class="novedad-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Modifica los campos permitidos de tu solicitud
                     </p>
                 </div>
@@ -325,43 +341,44 @@
             </div>
 
             <form id="formEditarSolicitud" enctype="multipart/form-data">
-                <div class="modal-body novedad-detalle-body">
+                <!-- ✅ modal-detalle-body -->
+                <div class="modal-detalle-body">
                     <input type="hidden" id="editarId" name="id">
 
-                    <div class="novedad-detalle-item mb-3">
-                        <span class="novedad-detalle-label">Tipo de Solicitud</span>
-                        <span class="novedad-detalle-value">
-                            <input type="text" class="form-control" id="editarTipoDisplay" disabled>
+                    <div class="modal-detalle-item mb-3">
+                        <span class="modal-detalle-label">Tipo de Solicitud</span>
+                        <span class="modal-detalle-value">
+                            <input type="text" class="form-control bg-light" id="editarTipoDisplay" disabled>
                         </span>
                         <small class="text-muted">El tipo de solicitud no se puede modificar.</small>
                     </div>
 
-                    <div class="novedad-detalle-grid">
-                        <div class="novedad-detalle-item">
-                            <span class="novedad-detalle-label">Fecha de Inicio <span class="text-danger">*</span></span>
-                            <span class="novedad-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha de Inicio <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="date" class="form-control" id="editarFechaInicio" name="fecha_inicio" required>
                             </span>
                         </div>
-                        <div class="novedad-detalle-item">
-                            <span class="novedad-detalle-label">Fecha de Fin <span class="text-danger">*</span></span>
-                            <span class="novedad-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha de Fin <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="date" class="form-control" id="editarFechaFin" name="fecha_fin" required>
                             </span>
                         </div>
                     </div>
 
-                    <div class="novedad-detalle-bloque-largo mt-3">
-                        <span class="novedad-detalle-bloque-largo-label">Motivo o Descripción <span class="text-danger">*</span></span>
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3">
+                        <span class="modal-detalle-bloque-largo-label">Motivo o Descripción <span class="text-danger">*</span></span>
                         <textarea class="form-control" id="editarMotivo" name="motivo" rows="3" required></textarea>
                     </div>
 
-                    <div class="novedad-detalle-bloque-largo mt-3">
-                        <span class="novedad-detalle-bloque-largo-label">Archivo Adjunto</span>
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3">
+                        <span class="modal-detalle-bloque-largo-label">Archivo Adjunto</span>
 
                         <div id="contenedorArchivoActual" class="mb-2" style="display: none;">
                             <span class="text-muted small d-block">Archivo actual cargado:</span>
-                            <a href="#" id="verArchivoActual" target="_blank" class="btn btn-sm btn-outline-primary mt-1">
+                            <a href="#" id="verArchivoActual" target="_blank" class="btn-action btn-action-download mt-1">
                                 <i class="bi bi-paperclip me-1"></i> Ver archivo actual
                             </a>
                         </div>
@@ -372,11 +389,12 @@
 
                 </div>
 
-                <div class="modal-footer novedad-detalle-footer">
-                    <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                <!-- ✅ modal-detalle-footer -->
+                <div class="modal-detalle-footer">
+                    <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg"></i> Cancelar
                     </button>
-                    <button type="submit" class="novedad-modal-btn btn-primary-corporate" id="btnGuardarEdicion">
+                    <button type="submit" class="btn-action btn-action-save" id="btnGuardarEdicion">
                         <i class="bi bi-check-lg"></i> Guardar cambios
                     </button>
                 </div>

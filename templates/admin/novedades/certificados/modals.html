@@ -24,18 +24,24 @@
                 <!-- Renderizado por JS -->
             </div>
 
+            <!-- Footer: antes .novedad-modal-btn + btn-outline-corporate/
+                 btn-primary-corporate/btn-success-corporate. "Rechazar" usaba
+                 el rojo institucional (correcto, ya es rojo=rechazar), pero
+                 "Descargar PDF" compartía el mismo verde que "Aprobar": son
+                 acciones distintas y deben distinguirse (verde=aprobar,
+                 teal=descargar, según el sistema global). -->
             <div class="modal-footer novedad-detalle-footer">
-                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
+                <button type="button" class="btn-action btn-action-close" data-bs-dismiss="modal">
                     <i class="bi bi-x-lg"></i> Cerrar
                 </button>
                 <div class="d-flex gap-2" id="certificadosAccionesFooter">
-                    <button type="button" class="novedad-modal-btn btn-primary-corporate" id="certificadosRechazarBtn">
+                    <button type="button" class="btn-action btn-action-reject" id="certificadosRechazarBtn">
                         <i class="bi bi-x-circle"></i> Rechazar
                     </button>
-                    <button type="button" class="novedad-modal-btn btn-success-corporate" id="certificadosAprobarBtn">
+                    <button type="button" class="btn-action btn-action-approve" id="certificadosAprobarBtn">
                         <i class="bi bi-check-circle"></i> Aprobar
                     </button>
-                    <button type="button" class="novedad-modal-btn btn-success-corporate" id="certificadosDescargarBtn" style="display:none;">
+                    <button type="button" class="btn-action btn-action-download" id="certificadosDescargarBtn" style="display:none;">
                         <i class="bi bi-download"></i> Descargar PDF
                     </button>
                 </div>
@@ -50,6 +56,11 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content novedad-modal">
             <div class="modal-header border-0 pb-0">
+                <!-- OJO: este ícono circular (.novedad-confirm-icon-success) es el
+                     mismo concepto que el .confirm-modal-icon global que ya dejamos
+                     definido en components.css — es una duplicación (punto 23 de tu
+                     spec). No lo cambié de clase para no romper el CSS de novedades
+                     que no he visto todavía; súbeme novedades.css y lo unifico. -->
                 <div class="novedad-confirm-icon novedad-confirm-icon-success mx-auto">
                     <i class="bi bi-check-lg"></i>
                 </div>
@@ -60,11 +71,11 @@
                 <p class="text-muted mb-0">El certificado será marcado como aprobado y se registrará la fecha de emisión.</p>
             </div>
             <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cancelar
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
-                <button type="button" class="novedad-modal-btn btn-success-corporate" id="certificadosConfirmApprove">
-                    <i class="bi bi-check-circle me-1"></i> Sí, aprobar
+                <button type="button" class="btn-action btn-action-approve" id="certificadosConfirmApprove">
+                    <i class="bi bi-check-circle"></i> Sí, aprobar
                 </button>
             </div>
         </div>
@@ -76,6 +87,8 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content novedad-modal">
             <div class="modal-body text-center pt-4">
+                <!-- Mismo caso: .novedad-confirm-icon-danger duplica
+                     .confirm-modal-icon--danger. Pendiente de unificar. -->
                 <div class="novedad-confirm-icon novedad-confirm-icon-danger mx-auto mb-3">
                     <i class="bi bi-x-lg"></i>
                 </div>
@@ -90,11 +103,11 @@
                 </div>
             </div>
             <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="novedad-modal-btn btn-outline-corporate" data-bs-dismiss="modal">
-                    Cancelar
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </button>
-                <button type="button" class="novedad-modal-btn btn-primary-corporate" id="certificadosConfirmReject">
-                    <i class="bi bi-x-circle me-1"></i> Rechazar certificado
+                <button type="button" class="btn-action btn-action-reject" id="certificadosConfirmReject">
+                    <i class="bi bi-x-circle"></i> Rechazar certificado
                 </button>
             </div>
         </div>

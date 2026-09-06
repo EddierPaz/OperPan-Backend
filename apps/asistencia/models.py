@@ -33,6 +33,18 @@ class Horario(models.Model):
         auto_now_add=True
     )
 
+    fecha_inicio = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Fecha en que inicia la asignación del horario."
+    )
+
+    fecha_fin = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Fecha en que finaliza la asignación del horario."
+    )
+
     ciclo_inicio = models.DateField(
         null=True,
         blank=True,

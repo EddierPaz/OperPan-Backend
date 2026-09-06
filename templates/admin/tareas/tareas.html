@@ -61,7 +61,7 @@
         // ==================== ABRIR MODAL DE ELIMINACIÓN ====================
         const confirmModal = document.getElementById('confirmModal');
         const deleteForm = document.getElementById('deleteForm');
-        const modalBody = document.getElementById('modalBodyText');
+        const modalTitle = document.getElementById('confirmModalTitle');
 
         if (confirmModal) {
             confirmModal.addEventListener('show.bs.modal', function(event) {
@@ -72,9 +72,9 @@
                 if (deleteForm) deleteForm.action = url;
 
                 const card = button.closest('.task-card');
-                if (card && modalBody) {
+                if (card && modalTitle) {
                     const titulo = card.querySelector('h5') ? card.querySelector('h5').innerText : 'esta tarea';
-                    modalBody.innerText = `¿Eliminar permanentemente la tarea "${titulo}"? Esta acción se registrará en auditoría.`;
+                    modalTitle.innerText = `¿Eliminar permanentemente la tarea "${titulo}"?`;
                 }
             });
         }

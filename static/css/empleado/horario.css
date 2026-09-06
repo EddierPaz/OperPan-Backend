@@ -1,0 +1,75 @@
+/* Días del calendario - Fondo pastel + borde según estado */
+.dia-card {
+    border: 2px solid #e5e7eb; /* Borde gris claro por defecto */
+    background: #ffffff;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dia-card-presente {
+    background: #dcfce7 !important;  /* Verde pastel */
+    border-color: var(--color-success) !important;
+}
+
+.dia-card-tarde {
+    background: #fef9c3 !important;  /* Amarillo pastel */
+    border-color: var(--color-warning) !important;
+}
+
+.dia-card-ausente {
+    background: #fee2e2 !important;  /* Rojo pastel */
+    border-color: var(--color-danger) !important;
+}
+
+.dia-card-descanso {
+    background: #dbeafe !important;  /* Azul pastel */
+    border-color: #3690A6 !important;
+}
+
+.dia-card-futuro {
+    background: #ffffff !important;
+    border-color: #e5e7eb !important;
+}
+
+.dia-card small {
+    display: block;
+    font-size: 0.65rem;
+    margin-top: 2px;
+    opacity: 0.8;
+}
+
+/* Leyenda */
+.leyenda-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+}
+
+.leyenda-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+.leyenda-color {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.05);
+    flex-shrink: 0;
+}
+
+.leyenda-presente { background: #dcfce7; border-color: var(--color-success); }
+.leyenda-tarde { background: #fef9c3; border-color: var(--color-warning); }
+.leyenda-ausente { background: #fee2e2; border-color: var(--color-danger); }
+.leyenda-descanso { background: #dbeafe; border-color: #3690A6; }
+.leyenda-futuro { background: #ffffff; border-color: #e5e7eb; }

@@ -70,8 +70,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 
-# ── Base de datos ─────────────────────────────
-# -- Modificacion para MAC (problema de credenciales de administrador para nosotros como aprendices)
+# Base de datos:
+
+
+# db.sqlite3 -- Esta base de datos aun le falta, pero puede funcionar para MAC
+    
+    # Modificacion para MAC
+        # Esto es optimo para trabajar en código desde dispositivos mac
+        
+        # Lo que se debe hacer es comentar y descomentar:
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -81,21 +89,30 @@ DATABASES = {
 
 
 
-# En caso de trabajar con windows:
+# XAMPP - unicamente funcional el windows:
+    # Esta BD es mejor para nutrirla y es la verdad al momento de ejecutar producción
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'operpan',
-#         'USER': 'operpan_user',
-#         'PASSWORD': 'Operpan123',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#         },
-#     }
-# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'operpan',
+
+#         # root es el usuario por defecto en xampp:
+#             # En el cambio del 4/09/2026 - Modifique a usuario y contraseña por defecto
+#             # En vez de tener un usuario de OperPan y una contraseña debido a que muchas veces
+#             # Los computadores pueden tener atributos que alteran los privilegios de usuarios en xampp sobre las db
+#             # Por ende es mejor tenerlo asi para tener un mejor flujo de trabajo:
+#         'USER': 'root',       
+
+#         # No tenemos contraseña para usar la por defecto   
+#         'PASSWORD': '',          
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
 
 
 
