@@ -8,6 +8,8 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/admin/asistencia.css' %}">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -15,20 +17,20 @@
 
   {% include "admin/asistencia/resumen_hoy.html" %}
 
-  <!-- Sección Historial de Asistencia -->
+  <!-- Sección Historial de Asistencia (ahora: empleados con gráficos) -->
   <div id="seccionHistorial">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-      <h3><i class="bi bi-clock-history me-2"></i>Historial de Asistencia</h3>
-      <span class="text-muted small">Total: {{ page_obj.paginator.count|default:0 }} registros</span>
+      <h3><i class="bi bi-people-fill me-2"></i>Resumen de empleados</h3>
+      <span class="text-muted small">{{ empleados_con_resumen|length }} empleados</span>
     </div>
 
     <!-- Filtros: Primera fila -->
     <div class="filtros-toolbar mb-3" id="filtrosHistorial">
       <div class="filtro-buscar">
         <i class="bi bi-search"></i>
-        <input type="text" id="buscarHistorial" placeholder="Buscar por nombre, fecha o estado..." autocomplete="off">
+        <input type="text" id="buscarEmpleado" placeholder="Buscar por nombre..." autocomplete="off">
       </div>
-      <!-- EMPLEADO (ID correcto: filtroEmpleado) -->
+      <!-- EMPLEADO (filtro por empleado específico) -->
       <div class="filtro-select-empleado">
         <select id="filtroEmpleado" class="form-select">
           <option value="">Todos los empleados</option>
@@ -39,7 +41,7 @@
       </div>
     </div>
 
-    <!-- Filtros: Segunda fila -->
+    <!-- Filtros: Segunda fila (ahora con MES) -->
     <div class="filtros-toolbar mb-4" id="filtrosHistorial2">
       <select id="filtroTurno" class="filtro-select">
         <option value="">Todos los turnos</option>
@@ -53,29 +55,56 @@
         <option value="TARDE">Tarde</option>
         <option value="AUSENTE">Ausente</option>
       </select>
+      <!-- NUEVO: Filtro de Mes (dropdown con últimos 12 meses) -->
+      <select id="filtroMes" class="filtro-select">
+        <option value="">Todos los meses</option>
+        {% for mes in meses_disponibles %}
+          <option value="{{ mes.valor }}">{{ mes.nombre }}</option>
+        {% endfor %}
+      </select>
       <button class="btn btn-outline-secondary filtro-btn-fecha" id="btnFechaUnica" data-bs-toggle="modal" data-bs-target="#modalFechaUnica">
         <i class="bi bi-calendar"></i> Fecha única
       </button>
       <button class="btn btn-outline-secondary filtro-btn-fecha" id="btnRangoFechas" data-bs-toggle="modal" data-bs-target="#modalRangoFechas">
         <i class="bi bi-calendar-range"></i> Rango
       </button>
-      <button type="button" id="limpiarFiltrosHistorial" class="filtro-btn-limpiar">
+      <button type="button" id="limpiarFiltrosEmpleados" class="filtro-btn-limpiar">
         Limpiar campos
       </button>
     </div>
 
-    <!-- Contenedor de cards (carga inicial) -->
-    <div id="historialWrapper">
-      {% include "admin/asistencia/historial_cards.html" %}
+    <!-- Grid de empleados (se actualizará vía AJAX al aplicar filtros) -->
+    <div id="empleadosWrapper">
+      <div class="row g-4" id="empleadosContainer">
+        {% for emp in empleados_con_resumen %}
+          <div class="col-12 col-md-6 col-lg-4 d-flex empleado-item"
+               data-nombre="{{ emp.nombre|lower }}"
+               data-id="{{ emp.id }}"
+               data-turno="{% for h in emp.horarios %}{{ h.turno }}{% if not forloop.last %},{% endif %}{% endfor %}"
+               data-cargo="{{ emp.cargo|lower }}">
+            {% include "admin/asistencia/empleado_card.html" with empleado=emp %}
+          </div>
+        {% empty %}
+          <div class="col-12">
+            <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
+              <i class="bi bi-inbox fs-3 d-block text-muted mb-2"></i>
+              No hay empleados registrados.
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 
-  <!-- Modales de fecha -->
+  <!-- Modales de fecha (sin cambios) -->
   {% include "admin/asistencia/modal_fecha_unica.html" %}
   {% include "admin/asistencia/modal_rango_fechas.html" %}
 
-  <!-- Modal de detalle de asistencia -->
+  <!-- Modal de detalle de asistencia (sin cambios) -->
   {% include "admin/asistencia/modal_detalle_asistencia.html" %}
+
+  <!-- NUEVO: Modal de historial de empleado -->
+  {% include "admin/asistencia/modal_historial_empleado.html" %}
 
 </main>
 {% endblock %}

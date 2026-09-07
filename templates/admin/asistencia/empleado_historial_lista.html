@@ -1,0 +1,42 @@
+{% load static %}
+<h5 class="text-center mb-3">Registros de asistencia</h5>
+<div class="table-responsive">
+  <table class="table table-custom align-middle">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Turno</th>
+        <th>Hora programada</th>
+        <th>Hora marcada</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for reg in registros %}
+      <tr>
+        <td>{{ reg.fecha }}</td>
+        <td><span class="badge badge-estado 
+          {% if reg.estado == 'Presente' %}badge-presente
+          {% elif reg.estado == 'Tarde' %}badge-tarde
+          {% elif reg.estado == 'Ausente' %}badge-ausente
+          {% else %}badge-sin-registro{% endif %}">
+          {{ reg.estado }}
+        </span></td>
+        <td>{{ reg.turno }}</td>
+        <td>{{ reg.hora_programada }}</td>
+        <td>{{ reg.hora_marcada }}</td>
+        <td>
+          <button class="btn-action btn-action-view btn-ver-detalle-lista" data-id="{{ reg.id }}" data-bs-toggle="modal" data-bs-target="#modalDetalleAsistencia">
+            <i class="bi bi-eye"></i>
+          </button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-muted">No hay registros con los filtros seleccionados.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

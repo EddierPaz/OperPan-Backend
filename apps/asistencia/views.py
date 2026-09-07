@@ -23,6 +23,9 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 
+
+# Fin de importaciones:
+
 def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asistencias=None, mostrar_relleno=True):
     if fecha_inicio is None:
         fecha_inicio = horario.ciclo_inicio or timezone.localdate()
@@ -282,27 +285,242 @@ def _contexto_base():
 
 
 
-# Cambio el 1 de sep para historial de asistencia con filtros y paginación
+# Cambio el 7 de sep para historial de asistencia con filtros y paginación
 
 @login_required
 @admin_required
 def asistencia_dashboard(request):
     # Obtener contexto base (día actual, KPIs, turnos, etc.)
     context = _contexto_base()
-
-    # Agregar histórico inicial (sin filtros, página 1)
-    historico = Asistencia.objects.select_related('horario__empleado').order_by('-fecha', '-hora_marcada')
-    paginator = Paginator(historico, 12)
-    page_obj = paginator.get_page(1)
-    context['page_obj'] = page_obj
-
-    # También pasar la lista de empleados para el filtro
-    context['empleados'] = PerfilEmpleado.objects.all().order_by('primer_nombre')
-
+    
+    # Obtener todos los empleados (activos e inactivos, pero con horario o sin él)
+    empleados = PerfilEmpleado.objects.all().order_by('primer_nombre')
+    
+    # Para cada empleado, calcular su resumen
+    empleados_con_resumen = []
+    for emp in empleados:
+        resumen = obtener_resumen_empleado(emp)
+        empleados_con_resumen.append({
+            'id': emp.id,
+            'nombre': emp.nombre_completo(),
+            'cargo': emp.get_cargo_display() or 'Sin cargo',
+            'resumen': resumen
+        })
+    
+    context['empleados_con_resumen'] = empleados_con_resumen
+    context['empleados'] = empleados  # Para el filtro de empleados (select)
+    
+    # Ya no necesitamos page_obj para el historial paginado
     return render(request, 'admin/asistencia/asistencia.html', context)
 
 
 # ---
+
+
+
+
+
+
+
+
+# Helper para obtener resumen de un empleado 
+    # Cambio del 7 de sep 26
+
+def obtener_resumen_empleado(empleado):
+    """
+    Calcula el resumen de asistencia para un empleado desde su fecha de ingreso (primer horario) hasta hoy.
+    Retorna un dict con conteos de: presente, tarde, ausente, descanso.
+    """
+    hoy = timezone.localdate()
+    
+    # Obtener el primer horario activo (o el más antiguo) para determinar fecha de inicio
+    primer_horario = Horario.objects.filter(empleado=empleado, estado=True).order_by('fecha_creacion').first()
+    if not primer_horario:
+        # Si no tiene horario, no hay datos de asistencia
+        return {'presente': 0, 'tarde': 0, 'ausente': 0, 'descanso': 0}
+    
+    fecha_inicio = primer_horario.fecha_creacion.date()  # o usar ciclo_inicio si existe
+    
+    # Obtener todas las asistencias del empleado desde esa fecha
+    asistencias = Asistencia.objects.filter(
+        horario__empleado=empleado,
+        fecha__gte=fecha_inicio,
+        fecha__lte=hoy
+    )
+    
+    # Conteos por estado
+    presente = asistencias.filter(estado='PRESENTE').count()
+    tarde = asistencias.filter(estado='TARDE').count()
+    ausente = asistencias.filter(estado='AUSENTE').count()
+    
+    # Contar descansos (días de descanso en el mismo período)
+    total_descansos = DescansoEmpleado.objects.filter(
+        horario__empleado=empleado,
+        fecha__gte=fecha_inicio,
+        fecha__lte=hoy,
+        es_descanso=True
+    ).count()
+    
+    return {
+        'presente': presente,
+        'tarde': tarde,
+        'ausente': ausente,
+        'descanso': total_descansos   # <--- CORREGIDO: usa total_descansos
+    }
+
+
+
+
+
+
+# 7sep/2026 Ahora bien, esta nueva función tiene mucha importancia ya que es fundamental para el modal:
+
+@login_required
+@admin_required
+def asistencia_empleado_historial(request, empleado_id):
+    """
+    Vista AJAX que devuelve HTML parcial para el modal de historial de un empleado,
+    mostrando calendario o lista según los filtros.
+    """
+    empleado = get_object_or_404(PerfilEmpleado, id=empleado_id)
+    
+    # Obtener parámetros GET
+    turno = request.GET.get('turno', '')
+    estado = request.GET.get('estado', '')
+    mes = request.GET.get('mes', '')  # formato 'YYYY-MM'
+    fecha_unica = request.GET.get('fecha_unica', '')
+    fecha_desde = request.GET.get('fecha_desde', '')
+    fecha_hasta = request.GET.get('fecha_hasta', '')
+    
+    # Determinar rango de fechas a mostrar
+    hoy = timezone.localdate()
+    if mes:
+        try:
+            año, mes_num = map(int, mes.split('-'))
+            primer_dia = date(año, mes_num, 1)
+            ultimo_dia = date(año, mes_num, calendar.monthrange(año, mes_num)[1])
+        except:
+            primer_dia = hoy.replace(day=1)
+            ultimo_dia = hoy
+    elif fecha_unica:
+        primer_dia = ultimo_dia = fecha_unica
+    elif fecha_desde and fecha_hasta:
+        primer_dia = fecha_desde
+        ultimo_dia = fecha_hasta
+    else:
+        # Por defecto: mes actual
+        primer_dia = hoy.replace(day=1)
+        ultimo_dia = hoy
+    
+    # Obtener horarios del empleado (activos e inactivos, para cubrir todo el período)
+    horarios = Horario.objects.filter(empleado=empleado)
+    
+    # Obtener asistencias en el rango
+    asistencias = Asistencia.objects.filter(
+        horario__empleado=empleado,
+        fecha__gte=primer_dia,
+        fecha__lte=ultimo_dia
+    ).select_related('horario')
+    
+    # Obtener descansos en el rango
+    descansos = DescansoEmpleado.objects.filter(
+        horario__empleado=empleado,
+        fecha__gte=primer_dia,
+        fecha__lte=ultimo_dia,
+        es_descanso=True
+    ).values_list('fecha', flat=True)
+    
+    # Aplicar filtros de turno y estado si están presentes
+    if turno:
+        asistencias = asistencias.filter(horario__turno=turno)
+    if estado:
+        asistencias = asistencias.filter(estado=estado)
+    
+    # Decidir si mostrar calendario o lista
+    # Mostrar lista si hay filtro de estado o turno específico (no "todos")
+    mostrar_lista = (estado and estado != '') or (turno and turno != '')
+    
+    if mostrar_lista:
+        # Construir lista de registros
+        registros = []
+        for asist in asistencias.order_by('-fecha', '-hora_marcada'):
+            registros.append({
+                'fecha': asist.fecha.strftime('%d/%m/%Y'),
+                'estado': asist.get_estado_display(),
+                'turno': asist.horario.get_turno_display(),
+                'hora_programada': asist.horario.hora_entrada.strftime('%H:%M') if asist.horario.hora_entrada else 'N/A',
+                'hora_marcada': asist.hora_marcada.strftime('%H:%M') if asist.hora_marcada else 'N/A',
+                'id': asist.id,
+            })
+        # Renderizar parcial de lista
+        html = render_to_string('admin/asistencia/empleado_historial_lista.html', {
+            'registros': registros,
+            'empleado': empleado,
+        }, request=request)
+    else:
+        # Construir calendario para el rango de fechas
+        # Generar todos los días del rango
+        dias = []
+        fecha_actual = primer_dia
+        while fecha_actual <= ultimo_dia:
+            # Verificar si es descanso
+            es_descanso = fecha_actual in descansos
+            
+            # Buscar asistencia para ese día (puede haber múltiples horarios, tomamos el primero)
+            asistencia = asistencias.filter(fecha=fecha_actual).first()
+            
+            estado_dia = 'no_aplica'
+            hora_entrada = 'N/A'
+            hora_salida = 'N/A'
+            
+            if es_descanso:
+                estado_dia = 'descanso'
+            elif asistencia:
+                if asistencia.estado == 'PRESENTE':
+                    estado_dia = 'presente'
+                elif asistencia.estado == 'TARDE':
+                    estado_dia = 'tarde'
+                elif asistencia.estado == 'AUSENTE':
+                    estado_dia = 'ausente'
+                # horas
+                if asistencia.hora_marcada:
+                    hora_entrada = asistencia.hora_marcada.strftime('%H:%M')
+                if asistencia.horario.hora_salida:
+                    hora_salida = asistencia.horario.hora_salida.strftime('%H:%M')
+                # Si es descanso, las horas no aplican
+            else:
+                # Día sin registro y sin descanso → no aplica
+                estado_dia = 'no_aplica'
+            
+            dias.append({
+                'fecha': fecha_actual,
+                'estado': estado_dia,
+                'hora_entrada': hora_entrada,
+                'hora_salida': hora_salida,
+                'es_descanso': es_descanso,
+                'id_asistencia': asistencia.id if asistencia else None,
+            })
+            fecha_actual += timedelta(days=1)
+        
+        # Renderizar parcial de calendario
+        html = render_to_string('admin/asistencia/empleado_historial_calendario.html', {
+            'dias': dias,
+            'empleado': empleado,
+            'mes_anio': primer_dia.strftime('%B %Y') if primer_dia.month == ultimo_dia.month else f"{primer_dia.strftime('%B')} - {ultimo_dia.strftime('%B %Y')}",
+        }, request=request)
+    
+    # Devolver JSON con el HTML y metadatos para el modal
+    return JsonResponse({
+        'html': html,
+        'empleado_nombre': empleado.nombre_completo(),
+        'empleado_cargo': empleado.get_cargo_display() or 'Sin cargo',
+    })
+
+
+
+
+
+    # Fin.
 
 
 

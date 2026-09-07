@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // 1. HELPER: MOSTRAR / OCLUTAR DÍAS CALENDARIO
+    // 1. FUNCIONES EXISTENTES (HORARIOS, CALENDARIOS, ETC.)
     // ==========================================
+
     function diasVisibles(turno) {
         return turno === "FIJO" ? 7 : 15;
     }
@@ -26,9 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
-    // 2. AUTOCOMPLETA CARGO DEL EMPLEADO (para horarios)
-    // ==========================================
+    // Autocompletar cargo al seleccionar empleado (para horarios)
     const empleadoSelect = document.getElementById("empleadoSelect");
     const cargoInput = document.getElementById("cargoInput");
     if (empleadoSelect && cargoInput) {
@@ -38,9 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
-    // 3. CALENDARIO Y HORARIOS — CREAR
-    // ==========================================
+    // Calendario para crear horario
     const turnoSelect = document.getElementById("turnoSelect");
     const horaEntrada = document.getElementById("horaEntrada");
     const horaSalida = document.getElementById("horaSalida");
@@ -85,9 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
-    // 4. LIMPIAR FORMULARIO CREAR
-    // ==========================================
+    // Limpiar formulario crear horario
     const btnLimpiar = document.getElementById("btnLimpiarHorario");
     if (btnLimpiar) {
         btnLimpiar.addEventListener("click", function () {
@@ -105,9 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
-    // 5. CALENDARIO — EDITAR
-    // ==========================================
+    // Calendario para editar horario
     const cicloEditar = document.getElementById("ciclo14x1Editar");
     const inputEditar = document.getElementById("fechaDescansoEditarInput");
     const labelEditar = document.getElementById("descansoEditarLabel");
@@ -132,9 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ==========================================
-    // 6. DELEGACIÓN DE EVENTOS (VER Y EDITAR MODALES DE HORARIOS)
-    // ==========================================
+    // Delegación para ver y editar horarios (modales)
     document.addEventListener("click", function (e) {
         const btnVer = e.target.closest(".btn-ver-horario");
         if (btnVer) {
@@ -206,11 +197,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert("No se pudo cargar la información para editar el horario.");
                 });
         }
+
+        // Eliminar horario
+        const btnEliminar = e.target.closest(".btn-eliminar-horario");
+        if (btnEliminar) {
+            e.preventDefault();
+            const id = btnEliminar.dataset.id;
+            const nombre = btnEliminar.dataset.empleado || "empleado";
+            const form = document.getElementById("formEliminarHorario");
+            if (form) {
+                form.action = "/asistencia/horarios/" + id + "/eliminar/";
+            }
+            const nombreSpan = document.getElementById("eliminar-empleado-nombre");
+            if (nombreSpan) {
+                nombreSpan.textContent = nombre;
+            }
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario"));
+            modal.show();
+        }
     });
 
-    // ==========================================
-    // 7. FILTROS DE BÚSQUEDA Y SELECCIÓN EN TABLA (existente)
-    // ==========================================
+    // Filtros de la tabla de horarios (existente)
     const filas = document.querySelectorAll("table.table-custom tbody tr");
     const inputBuscar = document.getElementById("buscarHorario");
     const selectTurno = document.getElementById("filtroTurno");
@@ -253,221 +260,295 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 8. ELIMINAR HORARIO
+    // 2. NUEVA FUNCIONALIDAD: EMPLEADOS Y GRÁFICOS
     // ==========================================
-    document.addEventListener("click", function (e) {
-        const btnEliminar = e.target.closest(".btn-eliminar-horario");
-        if (btnEliminar) {
-            e.preventDefault();
-            const id = btnEliminar.dataset.id;
-            const nombre = btnEliminar.dataset.empleado || "empleado";
-            const form = document.getElementById("formEliminarHorario");
-            if (form) {
-                form.action = "/asistencia/horarios/" + id + "/eliminar/";
+
+    // Inicializar gráficos de torta en cada card
+    function inicializarGraficos() {
+        document.querySelectorAll('.empleado-grafico canvas').forEach(function(canvas) {
+            const parent = canvas.closest('.asistencia-card-empleado');
+            if (!parent) return;
+            // Los datos están en el atributo data-resumen del contenedor padre
+            // Pero en el template los pasamos directamente en el contexto de Django,
+            // y lo insertamos como un atributo data-resumen en la card.
+            // Si no tenemos el atributo, podemos intentar leerlo de un script.
+            let data = {presente:0, tarde:0, ausente:0, descanso:0};
+            if (parent.dataset.resumen) {
+                try {
+                    data = JSON.parse(parent.dataset.resumen);
+                } catch(e) {}
             }
-            const nombreSpan = document.getElementById("eliminar-empleado-nombre");
-            if (nombreSpan) {
-                nombreSpan.textContent = nombre;
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Presente', 'Tarde', 'Ausente', 'Descanso'],
+                    datasets: [{
+                        data: [data.presente || 0, data.tarde || 0, data.ausente || 0, data.descanso || 0],
+                        backgroundColor: ['#28A745', '#FFC107', '#DC3545', '#2E86C1'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.raw || 0;
+                                    return label + ': ' + value;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        });
+    }
+
+    // ==========================================
+    // 3. FILTROS EN LA PÁGINA PRINCIPAL (empleados)
+    // ==========================================
+
+    const inputBuscarEmpleado = document.getElementById('buscarEmpleado');
+    const selectEmpleado = document.getElementById('filtroEmpleado');
+    const selectTurnoGeneral = document.getElementById('filtroTurno');
+    const selectEstadoGeneral = document.getElementById('filtroEstado');
+    const selectMesGeneral = document.getElementById('filtroMes');
+    const btnLimpiarGeneral = document.getElementById('limpiarFiltrosEmpleados');
+
+    function filtrarEmpleados() {
+        const texto = inputBuscarEmpleado.value.trim().toLowerCase();
+        const empleadoId = selectEmpleado.value;
+        // Los filtros de turno, estado y mes se aplican en el modal,
+        // no en la lista de empleados. Así que no los usamos aquí.
+        const items = document.querySelectorAll('.empleado-item');
+        items.forEach(function(item) {
+            let mostrar = true;
+            const nombre = item.dataset.nombre || '';
+            const id = item.dataset.id || '';
+
+            if (texto && !nombre.includes(texto)) {
+                mostrar = false;
             }
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario"));
-            modal.show();
-        }
+            if (empleadoId && id !== empleadoId) {
+                mostrar = false;
+            }
+            item.style.display = mostrar ? '' : 'none';
+        });
+    }
+
+    if (inputBuscarEmpleado) {
+        inputBuscarEmpleado.addEventListener('keyup', filtrarEmpleados);
+        inputBuscarEmpleado.addEventListener('input', filtrarEmpleados);
+    }
+    if (selectEmpleado) {
+        selectEmpleado.addEventListener('change', filtrarEmpleados);
+    }
+
+    if (btnLimpiarGeneral) {
+        btnLimpiarGeneral.addEventListener('click', function() {
+            if (inputBuscarEmpleado) inputBuscarEmpleado.value = '';
+            if (selectEmpleado) selectEmpleado.value = '';
+            if (selectTurnoGeneral) selectTurnoGeneral.value = '';
+            if (selectEstadoGeneral) selectEstadoGeneral.value = '';
+            if (selectMesGeneral) selectMesGeneral.value = '';
+            filtrarEmpleados();
+        });
+    }
+
+    // ==========================================
+    // 4. MODAL DE HISTORIAL DE EMPLEADO
+    // ==========================================
+
+    let empleadoIdActual = null;
+
+    // Al hacer clic en "Ver historial"
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-ver-historial');
+        if (!btn) return;
+        empleadoIdActual = btn.dataset.empleadoId;
+        // Cargar contenido del modal
+        cargarHistorialEmpleado(empleadoIdActual);
     });
 
-    // ==========================================
-    // 9. NUEVA FUNCIONALIDAD: HISTORIAL Y FILTROS
-    // ==========================================
-    const wrapper = document.getElementById('historialWrapper');
-    if (!wrapper) return;
+    function cargarHistorialEmpleado(empleadoId, params = {}) {
+        const contenedor = document.getElementById('contenidoHistorialEmpleado');
+        if (!contenedor) return;
+        // Mostrar spinner
+        contenedor.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
-    const inputBuscarHistorial = document.getElementById('buscarHistorial');
-    const selectTurnoHistorial = document.getElementById('filtroTurno');
-    const selectEstadoHistorial = document.getElementById('filtroEstado');
-    const selectEmpleadoHistorial = document.getElementById('filtroEmpleado'); 
-    const btnLimpiarHistorial = document.getElementById('limpiarFiltrosHistorial');
-    const seccionHistorial = document.getElementById('seccionHistorial');
+        // Construir URL con parámetros
+        let url = '/asistencia/empleado_historial/' + empleadoId + '/?';
+        const turno = document.getElementById('filtroTurnoInterno')?.value || '';
+        const estado = document.getElementById('filtroEstadoInterno')?.value || '';
+        const mes = document.getElementById('filtroMesInterno')?.value || '';
+        const fechaUnica = document.getElementById('fechaUnicaSeleccionadaInterna')?.value || '';
+        const fechaDesde = document.getElementById('fechaDesdeSeleccionadaInterna')?.value || '';
+        const fechaHasta = document.getElementById('fechaHastaSeleccionadaInterna')?.value || '';
 
-    function cargarHistorial(page = 1) {
-        const busqueda = inputBuscarHistorial.value.trim();
-        const turno = selectTurnoHistorial.value;
-        const estado = selectEstadoHistorial.value;
-        const empleado = selectEmpleadoHistorial.value;
-
-        const fechaUnica = document.getElementById('fechaUnicaSeleccionada')?.value || '';
-        const fechaDesde = document.getElementById('fechaDesdeSeleccionada')?.value || '';
-        const fechaHasta = document.getElementById('fechaHastaSeleccionada')?.value || '';
-
-        const params = new URLSearchParams();
-        params.append('page', page);
-        if (busqueda) params.append('busqueda', busqueda);
-        if (turno) params.append('turno', turno);
-        if (estado) params.append('estado', estado);
-        if (empleado) params.append('empleado', empleado); // IMPORTANTE: enviar 'empleado' (singular)
-        if (fechaUnica) params.append('fecha_unica', fechaUnica);
-        if (fechaDesde) params.append('fecha_desde', fechaDesde);
-        if (fechaHasta) params.append('fecha_hasta', fechaHasta);
-
-        const url = window.location.pathname + 'historico/?' + params.toString();
+        const paramsArray = [];
+        if (turno) paramsArray.push('turno=' + turno);
+        if (estado) paramsArray.push('estado=' + estado);
+        if (mes) paramsArray.push('mes=' + mes);
+        if (fechaUnica) paramsArray.push('fecha_unica=' + fechaUnica);
+        if (fechaDesde) paramsArray.push('fecha_desde=' + fechaDesde);
+        if (fechaHasta) paramsArray.push('fecha_hasta=' + fechaHasta);
+        url += paramsArray.join('&');
 
         fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.text())
-        .then(html => {
-            if (wrapper) {
-                wrapper.innerHTML = html;
+        .then(response => response.json())
+        .then(data => {
+            // Actualizar título del modal
+            document.getElementById('modalHistorialTitulo').textContent = 'Historial de Asistencia de ' + data.empleado_nombre;
+            document.getElementById('modalHistorialSubTitulo').textContent = data.empleado_cargo || '';
+            // Insertar HTML
+            contenedor.innerHTML = data.html;
+            // Re-asignar eventos a los días del calendario (si es calendario)
+            if (data.html.includes('dia-calendario')) {
+                document.querySelectorAll('.dia-calendario').forEach(function(el) {
+                    el.addEventListener('click', function() {
+                        const idAsistencia = this.dataset.idAsistencia;
+                        const fecha = this.dataset.fecha;
+                        const estadoDia = this.dataset.estado;
+                        if (idAsistencia) {
+                            // Abrir modal de detalle con el id de asistencia
+                            abrirDetalleAsistencia(idAsistencia);
+                        } else {
+                            // Si no tiene id, mostrar mensaje de que no hay registro
+                            alert('No hay registro de asistencia para esta fecha.');
+                        }
+                    });
+                });
             }
-            if (window.history && window.history.pushState) {
-                const newUrl = window.location.pathname + '?' + params.toString();
-                window.history.pushState({}, '', newUrl);
-            }
-            if (seccionHistorial) {
-                seccionHistorial.scrollIntoView({ behavior: 'smooth' });
-            }
+            // Re-asignar eventos a los botones de ver detalle en la lista
+            document.querySelectorAll('.btn-ver-detalle-lista').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const id = this.dataset.id;
+                    if (id) {
+                        abrirDetalleAsistencia(id);
+                    }
+                });
+            });
         })
         .catch(error => {
             console.error('Error al cargar historial:', error);
+            contenedor.innerHTML = '<div class="alert alert-danger">Error al cargar los datos. Intenta de nuevo.</div>';
         });
     }
 
-    // Debounce para búsqueda
-    let timeoutId = null;
-    if (inputBuscarHistorial) {
-        inputBuscarHistorial.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                cargarHistorial(1);
-            }, 300);
-        });
+    // Función para abrir el modal de detalle de asistencia
+    function abrirDetalleAsistencia(asistenciaId) {
+        // Obtener datos de la asistencia vía AJAX (o desde la card si está disponible)
+        // Como no tenemos un endpoint específico, podemos usar el mismo que antes,
+        // pero necesitamos crear uno o usar los datos ya presentes en la card.
+        // Para simplificar, usamos fetch a un nuevo endpoint (debes crearlo en views.py)
+        // o podemos usar los datos que ya tenemos en el DOM.
+        // Por ahora, mostramos un mensaje con el ID.
+        alert('Ver detalle de asistencia ID: ' + asistenciaId);
+        // Idealmente, deberías implementar un endpoint que devuelva los detalles en JSON
+        // y luego llenar el modal con esos datos.
+        // Ejemplo:
+        // fetch('/asistencia/asistencia_detalle/' + asistenciaId + '/')
+        //   .then(response => response.json())
+        //   .then(data => { ... llenar modal ... })
+        //   .catch(error => console.error(error));
     }
 
-    // Eventos de selects (turno, estado, empleado)
-    if (selectTurnoHistorial) {
-        selectTurnoHistorial.addEventListener('change', function() {
-            cargarHistorial(1);
-        });
-    }
-    if (selectEstadoHistorial) {
-        selectEstadoHistorial.addEventListener('change', function() {
-            cargarHistorial(1);
-        });
-    }
-    if (selectEmpleadoHistorial) {
-        selectEmpleadoHistorial.addEventListener('change', function() {
-            cargarHistorial(1);
-        });
-    }
-
-    // Botón limpiar
-    if (btnLimpiarHistorial) {
-        btnLimpiarHistorial.addEventListener('click', function() {
-            if (inputBuscarHistorial) inputBuscarHistorial.value = '';
-            if (selectTurnoHistorial) selectTurnoHistorial.value = '';
-            if (selectEstadoHistorial) selectEstadoHistorial.value = '';
-            if (selectEmpleadoHistorial) selectEmpleadoHistorial.value = '';
-            const fechaUnicaInput = document.getElementById('fechaUnicaSeleccionada');
-            if (fechaUnicaInput) fechaUnicaInput.value = '';
-            const fechaDesdeInput = document.getElementById('fechaDesdeSeleccionada');
-            if (fechaDesdeInput) fechaDesdeInput.value = '';
-            const fechaHastaInput = document.getElementById('fechaHastaSeleccionada');
-            if (fechaHastaInput) fechaHastaInput.value = '';
-            cargarHistorial(1);
-        });
-    }
-
-    // Paginación: delegación de eventos para clics en números
-    document.addEventListener('click', function(e) {
-        const link = e.target.closest('.page-link[data-page]');
-        if (link) {
-            e.preventDefault();
-            const page = link.getAttribute('data-page');
-            if (page) {
-                cargarHistorial(parseInt(page));
-            }
+    // Eventos de filtros internos del modal (cambios)
+    document.querySelectorAll('#filtroTurnoInterno, #filtroEstadoInterno, #filtroMesInterno').forEach(function(el) {
+        if (el) {
+            el.addEventListener('change', function() {
+                if (empleadoIdActual) {
+                    cargarHistorialEmpleado(empleadoIdActual);
+                }
+            });
         }
     });
 
-    // ==========================================
-    // 10. MODALES DE FECHA
-    // ==========================================
-    const aplicarFechaUnica = document.getElementById('aplicarFechaUnica');
-    if (aplicarFechaUnica) {
-        aplicarFechaUnica.addEventListener('click', function() {
-            const input = document.getElementById('fechaUnicaInput');
-            if (input && input.value) {
-                document.getElementById('fechaUnicaSeleccionada').value = input.value;
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalFechaUnica'));
-                if (modal) modal.hide();
-                cargarHistorial(1);
-            } else {
-                alert('Por favor selecciona una fecha.');
-            }
-        });
-    }
+    // Botón limpiar filtros internos
+    document.getElementById('limpiarFiltrosInternos')?.addEventListener('click', function() {
+        document.getElementById('filtroTurnoInterno').value = '';
+        document.getElementById('filtroEstadoInterno').value = '';
+        document.getElementById('filtroMesInterno').value = '';
+        document.getElementById('fechaUnicaSeleccionadaInterna').value = '';
+        document.getElementById('fechaDesdeSeleccionadaInterna').value = '';
+        document.getElementById('fechaHastaSeleccionadaInterna').value = '';
+        if (empleadoIdActual) {
+            cargarHistorialEmpleado(empleadoIdActual);
+        }
+    });
 
-    const aplicarRango = document.getElementById('aplicarRangoFechas');
-    if (aplicarRango) {
-        aplicarRango.addEventListener('click', function() {
-            const desde = document.getElementById('fechaDesdeInput');
-            const hasta = document.getElementById('fechaHastaInput');
-            if (desde && hasta && desde.value && hasta.value) {
-                if (desde.value <= hasta.value) {
-                    document.getElementById('fechaDesdeSeleccionada').value = desde.value;
-                    document.getElementById('fechaHastaSeleccionada').value = hasta.value;
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalRangoFechas'));
-                    if (modal) modal.hide();
-                    cargarHistorial(1);
-                } else {
-                    alert('La fecha "Desde" debe ser anterior a "Hasta".');
+    // Fechas internas (aplicar)
+    document.getElementById('aplicarFechaUnicaInterna')?.addEventListener('click', function() {
+        const input = document.getElementById('fechaUnicaInputInterna');
+        if (input && input.value) {
+            document.getElementById('fechaUnicaSeleccionadaInterna').value = input.value;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalFechaUnicaInterna'));
+            if (modal) modal.hide();
+            if (empleadoIdActual) {
+                cargarHistorialEmpleado(empleadoIdActual);
+            }
+        } else {
+            alert('Por favor selecciona una fecha.');
+        }
+    });
+
+    document.getElementById('aplicarRangoFechasInterno')?.addEventListener('click', function() {
+        const desde = document.getElementById('fechaDesdeInputInterna');
+        const hasta = document.getElementById('fechaHastaInputInterna');
+        if (desde && hasta && desde.value && hasta.value) {
+            if (desde.value <= hasta.value) {
+                document.getElementById('fechaDesdeSeleccionadaInterna').value = desde.value;
+                document.getElementById('fechaHastaSeleccionadaInterna').value = hasta.value;
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalRangoFechasInterno'));
+                if (modal) modal.hide();
+                if (empleadoIdActual) {
+                    cargarHistorialEmpleado(empleadoIdActual);
                 }
             } else {
-                alert('Por favor selecciona ambas fechas.');
+                alert('La fecha "Desde" debe ser anterior a "Hasta".');
             }
-        });
-    }
-
-    // ==========================================
-    // 11. MODAL DE DETALLE DE ASISTENCIA
-    // ==========================================
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.btn-ver-detalle');
-        if (!btn) return;
-        const card = btn.closest('.asistencia-card');
-        if (!card) return;
-
-        const empleado = card.dataset.empleado || 'Sin nombre';
-        const fecha = card.dataset.fecha || '';
-        const turno = card.dataset.turno || '';
-        const estado = card.dataset.estado || 'Sin registrar';
-        const estadoClase = card.dataset.estadoClase || 'sin-registro';
-        const horaProgramada = card.dataset.horaProgramada || '';
-        const horaMarcada = card.dataset.horaMarcada || 'Sin marcar';
-        const cargo = card.dataset.cargo || 'Sin cargo';
-
-        document.getElementById('detalleEmpleadoNombre').textContent = empleado;
-        document.getElementById('detalleFecha').textContent = fecha;
-        document.getElementById('detalleTurno').textContent = turno;
-        document.getElementById('detalleCargo').textContent = cargo;
-        document.getElementById('detalleHoraProgramada').textContent = horaProgramada;
-        document.getElementById('detalleHoraMarcada').textContent = horaMarcada;
-
-        // Estado con badge
-        const estadoBadge = document.createElement('span');
-        estadoBadge.className = 'badge badge-estado';
-        if (estadoClase === 'presente') {
-            estadoBadge.classList.add('badge-presente');
-        } else if (estadoClase === 'tarde') {
-            estadoBadge.classList.add('badge-tarde');
-        } else if (estadoClase === 'ausente') {
-            estadoBadge.classList.add('badge-ausente');
         } else {
-            estadoBadge.classList.add('badge-sin-registro');
+            alert('Por favor selecciona ambas fechas.');
         }
-        estadoBadge.textContent = estado;
-        const estadoContainer = document.getElementById('detalleEstado');
-        estadoContainer.innerHTML = '';
-        estadoContainer.appendChild(estadoBadge);
     });
+
+    // Rellenar dropdown de meses internos (últimos 12 meses)
+    function llenarMesesInternos() {
+        const select = document.getElementById('filtroMesInterno');
+        if (!select) return;
+        // Limpiar opciones excepto la primera (opcional)
+        select.innerHTML = '';
+        const hoy = new Date();
+        for (let i = 0; i < 12; i++) {
+            const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+            const valor = fecha.getFullYear() + '-' + String(fecha.getMonth() + 1).padStart(2, '0');
+            const nombre = fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            const option = document.createElement('option');
+            option.value = valor;
+            option.textContent = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+            select.appendChild(option);
+        }
+    }
+    llenarMesesInternos();
+
+    // ==========================================
+    // 5. INICIALIZACIÓN
+    // ==========================================
+    inicializarGraficos();
+
+    console.log('Asistencia - Nuevo módulo de empleados cargado.');
 });

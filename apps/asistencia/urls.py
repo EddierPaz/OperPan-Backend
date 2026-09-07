@@ -83,4 +83,11 @@ urlpatterns = [
         'empleado/horario/<int:id>/detalle/', 
         views.empleado_horario_detalle, 
         name='empleado_horario_detalle'),
+
+    # Función para el modal.
+    path(
+        "empleado_historial/<int:empleado_id>/",
+        views.asistencia_empleado_historial,
+        name="asistencia_empleado_historial"
+    ),
 ]

@@ -418,3 +418,135 @@
         gap: 5px;
     }
 }
+
+
+
+
+
+
+
+
+
+
+/* ==============================================
+   NUEVOS ESTILOS: CARDS DE EMPLEADOS Y MODAL
+
+    Cambio del 7 de septiembre 2026 - santiagoencodigo
+
+   ============================================== */
+
+/* Cards de empleados */
+.asistencia-card-empleado {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 1.5rem 1.2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #EDF2F7;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.asistencia-card-empleado:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+}
+.empleado-nombre {
+    font-size: 1.1rem;
+    color: #000000;
+}
+.empleado-grafico canvas {
+    max-width: 120px;
+    max-height: 120px;
+}
+
+/* CALENDARIO dentro del modal */
+.calendario-grid-empleado .dia-calendario {
+    background: #F1F5F9;
+    border-radius: 12px;
+    padding: 6px 4px;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    border: 2px solid transparent;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+.dia-calendario:hover {
+    transform: scale(1.05);
+    border-color: #A40706;
+}
+.dia-numero {
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.2;
+}
+.dia-info {
+    font-size: 0.6rem;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+/* Colores de los días (fondo suave, borde más intenso) */
+.dia-presente {
+    background: #D4EDDA;
+    border-color: #28A745;
+}
+.dia-tarde {
+    background: #FFF3CD;
+    border-color: #FFC107;
+}
+.dia-ausente {
+    background: #F8D7DA;
+    border-color: #DC3545;
+}
+.dia-descanso {
+    background: #D6EAF8;
+    border-color: #2E86C1;
+}
+.dia-no-aplica {
+    background: #E9ECEF;
+    border-color: #ADB5BD;
+}
+
+/* Leyenda de colores */
+.leyenda-colores {
+    font-size: 0.85rem;
+}
+.leyenda-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.color-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+.color-presente { background: #28A745; }
+.color-tarde { background: #FFC107; }
+.color-ausente { background: #DC3545; }
+.color-no-aplica { background: #ADB5BD; }
+.color-descanso { background: #2E86C1; }
+
+/* Responsive: ajuste de columnas para el grid de empleados */
+@media (max-width: 992px) {
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+@media (max-width: 576px) {
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
