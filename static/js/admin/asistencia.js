@@ -268,24 +268,36 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.empleado-grafico canvas').forEach(function(canvas) {
             const parent = canvas.closest('.asistencia-card-empleado');
             if (!parent) return;
-            // Los datos están en el atributo data-resumen del contenedor padre
-            // Pero en el template los pasamos directamente en el contexto de Django,
-            // y lo insertamos como un atributo data-resumen en la card.
-            // Si no tenemos el atributo, podemos intentar leerlo de un script.
-            let data = {presente:0, tarde:0, ausente:0, descanso:0};
+            
+            let data = {presente: 0, tarde: 0, ausente: 0, descanso: 0};
             if (parent.dataset.resumen) {
                 try {
                     data = JSON.parse(parent.dataset.resumen);
-                } catch(e) {}
+                } catch(e) {
+                    console.warn('Error al parsear resumen:', e);
+                }
             }
+            
+            // Si todos los valores son 0, mostrar un gráfico con un solo sector gris para indicar "sin datos"
+            const total = data.presente + data.tarde + data.ausente + data.descanso;
+            let chartData, chartColors;
+            if (total === 0) {
+                chartData = [1];
+                chartColors = ['#E9ECEF'];
+                // Las etiquetas no se mostrarán porque legend: false
+            } else {
+                chartData = [data.presente || 0, data.tarde || 0, data.ausente || 0, data.descanso || 0];
+                chartColors = ['#28A745', '#FFC107', '#DC3545', '#2E86C1'];
+            }
+            
             const ctx = canvas.getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Presente', 'Tarde', 'Ausente', 'Descanso'],
                     datasets: [{
-                        data: [data.presente || 0, data.tarde || 0, data.ausente || 0, data.descanso || 0],
-                        backgroundColor: ['#28A745', '#FFC107', '#DC3545', '#2E86C1'],
+                        data: chartData,
+                        backgroundColor: chartColors,
                         borderWidth: 2,
                         borderColor: '#ffffff'
                     }]
@@ -300,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
+                                    if (total === 0) return 'Sin datos';
                                     let label = context.label || '';
                                     let value = context.raw || 0;
                                     return label + ': ' + value;

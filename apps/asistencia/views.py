@@ -1,28 +1,32 @@
-from datetime import date, timedelta
-from datetime import datetime, time
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
-from django.utils import timezone
-from apps.usuarios.models import PerfilEmpleado
-from apps.usuarios.decorators import admin_required
+# =============================================================================
+# IMPORTS ESTÁNDAR DE PYTHON
+# =============================================================================
+import calendar                     # Para operaciones con meses (último día del mes)
+from datetime import date, timedelta, datetime, time   # Manejo de fechas y horas
+import json
+
+# =============================================================================
+# IMPORTS DE DJANGO CORE
+# =============================================================================
+from django.contrib import messages                     # Mensajes flash (notificaciones)
+from django.contrib.auth.decorators import login_required   # Decorador para vistas protegidas
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger   # Paginación (aunque ya no se usa para el listado, se mantiene por si acaso)
+from django.db.models import Q                          # Consultas complejas (OR, AND)
+from django.http import JsonResponse                    # Respuestas JSON para AJAX
+from django.shortcuts import get_object_or_404, redirect, render   # Atajos de renderizado
+from django.template.loader import render_to_string     # Renderizar templates a string (para AJAX)
+from django.urls import reverse                         # Generar URLs inversas
+from django.utils import timezone                       # Zona horaria y fechas locales
+
+# =============================================================================
+# IMPORTS DE APPS DEL PROYECTO
+# =============================================================================
+from apps.usuarios.models import PerfilEmpleado         # Modelo de empleado
+from apps.usuarios.decorators import admin_required     # Decorador para restringir a admin
+from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin  # Envío de emails
+
+# Modelos locales
 from .models import Asistencia, DescansoEmpleado, Horario
-
-# Importación para Busqueda de filtro
-from django.db.models import Q
-
-
-# ---
-
-# La importacion paginator sirve para el historial de asistencia 
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.template.loader import render_to_string
-from django.db.models import Q
-from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
-
 
 # Fin de importaciones:
 
@@ -304,13 +308,13 @@ def asistencia_dashboard(request):
             'id': emp.id,
             'nombre': emp.nombre_completo(),
             'cargo': emp.get_cargo_display() or 'Sin cargo',
-            'resumen': resumen
+            'resumen': resumen,
+            'resumen_json': json.dumps(resumen)  # <--- NUEVO: JSON string para el atributo data
         })
     
     context['empleados_con_resumen'] = empleados_con_resumen
     context['empleados'] = empleados  # Para el filtro de empleados (select)
     
-    # Ya no necesitamos page_obj para el historial paginado
     return render(request, 'admin/asistencia/asistencia.html', context)
 
 
@@ -328,18 +332,27 @@ def asistencia_dashboard(request):
 
 def obtener_resumen_empleado(empleado):
     """
-    Calcula el resumen de asistencia para un empleado desde su fecha de ingreso (primer horario) hasta hoy.
+    Calcula el resumen de asistencia para un empleado.
+    Usa como fecha de inicio la fecha_ingreso del empleado (campo en PerfilEmpleado).
+    Si no tiene fecha_ingreso, usa la fecha del primer horario activo.
     Retorna un dict con conteos de: presente, tarde, ausente, descanso.
     """
     hoy = timezone.localdate()
     
-    # Obtener el primer horario activo (o el más antiguo) para determinar fecha de inicio
-    primer_horario = Horario.objects.filter(empleado=empleado, estado=True).order_by('fecha_creacion').first()
-    if not primer_horario:
-        # Si no tiene horario, no hay datos de asistencia
-        return {'presente': 0, 'tarde': 0, 'ausente': 0, 'descanso': 0}
+    # 1. Intentar usar fecha_ingreso del empleado
+    fecha_inicio = empleado.fecha_ingreso
+    if not fecha_inicio:
+        # Fallback: primer horario activo
+        primer_horario = Horario.objects.filter(empleado=empleado, estado=True).order_by('fecha_creacion').first()
+        if primer_horario:
+            fecha_inicio = primer_horario.fecha_creacion.date()
+        else:
+            # Sin horario y sin fecha de ingreso → sin datos
+            return {'presente': 0, 'tarde': 0, 'ausente': 0, 'descanso': 0}
     
-    fecha_inicio = primer_horario.fecha_creacion.date()  # o usar ciclo_inicio si existe
+    # Asegurar que la fecha de inicio no sea posterior a hoy
+    if fecha_inicio > hoy:
+        fecha_inicio = hoy
     
     # Obtener todas las asistencias del empleado desde esa fecha
     asistencias = Asistencia.objects.filter(
@@ -365,7 +378,7 @@ def obtener_resumen_empleado(empleado):
         'presente': presente,
         'tarde': tarde,
         'ausente': ausente,
-        'descanso': total_descansos   # <--- CORREGIDO: usa total_descansos
+        'descanso': total_descansos
     }
 
 

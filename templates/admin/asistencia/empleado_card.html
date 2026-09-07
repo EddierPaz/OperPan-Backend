@@ -1,5 +1,6 @@
 {% load static %}
-<div class="asistencia-card-empleado card border-0 shadow-sm rounded-4 p-3 w-100">
+<div class="asistencia-card-empleado card border-0 shadow-sm rounded-4 p-3 w-100"
+     data-resumen="{{ empleado.resumen_json }}">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 class="empleado-nombre fw-bold m-0 text-truncate" title="{{ empleado.nombre }}">
       {{ empleado.nombre }}
