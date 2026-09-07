@@ -114,7 +114,8 @@ html body #navbar.navbar.scrolled .logo-text small {
 .logo-icon img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /*para que no se deforme*/
+  display:block;
 }
 
 .logo-text {
@@ -888,6 +889,51 @@ html body .navbar .btn-nav-login:hover,
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================================
    7. DESARROLLADORES (ALTURA FIJA, SOLO ANCHO VARIABLE)
    ========================================================================== */
@@ -903,8 +949,8 @@ html body .navbar .btn-nav-login:hover,
   gap: 20px;
   justify-content: center;
   align-items: stretch;
-  height: 500px;        /* ← altura fija */
-  min-height: 500px;    /* refuerzo */
+  height: 500px;
+  min-height: 500px;
 }
 
 .team-card {
@@ -912,12 +958,12 @@ html body .navbar .btn-nav-login:hover,
   border-radius: 16px;
   overflow: hidden;
   position: relative;
-  background: var(--gris-oscuro);
+  background: red;
   transition: flex 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  height: 100%;         /* ← ocupa toda la altura del contenedor */
-  min-height: 100%;     /* refuerzo */
+  box-shadow: 0 4px 16px rgba(138, 20, 20, 0.06);
+  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -929,15 +975,16 @@ html body .navbar .btn-nav-login:hover,
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
-  background-position: center 20%;
+ background-size: cover;   /* ← antes era contain */
+  background-position: center;
+  background-repeat: no-repeat;
   transition: transform 0.6s, filter 0.6s;
   z-index: 0;
   filter: brightness(0.9);
 }
 
 .team-card.active .team-card-bg {
-  transform: scale(1.05);
+  transform: scale(1.02);       /* ← CAMBIO: zoom más sutil (antes 1.05) */
   filter: brightness(0.7);
 }
 
@@ -972,8 +1019,8 @@ html body .navbar .btn-nav-login:hover,
   transform: translateY(20px);
   transition: opacity 0.4s 0.1s, transform 0.4s 0.1s;
   pointer-events: none;
-  overflow-y: auto;          /* ← scroll interno */
-  max-height: 100%;          /* ← no crece más allá del contenedor */
+  overflow-y: auto;
+  max-height: 100%;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
@@ -1051,21 +1098,21 @@ html body .navbar .btn-nav-login:hover,
   margin-top: auto;
   opacity: 0;
   transition: opacity 0.3s 0.2s;
-  flex-shrink: 0;  /* ← evita que se encoja al haber scroll */
+  flex-shrink: 0;
 }
 
 .team-card.active .team-card-footer {
   opacity: 1;
 }
 
-/* Expansión por clase active (solo ancho) */
+/* Expansión por clase active (más sutil) */
 .team-cards-desktop .team-card {
   flex: 1;
   transition: flex 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .team-cards-desktop .team-card.active {
-  flex: 2.5;
+  flex: 1.8;          /* ← CAMBIO: expansión más sutil (antes 2.5) */
 }
 
 .team-cards-desktop .team-card:not(.active) {
@@ -1105,6 +1152,31 @@ html body .navbar .btn-nav-login:hover,
   color: #fff;
   transform: rotate(45deg);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ==========================================================================
    Mobile: Acordeón (sin cambios)
