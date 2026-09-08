@@ -394,17 +394,33 @@ document.addEventListener('DOMContentLoaded', function () {
     let empleadoIdActual = null;
     let modalHistorialInstance = null;
     let modalDetalleInstance = null;
+    let modalFechaInstance = null;
 
-    // Obtener referencia al modal de historial
     const modalHistorialElement = document.getElementById('modalHistorialEmpleado');
     if (modalHistorialElement) {
         modalHistorialInstance = new bootstrap.Modal(modalHistorialElement, {
             backdrop: 'static',
             keyboard: true
         });
+
+        modalHistorialElement.addEventListener('hidden.bs.modal', function () {
+            if (!modalFechaInstance) {
+                document.getElementById('filtroTurnoInterno').value = '';
+                document.getElementById('filtroEstadoInterno').value = '';
+                document.getElementById('fechaUnicaSeleccionadaHistorial').value = '';
+                document.getElementById('fechaDesdeSeleccionadaHistorial').value = '';
+                document.getElementById('fechaHastaSeleccionadaHistorial').value = '';
+                const fechaUnicaInput = document.getElementById('fechaUnicaInputHistorial');
+                if (fechaUnicaInput) fechaUnicaInput.value = '';
+                const fechaDesdeInput = document.getElementById('fechaDesdeInputHistorial');
+                if (fechaDesdeInput) fechaDesdeInput.value = '';
+                const fechaHastaInput = document.getElementById('fechaHastaInputHistorial');
+                if (fechaHastaInput) fechaHastaInput.value = '';
+                empleadoIdActual = null;
+            }
+        });
     }
 
-    // Obtener referencia al modal de detalle
     const modalDetalleElement = document.getElementById('modalDetalleAsistencia');
     if (modalDetalleElement) {
         modalDetalleInstance = new bootstrap.Modal(modalDetalleElement, {
@@ -417,7 +433,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const btn = e.target.closest('.btn-ver-historial');
         if (!btn) return;
         empleadoIdActual = btn.dataset.empleadoId;
-        // Abrir modal de historial (si ya está abierto, no importa)
         cargarHistorialEmpleado(empleadoIdActual);
     });
 
@@ -426,13 +441,25 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!contenedor) return;
         contenedor.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
-        let url = '/asistencia/empleado_historial/' + empleadoId + '/?';
         const turno = document.getElementById('filtroTurnoInterno')?.value || '';
         const estado = document.getElementById('filtroEstadoInterno')?.value || '';
+        const fechaUnica = document.getElementById('fechaUnicaSeleccionadaHistorial')?.value || '';
+        const fechaDesde = document.getElementById('fechaDesdeSeleccionadaHistorial')?.value || '';
+        const fechaHasta = document.getElementById('fechaHastaSeleccionadaHistorial')?.value || '';
 
+        let url = '/asistencia/empleado_historial/' + empleadoId + '/?';
         const params = [];
+
+        if (fechaUnica) {
+            params.push('fecha_unica=' + fechaUnica);
+        } else if (fechaDesde && fechaHasta) {
+            params.push('fecha_desde=' + fechaDesde);
+            params.push('fecha_hasta=' + fechaHasta);
+        }
+
         if (turno) params.push('turno=' + turno);
         if (estado) params.push('estado=' + estado);
+
         url += params.join('&');
 
         fetch(url, {
@@ -444,28 +471,24 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('modalHistorialSubTitulo').textContent = data.empleado_cargo || '';
             contenedor.innerHTML = data.html;
 
-            // Mostrar el modal de historial
             if (modalHistorialInstance) {
                 modalHistorialInstance.show();
             }
 
-            // Eventos para botones "Ver detalle" en la tabla
             document.querySelectorAll('.btn-ver-detalle-lista').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
                     if (id) {
-                        // Cerrar modal de historial antes de abrir detalle
                         if (modalHistorialInstance) {
                             modalHistorialInstance.hide();
                         }
-                        // Abrir detalle
                         abrirDetalleAsistencia(id);
                     }
                 });
             });
         })
-        .catch(error => {
+        .catch(function(error) {
             console.error('Error al cargar historial:', error);
             contenedor.innerHTML = '<div class="alert alert-danger">Error al cargar los datos. Intenta de nuevo.</div>';
         });
@@ -475,7 +498,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/asistencia/asistencia_detalle/' + asistenciaId + '/')
             .then(response => response.json())
             .then(data => {
-                // Llenar el modal de detalle
                 document.getElementById('detalleEmpleadoNombre').textContent = data.empleado;
                 document.getElementById('detalleFecha').textContent = data.fecha;
                 document.getElementById('detalleTurno').textContent = data.turno;
@@ -483,7 +505,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('detalleHoraProgramada').textContent = data.hora_programada;
                 document.getElementById('detalleHoraMarcada').textContent = data.hora_marcada;
 
-                // Estado con badge
                 const estadoBadge = document.createElement('span');
                 estadoBadge.className = 'badge badge-estado';
                 if (data.estado_clase === 'presente') {
@@ -500,32 +521,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 estadoContainer.innerHTML = '';
                 estadoContainer.appendChild(estadoBadge);
 
-                // Mostrar el modal de detalle
                 if (modalDetalleInstance) {
                     modalDetalleInstance.show();
                 }
             })
-            .catch(error => {
+            .catch(function(error) {
                 console.error('Error al cargar detalle:', error);
                 alert('No se pudo cargar el detalle de la asistencia.');
-                // Reabrir el historial si falla
                 if (empleadoIdActual && modalHistorialInstance) {
                     cargarHistorialEmpleado(empleadoIdActual);
                 }
             });
     }
 
-    // Escuchar evento de cierre del modal de detalle para reabrir el historial
     if (modalDetalleElement) {
         modalDetalleElement.addEventListener('hidden.bs.modal', function () {
-            // Cuando se cierra el detalle, volver a abrir el historial
             if (empleadoIdActual && modalHistorialInstance) {
                 cargarHistorialEmpleado(empleadoIdActual);
             }
         });
     }
 
-    // Eventos de filtros internos del modal
     document.querySelectorAll('#filtroTurnoInterno, #filtroEstadoInterno').forEach(function(el) {
         if (el) {
             el.addEventListener('change', function() {
@@ -539,14 +555,131 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('limpiarFiltrosInternos')?.addEventListener('click', function() {
         document.getElementById('filtroTurnoInterno').value = '';
         document.getElementById('filtroEstadoInterno').value = '';
+        document.getElementById('fechaUnicaSeleccionadaHistorial').value = '';
+        document.getElementById('fechaDesdeSeleccionadaHistorial').value = '';
+        document.getElementById('fechaHastaSeleccionadaHistorial').value = '';
+        const fechaUnicaInput = document.getElementById('fechaUnicaInputHistorial');
+        if (fechaUnicaInput) fechaUnicaInput.value = '';
+        const fechaDesdeInput = document.getElementById('fechaDesdeInputHistorial');
+        if (fechaDesdeInput) fechaDesdeInput.value = '';
+        const fechaHastaInput = document.getElementById('fechaHastaInputHistorial');
+        if (fechaHastaInput) fechaHastaInput.value = '';
         if (empleadoIdActual && modalHistorialInstance) {
             cargarHistorialEmpleado(empleadoIdActual);
         }
     });
 
     // ==========================================
-    // 5. INICIALIZACIÓN
+    // 5. MODALES DE FECHA (Historial)
+    // ==========================================
+
+    const modalFechaUnicaElement = document.getElementById('modalFechaUnicaHistorial');
+    const modalRangoElement = document.getElementById('modalRangoFechasHistorial');
+
+    if (modalFechaUnicaElement) {
+        modalFechaUnicaElement.addEventListener('show.bs.modal', function () {
+            modalFechaInstance = 'unica';
+        });
+        modalFechaUnicaElement.addEventListener('hidden.bs.modal', function () {
+            modalFechaInstance = null;
+            const fechaSeleccionada = document.getElementById('fechaUnicaSeleccionadaHistorial')?.value;
+            if (fechaSeleccionada && empleadoIdActual) {
+                setTimeout(function() {
+                    if (modalHistorialInstance) {
+                        cargarHistorialEmpleado(empleadoIdActual);
+                    }
+                }, 200);
+            }
+        });
+    }
+
+    if (modalRangoElement) {
+        modalRangoElement.addEventListener('show.bs.modal', function () {
+            modalFechaInstance = 'rango';
+        });
+        modalRangoElement.addEventListener('hidden.bs.modal', function () {
+            modalFechaInstance = null;
+            const desde = document.getElementById('fechaDesdeSeleccionadaHistorial')?.value;
+            const hasta = document.getElementById('fechaHastaSeleccionadaHistorial')?.value;
+            if (desde && hasta && empleadoIdActual) {
+                setTimeout(function() {
+                    if (modalHistorialInstance) {
+                        cargarHistorialEmpleado(empleadoIdActual);
+                    }
+                }, 200);
+            }
+        });
+    }
+
+    document.getElementById('aplicarFechaUnicaHistorial')?.addEventListener('click', function() {
+        const input = document.getElementById('fechaUnicaInputHistorial');
+        if (input && input.value) {
+            document.getElementById('fechaUnicaSeleccionadaHistorial').value = input.value;
+            document.getElementById('fechaDesdeSeleccionadaHistorial').value = '';
+            document.getElementById('fechaHastaSeleccionadaHistorial').value = '';
+            const modal = bootstrap.Modal.getInstance(modalFechaUnicaElement);
+            if (modal) modal.hide();
+        } else {
+            alert('Por favor selecciona una fecha.');
+        }
+    });
+
+    document.getElementById('aplicarRangoFechasHistorial')?.addEventListener('click', function() {
+        const desde = document.getElementById('fechaDesdeInputHistorial');
+        const hasta = document.getElementById('fechaHastaInputHistorial');
+        if (desde && hasta && desde.value && hasta.value) {
+            if (desde.value <= hasta.value) {
+                document.getElementById('fechaDesdeSeleccionadaHistorial').value = desde.value;
+                document.getElementById('fechaHastaSeleccionadaHistorial').value = hasta.value;
+                document.getElementById('fechaUnicaSeleccionadaHistorial').value = '';
+                const modal = bootstrap.Modal.getInstance(modalRangoElement);
+                if (modal) modal.hide();
+            } else {
+                alert('La fecha "Desde" debe ser anterior a "Hasta".');
+            }
+        } else {
+            alert('Por favor selecciona ambas fechas.');
+        }
+    });
+
+    // ==========================================
+    // 6. INICIALIZACIÓN
     // ==========================================
     inicializarGraficos();
-    console.log('Asistencia - Módulo cargado correctamente.');
+
+    // ==========================================
+    // 7. SOLUCIÓN PARA ADVERTENCIAS ARIA
+    // ==========================================
+
+    // Al abrir un modal de fecha, marcar el modal de historial como inerte
+    if (modalFechaUnicaElement) {
+        modalFechaUnicaElement.addEventListener('show.bs.modal', function () {
+            if (modalHistorialElement) {
+                modalHistorialElement.setAttribute('inert', '');
+            }
+        });
+        modalFechaUnicaElement.addEventListener('hidden.bs.modal', function () {
+            if (modalHistorialElement) {
+                modalHistorialElement.removeAttribute('inert');
+                // Forzar foco al modal de historial (opcional)
+                const closeBtn = modalHistorialElement.querySelector('.btn-close');
+                if (closeBtn) setTimeout(() => closeBtn.focus(), 100);
+            }
+        });
+    }
+
+    if (modalRangoElement) {
+        modalRangoElement.addEventListener('show.bs.modal', function () {
+            if (modalHistorialElement) {
+                modalHistorialElement.setAttribute('inert', '');
+            }
+        });
+        modalRangoElement.addEventListener('hidden.bs.modal', function () {
+            if (modalHistorialElement) {
+                modalHistorialElement.removeAttribute('inert');
+                const closeBtn = modalHistorialElement.querySelector('.btn-close');
+                if (closeBtn) setTimeout(() => closeBtn.focus(), 100);
+            }
+        });
+    }
 });

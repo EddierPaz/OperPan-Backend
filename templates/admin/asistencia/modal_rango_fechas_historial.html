@@ -1,4 +1,4 @@
-<div class="modal fade" id="modalRangoFechasInterno" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalRangoFechasHistorial" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content modal-detalle">
       <div class="modal-detalle-header">
@@ -13,19 +13,17 @@
       </div>
       <div class="modal-detalle-body">
         <div class="mb-3">
-          <label for="fechaDesdeInputInterna" class="form-label">Desde:</label>
-          <input type="date" class="form-control" id="fechaDesdeInputInterna">
+          <label for="fechaDesdeInputHistorial" class="form-label">Desde:</label>
+          <input type="date" class="form-control" id="fechaDesdeInputHistorial">
         </div>
         <div class="mb-3">
-          <label for="fechaHastaInputInterna" class="form-label">Hasta:</label>
-          <input type="date" class="form-control" id="fechaHastaInputInterna">
+          <label for="fechaHastaInputHistorial" class="form-label">Hasta:</label>
+          <input type="date" class="form-control" id="fechaHastaInputHistorial">
         </div>
-        <input type="hidden" id="fechaDesdeSeleccionadaInterna" value="">
-        <input type="hidden" id="fechaHastaSeleccionadaInterna" value="">
       </div>
       <div class="modal-detalle-footer">
         <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn-action btn-action-save" id="aplicarRangoFechasInterno">
+        <button type="button" class="btn-action btn-action-save" id="aplicarRangoFechasHistorial">
           <i class="bi bi-check2"></i> Aplicar filtro
         </button>
       </div>

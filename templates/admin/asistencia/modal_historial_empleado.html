@@ -13,7 +13,7 @@
       </div>
 
       <div class="modal-detalle-body">
-        <!-- Filtros internos (sin mes) -->
+        <!-- Filtros -->
         <div class="filtros-toolbar mb-3" id="filtrosInternosModal">
           <select id="filtroTurnoInterno" class="filtro-select">
             <option value="">Todos los turnos</option>
@@ -27,14 +27,25 @@
             <option value="TARDE">Tarde</option>
             <option value="AUSENTE">Ausente</option>
           </select>
+
+          <button class="filtro-btn-fecha" id="btnFechaUnicaHistorial" data-bs-toggle="modal" data-bs-target="#modalFechaUnicaHistorial">
+            <i class="bi bi-calendar"></i> Fecha única
+          </button>
+          <button class="filtro-btn-fecha" id="btnRangoFechasHistorial" data-bs-toggle="modal" data-bs-target="#modalRangoFechasHistorial">
+            <i class="bi bi-calendar-range"></i> Rango
+          </button>
+
           <button type="button" id="limpiarFiltrosInternos" class="filtro-btn-limpiar">
             Limpiar campos
           </button>
         </div>
 
+        <input type="hidden" id="fechaUnicaSeleccionadaHistorial" value="">
+        <input type="hidden" id="fechaDesdeSeleccionadaHistorial" value="">
+        <input type="hidden" id="fechaHastaSeleccionadaHistorial" value="">
+
         <hr>
 
-        <!-- Contenedor de la tabla con scroll -->
         <div id="contenidoHistorialEmpleado" style="max-height: 550px; overflow-y: auto;">
           <div class="text-center py-4">
             <div class="spinner-border text-primary" role="status">

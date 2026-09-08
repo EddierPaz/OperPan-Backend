@@ -63,10 +63,12 @@
   </div>
 
   <!-- Modales -->
-  {% include "admin/asistencia/modal_fecha_unica.html" %}
-  {% include "admin/asistencia/modal_rango_fechas.html" %}
   {% include "admin/asistencia/modal_detalle_asistencia.html" %}
   {% include "admin/asistencia/modal_historial_empleado.html" %}
+
+  <!-- Modales de fecha (historial) - FUERA del modal de historial -->
+  {% include "admin/asistencia/modal_fecha_unica_historial.html" %}
+  {% include "admin/asistencia/modal_rango_fechas_historial.html" %}
 
 </main>
 {% endblock %}

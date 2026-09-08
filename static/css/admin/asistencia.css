@@ -324,12 +324,66 @@ Esto para temas de celulares.
 
  */
 
-@media (max-width: 576px) {
-    .empleado-nombre {
+    @media (max-width: 576px) {
+        .empleado-nombre {
+            font-size: 0.9rem;
+        }
+        .badge-cargo {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+    }
+
+    /* 
+        Ajuste para filtros en el modal de historial
+
+        Estilo para botones de fecha en el modal de historial
+    */
+    .filtro-btn-fecha {
+        flex: 0 0 auto;
+        border: 1px solid var(--color-border-soft);
+        background: #F8FAFC;
+        border-radius: 999px;
+        padding: 0.55rem 1.2rem;
         font-size: 0.9rem;
+        font-weight: 500;
+        color: #1F2937;
+        transition: 0.2s;
+        cursor: pointer;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
     }
-    .badge-cargo {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
+    .filtro-btn-fecha:hover {
+        background: #ffffff;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
     }
-}
+    .filtro-btn-fecha:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
+    }
+
+    /* Ajuste responsive para los filtros del modal */
+    @media (max-width: 768px) {
+        #filtrosInternosModal {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        #filtrosInternosModal .filtro-select,
+        #filtrosInternosModal .filtro-btn-fecha,
+        #filtrosInternosModal .filtro-btn-limpiar {
+            width: 100%;
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+    }
+
+/* 
+
+Fin.
+
+*/

@@ -386,36 +386,36 @@ def obtener_resumen_empleado(empleado):
 
 
 
-# 7sep/2026 Ahora bien, esta nueva función tiene mucha importancia ya que es fundamental para el modal:
+# 7 sep/2026 Ahora bien, esta nueva función tiene mucha importancia ya que es fundamental para el modal:
+
+# Se agregaron filtros de rango y fecha unica para el 8 de sep
 
 @login_required
 @admin_required
 def asistencia_empleado_historial(request, empleado_id):
     """
     Vista AJAX que devuelve HTML parcial para el modal de historial de un empleado.
-    Siempre devuelve una tabla/listado de registros (sin calendario).
+    Aplica filtros de turno, estado, fecha única o rango de fechas.
     """
     empleado = get_object_or_404(PerfilEmpleado, id=empleado_id)
 
-    # Obtener parámetros GET (turno, estado, mes opcional)
+    # Obtener parámetros GET
     turno = request.GET.get('turno', '')
     estado = request.GET.get('estado', '')
-    mes = request.GET.get('mes', '')  # opcional, se puede usar para filtrar por mes
+    fecha_unica = request.GET.get('fecha_unica', '')
+    fecha_desde = request.GET.get('fecha_desde', '')
+    fecha_hasta = request.GET.get('fecha_hasta', '')
 
     # Query base: todas las asistencias del empleado
     asistencias = Asistencia.objects.filter(
         horario__empleado=empleado
     ).select_related('horario').order_by('-fecha', '-hora_marcada')
 
-    # Si se envía mes, filtrar por ese mes (opcional)
-    if mes:
-        try:
-            año, mes_num = map(int, mes.split('-'))
-            primer_dia = date(año, mes_num, 1)
-            ultimo_dia = date(año, mes_num, calendar.monthrange(año, mes_num)[1])
-            asistencias = asistencias.filter(fecha__gte=primer_dia, fecha__lte=ultimo_dia)
-        except:
-            pass
+    # Aplicar filtros de fecha (prioridad: fecha única > rango)
+    if fecha_unica:
+        asistencias = asistencias.filter(fecha=fecha_unica)
+    elif fecha_desde and fecha_hasta:
+        asistencias = asistencias.filter(fecha__range=[fecha_desde, fecha_hasta])
 
     # Aplicar filtros de turno y estado
     if turno:
