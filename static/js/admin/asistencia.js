@@ -27,6 +27,71 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+    // ==========================================
+    // Cambio del 8 de septiembre del 2026
+    // Este TOAST es importante para la validacion de si el admin va a registrar al empleado en el horario correspondiente
+
+    // Si no es asi, entonces mostrara un toast de color amarillo
+    
+    // FUNCIÓN PARA MOSTRAR TOAST
+    // ==========================================
+    function mostrarToast(mensaje, tipo = 'warning') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+
+        // Eliminar toasts anteriores
+        const existing = container.querySelectorAll('.app-toast');
+        existing.forEach(el => el.remove());
+
+        const toast = document.createElement('div');
+        toast.className = `app-toast app-toast-${tipo}`;
+        toast.setAttribute('role', 'alert');
+
+        // Icono según tipo
+        let icono = 'bi-exclamation-triangle-fill';
+        if (tipo === 'success') icono = 'bi-check-circle-fill';
+        else if (tipo === 'danger') icono = 'bi-x-circle-fill';
+        else if (tipo === 'info') icono = 'bi-info-circle-fill';
+
+        toast.innerHTML = `
+            <div class="app-toast-icon">
+                <i class="bi ${icono}"></i>
+            </div>
+            <div class="app-toast-msg">${mensaje}</div>
+            <button type="button" class="app-toast-close" aria-label="Cerrar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Mostrar con animación
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // Ocultar después de 4 segundos
+        const timeout = setTimeout(() => {
+            toast.classList.add('hide');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 4000);
+
+        // Botón cerrar manual
+        const closeBtn = toast.querySelector('.app-toast-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                clearTimeout(timeout);
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            });
+        }
+    }
+
     // Autocompletar cargo al seleccionar empleado (para horarios)
     const empleadoSelect = document.getElementById("empleadoSelect");
     const cargoInput = document.getElementById("cargoInput");
@@ -154,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(function (err) {
                     console.error(err);
-                    alert("No se pudo cargar la información del horario.");
+                    mostrarToast("No se pudo cargar la información del horario.", "danger");
                 });
         }
 
@@ -194,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(function (err) {
                     console.error(err);
-                    alert("No se pudo cargar la información para editar el horario.");
+                    mostrarToast("No se pudo cargar la información para editar el horario.", "danger");
                 });
         }
 
@@ -491,6 +556,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(function(error) {
             console.error('Error al cargar historial:', error);
             contenedor.innerHTML = '<div class="alert alert-danger">Error al cargar los datos. Intenta de nuevo.</div>';
+            mostrarToast('Error al cargar el historial. Intenta de nuevo.', 'danger');
         });
     }
 
@@ -527,7 +593,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(function(error) {
                 console.error('Error al cargar detalle:', error);
-                alert('No se pudo cargar el detalle de la asistencia.');
+                mostrarToast('No se pudo cargar el detalle de la asistencia.', 'danger');
                 if (empleadoIdActual && modalHistorialInstance) {
                     cargarHistorialEmpleado(empleadoIdActual);
                 }
@@ -620,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const modal = bootstrap.Modal.getInstance(modalFechaUnicaElement);
             if (modal) modal.hide();
         } else {
-            alert('Por favor selecciona una fecha.');
+            mostrarToast('Por favor selecciona una fecha.', 'warning');
         }
     });
 
@@ -635,10 +701,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const modal = bootstrap.Modal.getInstance(modalRangoElement);
                 if (modal) modal.hide();
             } else {
-                alert('La fecha "Desde" debe ser anterior a "Hasta".');
+                mostrarToast('La fecha "Desde" debe ser anterior a "Hasta".', 'warning');
             }
         } else {
-            alert('Por favor selecciona ambas fechas.');
+            mostrarToast('Por favor selecciona ambas fechas.', 'warning');
         }
     });
 
@@ -734,14 +800,26 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => {
             if (!response.ok) {
+                // Leer el cuerpo como texto UNA SOLA VEZ
                 return response.text().then(text => {
-                    throw new Error(text || 'Error en la respuesta del servidor');
+                    let errorMsg = text;
+                    try {
+                        // Intentar parsear como JSON
+                        const json = JSON.parse(text);
+                        if (json.error) errorMsg = json.error;
+                    } catch (e) {
+                        // Si no es JSON, usar el texto plano (puede ser HTML de error 403, etc.)
+                    }
+                    throw new Error(errorMsg || 'Error al registrar la asistencia.');
                 });
             }
             return response.json();
         })
         .then(data => {
             if (data.success) {
+                // Mostrar toast de éxito (verde)
+                mostrarToast('Asistencia registrada correctamente.', 'success');
+
                 // Encontrar la fila más cercana
                 const row = btn.closest('tr');
                 if (!row) return;
@@ -768,14 +846,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     actionCell.innerHTML = '<span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>';
                 }
             } else {
-                alert(data.error || 'Error al registrar la asistencia.');
+                // Si el backend devuelve success: false (caso raro)
+                mostrarToast(data.error || 'Error al registrar la asistencia.', 'warning');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error de conexión. Intenta de nuevo.');
+            // Mostrar el mensaje de error específico (ej. validación de turno) en amarillo
+            mostrarToast(error.message || 'Error de conexión. Intenta de nuevo.', 'warning');
             btn.disabled = false;
             btn.innerHTML = originalHtml;
         });

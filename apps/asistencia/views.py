@@ -650,6 +650,8 @@ def eliminar_horario(request, id):
     # Se cambio porque el dropdown de asistencia del admin, se recargaba por el metodo POST
     # Ahora se implemento AJAX para siempre tener el dropdown abierto cuando se esta registrando asistencia.
 
+    # Ahora valida si registrar o no la asistencia dependiendo de si corresponde al turno o
+
 def registrar_asistencia(request):
     if request.method != "POST":
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -664,6 +666,31 @@ def registrar_asistencia(request):
 
     horario = get_object_or_404(Horario, id=horario_id)
     hoy = timezone.localdate()
+    hora_actual = timezone.localtime().time()
+
+    # VALIDACIÓN DE TURNO
+    hora_entrada = horario.hora_entrada
+    hora_salida = horario.hora_salida
+
+
+
+
+    # Mensajes de TOAST
+
+
+
+
+    if hora_entrada and hora_salida:
+        if not (hora_entrada <= hora_actual <= hora_salida):
+            nombre_turno = horario.get_turno_display()
+            mensaje = (
+                f"No puedes marcar asistencia del turno {nombre_turno} "
+                f"(rango {hora_entrada.strftime('%H:%M')} - {hora_salida.strftime('%H:%M')})."
+            )
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'error': mensaje}, status=400)
+            messages.error(request, mensaje)
+            return redirect("asistencia:asistencia_dashboard")
 
     # Verificar si ya existe asistencia para hoy
     asistencia_existente = Asistencia.objects.filter(horario=horario, fecha=hoy).first()
@@ -678,9 +705,8 @@ def registrar_asistencia(request):
             })
         return redirect("asistencia:asistencia_dashboard")
 
-    hora_actual = timezone.localtime().time()
-    estado = "PRESENTE" if hora_actual <= horario.hora_entrada else "TARDE"
-
+    # Registrar nueva asistencia
+    estado = "PRESENTE" if hora_actual <= hora_entrada else "TARDE"
     asistencia = Asistencia.objects.create(
         horario=horario,
         fecha=hoy,
