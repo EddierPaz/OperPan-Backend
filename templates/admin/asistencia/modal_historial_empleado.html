@@ -7,13 +7,13 @@
             <i class="bi bi-clock-history"></i>
             <span id="modalHistorialTitulo">Historial de Asistencia</span>
           </div>
-          <p class="modal-detalle-subtitulo mb-0" id="modalHistorialSubTitulo">Visualiza y busca/filtra cada registro de asistencia</p>
+          <p class="modal-detalle-subtitulo mb-0" id="modalHistorialSubTitulo">Registros de asistencia del empleado</p>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
       <div class="modal-detalle-body">
-        <!-- Filtros internos del modal -->
+        <!-- Filtros internos (sin mes) -->
         <div class="filtros-toolbar mb-3" id="filtrosInternosModal">
           <select id="filtroTurnoInterno" class="filtro-select">
             <option value="">Todos los turnos</option>
@@ -27,15 +27,6 @@
             <option value="TARDE">Tarde</option>
             <option value="AUSENTE">Ausente</option>
           </select>
-          <select id="filtroMesInterno" class="filtro-select">
-            <!-- se llenará con JS -->
-          </select>
-          <button class="btn btn-outline-secondary filtro-btn-fecha" id="btnFechaUnicaInterna" data-bs-toggle="modal" data-bs-target="#modalFechaUnicaInterna">
-            <i class="bi bi-calendar"></i> Fecha única
-          </button>
-          <button class="btn btn-outline-secondary filtro-btn-fecha" id="btnRangoFechasInterno" data-bs-toggle="modal" data-bs-target="#modalRangoFechasInterno">
-            <i class="bi bi-calendar-range"></i> Rango
-          </button>
           <button type="button" id="limpiarFiltrosInternos" class="filtro-btn-limpiar">
             Limpiar campos
           </button>
@@ -43,24 +34,12 @@
 
         <hr>
 
-        <!-- Contenedor del calendario o lista -->
-        <div id="contenidoHistorialEmpleado">
-          <!-- Se cargará dinámicamente vía AJAX -->
+        <!-- Contenedor de la tabla con scroll -->
+        <div id="contenidoHistorialEmpleado" style="max-height: 550px; overflow-y: auto;">
           <div class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Cargando...</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Leyenda de colores -->
-        <div class="leyenda-colores mt-4 pt-3 border-top">
-          <div class="d-flex flex-wrap gap-3 justify-content-center">
-            <span class="leyenda-item"><span class="color-box color-presente"></span> Asistencia puntual</span>
-            <span class="leyenda-item"><span class="color-box color-tarde"></span> Retardo</span>
-            <span class="leyenda-item"><span class="color-box color-ausente"></span> Inasistencia</span>
-            <span class="leyenda-item"><span class="color-box color-no-aplica"></span> No aplica</span>
-            <span class="leyenda-item"><span class="color-box color-descanso"></span> Descanso</span>
           </div>
         </div>
       </div>
@@ -71,7 +50,3 @@
     </div>
   </div>
 </div>
-
-<!-- Modales internos para fecha única y rango -->
-{% include "admin/asistencia/modal_fecha_unica_interna.html" %}
-{% include "admin/asistencia/modal_rango_fechas_interna.html" %}

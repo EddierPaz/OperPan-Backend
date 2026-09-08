@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // 1. FUNCIONES EXISTENTES (HORARIOS, CALENDARIOS, ETC.)
+    // 1. FUNCIONES EXISTENTES (HORARIOS, CALENDARIOS DE HORARIOS, ETC.)
     // ==========================================
 
     function diasVisibles(turno) {
@@ -248,33 +248,26 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Botón limpiar filtros
-        const btnLimpiarFiltros = document.getElementById('limpiarFiltrosEmpleados');
+        const btnLimpiarFiltros = document.getElementById("limpiarFiltrosHorarios");
         if (btnLimpiarFiltros) {
-            btnLimpiarFiltros.addEventListener('click', function() {
-                // Restablecer campo de búsqueda
-                if (inputBuscarEmpleado) {
-                    inputBuscarEmpleado.value = '';
-                }
-                // Restablecer dropdown de empleados
-                if (selectEmpleado) {
-                    selectEmpleado.value = '';
-                }
-                // Ejecutar el filtro para actualizar la vista
-                filtrarEmpleados();
+            btnLimpiarFiltros.addEventListener("click", function () {
+                inputBuscar.value = "";
+                if (selectTurno) selectTurno.value = "";
+                if (selectEstado) selectEstado.value = "";
+                aplicarFiltros();
             });
         }
     }
 
     // ==========================================
-    // 2. NUEVA FUNCIONALIDAD: EMPLEADOS Y GRÁFICOS
+    // 2. GRÁFICOS DE BARRAS HORIZONTALES (empleados)
     // ==========================================
 
     function inicializarGraficos() {
         document.querySelectorAll('.empleado-grafico canvas').forEach(function(canvas) {
             const parent = canvas.closest('.asistencia-card-empleado');
             if (!parent) return;
-            
+
             let data = {presente: 0, tarde: 0, ausente: 0, descanso: 0};
             if (parent.dataset.resumen) {
                 try {
@@ -283,79 +276,94 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.warn('Error al parsear resumen:', e);
                 }
             }
-            
-            const total = data.presente + data.tarde + data.ausente + data.descanso;
-            let chartData, chartColors;
-            if (total === 0) {
-                chartData = [1];
-                chartColors = ['#E9ECEF'];
-            } else {
-                chartData = [data.presente || 0, data.tarde || 0, data.ausente || 0, data.descanso || 0];
-                chartColors = ['#28A745', '#FFC107', '#DC3545', '#2E86C1'];
-            }
-            
+
             const ctx = canvas.getContext('2d');
+            const labels = ['Presente', 'Tarde', 'Ausente', 'Descanso'];
+            const values = [data.presente || 0, data.tarde || 0, data.ausente || 0, data.descanso || 0];
+            const colors = ['#28A745', '#FFC107', '#DC3545', '#2E86C1'];
+
             new Chart(ctx, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
-                    labels: ['Presente', 'Tarde', 'Ausente', 'Descanso'],
+                    labels: labels,
                     datasets: [{
-                        data: chartData,
-                        backgroundColor: chartColors,
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: ['#1E7E34', '#D39E00', '#BD2130', '#1B6FA8'],
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barThickness: 16,
                     }]
                 },
                 options: {
+                    indexAxis: 'y',
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    if (total === 0) return 'Sin datos';
-                                    return context.label + ': ' + context.raw;
+                                    return context.parsed.x + ' días';
                                 }
                             }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#1E293B',
+                            font: { weight: 'bold', size: 11 },
+                            formatter: function(value) {
+                                return value > 0 ? value : '';
+                            },
+                            offset: 2
                         }
                     },
-                    cutout: '65%'
-                }
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: { stepSize: 1, font: { size: 9 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10, weight: '500' } }
+                        }
+                    },
+                    layout: {
+                        padding: { right: 30 }
+                    }
+                },
+                plugins: [ChartDataLabels]
             });
         });
     }
 
     // ==========================================
-    // 3. FILTROS EN LA PÁGINA PRINCIPAL (empleados)
+    // 3. FILTROS EN LA PÁGINA PRINCIPAL
     // ==========================================
-
-    console.log('Inicializando filtros de empleados...');
 
     const inputBuscarEmpleado = document.getElementById('buscarEmpleado');
     const selectEmpleado = document.getElementById('filtroEmpleado');
-
-    console.log('inputBuscarEmpleado:', inputBuscarEmpleado);
-    console.log('selectEmpleado:', selectEmpleado);
+    const btnLimpiarEmpleados = document.getElementById('limpiarFiltrosEmpleados');
 
     function filtrarEmpleados() {
         const texto = inputBuscarEmpleado.value.trim().toLowerCase();
         const empleadoId = selectEmpleado.value;
         const items = document.querySelectorAll('.empleado-item');
-        console.log(`Filtrando: texto="${texto}", empleadoId="${empleadoId}", total items=${items.length}`);
-        
+
         items.forEach(function(item) {
             const nombre = (item.dataset.nombre || '').toLowerCase();
             const id = item.dataset.id || '';
             let mostrar = true;
-            
+
             if (texto && !nombre.includes(texto)) {
                 mostrar = false;
             }
             if (empleadoId && id !== empleadoId) {
                 mostrar = false;
             }
-            
+
             if (mostrar) {
                 item.classList.remove('d-none');
             } else {
@@ -364,58 +372,52 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Eventos
     if (inputBuscarEmpleado) {
         inputBuscarEmpleado.addEventListener('input', filtrarEmpleados);
         inputBuscarEmpleado.addEventListener('keyup', filtrarEmpleados);
-    } else {
-        console.error('No se encontró el elemento #buscarEmpleado');
     }
-
     if (selectEmpleado) {
         selectEmpleado.addEventListener('change', filtrarEmpleados);
-    } else {
-        console.error('No se encontró el elemento #filtroEmpleado');
     }
-
-    // Botón limpiar filtros
-    const btnLimpiarFiltros = document.getElementById('limpiarFiltrosEmpleados');
-    if (btnLimpiarFiltros) {
-        btnLimpiarFiltros.addEventListener('click', function() {
-            if (inputBuscarEmpleado) {
-                inputBuscarEmpleado.value = '';
-            }
-            if (selectEmpleado) {
-                selectEmpleado.value = '';
-            }
+    if (btnLimpiarEmpleados) {
+        btnLimpiarEmpleados.addEventListener('click', function() {
+            inputBuscarEmpleado.value = '';
+            selectEmpleado.value = '';
             filtrarEmpleados();
         });
     }
 
-    // Eventos
-    if (inputBuscarEmpleado) {
-        inputBuscarEmpleado.addEventListener('input', filtrarEmpleados);
-        inputBuscarEmpleado.addEventListener('keyup', filtrarEmpleados);
-    } else {
-        console.error('No se encontró el elemento #buscarEmpleado');
-    }
-
-    if (selectEmpleado) {
-        selectEmpleado.addEventListener('change', filtrarEmpleados);
-    } else {
-        console.error('No se encontró el elemento #filtroEmpleado');
-    }
-
     // ==========================================
-    // 4. MODAL DE HISTORIAL DE EMPLEADO
+    // 4. MODAL DE HISTORIAL DE EMPLEADO (TABLA)
     // ==========================================
 
     let empleadoIdActual = null;
+    let modalHistorialInstance = null;
+    let modalDetalleInstance = null;
+
+    // Obtener referencia al modal de historial
+    const modalHistorialElement = document.getElementById('modalHistorialEmpleado');
+    if (modalHistorialElement) {
+        modalHistorialInstance = new bootstrap.Modal(modalHistorialElement, {
+            backdrop: 'static',
+            keyboard: true
+        });
+    }
+
+    // Obtener referencia al modal de detalle
+    const modalDetalleElement = document.getElementById('modalDetalleAsistencia');
+    if (modalDetalleElement) {
+        modalDetalleInstance = new bootstrap.Modal(modalDetalleElement, {
+            backdrop: 'static',
+            keyboard: true
+        });
+    }
 
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.btn-ver-historial');
         if (!btn) return;
         empleadoIdActual = btn.dataset.empleadoId;
+        // Abrir modal de historial (si ya está abierto, no importa)
         cargarHistorialEmpleado(empleadoIdActual);
     });
 
@@ -427,18 +429,10 @@ document.addEventListener('DOMContentLoaded', function () {
         let url = '/asistencia/empleado_historial/' + empleadoId + '/?';
         const turno = document.getElementById('filtroTurnoInterno')?.value || '';
         const estado = document.getElementById('filtroEstadoInterno')?.value || '';
-        const mes = document.getElementById('filtroMesInterno')?.value || '';
-        const fechaUnica = document.getElementById('fechaUnicaSeleccionadaInterna')?.value || '';
-        const fechaDesde = document.getElementById('fechaDesdeSeleccionadaInterna')?.value || '';
-        const fechaHasta = document.getElementById('fechaHastaSeleccionadaInterna')?.value || '';
 
         const params = [];
         if (turno) params.push('turno=' + turno);
         if (estado) params.push('estado=' + estado);
-        if (mes) params.push('mes=' + mes);
-        if (fechaUnica) params.push('fecha_unica=' + fechaUnica);
-        if (fechaDesde) params.push('fecha_desde=' + fechaDesde);
-        if (fechaHasta) params.push('fecha_hasta=' + fechaHasta);
         url += params.join('&');
 
         fetch(url, {
@@ -450,23 +444,24 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('modalHistorialSubTitulo').textContent = data.empleado_cargo || '';
             contenedor.innerHTML = data.html;
 
-            // Eventos de los días del calendario
-            document.querySelectorAll('.dia-calendario').forEach(function(el) {
-                el.addEventListener('click', function() {
-                    const idAsistencia = this.dataset.idAsistencia;
-                    if (idAsistencia) {
-                        abrirDetalleAsistencia(idAsistencia);
-                    } else {
-                        alert('No hay registro de asistencia para esta fecha.');
-                    }
-                });
-            });
-            // Eventos de los botones "ver detalle" en lista
+            // Mostrar el modal de historial
+            if (modalHistorialInstance) {
+                modalHistorialInstance.show();
+            }
+
+            // Eventos para botones "Ver detalle" en la tabla
             document.querySelectorAll('.btn-ver-detalle-lista').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const id = this.dataset.id;
-                    if (id) abrirDetalleAsistencia(id);
+                    if (id) {
+                        // Cerrar modal de historial antes de abrir detalle
+                        if (modalHistorialInstance) {
+                            modalHistorialInstance.hide();
+                        }
+                        // Abrir detalle
+                        abrirDetalleAsistencia(id);
+                    }
                 });
             });
         })
@@ -477,18 +472,66 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function abrirDetalleAsistencia(asistenciaId) {
-        // Por ahora solo muestra un alert. Puedes implementar la carga real aquí.
-        alert('Ver detalle de asistencia ID: ' + asistenciaId);
-        // fetch('/asistencia/asistencia_detalle/' + asistenciaId + '/')
-        //   .then(response => response.json())
-        //   .then(data => { ... llenar modal ... })
+        fetch('/asistencia/asistencia_detalle/' + asistenciaId + '/')
+            .then(response => response.json())
+            .then(data => {
+                // Llenar el modal de detalle
+                document.getElementById('detalleEmpleadoNombre').textContent = data.empleado;
+                document.getElementById('detalleFecha').textContent = data.fecha;
+                document.getElementById('detalleTurno').textContent = data.turno;
+                document.getElementById('detalleCargo').textContent = data.cargo;
+                document.getElementById('detalleHoraProgramada').textContent = data.hora_programada;
+                document.getElementById('detalleHoraMarcada').textContent = data.hora_marcada;
+
+                // Estado con badge
+                const estadoBadge = document.createElement('span');
+                estadoBadge.className = 'badge badge-estado';
+                if (data.estado_clase === 'presente') {
+                    estadoBadge.classList.add('badge-presente');
+                } else if (data.estado_clase === 'tarde') {
+                    estadoBadge.classList.add('badge-tarde');
+                } else if (data.estado_clase === 'ausente') {
+                    estadoBadge.classList.add('badge-ausente');
+                } else {
+                    estadoBadge.classList.add('badge-sin-registro');
+                }
+                estadoBadge.textContent = data.estado;
+                const estadoContainer = document.getElementById('detalleEstado');
+                estadoContainer.innerHTML = '';
+                estadoContainer.appendChild(estadoBadge);
+
+                // Mostrar el modal de detalle
+                if (modalDetalleInstance) {
+                    modalDetalleInstance.show();
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar detalle:', error);
+                alert('No se pudo cargar el detalle de la asistencia.');
+                // Reabrir el historial si falla
+                if (empleadoIdActual && modalHistorialInstance) {
+                    cargarHistorialEmpleado(empleadoIdActual);
+                }
+            });
+    }
+
+    // Escuchar evento de cierre del modal de detalle para reabrir el historial
+    if (modalDetalleElement) {
+        modalDetalleElement.addEventListener('hidden.bs.modal', function () {
+            // Cuando se cierra el detalle, volver a abrir el historial
+            if (empleadoIdActual && modalHistorialInstance) {
+                cargarHistorialEmpleado(empleadoIdActual);
+            }
+        });
     }
 
     // Eventos de filtros internos del modal
-    document.querySelectorAll('#filtroTurnoInterno, #filtroEstadoInterno, #filtroMesInterno').forEach(function(el) {
+    document.querySelectorAll('#filtroTurnoInterno, #filtroEstadoInterno').forEach(function(el) {
         if (el) {
             el.addEventListener('change', function() {
-                if (empleadoIdActual) cargarHistorialEmpleado(empleadoIdActual);
+                if (empleadoIdActual && modalHistorialInstance) {
+                    cargarHistorialEmpleado(empleadoIdActual);
+                }
             });
         }
     });
@@ -496,64 +539,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('limpiarFiltrosInternos')?.addEventListener('click', function() {
         document.getElementById('filtroTurnoInterno').value = '';
         document.getElementById('filtroEstadoInterno').value = '';
-        document.getElementById('filtroMesInterno').value = '';
-        document.getElementById('fechaUnicaSeleccionadaInterna').value = '';
-        document.getElementById('fechaDesdeSeleccionadaInterna').value = '';
-        document.getElementById('fechaHastaSeleccionadaInterna').value = '';
-        if (empleadoIdActual) cargarHistorialEmpleado(empleadoIdActual);
-    });
-
-    document.getElementById('aplicarFechaUnicaInterna')?.addEventListener('click', function() {
-        const input = document.getElementById('fechaUnicaInputInterna');
-        if (input && input.value) {
-            document.getElementById('fechaUnicaSeleccionadaInterna').value = input.value;
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalFechaUnicaInterna'));
-            if (modal) modal.hide();
-            if (empleadoIdActual) cargarHistorialEmpleado(empleadoIdActual);
-        } else {
-            alert('Por favor selecciona una fecha.');
+        if (empleadoIdActual && modalHistorialInstance) {
+            cargarHistorialEmpleado(empleadoIdActual);
         }
     });
-
-    document.getElementById('aplicarRangoFechasInterno')?.addEventListener('click', function() {
-        const desde = document.getElementById('fechaDesdeInputInterna');
-        const hasta = document.getElementById('fechaHastaInputInterna');
-        if (desde && hasta && desde.value && hasta.value) {
-            if (desde.value <= hasta.value) {
-                document.getElementById('fechaDesdeSeleccionadaInterna').value = desde.value;
-                document.getElementById('fechaHastaSeleccionadaInterna').value = hasta.value;
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalRangoFechasInterno'));
-                if (modal) modal.hide();
-                if (empleadoIdActual) cargarHistorialEmpleado(empleadoIdActual);
-            } else {
-                alert('La fecha "Desde" debe ser anterior a "Hasta".');
-            }
-        } else {
-            alert('Por favor selecciona ambas fechas.');
-        }
-    });
-
-    // Rellenar dropdown de meses internos
-    function llenarMesesInternos() {
-        const select = document.getElementById('filtroMesInterno');
-        if (!select) return;
-        select.innerHTML = '';
-        const hoy = new Date();
-        for (let i = 0; i < 12; i++) {
-            const fecha = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
-            const valor = fecha.getFullYear() + '-' + String(fecha.getMonth() + 1).padStart(2, '0');
-            const nombre = fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-            const option = document.createElement('option');
-            option.value = valor;
-            option.textContent = nombre.charAt(0).toUpperCase() + nombre.slice(1);
-            select.appendChild(option);
-        }
-    }
-    llenarMesesInternos();
 
     // ==========================================
     // 5. INICIALIZACIÓN
     // ==========================================
     inicializarGraficos();
-    console.log('Asistencia - Nuevo módulo de empleados cargado.');
+    console.log('Asistencia - Módulo cargado correctamente.');
 });

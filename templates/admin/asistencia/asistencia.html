@@ -22,24 +22,24 @@
       <span class="text-muted small">{{ empleados_con_resumen|length }} empleados</span>
     </div>
 
-  <!-- Filtros: SOLO búsqueda por nombre y empleado -->
-  <div class="filtros-toolbar mb-3" id="filtrosHistorial">
-    <div class="filtro-buscar">
-      <i class="bi bi-search"></i>
-      <input type="text" id="buscarEmpleado" placeholder="Buscar por nombre..." autocomplete="off">
+    <!-- Filtros: Búsqueda por nombre, empleado y limpiar -->
+    <div class="filtros-toolbar mb-3" id="filtrosHistorial">
+      <div class="filtro-buscar">
+        <i class="bi bi-search"></i>
+        <input type="text" id="buscarEmpleado" placeholder="Buscar por nombre..." autocomplete="off">
+      </div>
+      <div class="filtro-select-empleado">
+        <select id="filtroEmpleado" class="form-select">
+          <option value="">Todos los empleados</option>
+          {% for emp in empleados %}
+            <option value="{{ emp.id }}">{{ emp.nombre_completo }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="button" id="limpiarFiltrosEmpleados" class="filtro-btn-limpiar">
+        <i class="bi bi-eraser"></i> Limpiar campos
+      </button>
     </div>
-    <div class="filtro-select-empleado">
-      <select id="filtroEmpleado" class="form-select">
-        <option value="">Todos los empleados</option>
-        {% for emp in empleados %}
-          <option value="{{ emp.id }}">{{ emp.nombre_completo }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <button type="button" id="limpiarFiltrosEmpleados" class="filtro-btn-limpiar">
-      Limpiar campos
-    </button>
-  </div>
 
     <!-- Grid de empleados -->
     <div id="empleadosWrapper">
@@ -62,14 +62,10 @@
     </div>
   </div>
 
-  <!-- Modales de fecha externos (ya no se usan desde la vista principal, pero se mantienen) -->
+  <!-- Modales -->
   {% include "admin/asistencia/modal_fecha_unica.html" %}
   {% include "admin/asistencia/modal_rango_fechas.html" %}
-
-  <!-- Modal de detalle de asistencia -->
   {% include "admin/asistencia/modal_detalle_asistencia.html" %}
-
-  <!-- Modal de historial de empleado -->
   {% include "admin/asistencia/modal_historial_empleado.html" %}
 
 </main>
@@ -77,5 +73,6 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="{% static 'js/admin/asistencia.js' %}"></script>
 {% endblock %}

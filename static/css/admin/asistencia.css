@@ -1,6 +1,5 @@
 /* ==============================================
    MÓDULO DE ASISTENCIA Y HORARIOS (ADMIN)
-   SOLO ESTILOS ESPECÍFICOS
    ============================================== */
 
 /* ── ACORDEÓN DE TURNOS ── */
@@ -41,7 +40,7 @@
     font-weight: 600;
 }
 
-/* ── CALENDARIO ── */
+/* ── CALENDARIO DE HORARIOS (crear/editar) ── */
 .calendario-wrapper {
     width: 100%;
 }
@@ -90,10 +89,6 @@
     border-color: #b91c1c;
     color: white;
 }
-.dia-btn.selected {
-    background: #dc3545;
-    color: white;
-}
 .dia-btn--ultimo {
     border-style: dashed;
     border-color: #a40706;
@@ -130,9 +125,15 @@
     font-size: 1.1rem;
     color: #000000;
 }
+.empleado-grafico {
+    position: relative;
+    height: 140px;
+    width: 100%;
+    margin: 0.5rem 0;
+}
 .empleado-grafico canvas {
-    max-width: 120px;
-    max-height: 120px;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Badge de cargo */
@@ -146,28 +147,28 @@
     border: 1px solid var(--color-border-soft);
 }
 
-/* Badges de estado (para la lista) */
+/* ── BADGES DE ESTADO (para la tabla) ── */
 .badge-estado {
-    padding: 0.5rem 0.5rem;
+    padding: 0.4rem 0.7rem;
     border-radius: 8px;
     font-weight: 600;
     font-size: 0.75rem;
 }
 .badge-presente {
-    background: var(--color-success-bg);
-    color: var(--color-success-text);
+    background: #E1FAF0;
+    color: #047A43;
 }
 .badge-tarde {
-    background: var(--color-warning-bg);
-    color: var(--color-warning-text);
+    background: #FFF3E0;
+    color: #C77A00;
 }
 .badge-ausente {
-    background: var(--color-danger-bg);
-    color: var(--color-danger-text);
+    background: #FEE2E2;
+    color: #B91C1C;
 }
 .badge-sin-registro {
-    background: var(--color-surface-subtle);
-    color: var(--color-text-muted);
+    background: #F8FAFC;
+    color: #64748B;
 }
 
 /* ── FILTROS ── */
@@ -192,7 +193,7 @@
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-placeholder-icon);
+    color: #94a3b8;
     font-size: 0.9rem;
     pointer-events: none;
 }
@@ -200,7 +201,7 @@
     width: 100%;
     border: 1px solid var(--color-border-soft);
     background: #F8FAFC;
-    border-radius: var(--radius-full);
+    border-radius: 999px;
     padding: 0.55rem 1rem 0.55rem 2.25rem;
     font-size: 0.9rem;
     color: #1F2937;
@@ -208,9 +209,9 @@
 }
 .filtro-buscar input:focus {
     outline: none;
-    border-color: var(--color-primary);
+    border-color: #a40706;
     background: #ffffff;
-    box-shadow: var(--shadow-focus-soft);
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
 }
 .filtro-select-empleado {
     flex: 1 1 220px;
@@ -219,7 +220,7 @@
     width: 100%;
     border: 1px solid var(--color-border-soft);
     background: #F8FAFC;
-    border-radius: var(--radius-full);
+    border-radius: 999px;
     padding: 0.55rem 1rem;
     font-size: 0.9rem;
     font-weight: 500;
@@ -228,15 +229,15 @@
 }
 .filtro-select-empleado select:focus {
     outline: none;
-    border-color: var(--color-primary);
+    border-color: #a40706;
     background: #ffffff;
-    box-shadow: var(--shadow-focus-soft);
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
 }
 .filtro-select {
     flex: 0 1 190px;
     border: 1px solid var(--color-border-soft);
     background: #F8FAFC;
-    border-radius: var(--radius-full);
+    border-radius: 999px;
     padding: 0.55rem 2rem 0.55rem 1rem;
     font-size: 0.9rem;
     font-weight: 500;
@@ -245,122 +246,60 @@
 }
 .filtro-select:focus {
     outline: none;
-    border-color: var(--color-primary);
+    border-color: #a40706;
     background: #ffffff;
-    box-shadow: var(--shadow-focus-soft);
+    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
 }
-.filtro-btn-fecha {
+.filtro-btn-limpiar {
     flex: 0 0 auto;
-    background: #f8fafc;
-    border: 1px solid #edf2f7;
-    color: #1f2937;
-    padding: 0.55rem 1.2rem;
+    background: #555555;
+    border: 1.5px solid #555555;
+    color: #ffffff;
+    padding: 0.55rem 1.5rem;
     border-radius: 999px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.9rem;
     white-space: nowrap;
     transition: all 0.2s ease;
     cursor: pointer;
 }
-.filtro-btn-fecha:hover {
-    background: #edf2f7;
-    border-color: #a40706;
-    color: #a40706;
+.filtro-btn-limpiar:hover {
+    background: #444444;
+    border-color: #444444;
+    color: white;
 }
 
-/* ── CALENDARIO DENTRO DEL MODAL ── */
-.calendario-grid-empleado .dia-calendario {
-    background: #F1F5F9;
-    border-radius: 12px;
-    padding: 6px 4px;
-    min-height: 70px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    border: 2px solid transparent;
-    transition: all 0.15s ease;
-    cursor: pointer;
+/* ── TABLA EN EL MODAL ── */
+#contenidoHistorialEmpleado {
+    max-height: 550px;
+    overflow-y: auto;
 }
-.dia-calendario:hover {
-    transform: scale(1.05);
-    border-color: #A40706;
+#contenidoHistorialEmpleado .table thead th {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 10;
+    border-bottom: 2px solid #dee2e6;
 }
-.dia-numero {
-    font-weight: 700;
-    font-size: 0.95rem;
-    line-height: 1.2;
-}
-.dia-info {
-    font-size: 0.6rem;
-    font-weight: 500;
-    line-height: 1.2;
-    margin-top: 2px;
-}
-
-/* Colores de los días */
-.dia-presente {
-    background: #D4EDDA;
-    border-color: #28A745;
-}
-.dia-tarde {
-    background: #FFF3CD;
-    border-color: #FFC107;
-}
-.dia-ausente {
-    background: #F8D7DA;
-    border-color: #DC3545;
-}
-.dia-descanso {
-    background: #D6EAF8;
-    border-color: #2E86C1;
-}
-.dia-no-aplica {
-    background: #E9ECEF;
-    border-color: #ADB5BD;
-}
-
-/* Leyenda de colores */
-.leyenda-colores {
-    font-size: 0.85rem;
-}
-.leyenda-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.color-box {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.1);
-}
-.color-presente { background: #28A745; }
-.color-tarde { background: #FFC107; }
-.color-ausente { background: #DC3545; }
-.color-no-aplica { background: #ADB5BD; }
-.color-descanso { background: #2E86C1; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 992px) {
-    .col-md-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
+@media (max-width: 768px) {
+    .filtros-toolbar {
+        flex-direction: column;
+        align-items: stretch;
     }
-}
-@media (max-width: 576px) {
-    .col-md-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
+    .filtro-buscar,
+    .filtro-select-empleado,
+    .filtro-select,
+    .filtro-btn-limpiar {
+        flex: 1 1 auto;
+        width: 100%;
     }
     .asistencia-card-empleado {
         padding: 1.2rem 0.8rem;
     }
 }
 
-/* Asegurar que los elementos ocultos con d-none no se muestren */
 .empleado-item.d-none {
     display: none !important;
 }
