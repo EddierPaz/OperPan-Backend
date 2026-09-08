@@ -1,0 +1,29 @@
+{% load static %}
+<h5 class="text-center mb-3">{{ mes_anio }}</h5>
+<div class="calendario-grid-empleado">
+  <div class="row g-2">
+    {% for dia in dias %}
+      <div class="col-2 col-sm-2 col-md-2 col-lg-1 text-center">
+        <div class="dia-calendario 
+                    {% if dia.estado == 'presente' %}dia-presente
+                    {% elif dia.estado == 'tarde' %}dia-tarde
+                    {% elif dia.estado == 'ausente' %}dia-ausente
+                    {% elif dia.estado == 'descanso' %}dia-descanso
+                    {% else %}dia-no-aplica{% endif %}"
+             data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+             data-id-asistencia="{{ dia.id_asistencia }}"
+             data-estado="{{ dia.estado }}"
+             role="button"
+             tabindex="0"
+             title="{% if dia.estado == 'descanso' %}Descanso{% else %}{{ dia.fecha|date:'d/m/Y' }} - {{ dia.hora_entrada }} - {{ dia.hora_salida }}{% endif %}">
+          <div class="dia-numero">{{ dia.fecha.day }}</div>
+          {% if dia.estado == 'descanso' %}
+            <div class="dia-info">Descanso</div>
+          {% else %}
+            <div class="dia-info">{{ dia.hora_entrada }} - {{ dia.hora_salida }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

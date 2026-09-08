@@ -108,26 +108,34 @@
     min-height: 56px;
 }
 
-/* ── TARJETAS DE ASISTENCIA (historial) ── */
-.asistencia-card {
+/* ── TARJETAS DE EMPLEADOS ── */
+.asistencia-card-empleado {
     background: #ffffff;
     border-radius: 20px;
-    padding: 1.5rem 1.2rem;  /* Aumento padding vertical */
+    padding: 1.5rem 1.2rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid #EDF2F7;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
-.asistencia-card:hover {
+.asistencia-card-empleado:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
 }
-.asistencia-empleado {
+.empleado-nombre {
     font-size: 1.1rem;
-    color: #000000;  /* Negro */
-    margin: 0;
+    color: #000000;
+}
+.empleado-grafico canvas {
+    max-width: 120px;
+    max-height: 120px;
 }
 
-/* Badge de cargo (primera fila) */
+/* Badge de cargo */
 .badge-cargo {
     background: var(--color-surface-subtle);
     color: var(--color-text-soft);
@@ -138,34 +146,12 @@
     border: 1px solid var(--color-border-soft);
 }
 
-/* Badges de turno, fecha y estado (segunda fila) */
-.badge-turno {
-    background: var(--color-border-soft);
-    color: var(--color-text-soft);
-    font-weight: 500;
-    padding: 0.5rem 0.5rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    display: inline-block;
-    text-align: center;
-}
-.badge-fecha {
-    background: #E6F0FA;
-    color: #1A5D9C;
-    font-weight: 600;
-    padding: 0.5rem 0.5rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    display: inline-block;
-    text-align: center;
-}
+/* Badges de estado (para la lista) */
 .badge-estado {
     padding: 0.5rem 0.5rem;
     border-radius: 8px;
     font-weight: 600;
     font-size: 0.75rem;
-    display: inline-block;
-    text-align: center;
 }
 .badge-presente {
     background: var(--color-success-bg);
@@ -184,34 +170,7 @@
     color: var(--color-text-muted);
 }
 
-/* Tercera fila: Programada y Marcada (con fondos distintos) */
-.badge-hora-programada {
-    background: #F1F5F9;
-    color: #1E293B;
-    font-weight: 500;
-    padding: 0.5rem 0.8rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    border: none;
-}
-.badge-hora-marcada {
-    background: #E2E8F0;
-    color: #1E293B;
-    font-weight: 500;
-    padding: 0.5rem 0.8rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    border: none;
-}
-
-/* Espaciado entre filas (ya aplicado con py-1 en el HTML y margin) */
-.asistencia-card .row,
-.asistencia-card .d-flex {
-    margin-top: 0.15rem;
-    margin-bottom: 0.15rem;
-}
-
-/* ── FILTROS REORGANIZADOS ── */
+/* ── FILTROS ── */
 .filtros-toolbar {
     background: #ffffff;
     border: 1px solid var(--color-border-soft);
@@ -290,24 +249,6 @@
     background: #ffffff;
     box-shadow: var(--shadow-focus-soft);
 }
-.filtro-btn-limpiar {
-    flex: 0 0 auto;
-    background: #555555;
-    border: 1.5px solid #555555;
-    color: #ffffff;
-    padding: 0.55rem 1.5rem;
-    border-radius: var(--radius-full);
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-.filtro-btn-limpiar:hover {
-    background: #444444;
-    border-color: #444444;
-    color: white;
-}
 .filtro-btn-fecha {
     flex: 0 0 auto;
     background: #f8fafc;
@@ -327,94 +268,99 @@
     color: #a40706;
 }
 
-/* ── PAGINACIÓN PERSONALIZADA ── */
-.custom-pagination .page-link {
-    border: 1px solid #A40706;
-    color: #A40706;
-    background: #ffffff;
-    margin: 0 3px;
-    border-radius: 8px;
-    padding: 0.5rem 0.9rem;
-    transition: all 0.2s ease;
+/* ── CALENDARIO DENTRO DEL MODAL ── */
+.calendario-grid-empleado .dia-calendario {
+    background: #F1F5F9;
+    border-radius: 12px;
+    padding: 6px 4px;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    border: 2px solid transparent;
+    transition: all 0.15s ease;
+    cursor: pointer;
 }
-.custom-pagination .page-link:hover {
-    background: #E6F0FA;
-    border-color: #0d6efd;
-    color: #0d6efd;
-}
-.custom-pagination .page-item.active .page-link {
-    background: #A40706;
+.dia-calendario:hover {
+    transform: scale(1.05);
     border-color: #A40706;
-    color: #ffffff;
 }
-.custom-pagination .page-item.disabled .page-link {
-    border-color: #dee2e6;
-    color: #6c757d;
-    background: #f8f9fa;
+.dia-numero {
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.2;
 }
+.dia-info {
+    font-size: 0.6rem;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+/* Colores de los días */
+.dia-presente {
+    background: #D4EDDA;
+    border-color: #28A745;
+}
+.dia-tarde {
+    background: #FFF3CD;
+    border-color: #FFC107;
+}
+.dia-ausente {
+    background: #F8D7DA;
+    border-color: #DC3545;
+}
+.dia-descanso {
+    background: #D6EAF8;
+    border-color: #2E86C1;
+}
+.dia-no-aplica {
+    background: #E9ECEF;
+    border-color: #ADB5BD;
+}
+
+/* Leyenda de colores */
+.leyenda-colores {
+    font-size: 0.85rem;
+}
+.leyenda-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.color-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+.color-presente { background: #28A745; }
+.color-tarde { background: #FFC107; }
+.color-ausente { background: #DC3545; }
+.color-no-aplica { background: #ADB5BD; }
+.color-descanso { background: #2E86C1; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-    .filtros-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .filtro-buscar,
-    .filtro-select-empleado,
-    .filtro-select,
-    .filtro-btn-limpiar,
-    .filtro-btn-fecha {
-        flex: 1 1 auto;
-        width: 100%;
-    }
-    .filtro-select-empleado select {
-        border-radius: 999px;
-    }
-    .custom-pagination .page-link {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.8rem;
-    }
-    .filtro-select-empleado select,
-    .filtro-select {
-        background: #ffffff;
-    }
-    /* Ajuste de padding en cards para móvil */
-    .asistencia-card {
-        padding: 1.2rem 0.8rem;
-    }
-}
-
-
-/* ── RESPONSIVE DE LAS CARDS (Nuevos requisitos) ── */
-
-/* 1. En 1640px o menos: Dejar de mostrar 3 columnas y pasar a 2 */
-@media (max-width: 1640px) {
-    .col-lg-4 {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}
-
-/* 2. En 992px o menos: Mantener 2 columnas (para que no se rompa en tablets) */
 @media (max-width: 992px) {
     .col-md-6 {
         flex: 0 0 50%;
         max-width: 50%;
     }
 }
-
-/* 3. En 430px o menos: Las cards pasan a 1 columna y los horarios se apilan verticalmente */
-@media (max-width: 430px) {
-    .col-12,
+@media (max-width: 576px) {
     .col-md-6 {
         flex: 0 0 100%;
         max-width: 100%;
     }
-    
-    /* La fila de Programada y Marcada deja de ser una fila y se vuelve columna */
-    .asistencia-horarios {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
+    .asistencia-card-empleado {
+        padding: 1.2rem 0.8rem;
     }
+}
+
+/* Asegurar que los elementos ocultos con d-none no se muestren */
+.empleado-item.d-none {
+    display: none !important;
 }
