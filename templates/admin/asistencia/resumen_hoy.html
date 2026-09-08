@@ -68,7 +68,7 @@
             {% elif turno_codigo == 'TARDE' %}bi-moon-stars-fill text-primary
             {% else %}bi-clock-history text-secondary{% endif %} me-2"></i>
           <strong>
-            Turno 
+            Turno
             {% if turno_codigo == 'MANANA' %}Mañana
             {% elif turno_codigo == 'TARDE' %}Tarde
             {% else %}{{ turno_codigo|title }}{% endif %}
@@ -106,13 +106,13 @@
                 </td>
                 <td>
                   {% if horario.asistencia %}
-                    {% if horario.asistencia.estado == "PRESENTE" %}
-                    <span class="badge badge-active">Presente</span>
-                    {% elif horario.asistencia.estado == "TARDE" %}
-                    <span class="badge badge-pendiente">Tarde</span>
-                    {% elif horario.asistencia.estado == "AUSENTE" %}
-                    <span class="badge badge-rechazado">Ausente</span>
-                    {% endif %}
+                  {% if horario.asistencia.estado == "PRESENTE" %}
+                  <span class="badge badge-active">Presente</span>
+                  {% elif horario.asistencia.estado == "TARDE" %}
+                  <span class="badge badge-pendiente">Tarde</span>
+                  {% elif horario.asistencia.estado == "AUSENTE" %}
+                  <span class="badge badge-rechazado">Ausente</span>
+                  {% endif %}
                   {% else %}
                   <span class="badge bg-secondary">Sin registrar</span>
                   {% endif %}
@@ -121,13 +121,10 @@
                   {% if horario.asistencia %}
                   <span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>
                   {% else %}
-                  <form method="POST" action="{% url 'asistencia:registrar_asistencia' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="horario_id" value="{{ horario.id }}">
-                    <button type="submit" class="btn btn-sm btn-outline-corporate">
-                      <i class="bi bi-fingerprint"></i> Registrar
-                    </button>
-                  </form>
+                  <button class="btn btn-sm btn-outline-corporate btn-registrar-asistencia"
+                    data-horario-id="{{ horario.id }}">
+                    <i class="bi bi-fingerprint"></i> Registrar
+                  </button>
                   {% endif %}
                 </td>
               </tr>

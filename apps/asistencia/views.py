@@ -645,32 +645,57 @@ def eliminar_horario(request, id):
     return redirect("asistencia:horarios")
 
 
+# Cambio del 8 de septiembre del 2026:
+
+    # Se cambio porque el dropdown de asistencia del admin, se recargaba por el metodo POST
+    # Ahora se implemento AJAX para siempre tener el dropdown abierto cuando se esta registrando asistencia.
+
 def registrar_asistencia(request):
-    if request.method == "POST":
-        horario_id = request.POST.get("horario_id")
-        horario = get_object_or_404(Horario, id=horario_id)
+    if request.method != "POST":
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Método no permitido'}, status=405)
+        return redirect("asistencia:asistencia_dashboard")
 
-        asistencia_existente = (
-            Asistencia.objects
-            .filter(
-                horario=horario,
-                fecha=timezone.localdate()
-            )
-            .first()
-        )
+    horario_id = request.POST.get("horario_id")
+    if not horario_id:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Falta ID de horario'}, status=400)
+        return redirect("asistencia:asistencia_dashboard")
 
-        if asistencia_existente:
-            return redirect("asistencia:asistencia_dashboard")
+    horario = get_object_or_404(Horario, id=horario_id)
+    hoy = timezone.localdate()
 
-        hora_actual = timezone.localtime().time()
-        estado = "PRESENTE" if hora_actual <= horario.hora_entrada else "TARDE"
+    # Verificar si ya existe asistencia para hoy
+    asistencia_existente = Asistencia.objects.filter(horario=horario, fecha=hoy).first()
+    if asistencia_existente:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'estado': asistencia_existente.estado,
+                'hora_marcada': asistencia_existente.hora_marcada.strftime('%H:%M'),
+                'estado_display': asistencia_existente.get_estado_display(),
+                'ya_registrado': True
+            })
+        return redirect("asistencia:asistencia_dashboard")
 
-        Asistencia.objects.create(
-            horario=horario,
-            fecha=timezone.localdate(),
-            estado=estado,
-            hora_marcada=hora_actual,
-        )
+    hora_actual = timezone.localtime().time()
+    estado = "PRESENTE" if hora_actual <= horario.hora_entrada else "TARDE"
+
+    asistencia = Asistencia.objects.create(
+        horario=horario,
+        fecha=hoy,
+        estado=estado,
+        hora_marcada=hora_actual,
+    )
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'estado': asistencia.estado,
+            'hora_marcada': asistencia.hora_marcada.strftime('%H:%M'),
+            'estado_display': asistencia.get_estado_display(),
+            'ya_registrado': False
+        })
 
     return redirect("asistencia:asistencia_dashboard")
 

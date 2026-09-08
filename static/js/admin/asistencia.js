@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 4. MODAL DE HISTORIAL DE EMPLEADO (TABLA)
+    // 8 de Sep/2026: 4. MODAL DE HISTORIAL DE EMPLEADO (TABLA)
     // ==========================================
 
     let empleadoIdActual = null;
@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ==========================================
-    // 5. MODALES DE FECHA (Historial)
+    // 5. 8 de Sep/2026: MODALES DE FECHA (Historial)
     // ==========================================
 
     const modalFechaUnicaElement = document.getElementById('modalFechaUnicaHistorial');
@@ -648,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inicializarGraficos();
 
     // ==========================================
-    // 7. SOLUCIÓN PARA ADVERTENCIAS ARIA
+    // 8 de Sep/2026: 7. SOLUCIÓN PARA ADVERTENCIAS ARIA
     // ==========================================
 
     // Al abrir un modal de fecha, marcar el modal de historial como inerte
@@ -682,4 +682,102 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // ==========================================
+    // 8 de Sep/2026: 8. REGISTRAR ASISTENCIA (AJAX)
+
+    // Este cambio/funcion sirve para el dropdown de asistencia del dia presente.
+    // Esto genera que no se recargue la pagina y seguir registrando.
+    // ==========================================
+
+    // Función auxiliar para obtener el token CSRF desde la cookie
+    function getCsrfToken() {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, 'csrftoken'.length + 1) === ('csrftoken' + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring('csrftoken'.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-registrar-asistencia');
+        if (!btn) return;
+
+        e.preventDefault();
+        const horarioId = btn.dataset.horarioId;
+        const originalHtml = btn.innerHTML;
+
+        // Deshabilitar y mostrar spinner
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+        const formData = new FormData();
+        formData.append('horario_id', horarioId);
+
+        // Obtener token CSRF desde la cookie
+        const csrfToken = getCsrfToken();
+
+        fetch('/asistencia/registrar-asistencia/', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text || 'Error en la respuesta del servidor');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Encontrar la fila más cercana
+                const row = btn.closest('tr');
+                if (!row) return;
+
+                // Actualizar celda de estado (5ta columna)
+                const estadoCell = row.querySelector('td:nth-child(5)');
+                if (estadoCell) {
+                    const badge = estadoCell.querySelector('.badge');
+                    if (badge) {
+                        badge.textContent = data.estado_display;
+                        badge.className = 'badge ' + (data.estado === 'PRESENTE' ? 'badge-active' : 'badge-pendiente');
+                    }
+                }
+
+                // Actualizar celda de hora marcada (4ta columna)
+                const horaCell = row.querySelector('td:nth-child(4)');
+                if (horaCell) {
+                    horaCell.textContent = data.hora_marcada;
+                }
+
+                // Reemplazar el botón por un badge "Registrado"
+                const actionCell = btn.closest('td');
+                if (actionCell) {
+                    actionCell.innerHTML = '<span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>';
+                }
+            } else {
+                alert(data.error || 'Error al registrar la asistencia.');
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error de conexión. Intenta de nuevo.');
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        });
+    });
 });
