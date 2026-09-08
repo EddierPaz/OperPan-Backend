@@ -1158,7 +1158,38 @@ html body .navbar .btn-nav-login:hover,
 
 
 
+/* Estilos para los enlaces de redes sociales dentro de las tarjetas */
+.team-social {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
 
+.team-social a {
+    color: #ffffff;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.team-social a:hover {
+    color: var(--rojo, #dc3545); /* Usa tu variable rojo, o un color fijo */
+}
+
+/* En móvil (acordeón) el fondo es claro, así que los iconos deben ser oscuros */
+.accordion-body .team-social a {
+    color: #333;
+}
+
+.accordion-body .team-social a:hover {
+    color: var(--rojo, #dc3545);
+}
+
+.accordion-body .team-social {
+    border-top-color: rgba(0, 0, 0, 0.1);
+}
 
 
 
