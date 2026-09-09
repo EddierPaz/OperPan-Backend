@@ -5,32 +5,28 @@
 <!-- Modal Detalle Certificado -->
 <div class="modal fade" id="certificadosDetalleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content novedad-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header novedad-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="novedad-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-award-fill"></i>
                         <span id="certificadoDetalleTitulo">Detalle de certificado</span>
                     </div>
-                    <p class="novedad-detalle-subtitulo mb-0" id="certificadoDetalleSubtitulo">
+                    <p class="modal-detalle-subtitulo mb-0" id="certificadoDetalleSubtitulo">
                         Información completa de la solicitud
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body novedad-detalle-body" id="certificadosModalBody">
+            <div class="modal-body modal-detalle-body" id="certificadosModalBody">
                 <!-- Renderizado por JS -->
             </div>
 
-            <!-- Footer: antes .novedad-modal-btn + btn-outline-corporate/
-                 btn-primary-corporate/btn-success-corporate. "Rechazar" usaba
-                 el rojo institucional (correcto, ya es rojo=rechazar), pero
-                 "Descargar PDF" compartía el mismo verde que "Aprobar": son
-                 acciones distintas y deben distinguirse (verde=aprobar,
-                 teal=descargar, según el sistema global). -->
-            <div class="modal-footer novedad-detalle-footer">
+            <!-- Footer: rojo=rechazar, verde=aprobar, teal=descargar
+                 (acciones distintas, colores del sistema global). -->
+            <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-close" data-bs-dismiss="modal">
                     <i class="bi bi-x-lg"></i> Cerrar
                 </button>
@@ -54,23 +50,15 @@
 <!-- Modal Confirmar Aprobación Certificado -->
 <div class="modal fade" id="certificadosConfirmApproveModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal">
-            <div class="modal-header border-0 pb-0">
-                <!-- OJO: este ícono circular (.novedad-confirm-icon-success) es el
-                     mismo concepto que el .confirm-modal-icon global que ya dejamos
-                     definido en components.css — es una duplicación (punto 23 de tu
-                     spec). No lo cambié de clase para no romper el CSS de novedades
-                     que no he visto todavía; súbeme novedades.css y lo unifico. -->
-                <div class="novedad-confirm-icon novedad-confirm-icon-success mx-auto">
+        <div class="modal-content confirm-modal">
+            <div class="modal-body confirm-modal-body">
+                <div class="confirm-modal-icon confirm-modal-icon--success">
                     <i class="bi bi-check-lg"></i>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="confirm-modal-title">¿Aprobar certificado?</h5>
+                <p class="confirm-modal-text">El certificado será marcado como aprobado y se registrará la fecha de emisión.</p>
             </div>
-            <div class="modal-body text-center">
-                <h5>¿Aprobar certificado?</h5>
-                <p class="text-muted mb-0">El certificado será marcado como aprobado y se registrará la fecha de emisión.</p>
-            </div>
-            <div class="modal-footer border-0 justify-content-center">
+            <div class="confirm-modal-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>
@@ -85,24 +73,22 @@
 <!-- Modal Motivo de Rechazo Certificado -->
 <div class="modal fade" id="certificadosRejectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content novedad-modal">
-            <div class="modal-body text-center pt-4">
-                <!-- Mismo caso: .novedad-confirm-icon-danger duplica
-                     .confirm-modal-icon--danger. Pendiente de unificar. -->
-                <div class="novedad-confirm-icon novedad-confirm-icon-danger mx-auto mb-3">
+        <div class="modal-content confirm-modal">
+            <div class="modal-body confirm-modal-body text-start">
+                <div class="confirm-modal-icon confirm-modal-icon--danger mx-auto mb-3">
                     <i class="bi bi-x-lg"></i>
                 </div>
-                <h5 class="mb-2">¿Rechazar certificado?</h5>
-                <p class="text-muted mb-3">Deberás indicar el motivo del rechazo.</p>
-                <div class="text-start">
-                    <label for="certificadosRejectReason" class="novedad-rechazo-label">
+                <h5 class="confirm-modal-title text-center">¿Rechazar certificado?</h5>
+                <p class="confirm-modal-text text-center mb-3">Deberás indicar el motivo del rechazo.</p>
+                <div class="mb-2">
+                    <label for="certificadosRejectReason" class="form-label">
                         Motivo del rechazo <span class="text-danger">*</span>
                     </label>
-                    <textarea id="certificadosRejectReason" class="novedad-rechazo-textarea" placeholder="Escribe el motivo del rechazo..."></textarea>
+                    <textarea id="certificadosRejectReason" class="form-control" rows="3" placeholder="Escribe el motivo del rechazo..."></textarea>
                     <small class="text-muted d-block mt-1">Este motivo será visible para el empleado.</small>
                 </div>
             </div>
-            <div class="modal-footer border-0 justify-content-center pb-4">
+            <div class="confirm-modal-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>

@@ -1,11 +1,5 @@
 /* ============================================================
    COMPONENTS.CSS - OPERPAN (SISTEMA DE GESTIÓN DE PERSONAL)
-   Componentes de UI reutilizables por TODOS los módulos
-   (tareas, cuentas, novedades, asistencia, etc).
-   Ningún módulo debe redefinir estas clases: si necesita un
-   detalle propio, agrega una clase modificadora en su propio
-   CSS (ej. .kpi-card.kpi-novedades) sin tocar esta base.
-   Requiere variables.css cargado antes.
    ============================================================ */
 
 /* ============================================================
@@ -34,9 +28,9 @@
 }
 
 .btn-outline-corporate {
-  border: 1.5px solid #555555;
-  background: #555555;
-  color: #ffff;
+  border: 1.5px solid var(--color-action-neutral);
+  background: var(--color-action-neutral);
+  color: #ffffff;
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius-pill);
   font-weight: 600;
@@ -49,7 +43,8 @@
 
 .btn-outline-corporate:hover {
   color: white;
-  background: #444444;
+  background: var(--color-action-neutral-hover);
+  border-color: var(--color-action-neutral-hover);
   transform: translateY(-1px);
 }
 
@@ -104,16 +99,16 @@
 }
 
 .btn-corporate-four {
-  background: #ffffff;
-  color: #333333;
-  border: 1px solid #cccccc;
+  background: var(--color-surface);
+  color: var(--color-text-soft);
+  border: 1px solid var(--color-border);
   transition: all 0.3s ease;
 }
 
 .btn-corporate-four:hover {
-  background: #f0f0f0;
-  color: #000000;
-  border-color: #999999;
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
   transform: translateY(-2px);
 }
 
@@ -312,13 +307,13 @@
 /* Filtrar: variante "outline" gris, para no competir visualmente
    con las acciones de fila (se usa sobre todo junto a filtros-toolbar) */
 .btn-action-filter {
-  background: #ffffff;
+  background: var(--color-surface);
   color: var(--color-text-soft);
   border: 1.5px solid var(--color-border);
 }
 
 .btn-action-filter:hover {
-  background: #F8FAFC;
+  background: var(--color-surface-subtle);
   color: var(--color-text);
   border-color: var(--color-border);
 }
@@ -342,7 +337,7 @@
   height: var(--action-height);
   padding: 0;
   border: 1px solid var(--color-border);
-  background: #F8FAFC;
+  background: var(--color-surface-subtle);
   color: var(--color-text-soft);
   border-radius: var(--action-radius-icon);
   display: inline-flex;
@@ -355,7 +350,7 @@
 .btn-action-icon:hover {
   background: var(--color-primary-soft-2);
   color: var(--color-primary);
-  border-color: #FCA5A5;
+  border-color: var(--color-primary);
 }
 
 /* "Más" (⋮): siempre neutro/gris, nunca cambia de color —
@@ -363,12 +358,12 @@
    en sí misma. Úsese junto a .btn-action-icon:
    class="btn-action-icon btn-action-more" */
 .btn-action-more {
-  background: #F8FAFC;
+  background: var(--color-surface-subtle);
   color: var(--color-text-soft);
 }
 
 .btn-action-more:hover {
-  background: #EEF2F6;
+  background: var(--color-surface-subtle);
   color: var(--color-text);
   border-color: var(--color-border);
 }
@@ -397,6 +392,7 @@
    registro (ej. una cuenta suspendida no debe mostrar "Suspender").
    ============================================================ */
 .action-menu {
+  background: var(--color-surface);
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
@@ -429,7 +425,7 @@
 }
 
 .action-menu-item:hover {
-  background: #F8FAFC;
+  background: var(--color-surface-subtle);
   color: var(--color-text);
 }
 
@@ -484,6 +480,8 @@
    cambia el color de fondo/texto según --danger/--warning/--success.
    ============================================================ */
 .confirm-modal .modal-content {
+  background: var(--color-surface);
+  color: var(--color-text);
   border: none;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -524,6 +522,7 @@
   font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
+  color: var(--color-text);
 }
 
 .confirm-modal-text {
@@ -592,6 +591,7 @@
    novedad-modal-btn, novedad-modal-btn-aprobar, btn-danger).
    ============================================================ */
 .modal-detalle {
+  background: var(--color-surface);
   border: none;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -604,7 +604,7 @@
   align-items: flex-start;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--color-border-soft);
-  background: var(--color-white);
+  background: var(--color-surface);
 }
 
 .modal-detalle-titulo {
@@ -629,13 +629,20 @@
 
 .modal-detalle-body {
   padding: 1.5rem;
-  background: var(--color-white);
+  background: var(--color-surface);
 }
 
 .modal-detalle-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+/* Modificador: un .modal-detalle-item que debe ocupar el ancho
+   completo del grid (ej. un período de fechas, la fecha de
+   solicitud) en vez de compartir fila con otro campo. */
+.modal-detalle-item-full {
+  grid-column: 1 / -1;
 }
 
 .modal-detalle-item {
@@ -664,7 +671,8 @@
 .modal-detalle-value .form-control,
 .modal-detalle-value .form-select {
   font-weight: 400;
-  background: var(--color-white);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xs);
   padding: 0.45rem 0.75rem;
@@ -673,6 +681,7 @@
 
 .modal-detalle-value .form-control:focus,
 .modal-detalle-value .form-select:focus {
+  background: var(--color-surface);
   border-color: var(--color-primary);
   box-shadow: var(--shadow-focus-soft);
 }
@@ -685,7 +694,7 @@
 .modal-detalle-bloque-largo {
   grid-column: 1 / -1;
   padding: 0.5rem 1rem;
-  background: var(--color-white);
+  background: var(--color-surface);
   border-bottom: 2px solid var(--color-primary);
   border-radius: 0;
 }
@@ -694,6 +703,7 @@
   padding: 1rem;
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-sm);
+  background: var(--color-surface-subtle);
 }
 
 .modal-detalle-bloque-largo-label {
@@ -733,7 +743,7 @@
   justify-content: flex-end;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--color-border-soft);
-  background: var(--color-white);
+  background: var(--color-surface);
   gap: 0.6rem;
 }
 
@@ -774,7 +784,7 @@
    ============================================================ */
 .stat-card,
 .kpi-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
   padding: 1.25rem 1.5rem;
   min-height: 110px;
@@ -799,6 +809,7 @@
   font-weight: 800;
   margin-bottom: 0;
   line-height: 1.2;
+  color: var(--color-text);
 }
 
 .stat-card .text-muted,
@@ -831,7 +842,7 @@
    TARJETAS Y TABLAS
    ============================================================ */
 .card-modern {
-  background: white;
+  background: var(--color-surface);
   border-radius: var(--radius-xl);
   border: none;
   box-shadow: var(--shadow-md);
@@ -843,6 +854,7 @@
   background: transparent;
   padding: 1.2rem 0rem;
   font-weight: 700;
+  color: var(--color-text);
 }
 
 .table-responsive-stack {
@@ -855,10 +867,11 @@
   width: 100% !important;
   margin-bottom: 0;
   border-collapse: collapse;
+  color: var(--color-text);
 }
 
 .table-custom thead th {
-  background-color: #F8F9FC !important;
+  background-color: var(--color-surface-subtle) !important;
   color: var(--color-text-muted) !important;
   font-weight: 700;
   text-transform: uppercase;
@@ -875,10 +888,11 @@
   white-space: normal;
   word-break: normal;
   overflow-wrap: break-word;
+  border-color: var(--color-border-soft);
 }
 
 .table-custom tbody tr:hover {
-  background-color: #F8FAFC !important;
+  background-color: var(--color-surface-subtle) !important;
 }
 
 /* ============================================================
@@ -892,16 +906,64 @@
 
 .form-control,
 .form-select {
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
   border-radius: var(--radius-md);
   border: 1.5px solid var(--color-border);
   padding: 0.7rem 1rem;
   font-family: var(--font-main);
 }
 
+.form-control::placeholder {
+  color: var(--color-text-muted);
+}
+
 .form-control:focus,
 .form-select:focus {
+  background: var(--color-surface);
+  color: var(--color-text);
   border-color: var(--color-primary);
   box-shadow: var(--shadow-focus);
+}
+
+/* Campos deshabilitados / autocompletados (ej. "Cargo"): deben
+   verse visiblemente "apagados" a propósito —así el usuario
+   entiende que no se editan— pero SIN romper el tema ni quedar
+   blancos. Un tono más plano que el input activo + texto muted.
+   El !important y -webkit-text-fill-color son necesarios porque
+   Chrome/Safari fuerzan su propio blanco en inputs disabled/
+   readonly y no siempre alcanza con la especificidad normal. */
+.form-control:disabled,
+.form-control[readonly],
+.form-select:disabled {
+  background-color: var(--color-border-soft) !important;
+  color: var(--color-text-muted) !important;
+  -webkit-text-fill-color: var(--color-text-muted);
+  border-color: var(--color-border-soft) !important;
+  opacity: 1 !important;
+  cursor: not-allowed;
+}
+
+/* Respaldo para utilidades de Bootstrap que fijan su color con
+   !important y por eso no heredan el remapeo de variables --bs-*
+   (pasa puntualmente con .text-muted y .text-secondary). */
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .text-secondary {
+  color: var(--color-text-muted) !important;
+}
+
+/* ============================================================
+   ÍCONOS NATIVOS DE BOOTSTRAP EN TEMA OSCURO
+   La flecha del acordeón (.accordion-button::after) es un SVG
+   con trazo oscuro fijo, no un ícono de Bootstrap Icons — por
+   eso no responde a "color". Se soluciona invirtiéndolo con
+   filter (ver --icon-filter-invert en variables.css). Esta regla
+   es GLOBAL: cualquier módulo con acordeón (Asistencia, Tareas,
+   el que venga) la hereda sin tener que repetirla.
+   ============================================================ */
+.accordion-button::after {
+  filter: var(--icon-filter-invert);
+  transition: filter 0.2s ease;
 }
 
 /* ============================================================
@@ -944,7 +1006,7 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border-soft);
   border-left: 4px solid var(--color-border);
@@ -998,6 +1060,7 @@
 .request-info-top h5 {
   font-size: 1rem;
   margin: 0;
+  color: var(--color-text);
 }
 
 .request-subtype {
@@ -1054,7 +1117,7 @@
    PESTAÑAS DE FILTRO (TABS)
    ============================================================ */
 .novedades-tabs {
-  background: white;
+  background: var(--color-surface);
   border-radius: var(--radius-pill-lg);
   padding: 0.4rem 0.6rem;
   display: inline-flex;
@@ -1086,7 +1149,7 @@
 }
 
 .novedades-tab:hover:not(.active) {
-  background-color: #F8F9FA;
+  background-color: var(--color-surface-subtle);
   color: var(--color-text);
 }
 
@@ -1099,10 +1162,10 @@
    BARRA DE FILTROS COMPARTIDA
    ============================================================ */
 .filtros-toolbar {
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border-soft);
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
   padding: 0.85rem 1rem;
   margin-bottom: 1.5rem;
   display: flex;
@@ -1129,44 +1192,48 @@
 .filtro-buscar input {
   width: 100%;
   border: 1px solid var(--color-border-soft);
-  background: #F8FAFC;
+  background: var(--color-surface-subtle);
   border-radius: var(--radius-full);
   padding: 0.55rem 1rem 0.55rem 2.25rem;
   font-size: 0.9rem;
-  color: #1F2937;
+  color: var(--color-text);
   transition: 0.2s;
+}
+
+.filtro-buscar input::placeholder {
+  color: var(--color-text-muted);
 }
 
 .filtro-buscar input:focus {
   outline: none;
   border-color: var(--color-primary);
-  background: #ffffff;
+  background: var(--color-surface);
   box-shadow: var(--shadow-focus-soft);
 }
 
 .filtro-select {
   flex: 0 1 190px;
   border: 1px solid var(--color-border-soft);
-  background: #F8FAFC;
+  background: var(--color-surface-subtle);
   border-radius: var(--radius-full);
   padding: 0.55rem 2rem 0.55rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #1F2937;
+  color: var(--color-text);
   transition: 0.2s;
 }
 
 .filtro-select:focus {
   outline: none;
   border-color: var(--color-primary);
-  background: #ffffff;
+  background: var(--color-surface);
   box-shadow: var(--shadow-focus-soft);
 }
 
 .filtro-btn-limpiar {
   flex: 0 0 auto;
-  background: #555555;
-  border: 1.5px solid #555555;
+  background: var(--color-action-neutral);
+  border: 1.5px solid var(--color-action-neutral);
   color: #ffffff;
   padding: 0.55rem 1.5rem;
   border-radius: var(--radius-full);
@@ -1181,8 +1248,8 @@
 }
 
 .filtro-btn-limpiar:hover {
-  background: #444444;
-  border-color: #444444;
+  background: var(--color-action-neutral-hover);
+  border-color: var(--color-action-neutral-hover);
   color: white;
 }
 

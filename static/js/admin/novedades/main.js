@@ -151,13 +151,16 @@ function formatDate(dateStr) {
 
 function getEstadoClass(estado) {
 
+    // Usa los mismos badges globales de components.css que ya
+    // usan las tarjetas del historial (permisos.js/incapacidades.js/
+    // certificados.js), para no duplicar estilos ni colores fijos.
     const map = {
-        'pendiente': 'novedad-estado-pendiente',
-        'aprobado': 'novedad-estado-aprobado',
-        'rechazado': 'novedad-estado-rechazado'
+        'pendiente': 'badge-pendiente',
+        'aprobado': 'badge-aprobado',
+        'rechazado': 'badge-rechazado'
     };
 
-    return map[estado] || 'novedad-estado-pendiente';
+    return map[estado] || 'badge-pendiente';
 }
 
 
@@ -191,72 +194,72 @@ function renderPermisoDetalle(data) {
     const fechaSolicitud = formatDate(data.fecha_solicitud);
 
     container.innerHTML = `
-        <div class="novedad-detalle-grid">
+        <div class="modal-detalle-grid">
 
-            <div class="novedad-detalle-item">
-                <span class="novedad-detalle-label">Estado</span>
+            <div class="modal-detalle-item">
+                <span class="modal-detalle-label">Estado</span>
 
-                <span class="novedad-detalle-value">
-                    <span class="novedad-detalle-estado ${estadoClass}">
+                <span class="modal-detalle-value">
+                    <span class="badge ${estadoClass}">
                         ${estadoLabel}
                     </span>
                 </span>
             </div>
 
-            <div class="novedad-detalle-item">
-                <span class="novedad-detalle-label">Empleado</span>
+            <div class="modal-detalle-item">
+                <span class="modal-detalle-label">Empleado</span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     ${data.empleado || '—'}
                 </span>
             </div>
 
-            <div class="novedad-detalle-item">
-                <span class="novedad-detalle-label">Tipo</span>
+            <div class="modal-detalle-item">
+                <span class="modal-detalle-label">Tipo</span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     ${data.tipo || '—'}
                 </span>
             </div>
 
-            <div class="novedad-detalle-item novedad-detalle-item-full">
-                <span class="novedad-detalle-label">Período</span>
+            <div class="modal-detalle-item modal-detalle-item-full">
+                <span class="modal-detalle-label">Período</span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     <i class="bi bi-calendar3 me-1"></i>
                     ${fechaInicio} - ${fechaFin}
                 </span>
             </div>
 
-            <div class="novedad-detalle-bloque-largo">
-                <span class="novedad-detalle-bloque-largo-label">
+            <div class="modal-detalle-bloque-largo">
+                <span class="modal-detalle-bloque-largo-label">
                     Justificación
                 </span>
 
-                <p class="novedad-detalle-bloque-largo-texto">
+                <p class="modal-detalle-bloque-largo-texto">
                     ${data.justificacion || 'Sin información adicional.'}
                 </p>
             </div>
 
-            <div class="novedad-detalle-item novedad-detalle-item-full">
-                <span class="novedad-detalle-label">
+            <div class="modal-detalle-item modal-detalle-item-full">
+                <span class="modal-detalle-label">
                     Fecha de solicitud
                 </span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     <i class="bi bi-clock me-1"></i>
                     ${fechaSolicitud}
                 </span>
             </div>
 
             ${data.archivo ? `
-                <div class="novedad-detalle-bloque-largo">
+                <div class="modal-detalle-bloque-largo">
 
-                    <span class="novedad-detalle-bloque-largo-label">
+                    <span class="modal-detalle-bloque-largo-label">
                         Archivo adjunto
                     </span>
 
-                    <p class="novedad-detalle-bloque-largo-texto">
+                    <p class="modal-detalle-bloque-largo-texto">
 
                         <a
                             href="${data.archivo}"
@@ -272,28 +275,9 @@ function renderPermisoDetalle(data) {
             ` : ''}
 
             ${data.motivo_rechazo ? `
-                <div
-                    class="novedad-detalle-bloque-largo"
-                    style="
-                        border-left: 3px solid #dc3545;
-                        background: #fff7f7;
-                    "
-                >
-
-                    <span
-                        class="novedad-detalle-bloque-largo-label"
-                        style="color: #dc3545;"
-                    >
-                        Motivo del rechazo
-                    </span>
-
-                    <p
-                        class="novedad-detalle-bloque-largo-texto"
-                        style="color: #7f1d1d;"
-                    >
-                        ${data.motivo_rechazo}
-                    </p>
-
+                <div class="modal-detalle-rechazo">
+                    <strong>Motivo del rechazo</strong><br>
+                    ${data.motivo_rechazo}
                 </div>
             ` : ''}
 
@@ -320,62 +304,62 @@ function renderIncapacidadDetalle(data) {
     const fechaSolicitud = formatDate(data.fecha_solicitud);
 
     container.innerHTML = `
-        <div class="novedad-detalle-grid">
+        <div class="modal-detalle-grid">
 
-            <div class="novedad-detalle-item">
-                <span class="novedad-detalle-label">Estado</span>
+            <div class="modal-detalle-item">
+                <span class="modal-detalle-label">Estado</span>
 
-                <span class="novedad-detalle-value">
-                    <span class="novedad-detalle-estado ${estadoClass}">
+                <span class="modal-detalle-value">
+                    <span class="badge ${estadoClass}">
                         ${estadoLabel}
                     </span>
                 </span>
             </div>
 
-            <div class="novedad-detalle-item">
-                <span class="novedad-detalle-label">Empleado</span>
+            <div class="modal-detalle-item">
+                <span class="modal-detalle-label">Empleado</span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     ${data.empleado || '—'}
                 </span>
             </div>
 
-            <div class="novedad-detalle-item">
-                <span class="novedad-detalle-label">Título</span>
+            <div class="modal-detalle-item">
+                <span class="modal-detalle-label">Título</span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     ${data.titulo || '—'}
                 </span>
             </div>
 
-            <div class="novedad-detalle-item novedad-detalle-item-full">
-                <span class="novedad-detalle-label">Período</span>
+            <div class="modal-detalle-item modal-detalle-item-full">
+                <span class="modal-detalle-label">Período</span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     <i class="bi bi-calendar3 me-1"></i>
                     ${fechaInicio} - ${fechaFin}
                 </span>
             </div>
 
-            <div class="novedad-detalle-bloque-largo">
+            <div class="modal-detalle-bloque-largo">
 
-                <span class="novedad-detalle-bloque-largo-label">
+                <span class="modal-detalle-bloque-largo-label">
                     Descripción
                 </span>
 
-                <p class="novedad-detalle-bloque-largo-texto">
+                <p class="modal-detalle-bloque-largo-texto">
                     ${data.descripcion || 'Sin información adicional.'}
                 </p>
 
             </div>
 
-            <div class="novedad-detalle-item novedad-detalle-item-full">
+            <div class="modal-detalle-item modal-detalle-item-full">
 
-                <span class="novedad-detalle-label">
+                <span class="modal-detalle-label">
                     Fecha de solicitud
                 </span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     <i class="bi bi-clock me-1"></i>
                     ${fechaSolicitud}
                 </span>
@@ -383,13 +367,13 @@ function renderIncapacidadDetalle(data) {
             </div>
 
             ${data.archivo ? `
-                <div class="novedad-detalle-bloque-largo">
+                <div class="modal-detalle-bloque-largo">
 
-                    <span class="novedad-detalle-bloque-largo-label">
+                    <span class="modal-detalle-bloque-largo-label">
                         Archivo adjunto
                     </span>
 
-                    <p class="novedad-detalle-bloque-largo-texto">
+                    <p class="modal-detalle-bloque-largo-texto">
 
                         <a
                             href="${data.archivo}"
@@ -406,28 +390,9 @@ function renderIncapacidadDetalle(data) {
             ` : ''}
 
             ${data.motivo_rechazo ? `
-                <div
-                    class="novedad-detalle-bloque-largo"
-                    style="
-                        border-left: 3px solid #dc3545;
-                        background: #fff7f7;
-                    "
-                >
-
-                    <span
-                        class="novedad-detalle-bloque-largo-label"
-                        style="color: #dc3545;"
-                    >
-                        Motivo del rechazo
-                    </span>
-
-                    <p
-                        class="novedad-detalle-bloque-largo-texto"
-                        style="color: #7f1d1d;"
-                    >
-                        ${data.motivo_rechazo}
-                    </p>
-
+                <div class="modal-detalle-rechazo">
+                    <strong>Motivo del rechazo</strong><br>
+                    ${data.motivo_rechazo}
                 </div>
             ` : ''}
 
@@ -453,17 +418,17 @@ function renderCertificadoDetalle(data) {
     const fechaEmision = formatDate(data.fecha_emision);
 
     container.innerHTML = `
-        <div class="novedad-detalle-grid">
+        <div class="modal-detalle-grid">
 
-            <div class="novedad-detalle-item">
+            <div class="modal-detalle-item">
 
-                <span class="novedad-detalle-label">
+                <span class="modal-detalle-label">
                     Estado
                 </span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
 
-                    <span class="novedad-detalle-estado ${estadoClass}">
+                    <span class="badge ${estadoClass}">
                         ${estadoLabel}
                     </span>
 
@@ -471,37 +436,37 @@ function renderCertificadoDetalle(data) {
 
             </div>
 
-            <div class="novedad-detalle-item">
+            <div class="modal-detalle-item">
 
-                <span class="novedad-detalle-label">
+                <span class="modal-detalle-label">
                     Empleado
                 </span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     ${data.empleado || '—'}
                 </span>
 
             </div>
 
-            <div class="novedad-detalle-item">
+            <div class="modal-detalle-item">
 
-                <span class="novedad-detalle-label">
+                <span class="modal-detalle-label">
                     Tipo
                 </span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
                     ${data.tipo || '—'}
                 </span>
 
             </div>
 
-            <div class="novedad-detalle-item">
+            <div class="modal-detalle-item">
 
-                <span class="novedad-detalle-label">
+                <span class="modal-detalle-label">
                     Solicitado
                 </span>
 
-                <span class="novedad-detalle-value">
+                <span class="modal-detalle-value">
 
                     <i class="bi bi-calendar3 me-1"></i>
                     ${fechaSolicitud}
@@ -511,13 +476,13 @@ function renderCertificadoDetalle(data) {
             </div>
 
             ${data.fecha_emision ? `
-                <div class="novedad-detalle-item">
+                <div class="modal-detalle-item">
 
-                    <span class="novedad-detalle-label">
+                    <span class="modal-detalle-label">
                         Fecha de emisión
                     </span>
 
-                    <span class="novedad-detalle-value">
+                    <span class="modal-detalle-value">
 
                         <i class="bi bi-check-circle me-1"></i>
                         ${fechaEmision}
@@ -527,26 +492,26 @@ function renderCertificadoDetalle(data) {
                 </div>
             ` : ''}
 
-            <div class="novedad-detalle-bloque-largo">
+            <div class="modal-detalle-bloque-largo">
 
-                <span class="novedad-detalle-bloque-largo-label">
+                <span class="modal-detalle-bloque-largo-label">
                     Propósito
                 </span>
 
-                <p class="novedad-detalle-bloque-largo-texto">
+                <p class="modal-detalle-bloque-largo-texto">
                     ${data.proposito || 'Sin información adicional.'}
                 </p>
 
             </div>
 
             ${data.dirigido_a ? `
-                <div class="novedad-detalle-item novedad-detalle-item-full">
+                <div class="modal-detalle-item modal-detalle-item-full">
 
-                    <span class="novedad-detalle-label">
+                    <span class="modal-detalle-label">
                         Dirigido a
                     </span>
 
-                    <span class="novedad-detalle-value">
+                    <span class="modal-detalle-value">
                         ${data.dirigido_a}
                     </span>
 
@@ -554,13 +519,13 @@ function renderCertificadoDetalle(data) {
             ` : ''}
 
             ${data.periodo ? `
-                <div class="novedad-detalle-item novedad-detalle-item-full">
+                <div class="modal-detalle-item modal-detalle-item-full">
 
-                    <span class="novedad-detalle-label">
+                    <span class="modal-detalle-label">
                         Período
                     </span>
 
-                    <span class="novedad-detalle-value">
+                    <span class="modal-detalle-value">
                         ${data.periodo}
                     </span>
 
@@ -568,13 +533,13 @@ function renderCertificadoDetalle(data) {
             ` : ''}
 
             ${data.archivo ? `
-                <div class="novedad-detalle-bloque-largo">
+                <div class="modal-detalle-bloque-largo">
 
-                    <span class="novedad-detalle-bloque-largo-label">
+                    <span class="modal-detalle-bloque-largo-label">
                         Archivo adjunto
                     </span>
 
-                    <p class="novedad-detalle-bloque-largo-texto">
+                    <p class="modal-detalle-bloque-largo-texto">
 
                         <a
                             href="${data.archivo}"
@@ -591,28 +556,9 @@ function renderCertificadoDetalle(data) {
             ` : ''}
 
             ${data.motivo_rechazo ? `
-                <div
-                    class="novedad-detalle-bloque-largo"
-                    style="
-                        border-left: 3px solid #dc3545;
-                        background: #fff7f7;
-                    "
-                >
-
-                    <span
-                        class="novedad-detalle-bloque-largo-label"
-                        style="color: #dc3545;"
-                    >
-                        Motivo del rechazo
-                    </span>
-
-                    <p
-                        class="novedad-detalle-bloque-largo-texto"
-                        style="color: #7f1d1d;"
-                    >
-                        ${data.motivo_rechazo}
-                    </p>
-
+                <div class="modal-detalle-rechazo">
+                    <strong>Motivo del rechazo</strong><br>
+                    ${data.motivo_rechazo}
                 </div>
             ` : ''}
 

@@ -1,10 +1,5 @@
 /* ============================================================
    BASE.CSS - OPERPAN (SISTEMA DE GESTIÓN DE PERSONAL)
-   Reset, tipografía global y esqueleto de layout (sidebar,
-   topbar, footer). Los COMPONENTES de UI reutilizables
-   (botones, kpis, tablas, filtros, badges, tabs) viven en
-   components.css, no aquí.
-   Requiere variables.css cargado antes.
    ============================================================ */
 
 /* ── RESET & GLOBAL ── */
@@ -49,7 +44,9 @@ h4,
 h5,
 h6 {
   font-weight: 700;
-  color: var(--color-black);
+  /* Antes: var(--color-black), fijo en #000 en los dos temas →
+     invisible en oscuro. var(--color-text) sí cambia por tema. */
+  color: var(--color-text);
 }
 
 h1 {

@@ -1,6 +1,5 @@
 /* ============================================================
    TAREAS.CSS - OPERPAN
-   Módulo de Gestión y Asignación de Tareas
    ============================================================ */
 
 /* ── BOTONES DE ACCIÓN ESPECÍFICOS DE TAREA ── */
@@ -26,19 +25,19 @@
 
 /* ── TARJETAS DE TAREAS (TASK CARDS) ── */
 .task-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 20px;
   padding: 1.2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #EDF2F7;
+  border: 1px solid var(--color-border-soft);
   overflow: visible !important;
   position: relative;
 }
 
 .task-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
 .task-card:has(.dropdown-menu.show) {
@@ -48,13 +47,16 @@
 .text-title {
   font-weight: 700;
   font-size: 1.15rem;
-  color: #A40706;
+  color: var(--color-primary);
 }
 
-/* ── PRIORIDADES Y BADGES ── */
+/* ── PRIORIDADES Y BADGES ──
+   Antes en hex fijo — ahora referencian los tokens de estado
+   compartidos (mismo criterio que badge-presente/tarde/ausente
+   de Asistencia), así responden al tema oscuro. */
 .priority-high {
-  color: #B91C1C;
-  background: #FEF2F0;
+  color: var(--color-danger-text);
+  background: var(--color-danger-bg);
   padding: 0.25rem 0.65rem;
   border-radius: 40px;
   font-size: 0.75rem;
@@ -62,8 +64,8 @@
 }
 
 .priority-medium {
-  color: #C77A00;
-  background: #FFF3E0;
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg);
   padding: 0.25rem 0.65rem;
   border-radius: 40px;
   font-size: 0.75rem;
@@ -71,8 +73,8 @@
 }
 
 .priority-low {
-  color: #1E7B48;
-  background: #E0F2E9;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
   padding: 0.25rem 0.65rem;
   border-radius: 40px;
   font-size: 0.75rem;
@@ -87,26 +89,27 @@
 }
 
 .badge-pendiente {
-  background: #FFF3E0;
-  color: #C77A00;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .badge-progreso {
-  background: #E6F0FA;
-  color: #1A5D9C;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 .badge-finalizada {
-  background: #E0F2E9;
-  color: #1E7B48;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 /* ── ACORDEÓN DE TAREAS DE HOY ── */
 .accordion-item {
+  background: var(--color-surface);
   border: none;
-  border-left: 5px solid #A40706;
+  border-left: 5px solid var(--color-primary);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
@@ -116,11 +119,13 @@
   align-items: center;
   padding: 1rem 1.25rem;
   font-weight: 600;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .accordion-button:not(.collapsed) {
-  background: #ffffff;
-  color: #A40706;
+  background: var(--color-surface);
+  color: var(--color-primary);
   box-shadow: none;
 }
 
@@ -130,8 +135,9 @@
 }
 
 .accordion-body {
-  border-top: 1px solid #ECECEC;
-  background: #FAFBFC;
+  border-top: 1px solid var(--color-border-soft);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
   padding: 1.25rem;
 }
 
@@ -139,150 +145,12 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  background: #A40706;
+  background: var(--color-primary);
   color: #ffffff;
   padding: 0.35rem 0.9rem;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
-}
-
-/* ── MODALES ── */
-.tarea-modal {
-  border: none;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
-}
-
-/* HEADER */
-.tarea-detalle-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #edf2f7;
-  background: #ffffff;
-}
-
-.tarea-detalle-titulo {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: #A40706;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.tarea-detalle-titulo i {
-  font-size: 1.25rem;
-}
-
-.tarea-detalle-subtitulo {
-  margin-top: 0.25rem;
-  margin-left: 1.85rem;
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-/* BODY */
-.tarea-detalle-body {
-  padding: 1.5rem;
-  background: #ffffff;
-}
-
-/* GRID */
-.tarea-detalle-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-/* ITEMS (CASILLAS) */
-.tarea-detalle-item {
-  padding: 0.9rem 1rem;
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
-  border-radius: 12px;
-}
-
-.tarea-detalle-label {
-  display: block;
-  margin-bottom: 0.25rem;
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.tarea-detalle-value {
-  display: block;
-  color: #1e293b;
-  font-size: 0.92rem;
-  font-weight: 600;
-  word-break: break-word;
-}
-
-.tarea-detalle-value .form-control,
-.tarea-detalle-value .form-select {
-  font-weight: 400;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.9rem;
-}
-
-.tarea-detalle-value .form-control:focus,
-.tarea-detalle-value .form-select:focus {
-  border-color: #A40706;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-/* BLOQUE LARGO (títulos de sección) */
-.tarea-detalle-bloque-largo {
-  grid-column: 1 / -1;
-  padding: 0.5rem 1rem;
-  background: #ffffff;
-  border-bottom: 2px solid #A40706;
-  border-radius: 0;
-}
-
-.tarea-detalle-bloque-largo-label {
-  display: block;
-  color: #A40706;
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-/* FOOTER */
-.tarea-detalle-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #edf2f7;
-  background: #ffffff;
-  gap: 0.6rem;
-}
-
-/* BOTONES */
-.tarea-modal-btn {
-  border: none;
-  border-radius: 25px;
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-danger {
-  background: #dc3545;
-  color: #ffffff;
-  border: 1.5px solid #dc3545;
-}
-
-.btn-danger:hover {
-  background: #b02a37;
-  border-color: #b02a37;
 }
 
 @media (max-width: 768px) {

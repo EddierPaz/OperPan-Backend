@@ -4,280 +4,212 @@
    ============================================================ */
 
 :root {
-   /* ── Colores de marca ── */
-   --color-primary: #A40706;
-   --color-primary-hover: #8a0605;
-   --color-primary-soft: rgba(164, 7, 6, 0.1);
-   --color-primary-soft-2: #F8E4E4;
-   --color-white: #FFFFFF;
-   --color-black: #000000;
-   --color-pastel: #E6B1B0;
+  /* ── Colores de marca ── */
+  --color-primary: #a40706;
+  --color-primary-hover: #8a0605;
+  --color-primary-soft: rgba(164, 7, 6, 0.1);
+  --color-primary-soft-2: #f8e4e4;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-pastel: #e6b1b0;
 
-   /* ── Colores de estado (badges, botones de acción, toasts) ── */
-   --color-success: #06A45A;
-   --color-success-hover: #05884B;
-   --color-success-bg: #E1FAF0;
-   --color-success-text: #047A43;
+  /* ── Colores de estado (badges, botones de acción, toasts) ── */
+  --color-success: #06a45a;
+  --color-success-hover: #05884b;
+  --color-success-bg: #e1faf0;
+  --color-success-text: #047a43;
 
-   --color-danger: #DC3545;
-   --color-danger-hover: #BB2D3B;
-   --color-danger-bg: #FEE2E2;
-   --color-danger-text: #B91C1C;
-   --color-danger-strong: #EF4444;
-   --color-danger-strong-hover: #B91C1C;
+  --color-danger: #dc3545;
+  --color-danger-hover: #bb2d3b;
+  --color-danger-bg: #fee2e2;
+  --color-danger-text: #b91c1c;
+  --color-danger-strong: #ef4444;
+  --color-danger-strong-hover: #b91c1c;
 
-   --color-warning: #F59E0B;
-   --color-warning-hover: #D97706;
-   --color-warning-bg: #FFF3E0;
-   --color-warning-text: #C77A00;
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-bg: #fff3e0;
+  --color-warning-text: #c77a00;
 
-   --color-info: #0284C7;
-   --color-info-hover: #0369A1;
+  --color-info: #0284c7;
+  --color-info-hover: #0369a1;
+  --color-info-bg: #e6f0fa;
+  --color-info-text: #1a5d9c;
 
-   --color-teal: #0D9488;
-   --color-teal-hover: #0F766E;
+  --color-teal: #0d9488;
+  --color-teal-hover: #0f766e;
 
-   /* ── Neutros (fondo, texto, bordes) ── */
-   --color-bg: #F4F7FC;
-   --color-surface: var(--color-white);
-   /* Superficie principal (tarjetas, modales) */
-   --color-surface-subtle: #F8FAFC;
-   /* Fondos sutiles (inputs, hover) */
-   --color-text: #1E293B;
-   --color-text-muted: #64748B;
-   --color-text-soft: #475569;
-   --color-border: #E2E8F0;
-   --color-border-soft: #EDF2F7;
-   --color-placeholder-icon: #94A3B8;
-   --color-toast-text: #2C3E50;
-   --color-toast-close: #8A99AA;
+  /* ── Neutros (fondo, texto, bordes) ── */
+  --color-bg: #f4f7fc;
+  --color-surface: var(--color-white);
+  /* Superficie principal (tarjetas, modales) */
+  --color-surface-subtle: #f8fafc;
+  /* Fondos sutiles (inputs, hover) */
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --color-text-soft: #475569;
+  --color-border: #e2e8f0;
+  --color-border-soft: #edf2f7;
+  --color-placeholder-icon: #94a3b8;
+  --color-toast-text: #2c3e50;
+  --color-toast-close: #8a99aa;
 
-   /* ── Tipografía ── */
-   --font-main: 'Poppins', sans-serif;
+  /* ── Tipografía ── */
+  --font-main: "Poppins", sans-serif;
 
-   /* ── Radios ── */
-   --radius-xs: 8px;
-   --radius-sm: 12px;
-   --radius-md: 16px;
-   --radius-lg: 20px;
-   --radius-xl: 24px;
-   --radius-pill: 40px;
-   --radius-pill-lg: 60px;
-   --radius-full: 999px;
-   --radius-circle: 50%;
+  /* ── Radios ── */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 40px;
+  --radius-pill-lg: 60px;
+  --radius-full: 999px;
+  --radius-circle: 50%;
 
-   /* ── Sombras ── */
-   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
-   --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.05);
-   --shadow-modal: 0 20px 50px rgba(15, 23, 42, 0.18);
-   --shadow-focus: 0 0 0 3px rgba(164, 7, 6, 0.2);
-   --shadow-focus-soft: 0 0 0 3px rgba(164, 7, 6, 0.08);
-   --shadow-toast: 0 12px 30px rgba(0, 0, 0, 0.12);
+  /* ── Sombras ── */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 20px 50px rgba(15, 23, 42, 0.18);
+  --shadow-focus: 0 0 0 3px rgba(164, 7, 6, 0.2);
+  --shadow-focus-soft: 0 0 0 3px rgba(164, 7, 6, 0.08);
+  --shadow-toast: 0 12px 30px rgba(0, 0, 0, 0.12);
 
-   /* ── Sidebar / Topbar (oscuros, no dependen del branding) ── */
-   --color-surface-dark: #000000;
-   --color-surface-dark-border: #2C2C2C;
-   --color-text-on-dark: #FFFFFF;
-   --color-text-on-dark-soft: #E0E0E0;
-   --color-text-on-dark-muted: #BBBBBB;
+  /* ── Sidebar / Topbar (oscuros, no dependen del branding) ── */
+  --color-surface-dark: #000000;
+  --color-surface-dark-border: #2c2c2c;
+  --color-text-on-dark: #ffffff;
+  --color-text-on-dark-soft: #e0e0e0;
+  --color-text-on-dark-muted: #bbbbbb;
 
-   /* ── Espaciado ── */
-   --spacing-xs: 0.4rem;
-   --spacing-sm: 0.6rem;
-   --spacing-md: 1rem;
-   --spacing-lg: 1.5rem;
+  /* ── Espaciado ── */
+  --spacing-xs: 0.4rem;
+  --spacing-sm: 0.6rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
 
-   /* ── Sistema global de acciones (.btn-action-*) ── */
-   --action-height: 36px;
-   --action-radius: 25px;
-   --action-radius-icon: var(--radius-circle);
-   --action-padding: 0.5rem 1rem;
-   --action-gap: 0.4rem;
-   --action-font-size: 0.88rem;
-   --action-icon-size: 1rem;
+  /* ── Sistema global de acciones (.btn-action-*) ── */
+  --action-height: 36px;
+  --action-radius: 25px;
+  --action-radius-icon: var(--radius-circle);
+  --action-padding: 0.5rem 1rem;
+  --action-gap: 0.4rem;
+  --action-font-size: 0.88rem;
+  --action-icon-size: 1rem;
 
-   /* ── Colores semánticos de acción ── */
-   --color-action-view: var(--color-info);
-   --color-action-view-hover: var(--color-info-hover);
-   --color-action-edit: var(--color-info);
-   --color-action-edit-hover: var(--color-info-hover);
-   --color-action-info: var(--color-info);
-   --color-action-info-hover: var(--color-info-hover);
-   --color-action-create: var(--color-success);
-   --color-action-create-hover: var(--color-success-hover);
-   --color-action-save: var(--color-success);
-   --color-action-save-hover: var(--color-success-hover);
-   --color-action-approve: var(--color-success);
-   --color-action-approve-hover: var(--color-success-hover);
-   --color-action-activate: var(--color-success);
-   --color-action-activate-hover: var(--color-success-hover);
-   --color-action-reject: var(--color-danger);
-   --color-action-reject-hover: var(--color-danger-hover);
-   --color-action-delete: var(--color-danger-strong);
-   --color-action-delete-hover: var(--color-danger-strong-hover);
-   --color-action-suspend: var(--color-warning);
-   --color-action-suspend-hover: var(--color-warning-hover);
-   --color-action-download: var(--color-teal);
-   --color-action-download-hover: var(--color-teal-hover);
-   --color-action-print: var(--color-teal);
-   --color-action-print-hover: var(--color-teal-hover);
-   --color-action-neutral: #555555;
-   /* Botones secundarios (Cancelar, Cerrar) */
-   --color-action-neutral-hover: #444444;
+  /* ── Colores semánticos de acción ── */
+  --color-action-view: var(--color-info);
+  --color-action-view-hover: var(--color-info-hover);
+  --color-action-edit: var(--color-info);
+  --color-action-edit-hover: var(--color-info-hover);
+  --color-action-info: var(--color-info);
+  --color-action-info-hover: var(--color-info-hover);
+  --color-action-create: var(--color-success);
+  --color-action-create-hover: var(--color-success-hover);
+  --color-action-save: var(--color-success);
+  --color-action-save-hover: var(--color-success-hover);
+  --color-action-approve: var(--color-success);
+  --color-action-approve-hover: var(--color-success-hover);
+  --color-action-activate: var(--color-success);
+  --color-action-activate-hover: var(--color-success-hover);
+  --color-action-reject: var(--color-danger);
+  --color-action-reject-hover: var(--color-danger-hover);
+  --color-action-delete: var(--color-danger-strong);
+  --color-action-delete-hover: var(--color-danger-strong-hover);
+  --color-action-suspend: var(--color-warning);
+  --color-action-suspend-hover: var(--color-warning-hover);
+  --color-action-download: var(--color-teal);
+  --color-action-download-hover: var(--color-teal-hover);
+  --color-action-print: var(--color-teal);
+  --color-action-print-hover: var(--color-teal-hover);
+  --color-action-neutral: #555555;
+  /* Botones secundarios (Cancelar, Cerrar) */
+  --color-action-neutral-hover: #444444;
+
+  /* ── Filtro para íconos nativos "quemados" en SVG (ej. la
+     flecha del acordeón de Bootstrap): no son texto ni Bootstrap
+     Icons, son background-image con un trazo oscuro fijo dentro
+     del propio SVG, así que ningún color/var los toca — hay que
+     invertirlos con filter. En claro no hace falta (none). ── */
+  --icon-filter-invert: none;
 }
-
-
-/* ============================================================
-   CORRECCIÓN TOTAL MODO OSCURO (PEGAR AL FINAL)
-   ============================================================ */
 
 [data-theme="dark"] {
-   /* 1. COLORES BASE (La "receta" premium) */
-   --color-bg: #1A1D23;
-   /* Fondo general: Gris muy oscuro azulado (no negro) */
-   --color-white: #242A33;
-   /* Tarjetas, Tablas y Modales: Gris un poco más claro */
-   --color-surface: #242A33;
-   --color-surface-subtle: #1E232B;
-   /* Inputs y fondos sutiles */
-   --color-surface-dark: #16181D;
-   /* Sidebar y topbar: Casi negro */
+  /* ── Marca ── */
+  --color-primary: #e4534f; /* mismo hue, +brillo para contraste */
+  --color-primary-hover: #ef6b67;
+  --color-primary-soft: rgba(228, 83, 79, 0.16);
+  --color-primary-soft-2: #3a2020; /* antes tinte claro → tinte oscuro */
+  --color-pastel: #5c3535;
 
-   /* 2. TEXTOS (Asegura que siempre sean blancos o grises claros) */
-   --color-text: #FFFFFF;
-   /* Texto principal: Blanco puro */
-   --color-text-muted: #94A3B8;
-   /* Textos secundarios: Gris claro */
-   --color-text-soft: #CBD5E1;
+  /* ── Estados ── */
+  --color-success: #34d399;
+  --color-success-hover: #22c55e;
+  --color-success-bg: rgba(52, 211, 153, 0.14);
+  --color-success-text: #6ee7b7;
 
-   /* 3. BORDES */
-   --color-border: #3A4354;
-   /* Bordes de tablas visibles */
-   --color-border-soft: #2E3542;
+  --color-danger: #f87171;
+  --color-danger-hover: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.16);
+  --color-danger-text: #fca5a5;
+  --color-danger-strong: #f87171;
+  --color-danger-strong-hover: #ef4444;
 
-   /* 4. FUERZA TÍTULOS EN BLANCO */
-   [data-theme="dark"] h1,
-   [data-theme="dark"] h2,
-   [data-theme="dark"] h3,
-   [data-theme="dark"] h4,
-   [data-theme="dark"] h5,
-   [data-theme="dark"] h6,
-   [data-theme="dark"] .section-title,
-   [data-theme="dark"] .card-title {
-      color: #FFFFFF !important;
-   }
+  --color-warning: #fbbf24;
+  --color-warning-hover: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.14);
+  --color-warning-text: #fcd34d;
 
-   /* 5. CORRECCIÓN DE TABLAS (La clave para que se vean los nombres) */
-   [data-theme="dark"] table,
-   [data-theme="dark"] .table,
-   [data-theme="dark"] tbody {
-      background-color: #242A33 !important;
-      color: #FFFFFF !important;
-   }
+  --color-info: #38bdf8;
+  --color-info-hover: #0ea5e9;
+  --color-info-bg: rgba(56, 189, 248, 0.16);
+  --color-info-text: #7dd3fc;
 
-   [data-theme="dark"] thead th {
-      background-color: #1A1D23 !important;
-      color: #94A3B8 !important;
-      border-bottom: 2px solid #3A4354 !important;
-      font-weight: 600;
-   }
+  --color-teal: #2dd4bf;
+  --color-teal-hover: #14b8a6;
 
-   [data-theme="dark"] tbody td {
-      background-color: #242A33 !important;
-      color: #FFFFFF !important;
-      /* ¡Obligatorio! Esto arregla los nombres invisibles */
-      border-bottom: 1px solid #3A4354 !important;
-   }
+  /* ── Neutros ── */
+  --color-bg: #101317;
+  --color-surface: #1a1e24;
+  --color-surface-subtle: #20242b;
+  --color-text: #e8eaed;
+  --color-text-muted: #a3abb8;
+  --color-text-soft: #c7cbd3;
+  --color-border: #2c313a;
+  --color-border-soft: #232830;
+  --color-placeholder-icon: #6b7280;
+  --color-toast-text: #e8eaed;
+  --color-toast-close: #8b93a0;
 
-   [data-theme="dark"] tbody tr:hover td {
-      background-color: #2D3540 !important;
-      /* Efecto hover elegante */
-   }
+  /* ── Sombras (más fuertes, el negro sobre negro no se nota) ── */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.45);
+  --shadow-modal: 0 20px 50px rgba(0, 0, 0, 0.55);
+  --shadow-focus: 0 0 0 3px rgba(228, 83, 79, 0.3);
+  --shadow-focus-soft: 0 0 0 3px rgba(228, 83, 79, 0.12);
+  --shadow-toast: 0 12px 30px rgba(0, 0, 0, 0.4);
 
-   /* 6. TARJETAS KPI (Las de la parte superior) */
-   /* Opción A: Si quieres que sigan siendo blancas con texto negro (como en tu foto) */
-   [data-theme="dark"] .kpi-card,
-   [data-theme="dark"] .card-stat {
-      background-color: #FFFFFF !important;
-      color: #1E293B !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-   }
+  /* ── Acciones neutras (Cancelar/Cerrar/Filtrar) ── */
+  --color-action-neutral: #3a3f47;
+  --color-action-neutral-hover: #4a4f58;
 
-   [data-theme="dark"] .kpi-card h1,
-   [data-theme="dark"] .kpi-card h2,
-   [data-theme="dark"] .kpi-card .number {
-      color: #1E293B !important;
-   }
+  /* ── Puente con variables nativas de Bootstrap ──
+     Muchas utilidades de Bootstrap (.text-muted, .text-secondary,
+     .form-control:disabled, .dropdown-menu, .modal-content, bordes)
+     usan colores fijos con !important basados en estas variables.
+     Remapeándolas acá, todo el sistema hereda el tema oscuro sin
+     tener que pisar cada clase de Bootstrap una por una. */
+  --bs-body-bg: var(--color-bg);
+  --bs-body-color: var(--color-text);
+  --bs-secondary-color: var(--color-text-muted);
+  --bs-secondary-bg: var(--color-surface-subtle);
+  --bs-tertiary-bg: var(--color-surface);
+  --bs-border-color: var(--color-border);
+  --bs-emphasis-color: var(--color-text);
+  --bs-heading-color: var(--color-text);
+  --bs-link-color: var(--color-primary);
+  --bs-link-hover-color: var(--color-primary-hover);
 
-   /* Opción B (Recomendada para modo oscuro total): 
-     Descomenta estas líneas si prefieres que las tarjetas KPI también sean oscuras */
-   /*
-  [data-theme="dark"] .kpi-card, [data-theme="dark"] .card-stat {
-      background-color: #242A33 !important;
-      color: #FFFFFF !important;
-      border: 1px solid #3A4354 !important;
-  }
-  [data-theme="dark"] .kpi-card h1, [data-theme="dark"] .kpi-card h2, 
-  [data-theme="dark"] .kpi-card .number {
-      color: #FFFFFF !important;
-  }
-  */
-
-   /* 7. MODALES */
-   [data-theme="dark"] .modal-content,
-   [data-theme="dark"] .modal-header,
-   [data-theme="dark"] .modal-body {
-      background-color: #242A33 !important;
-      color: #FFFFFF !important;
-      border: 1px solid #3A4354 !important;
-   }
-}
-
-/* ============================================================
-   CORRECCIÓN FINAL: FORZAR TABLAS A MODO OSCURO
-   ============================================================ */
-
-/* Fondo general de la tabla y filas */
-[data-theme="dark"] table,
-[data-theme="dark"] .table,
-[data-theme="dark"] tbody,
-[data-theme="dark"] tr,
-[data-theme="dark"] td {
-    background-color: #242A33 !important; /* El mismo gris de las tarjetas */
-    color: #FFFFFF !important;            /* Texto en blanco puro */
-    border-color: #3A4354 !important;     /* Bordes visibles */
-}
-
-/* Encabezados de la tabla (la fila de DOCUMENTO, USUARIO, etc.) */
-[data-theme="dark"] thead,
-[data-theme="dark"] thead th {
-    background-color: #1A1D23 !important; /* Un poco más oscuro para diferenciarlo */
-    color: #94A3B8 !important;            /* Gris claro legible */
-    border-bottom: 2px solid #3A4354 !important;
-}
-
-/* Efecto hover en las filas (para que se sienta interactivo) */
-[data-theme="dark"] tbody tr:hover td {
-    background-color: #2D3540 !important;
-}
-
-/* Arreglar los enlaces o nombres dentro de las celdas */
-[data-theme="dark"] tbody td a,
-[data-theme="dark"] tbody td span,
-[data-theme="dark"] tbody td div {
-    color: #FFFFFF !important;
-}
-
-/* Opcional: Volver oscuras las tarjetas KPI para que no desentonen */
-[data-theme="dark"] .kpi-card,
-[data-theme="dark"] .card-stat,
-[data-theme="dark"] .card-stats {
-    background-color: #242A33 !important;
-    color: #FFFFFF !important;
-    border: 1px solid #3A4354 !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-[data-theme="dark"] .kpi-card .title,
-[data-theme="dark"] .kpi-card .number {
-    color: #FFFFFF !important;
+  --icon-filter-invert: invert(1) brightness(1.7);
 }

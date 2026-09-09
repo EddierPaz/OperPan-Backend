@@ -4,317 +4,260 @@
 
 /* ── ACORDEÓN DE TURNOS ── */
 .accordion-item {
-    border: none;
-    border-left: 5px solid #a40706;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin-bottom: 18px;
+  background: var(--color-surface);
+  border: none;
+  border-left: 5px solid var(--color-primary);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 18px;
 }
 .accordion-button {
-    display: grid !important;
-    grid-template-columns: 1fr auto 30px;
-    align-items: center;
-    position: relative;
+  display: grid !important;
+  grid-template-columns: 1fr auto 30px;
+  align-items: center;
+  position: relative;
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 .accordion-button:not(.collapsed) {
-    background: #fff;
-    color: #a40706;
-    box-shadow: none;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: none;
 }
 .accordion-button:focus {
-    box-shadow: none;
-    border: none;
+  box-shadow: none;
+  border: none;
 }
 .accordion-body {
-    border-top: 1px solid #ececec;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-top: 1px solid var(--color-border-soft);
 }
 .turno-badge {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #a40706;
-    color: #fff;
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 /* ── CALENDARIO DE HORARIOS (crear/editar) ── */
 .calendario-wrapper {
-    width: 100%;
+  width: 100%;
 }
 .dias-semana {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
 }
 .dia-semana {
-    text-align: center;
-    font-weight: 700;
-    color: #6c757d;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 .calendario-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  width: 100%;
 }
 .dias-calendario {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
 }
 .dia-btn {
-    width: 100%;
-    min-height: 56px;
-    border: none;
-    border-radius: 12px;
-    background: #f5f7fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    transition: 0.2s;
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 12px;
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: 0.2s;
 }
 .dia-btn:hover {
-    border-color: #a40706;
-    color: #a40706;
-    transform: translateY(-2px);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-2px);
 }
 .dia-btn.seleccionado {
-    background: #b91c1c;
-    border-color: #b91c1c;
-    color: white;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
 }
 .dia-btn--ultimo {
-    border-style: dashed;
-    border-color: #a40706;
-    color: #a40706;
+  border-style: dashed;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 .dia-btn--ultimo:hover {
-    background: #a40706;
-    color: white;
+  background: var(--color-primary);
+  color: white;
 }
 .dia-vacio {
-    width: 100%;
-    min-height: 56px;
+  width: 100%;
+  min-height: 56px;
 }
 
 /* ── TARJETAS DE EMPLEADOS ── */
 .asistencia-card-empleado {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 1.5rem 1.2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid #EDF2F7;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  background: var(--color-surface);
+  border-radius: 20px;
+  padding: 1.5rem 1.2rem;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  border: 1px solid var(--color-border-soft);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 .asistencia-card-empleado:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 .empleado-nombre {
-    font-size: 1rem; /* tamaño base */
-    line-height: 1.3;
-    color: #000000;
+  font-size: 1rem; /* tamaño base */
+  line-height: 1.3;
+  color: var(--color-text);
 }
 .empleado-grafico {
-    position: relative;
-    height: 140px;
-    width: 100%;
-    margin: 0.5rem 0;
+  position: relative;
+  height: 140px;
+  width: 100%;
+  margin: 0.5rem 0;
 }
 .empleado-grafico canvas {
-    width: 100% !important;
-    height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* Badge de cargo */
 .badge-cargo {
-    background: var(--color-surface-subtle);
-    color: var(--color-text-soft);
-    font-weight: 500;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    border: 1px solid var(--color-border-soft);
-    
-    /* 
+  background: var(--color-surface-subtle);
+  color: var(--color-text-soft);
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  border: 1px solid var(--color-border-soft);
+
+  /*
         Cambio del 8 de sep/26:
-        
+
         Evita que se encoja al momento de disminuir el tamaño de PX en width del dispostivo
     */
-    white-space: nowrap;
-    flex-shrink: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* ── BADGES DE ESTADO (para la tabla) ── */
+/* ── BADGES DE ESTADO (para la tabla) ──
+   Antes en hex fijo (#E1FAF0, etc.) — ahora referencian los
+   mismos tokens de estado que badge-active/badge-pendiente/etc,
+   así responden al tema igual que el resto del sistema. */
 .badge-estado {
-    padding: 0.4rem 0.7rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.75rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.75rem;
 }
 .badge-presente {
-    background: #E1FAF0;
-    color: #047A43;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 .badge-tarde {
-    background: #FFF3E0;
-    color: #C77A00;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 .badge-ausente {
-    background: #FEE2E2;
-    color: #B91C1C;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 .badge-sin-registro {
-    background: #F8FAFC;
-    color: #64748B;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
 }
 
-/* ── FILTROS ── */
-.filtros-toolbar {
-    background: #ffffff;
-    border: 1px solid var(--color-border-soft);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    padding: 0.85rem 1rem;
-    margin-bottom: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: center;
-}
-.filtro-buscar {
-    position: relative;
-    flex: 1 1 260px;
-}
-.filtro-buscar i {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    font-size: 0.9rem;
-    pointer-events: none;
-}
-.filtro-buscar input {
-    width: 100%;
-    border: 1px solid var(--color-border-soft);
-    background: #F8FAFC;
-    border-radius: 999px;
-    padding: 0.55rem 1rem 0.55rem 2.25rem;
-    font-size: 0.9rem;
-    color: #1F2937;
-    transition: 0.2s;
-}
-.filtro-buscar input:focus {
-    outline: none;
-    border-color: #a40706;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
+/* ── FILTROS ──
+   .filtros-toolbar, .filtro-buscar, .filtro-select y
+   .filtro-btn-limpiar YA NO SE REDEFINEN ACÁ: se heredan tal
+   cual de components.css. Solo queda lo que es EXCLUSIVO de
+   este módulo (el select de empleado y el botón de fecha), que
+   no existe en el sistema global. */
 .filtro-select-empleado {
-    flex: 1 1 220px;
+  flex: 1 1 220px;
 }
 .filtro-select-empleado select {
-    width: 100%;
-    border: 1px solid var(--color-border-soft);
-    background: #F8FAFC;
-    border-radius: 999px;
-    padding: 0.55rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #1F2937;
-    transition: 0.2s;
+  width: 100%;
+  border: 1px solid var(--color-border-soft);
+  background: var(--color-surface-subtle);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: 0.2s;
 }
 .filtro-select-empleado select:focus {
-    outline: none;
-    border-color: #a40706;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-.filtro-select {
-    flex: 0 1 190px;
-    border: 1px solid var(--color-border-soft);
-    background: #F8FAFC;
-    border-radius: 999px;
-    padding: 0.55rem 2rem 0.55rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #1F2937;
-    transition: 0.2s;
-}
-.filtro-select:focus {
-    outline: none;
-    border-color: #a40706;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-.filtro-btn-limpiar {
-    flex: 0 0 auto;
-    background: #555555;
-    border: 1.5px solid #555555;
-    color: #ffffff;
-    padding: 0.55rem 1.5rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-.filtro-btn-limpiar:hover {
-    background: #444444;
-    border-color: #444444;
-    color: white;
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-focus-soft);
 }
 
 /* ── TABLA EN EL MODAL ── */
 #contenidoHistorialEmpleado {
-    max-height: 550px;
-    overflow-y: auto;
+  max-height: 550px;
+  overflow-y: auto;
+}
+#contenidoHistorialEmpleado .table {
+  color: var(--color-text);
 }
 #contenidoHistorialEmpleado .table thead th {
-    position: sticky;
-    top: 0;
-    background: #ffffff;
-    z-index: 10;
-    border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  z-index: 10;
+  border-bottom: 2px solid var(--color-border);
 }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-    .filtros-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .filtro-buscar,
-    .filtro-select-empleado,
-    .filtro-select,
-    .filtro-btn-limpiar {
-        flex: 1 1 auto;
-        width: 100%;
-    }
-    .asistencia-card-empleado {
-        padding: 1.2rem 0.8rem;
-    }
+  .filtros-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filtro-buscar,
+  .filtro-select-empleado,
+  .filtro-select,
+  .filtro-btn-limpiar {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  .asistencia-card-empleado {
+    padding: 1.2rem 0.8rem;
+  }
 }
 
 .empleado-item.d-none {
-    display: none !important;
+  display: none !important;
 }
 
-
-/* 
+/*
 
 Cambio del 8 de sep/26
 
@@ -324,115 +267,108 @@ Esto para temas de celulares.
 
  */
 
-    @media (max-width: 576px) {
-        .empleado-nombre {
-            font-size: 0.9rem;
-        }
-        .badge-cargo {
-            font-size: 0.7rem;
-            padding: 0.3rem 0.6rem;
-        }
-    }
+@media (max-width: 576px) {
+  .empleado-nombre {
+    font-size: 0.9rem;
+  }
+  .badge-cargo {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
 
-    /* 
+/*
         Ajuste para filtros en el modal de historial
 
         Estilo para botones de fecha en el modal de historial
     */
-    .filtro-btn-fecha {
-        flex: 0 0 auto;
-        border: 1px solid var(--color-border-soft);
-        background: #F8FAFC;
-        border-radius: 999px;
-        padding: 0.55rem 1.2rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #1F2937;
-        transition: 0.2s;
-        cursor: pointer;
-        white-space: nowrap;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-    .filtro-btn-fecha:hover {
-        background: #ffffff;
-        border-color: var(--color-primary);
-        color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-    }
-    .filtro-btn-fecha:focus {
-        outline: none;
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-    }
+.filtro-btn-fecha {
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border-soft);
+  background: var(--color-surface-subtle);
+  border-radius: 999px;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: 0.2s;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.filtro-btn-fecha:hover {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-focus-soft);
+}
+.filtro-btn-fecha:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus-soft);
+}
 
-    /* Ajuste responsive para los filtros del modal */
-    @media (max-width: 768px) {
-        #filtrosInternosModal {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        #filtrosInternosModal .filtro-select,
-        #filtrosInternosModal .filtro-btn-fecha,
-        #filtrosInternosModal .filtro-btn-limpiar {
-            width: 100%;
-            flex: 1 1 auto;
-            justify-content: center;
-        }
-    }
+/* Ajuste responsive para los filtros del modal */
+@media (max-width: 768px) {
+  #filtrosInternosModal {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #filtrosInternosModal .filtro-select,
+  #filtrosInternosModal .filtro-btn-fecha,
+  #filtrosInternosModal .filtro-btn-limpiar {
+    width: 100%;
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
 
-    /* ==============================================
-    
-    
-    
+/* ==============================================
+
+
+
     Responsividad del badge "programados"
     en acordeón de turnos (pantallas < 530px)
 
-    
+
     ============================================== */
 
-    @media (max-width: 530px) {
-        /* Reorganizar el botón del acordeón en grid de una columna */
-        .accordion-button {
-            grid-template-columns: 1fr !important;
-            grid-template-rows: auto auto auto;
-            gap: 0.25rem;
-            justify-items: center;
-            padding: 0.75rem 0.5rem;
-            text-align: center;
-        }
+@media (max-width: 530px) {
+  /* Reorganizar el botón del acordeón en grid de una columna */
+  .accordion-button {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto;
+    gap: 0.25rem;
+    justify-items: center;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+  }
 
-        /* Primera fila: icono + nombre del turno */
-        .accordion-button .d-flex {
-            grid-row: 1;
-            justify-self: center;
-            margin: 0;
-        }
+  /* Primera fila: icono + nombre del turno */
+  .accordion-button .d-flex {
+    grid-row: 1;
+    justify-self: center;
+    margin: 0;
+  }
 
-        /* Segunda fila: badge "programados" (sin posición absoluta) */
-        .turno-badge {
-            grid-row: 2;
-            position: static !important;
-            transform: none !important;
-            left: auto !important;
-            justify-self: center;
-            font-size: 0.8rem;
-            padding: 0.2rem 0.8rem;
-            margin: 0;
-        }
+  /* Segunda fila: badge "programados" (sin posición absoluta) */
+  .turno-badge {
+    grid-row: 2;
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    justify-self: center;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.8rem;
+    margin: 0;
+  }
 
-        /* Tercera fila: flecha de Bootstrap (collapse indicator) */
-        .accordion-button::after {
-            grid-row: 3;
-            justify-self: center;
-            margin: 0;
-        }
-    }
-
-
-/* 
-
-Fin.
-
-*/
+  /* Tercera fila: flecha de Bootstrap (collapse indicator) */
+  .accordion-button::after {
+    grid-row: 3;
+    justify-self: center;
+    margin: 0;
+  }
+}
