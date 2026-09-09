@@ -108,4 +108,56 @@ document.addEventListener("DOMContentLoaded", () => {
     // Exponer función globalmente por si alguna vista necesita
     // lanzar una notificación desde JS (ej. tras una llamada fetch)
     window.mostrarNotificacion = mostrarNotificacion;
+
+    // ── Toggle de tema (claro/oscuro) ──────────────────────────
+    (function() {
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+
+        if (!toggleBtn || !icon) return; // Si no existe el botón, salir
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            // Cambiar ícono
+            if (theme === 'dark') {
+                icon.className = 'bi bi-sun-fill';
+            } else {
+                icon.className = 'bi bi-moon-fill';
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        function getInitialTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) return stored;
+            // Detectar preferencia del sistema
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+
+        // Establecer tema inicial
+        const initialTheme = getInitialTheme();
+        setTheme(initialTheme);
+
+        // Evento clic
+        toggleBtn.addEventListener('click', function() {
+            const current = html.getAttribute('data-theme') || 'light';
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        });
+
+        // (Opcional) Escuchar cambios en la preferencia del sistema
+        // Solo si el usuario no ha guardado una preferencia explícita
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', function(e) {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+    })();
 });

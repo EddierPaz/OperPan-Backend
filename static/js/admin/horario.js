@@ -185,7 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const btn = e.target.closest(".dia-btn");
             if (!btn || btn.style.display === "none") return;
 
-            // Obtener la fecha seleccionada
             const fechaStr = btn.dataset.fecha;
             if (!fechaStr) return;
 
@@ -193,17 +192,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
 
-            // =====================================================
-            // VALIDACIÓN 1: No permitir fechas pasadas O EL DÍA ACTUAL
-            // =====================================================
             if (fechaSeleccionada <= hoy) {
                 mostrarToast("No puedes seleccionar el día de hoy o una fecha que ya pasó.", "warning");
                 return;
             }
 
-            // =====================================================
-            // VALIDACIÓN 2: Si el descanso ya pasó, bloquear cualquier cambio
-            // =====================================================
             if (descansoPasado) {
                 mostrarToast(
                     "El descanso de este ciclo ya ocurrió. No se puede modificar.",
@@ -212,9 +205,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // =====================================================
-            // VALIDACIÓN 3: Verificar que la fecha esté dentro del ciclo actual
-            // =====================================================
             if (cicloInicio && cicloFin) {
                 const fechaInicio = new Date(cicloInicio + 'T00:00:00');
                 const fechaFin = new Date(cicloFin + 'T00:00:00');
@@ -229,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // Si pasa todas las validaciones, seleccionar
             cicloEditar.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
             btn.classList.add("seleccionado");
             inputEditar.value = btn.dataset.fecha;
@@ -242,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // 3. VER / EDITAR / ELIMINAR HORARIO (modales)
     // ==========================================
 
-    // Referencias del modal de eliminar
     const modalEliminarElement = document.getElementById("modalEliminarHorario");
     const formEliminarHorario = document.getElementById("formEliminarHorario");
     const btnConfirmarEliminar = formEliminarHorario
@@ -312,7 +300,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     return res.json();
                 })
                 .then(function (data) {
-                    // Guardar datos del ciclo y descanso para validaciones
                     descansoPasado = data.descanso_pasado || false;
                     fechaDescansoActual = data.descanso_fecha || null;
                     cicloInicio = data.ciclo_inicio || null;
@@ -331,9 +318,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
                     }
 
-                    // =====================================================
-                    // Mostrar advertencia si el descanso ya pasó o es hoy
-                    // =====================================================
                     if (avisoEdicion) {
                         const hoy = new Date();
                         hoy.setHours(0, 0, 0, 0);
@@ -349,11 +333,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                 ${descansoPasado ? 'ya ocurrió' : 'está en el día de hoy'}. 
                                 No se puede modificar. El siguiente descanso se generará automáticamente.
                             `;
-                            // Deshabilitar el calendario
                             cicloEditar.style.pointerEvents = 'none';
                             cicloEditar.style.opacity = '0.5';
                             cicloEditar.style.cursor = 'not-allowed';
-                            // Deshabilitar el botón de limpiar
                             const btnLimpiarEditar = document.getElementById('btnLimpiarEditar');
                             if (btnLimpiarEditar) {
                                 btnLimpiarEditar.disabled = true;
@@ -374,7 +356,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     actualizarDiasCalendario(cicloEditar, data.turno_valor, inputEditar, labelEditar, textoEditar);
 
-                    // Seleccionar el día de descanso en el calendario
                     if (cicloEditar) {
                         cicloEditar.querySelectorAll(".dia-btn").forEach(function (b) {
                             b.classList.remove("seleccionado");
@@ -384,9 +365,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     }
 
-                    // =====================================================
-                    // Marcar días pasados y el día actual como deshabilitados
-                    // =====================================================
                     if (cicloEditar) {
                         const hoy = new Date();
                         hoy.setHours(0, 0, 0, 0);
@@ -394,7 +372,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             const fechaStr = b.dataset.fecha;
                             if (fechaStr) {
                                 const fecha = new Date(fechaStr + 'T00:00:00');
-                                // Deshabilitar días pasados Y el día actual
                                 if (fecha <= hoy) {
                                     b.style.opacity = '0.3';
                                     b.style.cursor = 'not-allowed';
@@ -421,7 +398,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         }
 
-        // Eliminar horario
         const btnEliminar = e.target.closest(".btn-eliminar-horario");
         if (btnEliminar) {
             e.preventDefault();
@@ -455,7 +431,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Al enviar el formulario de eliminar, doble seguro
     if (formEliminarHorario) {
         formEliminarHorario.addEventListener("submit", function (e) {
             if (btnConfirmarEliminar && btnConfirmarEliminar.disabled) {
@@ -476,25 +451,20 @@ document.addEventListener('DOMContentLoaded', function () {
         function aplicarFiltros() {
             const texto = inputBuscar.value.trim().toLowerCase();
             const turno = selectTurno ? selectTurno.value.toLowerCase() : "";
-            
+
             filas.forEach(fila => {
-                const celdas = fila.querySelectorAll("td");
-                if (celdas.length < 2) return;
-                
-                const empleado = celdas[0].textContent.trim().toLowerCase();
-                const turnoFila = celdas[1].textContent.trim().toLowerCase();
-                
+                // Leemos los atributos data-* que ya están en minúsculas
+                const empleado = (fila.dataset.empleado || "").toLowerCase();
+                const turnoFila = (fila.dataset.turno || "").toLowerCase();
+
                 const coincideTexto = !texto || empleado.includes(texto);
                 const coincideTurno = !turno || turnoFila === turno;
-                
+
                 fila.style.display = (coincideTexto && coincideTurno) ? "" : "none";
             });
         }
 
-        if (inputBuscar) {
-            inputBuscar.addEventListener("input", aplicarFiltros);
-            inputBuscar.addEventListener("keyup", aplicarFiltros);
-        }
+        inputBuscar.addEventListener("input", aplicarFiltros);
         if (selectTurno) {
             selectTurno.addEventListener("change", aplicarFiltros);
         }
