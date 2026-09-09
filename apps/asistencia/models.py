@@ -54,6 +54,14 @@ class Horario(models.Model):
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.get_turno_display()}"
 
+    def tiene_asistencia_registrada(self):
+        """
+        True si este horario ya tiene al menos un registro de asistencia
+        asociado. Se usa para impedir eliminarlo (perdería trazabilidad
+        de la asistencia ya marcada).
+        """
+        return self.asistencias.exists()
+
 
 class DescansoEmpleado(models.Model):
 

@@ -3,28 +3,28 @@
 <!-- MODAL: Crear horario -->
 <div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content asistencia-modal">
+    <div class="modal-content modal-detalle">
 
-      <div class="modal-header asistencia-detalle-header">
+      <div class="modal-header modal-detalle-header">
         <div>
-          <div class="asistencia-detalle-titulo">
+          <div class="modal-detalle-titulo">
             <i class="bi bi-plus-circle"></i> <span>Asignar nuevo horario</span>
           </div>
-          <p class="asistencia-detalle-subtitulo mb-0">Selecciona los datos y jornada para el empleado</p>
+          <p class="modal-detalle-subtitulo mb-0">Selecciona los datos y jornada para el empleado</p>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
-      <div class="modal-body asistencia-detalle-body">
+      <div class="modal-body modal-detalle-body">
         <form method="POST" action="{% url 'asistencia:horarios' %}" id="formCrearHorario">
           {% csrf_token %}
 
-          <div class="asistencia-detalle-grid">
+          <div class="modal-detalle-grid">
 
             <!-- Empleado -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Empleado <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Empleado <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <select name="empleado" id="empleadoSelect" class="form-select" required>
                   <option value="">Seleccione empleado</option>
                   {% for empleado in empleados %}
@@ -37,18 +37,18 @@
             </div>
 
             <!-- Cargo -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Cargo</span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Cargo</span>
+              <span class="modal-detalle-value">
                 <input type="text" id="cargoInput" class="form-control" readonly placeholder="Se autocompleta"
                   style="background-color: #f8fafc;">
               </span>
             </div>
 
             <!-- Jornada -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Jornada <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Jornada <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <select name="turno" id="turnoSelect" class="form-select" required>
                   <option value="">Seleccione jornada</option>
                   <option value="MANANA">Mañana</option>
@@ -59,24 +59,24 @@
             </div>
 
             <!-- Hora Entrada -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Hora entrada <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <input type="time" name="hora_entrada" id="horaEntrada" class="form-control" required>
               </span>
             </div>
 
             <!-- Hora Salida -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Hora salida <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <input type="time" name="hora_salida" id="horaSalida" class="form-control" required>
               </span>
             </div>
 
             <!-- Día de Descanso (Bloque largo) -->
-            <div class="asistencia-detalle-bloque-largo">
-              <span class="asistencia-detalle-bloque-largo-label">Seleccione el día de descanso <span
+            <div class="modal-detalle-bloque-largo">
+              <span class="modal-detalle-bloque-largo-label">Seleccione el día de descanso <span
                   class="text-danger">*</span></span>
 
               <div class="calendario-wrapper mt-2" id="ciclo14x1">
@@ -110,12 +110,12 @@
         </form>
       </div>
 
-      <!-- Footer: antes botones .asistencia-modal-btn con distintos colores
+      <!-- Footer: antes botones .modal-detalle-btn con distintos colores
            inconsistentes entre módulos (btn-outline-corporate para Cancelar
            Y Limpiar, sin distinción). Ahora usa el sistema global:
            Cancelar/Limpiar = gris neutro, Guardar = verde (acción de
            confirmación positiva). -->
-      <div class="modal-footer asistencia-detalle-footer">
+      <div class="modal-footer modal-detalle-footer">
         <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
@@ -134,45 +134,45 @@
 <!-- MODAL: Editar horario -->
 <div class="modal fade" id="modalEditarHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content asistencia-modal">
+    <div class="modal-content modal-detalle">
 
       <!-- HEADER -->
-      <div class="modal-header asistencia-detalle-header">
+      <div class="modal-header modal-detalle-header">
         <div>
-          <div class="asistencia-detalle-titulo">
+          <div class="modal-detalle-titulo">
             <i class="bi bi-pencil"></i> <span>Editar horario</span>
           </div>
-          <p class="asistencia-detalle-subtitulo mb-0">Modifica los detalles del horario seleccionado</p>
+          <p class="modal-detalle-subtitulo mb-0">Modifica los detalles del horario seleccionado</p>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
-      <div class="modal-body asistencia-detalle-body">
+      <div class="modal-body modal-detalle-body">
         <form method="POST" id="formEditar" action="">
           {% csrf_token %}
           
-          <div class="asistencia-detalle-grid">
+          <div class="modal-detalle-grid">
             
             <!-- Empleado (Solo lectura) -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Empleado</span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Empleado</span>
+              <span class="modal-detalle-value">
                 <input id="editar-empleado" class="form-control" type="text" readonly style="background-color: #f8fafc;">
               </span>
             </div>
 
             <!-- Cargo (Solo lectura) -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Cargo</span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Cargo</span>
+              <span class="modal-detalle-value">
                 <input id="editar-cargo" class="form-control" type="text" readonly style="background-color: #f8fafc;">
               </span>
             </div>
 
             <!-- Jornada -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Jornada <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Jornada <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <select id="editar-turno" name="turno" class="form-select" required>
                   <option value="MANANA">Mañana</option>
                   <option value="TARDE">Tarde</option>
@@ -182,24 +182,24 @@
             </div>
 
             <!-- Hora Entrada -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Hora entrada <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" required>
               </span>
             </div>
 
             <!-- Hora Salida -->
-            <div class="asistencia-detalle-item">
-              <span class="asistencia-detalle-label">Hora salida <span class="text-danger">*</span></span>
-              <span class="asistencia-detalle-value">
+            <div class="modal-detalle-item">
+              <span class="modal-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
                 <input id="editar-salida" type="time" name="hora_salida" class="form-control" required>
               </span>
             </div>
 
             <!-- Día de Descanso (Bloque largo) -->
-            <div class="asistencia-detalle-bloque-largo">
-              <span class="asistencia-detalle-bloque-largo-label">
+            <div class="modal-detalle-bloque-largo">
+              <span class="modal-detalle-bloque-largo-label">
                 Cambiar día de descanso <span id="descanso-actual-label" class="text-black ms-1"></span>
               </span>
 
@@ -235,7 +235,7 @@
       </div>
 
       <!-- FOOTER -->
-      <div class="modal-footer asistencia-detalle-footer">
+      <div class="modal-footer modal-detalle-footer">
         <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
@@ -251,81 +251,81 @@
 <!-- MODAL: Ver detalle del horario -->
 <div class="modal fade" id="modalVerHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content asistencia-modal">
+    <div class="modal-content modal-detalle">
 
       <!-- HEADER: Con estilo corporativo -->
-      <div class="modal-header asistencia-detalle-header">
+      <div class="modal-header modal-detalle-header">
         <div>
-          <div class="asistencia-detalle-titulo">
+          <div class="modal-detalle-titulo">
             <i class="bi bi-eye me-2"></i> <span>Detalle del horario</span>
           </div>
-          <p class="asistencia-detalle-subtitulo mb-0">Información detallada de la programación</p>
+          <p class="modal-detalle-subtitulo mb-0">Información detallada de la programación</p>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body asistencia-detalle-body">
-        <div class="asistencia-detalle-grid">
+      <div class="modal-body modal-detalle-body">
+        <div class="modal-detalle-grid">
           
           <!-- Empleado -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label">Empleado</span>
-            <span class="asistencia-detalle-value" id="ver-empleado"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Empleado</span>
+            <span class="modal-detalle-value" id="ver-empleado"></span>
           </div>
 
           <!-- Cargo -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-cargo">Cargo</span>
-            <span id="ver-cargo" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-cargo">Cargo</span>
+            <span id="ver-cargo" class="modal-detalle-value"></span>
           </div>
 
           <!-- Jornada -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-turno">Jornada</span>
-            <span id="ver-turno" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-turno">Jornada</span>
+            <span id="ver-turno" class="modal-detalle-value"></span>
           </div>
 
           <!-- Hora entrada -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-entrada">Hora entrada</span>
-            <span id="ver-entrada" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-entrada">Hora entrada</span>
+            <span id="ver-entrada" class="modal-detalle-value"></span>
           </div>
 
           <!-- Hora salida -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-salida">Hora salida</span>
-            <span id="ver-salida" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-salida">Hora salida</span>
+            <span id="ver-salida" class="modal-detalle-value"></span>
           </div>
 
           <!-- Próximo descanso -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-descanso">Próximo descanso</span>
-            <span id="ver-descanso" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-descanso">Próximo descanso</span>
+            <span id="ver-descanso" class="modal-detalle-value"></span>
           </div>
 
           <!-- Estado -->
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-estado">Estado</span>
-            <span id="ver-estado" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-estado">Estado</span>
+            <span id="ver-estado" class="modal-detalle-value"></span>
           </div>
 
           <!-- Horario vigente (Bloque largo) -->
-          <div class="asistencia-detalle-bloque-largo">
-            <label class="asistencia-detalle-bloque-largo-label">Horario vigente</label>
+          <div class="modal-detalle-bloque-largo">
+            <label class="modal-detalle-bloque-largo-label">Horario vigente</label>
           </div>
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-ciclo-inicio">Inicio horario</span>
-            <span id="ver-ciclo-inicio" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-ciclo-inicio">Inicio horario</span>
+            <span id="ver-ciclo-inicio" class="modal-detalle-value"></span>
           </div>
-          <div class="asistencia-detalle-item">
-            <span class="asistencia-detalle-label" for="ver-ciclo-fin">Fin horario</span>
-            <span id="ver-ciclo-fin" class="asistencia-detalle-value"></span>
+          <div class="modal-detalle-item">
+            <span class="modal-detalle-label" for="ver-ciclo-fin">Fin horario</span>
+            <span id="ver-ciclo-fin" class="modal-detalle-value"></span>
           </div>
         </div>
       </div>
 
       <!-- FOOTER: Botón corporativo -->
-      <div class="modal-footer asistencia-detalle-footer">
+      <div class="modal-footer modal-detalle-footer">
         <button type="button" class="btn-action btn-action-close" data-bs-dismiss="modal">
           <i class="bi bi-x"></i> Cerrar
         </button>
@@ -338,21 +338,21 @@
 <!-- MODAL: Eliminar horario -->
 <div class="modal fade" id="modalEliminarHorario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content asistencia-modal">
+        <div class="modal-content modal-detalle">
             
             <!-- HEADER -->
-            <div class="modal-header asistencia-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="asistencia-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-trash text-danger"></i> <span>Eliminar horario</span>
                     </div>
-                    <p class="asistencia-detalle-subtitulo mb-0">¿Estás seguro de eliminar este horario?</p>
+                    <p class="modal-detalle-subtitulo mb-0">¿Estás seguro de eliminar este horario?</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
             <!-- BODY -->
-            <div class="modal-body asistencia-detalle-body text-center py-4">
+            <div class="modal-body modal-detalle-body text-center py-4">
                 <div class="confirm-modal-icon confirm-modal-icon--danger mb-3">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
@@ -362,7 +362,7 @@
             </div>
 
             <!-- FOOTER -->
-            <div class="modal-footer asistencia-detalle-footer">
+            <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>

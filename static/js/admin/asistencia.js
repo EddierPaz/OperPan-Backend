@@ -1,46 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // 1. FUNCIONES EXISTENTES (HORARIOS, CALENDARIOS DE HORARIOS, ETC.)
-    // ==========================================
-
-    function diasVisibles(turno) {
-        return turno === "FIJO" ? 7 : 15;
-    }
-
-    function actualizarDiasCalendario(ciclo, turno, inputFecha, label, texto) {
-        if (!ciclo) return;
-        const maxDias = diasVisibles(turno);
-        ciclo.querySelectorAll(".dia-btn").forEach(function (btn) {
-            const indice = parseInt(btn.dataset.indice, 10);
-            if (indice < maxDias) {
-                btn.style.display = "";
-            } else {
-                btn.style.display = "none";
-                if (btn.classList.contains("seleccionado")) {
-                    btn.classList.remove("seleccionado");
-                    if (inputFecha) inputFecha.value = "";
-                    if (label) label.style.display = "none";
-                    if (texto) texto.textContent = "";
-                }
-            }
-        });
-    }
-
-
-    // ==========================================
-    // Cambio del 8 de septiembre del 2026
-    // Este TOAST es importante para la validacion de si el admin va a registrar al empleado en el horario correspondiente
-
-    // Si no es asi, entonces mostrara un toast de color amarillo
-    
-    // FUNCIÓN PARA MOSTRAR TOAST
+    // 1. TOAST - Sistema de notificaciones
     // ==========================================
     function mostrarToast(mensaje, tipo = 'warning') {
         const container = document.getElementById('toastContainer');
         if (!container) return;
 
-        // Eliminar toasts anteriores
         const existing = container.querySelectorAll('.app-toast');
         existing.forEach(el => el.remove());
 
@@ -48,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
         toast.className = `app-toast app-toast-${tipo}`;
         toast.setAttribute('role', 'alert');
 
-        // Icono según tipo
         let icono = 'bi-exclamation-triangle-fill';
         if (tipo === 'success') icono = 'bi-check-circle-fill';
         else if (tipo === 'danger') icono = 'bi-x-circle-fill';
@@ -66,260 +31,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         container.appendChild(toast);
 
-        // Mostrar con animación
         requestAnimationFrame(() => {
             toast.classList.add('show');
         });
 
-        // Ocultar después de 4 segundos
         const timeout = setTimeout(() => {
             toast.classList.add('hide');
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
+            setTimeout(() => toast.remove(), 300);
         }, 4000);
 
-        // Botón cerrar manual
         const closeBtn = toast.querySelector('.app-toast-close');
         if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
+            closeBtn.addEventListener('click', function () {
                 clearTimeout(timeout);
                 toast.classList.add('hide');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            });
-        }
-    }
-
-    // Autocompletar cargo al seleccionar empleado (para horarios)
-    const empleadoSelect = document.getElementById("empleadoSelect");
-    const cargoInput = document.getElementById("cargoInput");
-    if (empleadoSelect && cargoInput) {
-        empleadoSelect.addEventListener("change", function () {
-            const opcion = this.options[this.selectedIndex];
-            cargoInput.value = opcion.dataset.cargo || "";
-        });
-    }
-
-    // Calendario para crear horario
-    const turnoSelect = document.getElementById("turnoSelect");
-    const horaEntrada = document.getElementById("horaEntrada");
-    const horaSalida = document.getElementById("horaSalida");
-    const cicloCrear = document.getElementById("ciclo14x1");
-    const inputCrear = document.getElementById("fechaDescansoInput");
-    const labelCrear = document.getElementById("descansoLabel");
-    const textoCrear = document.getElementById("descansoFechaTexto");
-
-    if (turnoSelect) {
-        turnoSelect.addEventListener("change", function () {
-            switch (this.value) {
-                case "MANANA":
-                    horaEntrada.value = "05:00";
-                    horaSalida.value = "13:00";
-                    break;
-                case "TARDE":
-                    horaEntrada.value = "13:00";
-                    horaSalida.value = "22:00";
-                    break;
-                case "FIJO":
-                    horaEntrada.value = "08:00";
-                    horaSalida.value = "17:00";
-                    break;
-                default:
-                    horaEntrada.value = "";
-                    horaSalida.value = "";
-            }
-            actualizarDiasCalendario(cicloCrear, this.value, inputCrear, labelCrear, textoCrear);
-        });
-        actualizarDiasCalendario(cicloCrear, turnoSelect.value, inputCrear, labelCrear, textoCrear);
-    }
-
-    if (cicloCrear) {
-        cicloCrear.addEventListener("click", function (e) {
-            const btn = e.target.closest(".dia-btn");
-            if (!btn || btn.style.display === "none") return;
-            cicloCrear.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
-            btn.classList.add("seleccionado");
-            inputCrear.value = btn.dataset.fecha;
-            textoCrear.textContent = btn.dataset.label;
-            labelCrear.style.display = "block";
-        });
-    }
-
-    // Limpiar formulario crear horario
-    const btnLimpiar = document.getElementById("btnLimpiarHorario");
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener("click", function () {
-            setTimeout(function () {
-                if (cargoInput) cargoInput.value = "";
-                if (inputCrear) inputCrear.value = "";
-                if (labelCrear) labelCrear.style.display = "none";
-                if (textoCrear) textoCrear.textContent = "";
-                document.querySelectorAll("#ciclo14x1 .dia-btn").forEach(function (b) {
-                    b.classList.remove("seleccionado");
-                    b.blur();
-                });
-                actualizarDiasCalendario(cicloCrear, "", inputCrear, labelCrear, textoCrear);
-            }, 10);
-        });
-    }
-
-    // Calendario para editar horario
-    const cicloEditar = document.getElementById("ciclo14x1Editar");
-    const inputEditar = document.getElementById("fechaDescansoEditarInput");
-    const labelEditar = document.getElementById("descansoEditarLabel");
-    const textoEditar = document.getElementById("descansoEditarFechaTexto");
-    const editarTurnoSelect = document.getElementById("editar-turno");
-
-    if (editarTurnoSelect) {
-        editarTurnoSelect.addEventListener("change", function () {
-            actualizarDiasCalendario(cicloEditar, this.value, inputEditar, labelEditar, textoEditar);
-        });
-    }
-
-    if (cicloEditar) {
-        cicloEditar.addEventListener("click", function (e) {
-            const btn = e.target.closest(".dia-btn");
-            if (!btn || btn.style.display === "none") return;
-            cicloEditar.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
-            btn.classList.add("seleccionado");
-            inputEditar.value = btn.dataset.fecha;
-            textoEditar.textContent = btn.dataset.label;
-            labelEditar.style.display = "block";
-        });
-    }
-
-    // Delegación para ver y editar horarios (modales)
-    document.addEventListener("click", function (e) {
-        const btnVer = e.target.closest(".btn-ver-horario");
-        if (btnVer) {
-            const id = btnVer.dataset.id;
-            fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) {
-                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
-                    return res.json();
-                })
-                .then(function (data) {
-                    document.getElementById("ver-empleado").textContent = data.empleado;
-                    document.getElementById("ver-cargo").textContent = data.cargo;
-                    document.getElementById("ver-turno").textContent = data.turno;
-                    document.getElementById("ver-entrada").textContent = data.hora_entrada;
-                    document.getElementById("ver-salida").textContent = data.hora_salida;
-                    document.getElementById("ver-descanso").textContent = data.descanso || "Sin asignar";
-                    document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
-                    const ciclo = document.getElementById("ver-ciclo");
-                    if (ciclo) {
-                        ciclo.textContent = (data.ciclo_inicio && data.ciclo_fin)
-                            ? data.ciclo_inicio + " — " + data.ciclo_fin
-                            : "Sin definir";
-                    }
-                    const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
-                    modalVer.show();
-                })
-                .catch(function (err) {
-                    console.error(err);
-                    mostrarToast("No se pudo cargar la información del horario.", "danger");
-                });
-        }
-
-        const btnEditar = e.target.closest(".btn-editar-horario");
-        if (btnEditar) {
-            const id = btnEditar.dataset.id;
-            fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) {
-                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
-                    return res.json();
-                })
-                .then(function (data) {
-                    document.getElementById("editar-empleado").value = data.empleado;
-                    document.getElementById("editar-cargo").value = data.cargo;
-                    document.getElementById("editar-turno").value = data.turno_valor;
-                    document.getElementById("editar-entrada").value = data.hora_entrada;
-                    document.getElementById("editar-salida").value = data.hora_salida;
-                    document.getElementById("formEditar").action = "/asistencia/horarios/" + id + "/editar/";
-                    const labelActual = document.getElementById("descanso-actual-label");
-                    if (labelActual) {
-                        labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
-                    }
-                    actualizarDiasCalendario(cicloEditar, data.turno_valor, inputEditar, labelEditar, textoEditar);
-                    if (cicloEditar) {
-                        cicloEditar.querySelectorAll(".dia-btn").forEach(function (b) {
-                            b.classList.remove("seleccionado");
-                            if (data.descanso_fecha && b.dataset.fecha === data.descanso_fecha) {
-                                b.classList.add("seleccionado");
-                            }
-                        });
-                    }
-                    if (inputEditar) inputEditar.value = data.descanso_fecha || "";
-                    if (labelEditar) labelEditar.style.display = "none";
-                    if (textoEditar) textoEditar.textContent = "";
-                    const modalEditar = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEditarHorario"));
-                    modalEditar.show();
-                })
-                .catch(function (err) {
-                    console.error(err);
-                    mostrarToast("No se pudo cargar la información para editar el horario.", "danger");
-                });
-        }
-
-        // Eliminar horario
-        const btnEliminar = e.target.closest(".btn-eliminar-horario");
-        if (btnEliminar) {
-            e.preventDefault();
-            const id = btnEliminar.dataset.id;
-            const nombre = btnEliminar.dataset.empleado || "empleado";
-            const form = document.getElementById("formEliminarHorario");
-            if (form) {
-                form.action = "/asistencia/horarios/" + id + "/eliminar/";
-            }
-            const nombreSpan = document.getElementById("eliminar-empleado-nombre");
-            if (nombreSpan) {
-                nombreSpan.textContent = nombre;
-            }
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario"));
-            modal.show();
-        }
-    });
-
-    // Filtros de la tabla de horarios (existente)
-    const filas = document.querySelectorAll("table.table-custom tbody tr");
-    const inputBuscar = document.getElementById("buscarHorario");
-    const selectTurno = document.getElementById("filtroTurno");
-    const selectEstado = document.getElementById("filtroEstadoHorario");
-
-    if (inputBuscar) {
-        function aplicarFiltros() {
-            const texto = inputBuscar.value.trim().toLowerCase();
-            const turno = selectTurno.value.toLowerCase();
-            const estado = selectEstado.value.toLowerCase();
-            filas.forEach(fila => {
-                const celdas = fila.querySelectorAll("td");
-                if (celdas.length < 6) return;
-                const empleado = celdas[0].textContent.trim().toLowerCase();
-                const turnoFila = celdas[2].textContent.trim().toLowerCase();
-                const estadoFila = celdas[5].textContent.trim().toLowerCase();
-                const coincideTexto = !texto || empleado.includes(texto);
-                const coincideTurno = !turno || turnoFila === turno;
-                const coincideEstado = !estado || estadoFila === estado;
-                fila.style.display = (coincideTexto && coincideTurno && coincideEstado) ? "" : "none";
-            });
-        }
-
-        [inputBuscar, selectTurno, selectEstado].forEach(el => {
-            if (el) {
-                el.addEventListener("input", aplicarFiltros);
-                el.addEventListener("change", aplicarFiltros);
-            }
-        });
-
-        const btnLimpiarFiltros = document.getElementById("limpiarFiltrosHorarios");
-        if (btnLimpiarFiltros) {
-            btnLimpiarFiltros.addEventListener("click", function () {
-                inputBuscar.value = "";
-                if (selectTurno) selectTurno.value = "";
-                if (selectEstado) selectEstado.value = "";
-                aplicarFiltros();
+                setTimeout(() => toast.remove(), 300);
             });
         }
     }
@@ -453,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 8 de Sep/2026: 4. MODAL DE HISTORIAL DE EMPLEADO (TABLA)
+    // 4. MODAL DE HISTORIAL DE EMPLEADO (TABLA)
     // ==========================================
 
     let empleadoIdActual = null;
@@ -636,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ==========================================
-    // 5. 8 de Sep/2026: MODALES DE FECHA (Historial)
+    // 5. MODALES DE FECHA (Historial)
     // ==========================================
 
     const modalFechaUnicaElement = document.getElementById('modalFechaUnicaHistorial');
@@ -709,15 +435,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ==========================================
-    // 6. INICIALIZACIÓN
-    // ==========================================
-    inicializarGraficos();
-
-    // ==========================================
-    // 8 de Sep/2026: 7. SOLUCIÓN PARA ADVERTENCIAS ARIA
+    // 6. SOLUCIÓN PARA ADVERTENCIAS ARIA
     // ==========================================
 
-    // Al abrir un modal de fecha, marcar el modal de historial como inerte
     if (modalFechaUnicaElement) {
         modalFechaUnicaElement.addEventListener('show.bs.modal', function () {
             if (modalHistorialElement) {
@@ -727,7 +447,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modalFechaUnicaElement.addEventListener('hidden.bs.modal', function () {
             if (modalHistorialElement) {
                 modalHistorialElement.removeAttribute('inert');
-                // Forzar foco al modal de historial (opcional)
                 const closeBtn = modalHistorialElement.querySelector('.btn-close');
                 if (closeBtn) setTimeout(() => closeBtn.focus(), 100);
             }
@@ -750,13 +469,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 8 de Sep/2026: 8. REGISTRAR ASISTENCIA (AJAX)
-
-    // Este cambio/funcion sirve para el dropdown de asistencia del dia presente.
-    // Esto genera que no se recargue la pagina y seguir registrando.
+    // 7. REGISTRAR ASISTENCIA (AJAX)
     // ==========================================
 
-    // Función auxiliar para obtener el token CSRF desde la cookie
     function getCsrfToken() {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -780,14 +495,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const horarioId = btn.dataset.horarioId;
         const originalHtml = btn.innerHTML;
 
-        // Deshabilitar y mostrar spinner
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
 
         const formData = new FormData();
         formData.append('horario_id', horarioId);
 
-        // Obtener token CSRF desde la cookie
         const csrfToken = getCsrfToken();
 
         fetch('/asistencia/registrar-asistencia/', {
@@ -800,16 +513,12 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => {
             if (!response.ok) {
-                // Leer el cuerpo como texto UNA SOLA VEZ
                 return response.text().then(text => {
                     let errorMsg = text;
                     try {
-                        // Intentar parsear como JSON
                         const json = JSON.parse(text);
                         if (json.error) errorMsg = json.error;
-                    } catch (e) {
-                        // Si no es JSON, usar el texto plano (puede ser HTML de error 403, etc.)
-                    }
+                    } catch (e) {}
                     throw new Error(errorMsg || 'Error al registrar la asistencia.');
                 });
             }
@@ -817,14 +526,11 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
             if (data.success) {
-                // Mostrar toast de éxito (verde)
                 mostrarToast('Asistencia registrada correctamente.', 'success');
 
-                // Encontrar la fila más cercana
                 const row = btn.closest('tr');
                 if (!row) return;
 
-                // Actualizar celda de estado (5ta columna)
                 const estadoCell = row.querySelector('td:nth-child(5)');
                 if (estadoCell) {
                     const badge = estadoCell.querySelector('.badge');
@@ -834,19 +540,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                // Actualizar celda de hora marcada (4ta columna)
                 const horaCell = row.querySelector('td:nth-child(4)');
                 if (horaCell) {
                     horaCell.textContent = data.hora_marcada;
                 }
 
-                // Reemplazar el botón por un badge "Registrado"
                 const actionCell = btn.closest('td');
                 if (actionCell) {
                     actionCell.innerHTML = '<span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>';
                 }
             } else {
-                // Si el backend devuelve success: false (caso raro)
                 mostrarToast(data.error || 'Error al registrar la asistencia.', 'warning');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
@@ -854,10 +557,15 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => {
             console.error('Error:', error);
-            // Mostrar el mensaje de error específico (ej. validación de turno) en amarillo
             mostrarToast(error.message || 'Error de conexión. Intenta de nuevo.', 'warning');
             btn.disabled = false;
             btn.innerHTML = originalHtml;
         });
     });
+
+    // ==========================================
+    // 8. INICIALIZACIÓN
+    // ==========================================
+    inicializarGraficos();
+
 });

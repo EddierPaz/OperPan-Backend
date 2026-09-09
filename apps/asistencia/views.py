@@ -564,6 +564,7 @@ def horario_json(request, id):
         "descanso_fecha": descanso.fecha.strftime("%Y-%m-%d") if descanso else None,
         "ciclo_inicio": horario.ciclo_inicio.strftime("%d/%m/%Y") if horario.ciclo_inicio else None,
         "ciclo_fin": fin.strftime("%d/%m/%Y") if fin else None,
+        "tiene_asistencia": horario.tiene_asistencia_registrada(),
     })
 
 
@@ -623,6 +624,18 @@ def editar_horario(request, id):
 
 def eliminar_horario(request, id):
     horario = get_object_or_404(Horario, id=id)
+
+    # =====================================================
+    # VALIDACIÓN: no se puede eliminar un horario que ya
+    # tiene asistencia registrada (se perdería trazabilidad).
+    # =====================================================
+    if horario.tiene_asistencia_registrada():
+        messages.error(
+            request,
+            f"No se puede eliminar el horario de {horario.empleado.nombre_completo()} "
+            "porque ya tiene asistencia registrada."
+        )
+        return redirect("asistencia:horarios")
 
     # =====================================================
     # NOTIFICACIÓN AL EMPLEADO (ANTES DE DESACTIVAR)
