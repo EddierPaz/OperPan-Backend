@@ -1,6 +1,7 @@
 from datetime import date
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from apps.usuarios.models import PerfilEmpleado, User
 
 
@@ -91,7 +92,7 @@ class Task(models.Model):
     )
 
     fecha_limite = models.DateField()
-    hora_limite = models.TimeField(blank=True, null=True)
+    hora_limite = models.TimeField(blank=True, null=True)  # ⚠️ Cambiar a null=False en la migración
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     fecha_finalizacion = models.DateTimeField(null=True, blank=True)
@@ -105,6 +106,37 @@ class Task(models.Model):
 
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_limite})"
+
+    def clean(self):
+        """Validación a nivel de modelo"""
+        from apps.asistencia.models import Horario
+
+        # 1. Validar que la hora_limite sea obligatoria
+        if not self.hora_limite:
+            raise ValidationError({
+                'hora_limite': 'La hora límite es obligatoria. Debes especificar una hora.'
+            })
+
+        # 2. Validar que la hora_limite esté dentro del rango del horario del empleado
+        horario_activo = Horario.objects.filter(
+            empleado=self.empleado,
+            estado=True
+        ).order_by('-fecha_creacion').first()
+
+        if horario_activo and horario_activo.hora_entrada and horario_activo.hora_salida:
+            hora_entrada = horario_activo.hora_entrada
+            hora_salida = horario_activo.hora_salida
+
+            if not (hora_entrada <= self.hora_limite <= hora_salida):
+                raise ValidationError({
+                    'hora_limite': f'La hora límite debe estar dentro del rango de la jornada '
+                                   f'({hora_entrada.strftime("%H:%M")} - {hora_salida.strftime("%H:%M")}) '
+                                   f'del empleado.'
+                })
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     @property
     def esta_vencida(self):

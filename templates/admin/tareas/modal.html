@@ -49,7 +49,6 @@
                                     {% endfor %}
                                 </select>
                                 {% if editando %}
-                                    <!-- Campo oculto para enviar el valor del empleado ya que el select está disabled -->
                                     <input type="hidden" name="empleado" value="{{ form.empleado.value }}">
                                 {% endif %}
                             </span>
@@ -140,13 +139,14 @@
                             {% if form.fecha_limite.errors %}<div class="invalid-feedback d-block">{{ form.fecha_limite.errors }}</div>{% endif %}
                         </div>
 
-                        <!-- Hora límite -->
+                        <!-- Hora límite (OBLIGATORIO) -->
                         <div class="modal-detalle-item">
-                            <span class="modal-detalle-label">Hora límite</span>
+                            <span class="modal-detalle-label">Hora límite <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
                                 <input type="time" class="form-control" name="hora_limite" id="id_hora_limite"
-                                       value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
+                                       required value="{{ form.hora_limite.value|time:'H:i'|default:'' }}">
                                 <small class="text-muted" id="hora-limite-hint"></small>
+                                <div id="hora-limite-error" class="text-danger small mt-1" style="display:none;"></div>
                             </span>
                             {% if form.hora_limite.errors %}<div class="invalid-feedback d-block">{{ form.hora_limite.errors }}</div>{% endif %}
                         </div>

@@ -3,9 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 1. UTILIDAD PARSEADOR JSON
     // ==========================================
-    /**
-     * Extrae y parsea de forma segura el contenido JSON generado por Django json_script
-     */
     function leerJSON(id, fallback) {
         const el = document.getElementById(id);
         if (!el) return fallback;
@@ -47,21 +44,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let coincideEstado = true;
 
-            // Lógica de filtrado por estado
             if (estadoSel === 'VENCIDA') {
-                // Si el filtro es "Vencidas", solo mostrar tareas vencidas
                 coincideEstado = esVencida;
             } else if (estadoSel) {
-                // Si el filtro es PENDIENTE, EN_PROGRESO o FINALIZADA
-                // NO mostrar tareas vencidas a menos que coincidan con el estado
                 if (esVencida) {
-                    // Si está vencida y el filtro no es "VENCIDA", no coincide
                     coincideEstado = false;
                 } else {
                     coincideEstado = estadoCard === estadoSel;
                 }
             } else {
-                // Si no hay filtro de estado, mostrar todas (incluyendo vencidas)
                 coincideEstado = true;
             }
 
@@ -76,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Escuchadores de eventos para los filtros
     [inputBuscar, selectEstado, selectPrioridad].forEach(el => {
         if (el) {
             el.addEventListener('keyup', aplicarFiltrosTareas);
@@ -102,11 +92,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const OTRA_VALUE = 'OTRA';
 
-    // Carga de datos inyectados por Django desde el HTML
     const empleadosData = leerJSON('empleados-data', {});
     const tareasPorCargo = leerJSON('tareas-por-cargo', {});
 
-    // Elementos del DOM del Formulario Modal
     const empleadoSelect = document.getElementById('id_empleado');
     const cargoDisplay = document.getElementById('id_cargo_display');
     const turnoSelect = document.getElementById('id_turno_asociado');
@@ -118,19 +106,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const fechaInput = document.getElementById('id_fecha_limite');
     const horaInput = document.getElementById('id_hora_limite');
     const horaHint = document.getElementById('hora-limite-hint');
+    const horaError = document.getElementById('hora-limite-error');
 
-    // Almacenar descripción original en caso de alternar con "Otra"
+    // Almacenar descripción original
     if (descripcionInput) descripcionInput.dataset.original = descripcionInput.value;
 
-    // Si el título es ingresado por preset, ocultar el input genérico por defecto
     if (tituloInput && !tituloInput.value) {
         tituloInput.style.display = 'none';
     }
 
-    // Establecer fecha mínima para selección (Hoy)
     if (fechaInput) {
-        const hoy = new Date().toISOString().split('T')[0];
-        fechaInput.setAttribute('min', hoy);
+        const hoy = new Date();
+        const manana = new Date(hoy);
+        manana.setDate(hoy.getDate() + 1);
+        const year = manana.getFullYear();
+        const month = String(manana.getMonth() + 1).padStart(2, '0');
+        const day = String(manana.getDate()).padStart(2, '0');
+        fechaInput.setAttribute('min', `${year}-${month}-${day}`);
     }
 
     function aplicarTurnoAutomatico(turnoValue, turnoLabel) {
@@ -155,6 +147,81 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ==========================================
+    // 3.1 VALIDACIÓN DE HORA LÍMITE (NUEVO)
+    // ==========================================
+    function validarHoraLimite(horaEntrada, horaSalida) {
+        if (!horaInput) return;
+
+        const valor = horaInput.value;
+        const errorElement = document.getElementById('hora-limite-error');
+        const hintElement = document.getElementById('hora-limite-hint');
+
+        // Limpiar errores previos
+        horaInput.classList.remove('is-invalid', 'is-valid');
+
+        // Actualizar hint
+        if (horaEntrada && horaSalida) {
+            if (hintElement) {
+                hintElement.textContent = `⏰ Rango permitido: ${horaEntrada} - ${horaSalida} (jornada del empleado)`;
+                hintElement.style.color = '#6c757d';
+            }
+        } else if (horaEntrada) {
+            if (hintElement) {
+                hintElement.textContent = `⏰ Hora mínima: ${horaEntrada} (inicio de jornada)`;
+                hintElement.style.color = '#6c757d';
+            }
+        } else if (horaSalida) {
+            if (hintElement) {
+                hintElement.textContent = `⏰ Hora máxima: ${horaSalida} (fin de jornada)`;
+                hintElement.style.color = '#6c757d';
+            }
+        } else {
+            if (hintElement) {
+                hintElement.textContent = '⏰ Debe estar dentro del rango de la jornada del empleado';
+                hintElement.style.color = '#6c757d';
+            }
+        }
+
+        // Validar si hay valor
+        if (!valor) {
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+            horaInput.setCustomValidity('La hora límite es obligatoria.');
+            return;
+        }
+
+        // Validar rango
+        if (horaEntrada && valor < horaEntrada) {
+            horaInput.classList.add('is-invalid');
+            if (errorElement) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = `❌ La hora no puede ser antes de ${horaEntrada} (inicio de jornada).`;
+            }
+            horaInput.setCustomValidity(`La hora no puede ser antes de ${horaEntrada}.`);
+            return;
+        }
+
+        if (horaSalida && valor > horaSalida) {
+            horaInput.classList.add('is-invalid');
+            if (errorElement) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = `❌ La hora no puede superar ${horaSalida} (fin de jornada).`;
+            }
+            horaInput.setCustomValidity(`La hora no puede superar ${horaSalida}.`);
+            return;
+        }
+
+        // Válido
+        horaInput.classList.remove('is-invalid');
+        horaInput.classList.add('is-valid');
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+        horaInput.setCustomValidity('');
+    }
+
     function actualizarLimiteHora(horaEntrada, horaSalida) {
         if (horaInput) {
             if (horaSalida) horaInput.setAttribute('max', horaSalida);
@@ -162,44 +229,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (horaEntrada) horaInput.setAttribute('min', horaEntrada);
             else horaInput.removeAttribute('min');
+
+            // Hacer required si no lo está
+            horaInput.setAttribute('required', 'required');
         }
 
-        if (horaHint) {
-            if (horaEntrada && horaSalida) {
-                horaHint.textContent = `Debe estar entre ${horaEntrada} y ${horaSalida} (jornada del empleado).`;
-            } else if (horaSalida) {
-                horaHint.textContent = `No puede superar el fin de la jornada (${horaSalida}).`;
-            } else {
-                horaHint.textContent = '';
-            }
-        }
-
-        validarHoraLimite(); // revalida por si ya había un valor cargado (ej. al editar)
-    }
-
-    function validarHoraLimite() {
-        if (!horaInput) return;
-        const min = horaInput.getAttribute('min');
-        const max = horaInput.getAttribute('max');
-
-        if (!horaInput.value) {
-            horaInput.setCustomValidity('');
-            return;
-        }
-        if (min && horaInput.value < min) {
-            horaInput.setCustomValidity(`La hora no puede ser antes de ${min} (inicio de jornada).`);
-        } else if (max && horaInput.value > max) {
-            horaInput.setCustomValidity(`La hora no puede superar ${max} (fin de jornada).`);
+        // Aplicar validación si hay valor
+        if (horaInput && horaInput.value) {
+            validarHoraLimite(horaEntrada, horaSalida);
         } else {
-            horaInput.setCustomValidity('');
+            // Mostrar hint incluso sin valor
+            validarHoraLimite(horaEntrada, horaSalida);
         }
     }
 
+    // Eventos para validación en tiempo real
     if (horaInput) {
-        horaInput.addEventListener('input', validarHoraLimite);
-        horaInput.addEventListener('change', validarHoraLimite);
+        horaInput.addEventListener('input', function() {
+            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+            validarHoraLimite(
+                emp ? emp.hora_entrada : null,
+                emp ? emp.hora_salida : null
+            );
+        });
+        horaInput.addEventListener('change', function() {
+            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+            validarHoraLimite(
+                emp ? emp.hora_entrada : null,
+                emp ? emp.hora_salida : null
+            );
+        });
     }
 
+    // ==========================================
+    // 3.2 FUNCIONES DE BLOQUEO
+    // ==========================================
     function bloquear(campo) {
         if (!campo) return;
         campo.classList.add('locked-field');
@@ -216,6 +280,9 @@ document.addEventListener('DOMContentLoaded', function () {
         campo.removeAttribute('readonly');
     }
 
+    // ==========================================
+    // 3.3 FUNCIONES DE POBLADO
+    // ==========================================
     function poblarTitulos(cargo, tituloPrevio) {
         if (!tituloPreset) return;
         tituloPreset.innerHTML = '';
@@ -278,7 +345,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Evento al cambiar el empleado en el select
+    // ==========================================
+    // 3.4 EVENTOS DEL FORMULARIO
+    // ==========================================
+
+    // Cambio de empleado
     if (empleadoSelect) {
         empleadoSelect.addEventListener('change', function () {
             const emp = empleadosData[this.value];
@@ -297,15 +368,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             actualizarLimiteHora(emp.hora_entrada, emp.hora_salida);
             poblarTitulos(emp.cargo, null);
+
+            // Resetear hora si está fuera del rango
+            if (horaInput && horaInput.value) {
+                validarHoraLimite(emp.hora_entrada, emp.hora_salida);
+            }
         });
     }
 
-    // Evento al cambiar la tarea sugerida (preset)
+    // Cambio de tarea preseleccionada
     if (tituloPreset) {
         tituloPreset.addEventListener('change', function () {
-            if (this.value === OTRA_VALUE) { 
-                aplicarOtra(''); 
-                return; 
+            if (this.value === OTRA_VALUE) {
+                aplicarOtra('');
+                return;
             }
             const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
             const opciones = (emp && tareasPorCargo[emp.cargo]) || [];
@@ -314,7 +390,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Cargar datos existentes si se está editando una tarea
+    // ==========================================
+    // 4. CARGA DE DATOS EXISTENTES (EDICIÓN)
+    // ==========================================
     const editando = taskForm.dataset.editando === '1';
     if (editando) {
         const empleadoActual = taskForm.dataset.empleadoActual;
@@ -336,4 +414,47 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+
+    // ==========================================
+    // 5. VALIDACIÓN ANTES DE ENVIAR
+    // ==========================================
+    if (taskForm) {
+        taskForm.addEventListener('submit', function(e) {
+            const horaValor = horaInput ? horaInput.value : '';
+            if (!horaValor) {
+                e.preventDefault();
+                mostrarError('La hora límite es obligatoria. Por favor selecciona una hora.');
+                if (horaInput) {
+                    horaInput.classList.add('is-invalid');
+                    horaInput.focus();
+                }
+                return;
+            }
+
+            // Verificar que la hora sea válida según el rango
+            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+            if (emp && emp.hora_entrada && emp.hora_salida) {
+                if (horaValor < emp.hora_entrada || horaValor > emp.hora_salida) {
+                    e.preventDefault();
+                    mostrarError(`La hora debe estar dentro del rango ${emp.hora_entrada} - ${emp.hora_salida}.`);
+                    if (horaInput) {
+                        horaInput.classList.add('is-invalid');
+                        horaInput.focus();
+                    }
+                    return;
+                }
+            }
+        });
+    }
+
+    function mostrarError(mensaje) {
+        // Usar el toast si existe, o alert simple
+        const toastContainer = document.getElementById('toastContainer');
+        if (toastContainer && typeof mostrarToast === 'function') {
+            mostrarToast(mensaje, 'warning');
+        } else {
+            alert(mensaje);
+        }
+    }
+
 });
