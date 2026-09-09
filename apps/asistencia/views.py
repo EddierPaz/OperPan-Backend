@@ -582,32 +582,108 @@ def editar_horario(request, id):
         if hora_salida_str:
             horario.hora_salida = datetime.strptime(hora_salida_str, '%H:%M').time()
             
-        fecha_descanso = request.POST.get("fecha_descanso")
+        fecha_descanso_str = request.POST.get("fecha_descanso")
 
-        if fecha_descanso:
-            descanso = DescansoEmpleado.objects.filter(horario=horario, es_descanso=True).order_by("-fecha", "-id").first()
-            if descanso:
-                descanso.fecha = fecha_descanso
-                descanso.save(update_fields=["fecha"])
-            else:
-                DescansoEmpleado.objects.create(
+        # =====================================================
+        # VALIDACIÓN DE FECHA DE DESCANSO (NUEVO)
+        # =====================================================
+        if fecha_descanso_str:
+            try:
+                nueva_fecha_descanso = datetime.strptime(fecha_descanso_str, '%Y-%m-%d').date()
+                hoy = timezone.localdate()
+
+                if nueva_fecha_descanso < hoy:
+                    messages.error(
+                        request,
+                        "No puedes asignar un día de descanso en una fecha que ya pasó."
+                    )
+                    return redirect("asistencia:horarios")
+
+                descanso_actual = DescansoEmpleado.objects.filter(
                     horario=horario,
-                    fecha=fecha_descanso,
-                    es_descanso=True,
-                )
-            horario.ciclo_inicio = timezone.localdate()
+                    es_descanso=True
+                ).order_by("-fecha", "-id").first()
+
+                if descanso_actual:
+                    ciclo_inicio = horario.ciclo_inicio
+                    if not ciclo_inicio:
+                        ciclo_inicio = horario.fecha_inicio or hoy
+
+                    dias_ciclo_val = dias_ciclo(horario.turno)
+                    ciclo_fin = ciclo_inicio + timedelta(days=dias_ciclo_val - 1)
+
+                    if not (ciclo_inicio <= nueva_fecha_descanso <= ciclo_fin):
+                        messages.error(
+                            request,
+                            f"La fecha de descanso debe estar dentro del ciclo actual "
+                            f"({ciclo_inicio.strftime('%d/%m/%Y')} - {ciclo_fin.strftime('%d/%m/%Y')})."
+                        )
+                        return redirect("asistencia:horarios")
+
+                    if descanso_actual.fecha < hoy and nueva_fecha_descanso != descanso_actual.fecha:
+                        messages.error(
+                            request,
+                            f"No puedes cambiar el día de descanso porque el descanso actual "
+                            f"({descanso_actual.fecha.strftime('%d/%m/%Y')}) ya ocurrió. "
+                            "El siguiente descanso se generará automáticamente al finalizar el ciclo."
+                        )
+                        return redirect("asistencia:horarios")
+
+                    if descanso_actual.fecha < hoy and nueva_fecha_descanso == descanso_actual.fecha:
+                        messages.warning(
+                            request,
+                            "El día de descanso ya ocurrió. La fecha no se modificará."
+                        )
+                        return redirect("asistencia:horarios")
+                    asistencia_existente = Asistencia.objects.filter(
+                        horario=horario,
+                        fecha=nueva_fecha_descanso
+                    ).exists()
+                    
+                    if asistencia_existente:
+                        messages.error(
+                            request,
+                            f"No puedes asignar descanso en el día {nueva_fecha_descanso.strftime('%d/%m/%Y')} "
+                            "porque ya tiene asistencia registrada."
+                        )
+                        return redirect("asistencia:horarios")
+
+                    descanso_actual.fecha = nueva_fecha_descanso
+                    descanso_actual.save(update_fields=["fecha"])
+                    horario.ciclo_inicio = hoy
+                    horario.save(update_fields=["ciclo_inicio"])
+
+                else:
+                    if nueva_fecha_descanso < hoy:
+                        messages.error(
+                            request,
+                            "No puedes asignar un día de descanso en una fecha que ya pasó."
+                        )
+                        return redirect("asistencia:horarios")
+                    
+                    DescansoEmpleado.objects.create(
+                        horario=horario,
+                        fecha=nueva_fecha_descanso,
+                        es_descanso=True,
+                    )
+                    horario.ciclo_inicio = hoy
+                    horario.save(update_fields=["ciclo_inicio"])
+
+            except ValueError:
+                messages.error(request, "Formato de fecha inválido.")
+                return redirect("asistencia:horarios")
 
         horario.save()
 
         # =====================================================
-        # NOTIFICACIÓN AL EMPLEADO (DESPUÉS DE GUARDAR)
+        # NOTIFICACIÓN AL EMPLEADO
         # =====================================================
         contexto = {
             'empleado_nombre': horario.empleado.nombre_completo(),
             'turno': horario.get_turno_display(),
             'hora_entrada': horario.hora_entrada.strftime('%H:%M') if horario.hora_entrada else '',
             'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
-            'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
+            'fecha_descanso': fecha_descanso_str if fecha_descanso_str else 'A definir',
         }
         enviar_notificacion(
             destinatario=horario.empleado.correo,
