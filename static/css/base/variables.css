@@ -39,6 +39,11 @@
   --color-teal: #0d9488;
   --color-teal-hover: #0f766e;
 
+  --color-purple: #7c3aed;
+  --color-purple-hover: #6d28d9;
+  --color-purple-bg: #f1e8fd;
+  --color-purple-text: #6d28d9;
+
   /* ── Neutros (fondo, texto, bordes) ── */
   --color-bg: #f4f7fc;
   --color-surface: var(--color-white);
@@ -169,6 +174,11 @@
   --color-teal: #2dd4bf;
   --color-teal-hover: #14b8a6;
 
+  --color-purple: #a78bfa;
+  --color-purple-hover: #8b5cf6;
+  --color-purple-bg: rgba(167, 139, 250, 0.16);
+  --color-purple-text: #c4b5fd;
+
   /* ── Neutros ── */
   --color-bg: #101317;
   --color-surface: #1a1e24;
@@ -194,12 +204,7 @@
   --color-action-neutral: #3a3f47;
   --color-action-neutral-hover: #4a4f58;
 
-  /* ── Puente con variables nativas de Bootstrap ──
-     Muchas utilidades de Bootstrap (.text-muted, .text-secondary,
-     .form-control:disabled, .dropdown-menu, .modal-content, bordes)
-     usan colores fijos con !important basados en estas variables.
-     Remapeándolas acá, todo el sistema hereda el tema oscuro sin
-     tener que pisar cada clase de Bootstrap una por una. */
+  /* ── Puente con variables nativas de Bootstrap ── */
   --bs-body-bg: var(--color-bg);
   --bs-body-color: var(--color-text);
   --bs-secondary-color: var(--color-text-muted);

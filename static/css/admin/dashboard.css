@@ -6,19 +6,19 @@
 /* -------- GENERAL -------- */
 .dashboard-container {
   padding: 2rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-main);
 }
 
 /* ============================================
    WELCOME CARD
    ============================================ */
 .welcome-card {
-  background: #A40706;
-  color: #F0F2F5;
+  background: var(--color-primary);
+  color: var(--color-white);
   border-radius: 28px;
   padding: 1.8rem 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(164, 7, 6, 0.25);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--color-primary) 25%, transparent);
   border: none;
   transition: all 0.3s ease;
 }
@@ -28,7 +28,7 @@
   font-size: 1.5rem;
   letter-spacing: -0.3px;
   margin-bottom: 0.2rem;
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .welcome-card .text-white-50 {
@@ -38,9 +38,9 @@
 
 .btn-refresh {
   background: rgba(255, 255, 255, 0.15);
-  color: white;
+  color: var(--color-white);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 40px;
+  border-radius: var(--radius-pill);
   padding: 0.3rem 1.2rem;
   font-size: 0.8rem;
   font-weight: 500;
@@ -57,71 +57,30 @@
 
 /* ============================================
    KPIs (STAT CARDS)
+   Ya NO se redefine .stat-card aquí: se usa el componente
+   global de components.css (.stat-card/.kpi-card +
+   .icono-circular) igual que el resto de módulos, en vez de
+   duplicarlo con colores propios que no respondían al tema
+   oscuro. Los íconos de KPI del dashboard.html ahora van
+   dentro de .icono-circular, no como <i style="color:...">.
    ============================================ */
-.stat-card {
-  background: white;
-  border-radius: 20px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  border: 1px solid #EDF2F7;
-  height: 100%;
-  min-height: 90px;
-  transition: all 0.25s ease;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.stat-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-  border-color: #A40706;
-  transform: translateY(-2px);
-}
-
-.stat-card .text-muted {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
-  color: #6c757d;
-}
-
-.stat-card h3 {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-top: 0.15rem;
-  margin-bottom: 0;
-  color: #1a1a2e;
-  line-height: 1.2;
-}
-
-.stat-card small {
-  font-size: 0.7rem;
-  display: block;
-  margin-top: 0.1rem;
-  color: #6c757d;
-  font-weight: 400;
-}
-
-.stat-card i {
-  opacity: 0.85;
-  transition: all 0.2s;
-}
-
-.stat-card:hover i {
-  opacity: 1;
-  transform: scale(1.05);
+/* Utilidad puntual del dashboard: ícono rojo institucional
+   junto a un título de sección (evita repetir
+   style="color:#A40706" en cada ícono del HTML). */
+.icon-primary {
+  color: var(--color-primary);
 }
 
 /* ============================================
    CARDS BASE
    ============================================ */
 .card-block {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 20px;
   padding: 1.2rem 1.2rem 0.8rem;
-  border: 1px solid #e9edf4;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border-soft);
+  box-shadow: var(--shadow-sm);
   transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
@@ -129,31 +88,31 @@
 }
 
 .card-block:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-  border-color: #d5dbe6;
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border);
 }
 
 /* Cards con gradiente suave */
 .asistencia-card,
 .tareas-card,
 .novedades-card {
-  background: linear-gradient(145deg, #ffffff 0%, #fafbff 100%);
+  background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-subtle) 100%);
 }
 
 .asistencia-card:hover,
 .tareas-card:hover,
 .novedades-card:hover {
-  background: linear-gradient(145deg, #ffffff 0%, #f5f0f0 100%);
+  background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-primary-soft-2) 100%);
 }
 
 /* Actividad card con fondo diferenciado */
 .actividad-card {
-  background: #f8f9fc;
-  border-color: #e2e6ed;
+  background: var(--color-surface-subtle);
+  border-color: var(--color-border-soft);
 }
 
 .actividad-card .card-title {
-  border-bottom-color: #dde1e9;
+  border-bottom-color: var(--color-border-soft);
 }
 
 /* ============================================
@@ -162,11 +121,11 @@
 .card-title {
   font-weight: 500;
   font-size: 0.95rem;
-  color: #1a1a2e;
+  color: var(--color-text);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f0f2f7;
+  border-bottom: 1px solid var(--color-border-soft);
   padding-bottom: 0.5rem;
   margin-bottom: 0.8rem;
   flex-shrink: 0;
@@ -177,7 +136,7 @@
 }
 
 .card-link-icon {
-  color: #6c757d;
+  color: var(--color-text-muted);
   text-decoration: none;
   transition: all 0.3s ease;
   padding: 0.1rem 0.3rem;
@@ -185,8 +144,8 @@
 }
 
 .card-link-icon:hover {
-  color: #A40706;
-  background: rgba(164, 7, 6, 0.06);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
 .card-link-icon i {
@@ -230,19 +189,19 @@
 
 .tabla-scroll::-webkit-scrollbar-track,
 .lista-scroll::-webkit-scrollbar-track {
-  background: #f0f2f7;
+  background: var(--color-border-soft);
   border-radius: 10px;
 }
 
 .tabla-scroll::-webkit-scrollbar-thumb,
 .lista-scroll::-webkit-scrollbar-thumb {
-  background: #c5cad4;
+  background: var(--color-border);
   border-radius: 10px;
 }
 
 .tabla-scroll::-webkit-scrollbar-thumb:hover,
 .lista-scroll::-webkit-scrollbar-thumb:hover {
-  background: #A40706;
+  background: var(--color-primary);
 }
 
 /* ============================================
@@ -255,14 +214,14 @@
 .table th {
   border-top: none;
   font-weight: 500;
-  color: #495057;
+  color: var(--color-text-muted);
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.2px;
   padding: 0.4rem 0.2rem;
   position: sticky;
   top: 0;
-  background: #fafbff;
+  background: var(--color-surface-subtle);
   z-index: 1;
 }
 
@@ -270,6 +229,7 @@
   padding: 0.3rem 0.2rem;
   vertical-align: middle;
   font-size: 0.8rem;
+  color: var(--color-text);
 }
 
 .table .badge {
@@ -280,15 +240,15 @@
 }
 
 .asistencia-link {
-  color: #1a1a2e;
+  color: var(--color-text);
   padding: 0.4rem 0.2rem;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .asistencia-link:hover {
-  background: #fafbff;
-  color: #A40706;
+  background: var(--color-surface-subtle);
+  color: var(--color-primary);
 }
 
 .asistencia-link .badge {
@@ -303,18 +263,18 @@
 }
 
 .btn-group-sm .btn-outline-success:hover {
-  background: #28a745;
-  color: white;
+  background: var(--color-success);
+  color: var(--color-white);
 }
 
 .btn-group-sm .btn-outline-warning:hover {
-  background: #ffc107;
-  color: #212529;
+  background: var(--color-warning);
+  color: var(--color-black);
 }
 
 .btn-group-sm .btn-outline-danger:hover {
-  background: #dc3545;
-  color: white;
+  background: var(--color-danger);
+  color: var(--color-white);
 }
 
 .asistencia-item td {
@@ -333,7 +293,7 @@
   border-right: none;
   padding: 0;
   background: transparent;
-  border-color: #f0f2f7;
+  border-color: var(--color-border-soft);
   transition: all 0.2s ease;
 }
 
@@ -347,7 +307,7 @@
 
 .tarea-link,
 .novedad-link {
-  color: #1a1a2e;
+  color: var(--color-text);
   padding: 0.4rem 0.2rem;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -355,8 +315,8 @@
 
 .tarea-link:hover,
 .novedad-link:hover {
-  background: #fafbff;
-  color: #A40706;
+  background: var(--color-surface-subtle);
+  color: var(--color-primary);
 }
 
 .tarea-link .badge,
@@ -399,12 +359,12 @@
   gap: 0.5rem;
   justify-content: center;
   padding: 0.5rem 0;
-  color: #6c757d;
+  color: var(--color-text-muted);
 }
 
 .empty-state i {
   font-size: 1.2rem;
-  color: #28a745;
+  color: var(--color-success);
 }
 
 .empty-state .text-muted {
@@ -419,7 +379,7 @@
 }
 
 .chart-container {
-  background: #f8f9fc;
+  background: var(--color-surface-subtle);
   border-radius: 16px;
   padding: 0.8rem;
   height: 100%;
@@ -464,17 +424,17 @@
 }
 
 .actividad-feed::-webkit-scrollbar-track {
-  background: #e9edf4;
+  background: var(--color-border-soft);
   border-radius: 10px;
 }
 
 .actividad-feed::-webkit-scrollbar-thumb {
-  background: #c5cad4;
+  background: var(--color-border);
   border-radius: 10px;
 }
 
 .actividad-feed::-webkit-scrollbar-thumb:hover {
-  background: #A40706;
+  background: var(--color-primary);
 }
 
 .actividad-item {
@@ -482,16 +442,16 @@
   align-items: center;
   gap: 0.8rem;
   padding: 0.5rem 0.8rem;
-  background: #ffffff;
-  border: 1px solid #e9edf4;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
   border-radius: 12px;
   margin-bottom: 0.4rem;
   transition: all 0.2s ease;
 }
 
 .actividad-item:hover {
-  border-color: #A40706;
-  box-shadow: 0 2px 12px rgba(164, 7, 6, 0.06);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--color-primary) 12%, transparent);
   transform: translateX(3px);
 }
 
@@ -512,7 +472,7 @@
 }
 
 .actividad-contenido a {
-  color: #1a1a2e;
+  color: var(--color-text);
   font-weight: 500;
   font-size: 0.85rem;
   text-decoration: none;
@@ -520,7 +480,7 @@
 }
 
 .actividad-contenido a:hover {
-  color: #A40706;
+  color: var(--color-primary);
   text-decoration: underline;
 }
 
@@ -557,16 +517,6 @@
 }
 
 /* ============================================
-   TOAST
-   ============================================ */
-.toast-message {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1100;
-}
-
-/* ============================================
    FOOTER
    ============================================ */
 footer {
@@ -597,10 +547,6 @@ footer i {
     max-width: 33.333%;
   }
 
-  .stat-card h3 {
-    font-size: 2rem;
-  }
-
   .tabla-scroll,
   .lista-scroll {
     height: 400px;
@@ -621,10 +567,6 @@ footer i {
   .fila-graficas .col-lg-4 {
     flex: 0 0 33.333%;
     max-width: 33.333%;
-  }
-
-  .stat-card h3 {
-    font-size: 1.6rem;
   }
 
   .tabla-scroll,
@@ -660,23 +602,6 @@ footer i {
   .fila-graficas .col-md-12 {
     flex: 0 0 100%;
     max-width: 100%;
-  }
-
-  .stat-card {
-    padding: 0.8rem 1rem;
-    min-height: 75px;
-  }
-
-  .stat-card h3 {
-    font-size: 1.5rem;
-  }
-
-  .stat-card .text-muted {
-    font-size: 0.7rem;
-  }
-
-  .stat-card i {
-    font-size: 1.6rem !important;
   }
 
   .card-block {
@@ -736,24 +661,6 @@ footer i {
   .fila-graficas [class*="col-"] {
     flex: 0 0 100%;
     max-width: 100%;
-  }
-
-  .stat-card {
-    padding: 0.7rem 0.8rem;
-    min-height: 65px;
-    border-radius: 16px;
-  }
-
-  .stat-card h3 {
-    font-size: 1.3rem;
-  }
-
-  .stat-card .text-muted {
-    font-size: 0.6rem;
-  }
-
-  .stat-card i {
-    font-size: 1.3rem !important;
   }
 
   .card-block {
@@ -858,20 +765,6 @@ footer i {
 
   .welcome-card h2 {
     font-size: 1rem;
-  }
-
-  .stat-card {
-    padding: 0.5rem 0.6rem;
-    min-height: 55px;
-    border-radius: 14px;
-  }
-
-  .stat-card h3 {
-    font-size: 1.1rem;
-  }
-
-  .stat-card i {
-    font-size: 1.1rem !important;
   }
 
   .card-block {

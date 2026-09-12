@@ -3,61 +3,61 @@
      ============================================================ -->
 <div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content usuario-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header usuario-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-person-plus-fill"></i> <span>Crear Usuario</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">Registra un nuevo empleado en el sistema</p>
+                    <p class="modal-detalle-subtitulo mb-0">Registra un nuevo empleado en el sistema</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body usuario-detalle-body">
+            <div class="modal-body modal-detalle-body">
                 <form method="POST" id="formCrearUsuario" action="{% url 'user_list' %}">
                     {% csrf_token %}
 
                     <!-- DATOS PERSONALES -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-person-vcard me-1"></i> Datos Personales
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="primer_nombre" id="c_primer_nombre" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Segundo Nombre</span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Segundo Nombre</span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="segundo_nombre" id="c_segundo_nombre">
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Primer Apellido <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Primer Apellido <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="primer_apellido" id="c_primer_apellido" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Segundo Apellido <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Segundo Apellido <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="segundo_apellido" id="c_segundo_apellido" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Tipo Documento <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tipo Documento <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="tipo_documento" id="c_tipo_documento" required>
                                     <option value="">Seleccione</option>
                                     <option value="CC">Cédula de Ciudadanía</option>
@@ -68,23 +68,23 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Número Documento <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Número Documento <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="numero_documento" id="c_numero_documento" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="date" class="form-control" name="fecha_nacimiento" id="c_fecha_nacimiento" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Género <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Género <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="genero" id="c_genero" required>
                                     <option value="">Seleccione</option>
                                     <option value="M">Masculino</option>
@@ -94,9 +94,9 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Estado Civil <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Estado Civil <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="estado_civil" id="c_estado_civil" required>
                                     <option value="">Seleccione</option>
                                     <option value="soltero">Soltero</option>
@@ -108,9 +108,9 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Tipo de Sangre <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tipo de Sangre <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="tipo_sangre" id="c_tipo_sangre" required>
                                     <option value="">Seleccione</option>
                                     <option value="O+">O+</option>
@@ -129,58 +129,58 @@
                     <hr class="my-4">
 
                     <!-- INFORMACIÓN DE CONTACTO -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-telephone me-1"></i> Información de Contacto
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Teléfono <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Teléfono <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="tel" class="form-control" name="telefono" id="c_telefono" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Correo <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Correo <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="email" class="form-control" name="correo" id="c_correo" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Ciudad <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Ciudad <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="ciudad" id="c_ciudad" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Dirección <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Dirección <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="direccion" id="c_direccion" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Contacto emergencia <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Contacto emergencia <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="contacto_emergencia" id="c_contacto_emergencia" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Parentesco <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Parentesco <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="parentesco_emergencia" id="c_parentesco_emergencia" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="tel" class="form-control" name="telefono_emergencia" id="c_telefono_emergencia" required>
                             </span>
                         </div>
@@ -189,16 +189,16 @@
                     <hr class="my-4">
 
                     <!-- DATOS LABORALES -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-briefcase me-1"></i> Datos Laborales
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Cargo <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Cargo <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="cargo" id="c_cargo" required>
                                     <option value="">Seleccione</option>
                                     <option value="mesero">Mesero</option>
@@ -212,30 +212,30 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="date" class="form-control" name="fecha_ingreso" id="c_fecha_ingreso" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">EPS <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">EPS <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="eps" id="c_eps" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">ARL <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">ARL <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="arl" id="c_arl" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="fondo_pension" id="c_fondo_pension" required>
                             </span>
                         </div>
@@ -244,24 +244,24 @@
                     <hr class="my-4">
 
                     <!-- ACCESO AL SISTEMA -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Usuario <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Usuario <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="username" id="c_username" required>
                             </span>
                         </div>
 
                         <!-- RN-CT-01: ya no se digita contraseña; se calcula desde el documento -->
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Credenciales iniciales</span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Credenciales iniciales</span>
+                            <span class="modal-detalle-value">
                                 <div class="form-check mt-2">
                                     <input class="form-check-input" type="checkbox" name="enviar_credenciales" id="c_enviar_credenciales" value="1">
                                     <label class="form-check-label" for="c_enviar_credenciales">
@@ -274,9 +274,9 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Rol <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Rol <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="rol" id="c_rol" required>
                                     <option value="">Seleccione</option>
                                     <option value="admin">Administrador</option>
@@ -292,7 +292,7 @@
             <!-- Footer: Cancelar/Limpiar = gris neutro, Guardar = verde.
                  (Antes: btn-outline-corporate para ambos grises, y
                  btn-primary-corporate rojo institucional para Guardar). -->
-            <div class="modal-footer usuario-detalle-footer">
+            <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>
@@ -313,61 +313,61 @@
      ============================================================ -->
 <div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content usuario-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header usuario-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-pencil-square"></i> <span>Editar Usuario</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">Modifica los datos del empleado</p>
+                    <p class="modal-detalle-subtitulo mb-0">Modifica los datos del empleado</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body usuario-detalle-body">
+            <div class="modal-body modal-detalle-body">
                 <form method="POST" id="formEditarUsuario" action="">
                     {% csrf_token %}
 
                     <!-- DATOS PERSONALES -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-person-vcard me-1"></i> Datos Personales
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="primer_nombre" id="e_primer_nombre" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Segundo Nombre</span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Segundo Nombre</span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="segundo_nombre" id="e_segundo_nombre">
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Primer Apellido <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Primer Apellido <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="primer_apellido" id="e_primer_apellido" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Segundo Apellido <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Segundo Apellido <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="segundo_apellido" id="e_segundo_apellido" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Tipo Documento <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tipo Documento <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="tipo_documento" id="e_tipo_documento" disabled required>
                                     <option value="">Seleccione</option>
                                     <option value="CC">Cédula de Ciudadanía</option>
@@ -379,23 +379,23 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Número Documento <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
-                                <input type="text" class="form-control" name="numero_documento" id="e_numero_documento" readonly required style="background-color: #f1f3f5; cursor: not-allowed;">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Número Documento <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <input type="text" class="form-control" name="numero_documento" id="e_numero_documento" readonly required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
-                                <input type="date" class="form-control" name="fecha_nacimiento" id="e_fecha_nacimiento" readonly required style="background-color: #f1f3f5; cursor: not-allowed;">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <input type="date" class="form-control" name="fecha_nacimiento" id="e_fecha_nacimiento" readonly required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Género <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Género <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="genero" id="e_genero" disabled required>
                                     <option value="">Seleccione</option>
                                     <option value="M">Masculino</option>
@@ -406,9 +406,9 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Estado Civil <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Estado Civil <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="estado_civil" id="e_estado_civil" required>
                                     <option value="">Seleccione</option>
                                     <option value="soltero">Soltero</option>
@@ -420,9 +420,9 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Tipo de Sangre <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tipo de Sangre <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="tipo_sangre" id="e_tipo_sangre" disabled required>
                                     <option value="">Seleccione</option>
                                     <option value="O+">O+</option>
@@ -442,58 +442,58 @@
                     <hr class="my-4">
 
                     <!-- INFORMACIÓN DE CONTACTO -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-telephone me-1"></i> Información de Contacto
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Teléfono <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Teléfono <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="tel" class="form-control" name="telefono" id="e_telefono" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Correo <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Correo <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="email" class="form-control" name="correo" id="e_correo" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Ciudad <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Ciudad <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="ciudad" id="e_ciudad" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Dirección <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Dirección <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="direccion" id="e_direccion" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Contacto emergencia <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Contacto emergencia <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="contacto_emergencia" id="e_contacto_emergencia" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Parentesco <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Parentesco <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="parentesco_emergencia" id="e_parentesco_emergencia" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="tel" class="form-control" name="telefono_emergencia" id="e_telefono_emergencia" required>
                             </span>
                         </div>
@@ -502,16 +502,16 @@
                     <hr class="my-4">
 
                     <!-- DATOS LABORALES -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-briefcase me-1"></i> Datos Laborales
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Cargo <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Cargo <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="cargo" id="e_cargo" required>
                                     <option value="">Seleccione</option>
                                     <option value="mesero">Mesero</option>
@@ -525,30 +525,30 @@
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
-                                <input type="date" class="form-control" name="fecha_ingreso" id="e_fecha_ingreso" readonly required style="background-color: #f1f3f5; cursor: not-allowed;">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <input type="date" class="form-control" name="fecha_ingreso" id="e_fecha_ingreso" readonly required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">EPS <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">EPS <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="eps" id="e_eps" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">ARL <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">ARL <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="arl" id="e_arl" required>
                             </span>
                         </div>
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="fondo_pension" id="e_fondo_pension" required>
                             </span>
                         </div>
@@ -560,16 +560,16 @@
                     <hr class="my-4">
 
                     <!-- ACCESO AL SISTEMA -->
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-grid">
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Usuario <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                    <div class="modal-detalle-grid">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Usuario <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <input type="text" class="form-control" name="username" id="e_username" required>
                             </span>
                         </div>
@@ -577,9 +577,9 @@
                         <!-- La contraseña ya NO se cambia desde aquí: usa "Reenviar credenciales"
                              (mientras esté PENDIENTE) o el flujo normal de recuperación. -->
 
-                        <div class="usuario-detalle-item">
-                            <span class="usuario-detalle-label">Rol <span class="text-danger">*</span></span>
-                            <span class="usuario-detalle-value">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Rol <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
                                 <select class="form-select" name="rol" id="e_rol" required>
                                     <option value="">Seleccione</option>
                                     <option value="admin">Administrador</option>
@@ -592,7 +592,7 @@
                 </form>
             </div>
 
-            <div class="modal-footer usuario-detalle-footer">
+            <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>
@@ -610,164 +610,164 @@
      ============================================================ -->
 <div class="modal fade" id="modalVerUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content usuario-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header usuario-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-person-badge"></i> <span>Detalle del Usuario</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">Información completa del empleado</p>
+                    <p class="modal-detalle-subtitulo mb-0">Información completa del empleado</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body usuario-detalle-body">
-                <div class="usuario-detalle-grid">
+            <div class="modal-body modal-detalle-body">
+                <div class="modal-detalle-grid">
 
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-person-vcard me-1"></i> Datos Personales
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Nombre Completo</span>
-                        <span class="usuario-detalle-value" id="v_nombre_completo">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Nombre Completo</span>
+                        <span class="modal-detalle-value" id="v_nombre_completo">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Tipo Documento</span>
-                        <span class="usuario-detalle-value" id="v_tipo_documento">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Tipo Documento</span>
+                        <span class="modal-detalle-value" id="v_tipo_documento">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Número Documento</span>
-                        <span class="usuario-detalle-value" id="v_numero_documento">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Número Documento</span>
+                        <span class="modal-detalle-value" id="v_numero_documento">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Fecha Nacimiento</span>
-                        <span class="usuario-detalle-value" id="v_fecha_nacimiento">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha Nacimiento</span>
+                        <span class="modal-detalle-value" id="v_fecha_nacimiento">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Género</span>
-                        <span class="usuario-detalle-value" id="v_genero">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Género</span>
+                        <span class="modal-detalle-value" id="v_genero">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Estado Civil</span>
-                        <span class="usuario-detalle-value" id="v_estado_civil">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado Civil</span>
+                        <span class="modal-detalle-value" id="v_estado_civil">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Tipo de Sangre</span>
-                        <span class="usuario-detalle-value" id="v_tipo_sangre">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Tipo de Sangre</span>
+                        <span class="modal-detalle-value" id="v_tipo_sangre">-</span>
                     </div>
 
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-telephone me-1"></i> Información de Contacto
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Teléfono</span>
-                        <span class="usuario-detalle-value" id="v_telefono">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Teléfono</span>
+                        <span class="modal-detalle-value" id="v_telefono">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Correo</span>
-                        <span class="usuario-detalle-value" id="v_correo">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Correo</span>
+                        <span class="modal-detalle-value" id="v_correo">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Ciudad</span>
-                        <span class="usuario-detalle-value" id="v_ciudad">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Ciudad</span>
+                        <span class="modal-detalle-value" id="v_ciudad">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Dirección</span>
-                        <span class="usuario-detalle-value" id="v_direccion">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Dirección</span>
+                        <span class="modal-detalle-value" id="v_direccion">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Contacto Emergencia</span>
-                        <span class="usuario-detalle-value" id="v_contacto_emergencia">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Contacto Emergencia</span>
+                        <span class="modal-detalle-value" id="v_contacto_emergencia">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Parentesco</span>
-                        <span class="usuario-detalle-value" id="v_parentesco_emergencia">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Parentesco</span>
+                        <span class="modal-detalle-value" id="v_parentesco_emergencia">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Teléfono Emergencia</span>
-                        <span class="usuario-detalle-value" id="v_telefono_emergencia">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Teléfono Emergencia</span>
+                        <span class="modal-detalle-value" id="v_telefono_emergencia">-</span>
                     </div>
 
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-briefcase me-1"></i> Datos Laborales
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Cargo</span>
-                        <span class="usuario-detalle-value" id="v_cargo">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Cargo</span>
+                        <span class="modal-detalle-value" id="v_cargo">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Fecha Ingreso</span>
-                        <span class="usuario-detalle-value" id="v_fecha_ingreso">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha Ingreso</span>
+                        <span class="modal-detalle-value" id="v_fecha_ingreso">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Estado laboral</span>
-                        <span class="usuario-detalle-value" id="v_estado">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado laboral</span>
+                        <span class="modal-detalle-value" id="v_estado">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">EPS</span>
-                        <span class="usuario-detalle-value" id="v_eps">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">EPS</span>
+                        <span class="modal-detalle-value" id="v_eps">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">ARL</span>
-                        <span class="usuario-detalle-value" id="v_arl">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">ARL</span>
+                        <span class="modal-detalle-value" id="v_arl">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Fondo Pensión</span>
-                        <span class="usuario-detalle-value" id="v_fondo_pension">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fondo Pensión</span>
+                        <span class="modal-detalle-value" id="v_fondo_pension">-</span>
                     </div>
 
-                    <div class="usuario-detalle-bloque-largo">
-                        <span class="usuario-detalle-bloque-largo-label">
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-shield-lock me-1"></i> Acceso al Sistema
                         </span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Usuario</span>
-                        <span class="usuario-detalle-value" id="v_username">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Usuario</span>
+                        <span class="modal-detalle-value" id="v_username">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Rol</span>
-                        <span class="usuario-detalle-value" id="v_rol">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Rol</span>
+                        <span class="modal-detalle-value" id="v_rol">-</span>
                     </div>
 
-                    <div class="usuario-detalle-item">
-                        <span class="usuario-detalle-label">Estado de cuenta</span>
-                        <span class="usuario-detalle-value" id="v_estado_cuenta">-</span>
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado de cuenta</span>
+                        <span class="modal-detalle-value" id="v_estado_cuenta">-</span>
                     </div>
 
                 </div>
             </div>
 
-            <div class="modal-footer usuario-detalle-footer">
+            <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-close" data-bs-dismiss="modal">
                     <i class="bi bi-x"></i> Cerrar
                 </button>
@@ -782,13 +782,13 @@
      ============================================================ -->
 <div class="modal fade" id="modalSuspenderUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuario-modal">
-            <div class="modal-header usuario-detalle-header">
+        <div class="modal-content modal-detalle">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-pause-circle text-warning"></i> <span>Suspender Cuenta</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Suspender a <strong id="suspender_usuario_nombre">...</strong>
                     </p>
                 </div>
@@ -796,13 +796,13 @@
             </div>
             <form id="formSuspenderUsuario" method="POST" action="">
                 {% csrf_token %}
-                <div class="modal-body usuario-detalle-body">
-                    <label class="usuario-detalle-label mb-2" for="suspender_motivo">
+                <div class="modal-body modal-detalle-body">
+                    <label class="modal-detalle-label mb-2" for="suspender_motivo">
                         Motivo de la suspensión <span class="text-danger">*</span>
                     </label>
                     <textarea class="form-control" name="motivo" id="suspender_motivo" rows="3" required></textarea>
                 </div>
-                <div class="modal-footer usuario-detalle-footer">
+                <div class="modal-footer modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
@@ -820,13 +820,13 @@
      ============================================================ -->
 <div class="modal fade" id="modalReactivarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuario-modal">
-            <div class="modal-header usuario-detalle-header">
+        <div class="modal-content modal-detalle">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-check-circle text-success"></i> <span>Reactivar Cuenta</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         ¿Reactivar el acceso de <strong id="reactivar_usuario_nombre">...</strong>?
                     </p>
                 </div>
@@ -834,7 +834,7 @@
             </div>
             <form id="formReactivarUsuario" method="POST" action="">
                 {% csrf_token %}
-                <div class="modal-footer usuario-detalle-footer">
+                <div class="modal-footer modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
@@ -852,13 +852,13 @@
      ============================================================ -->
 <div class="modal fade" id="modalRetirarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuario-modal">
-            <div class="modal-header usuario-detalle-header">
+        <div class="modal-content modal-detalle">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-box-arrow-right text-danger"></i> <span>Retirar Empleado</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Retirar a <strong id="retirar_usuario_nombre">...</strong>. Su historial se conserva.
                     </p>
                 </div>
@@ -866,14 +866,14 @@
             </div>
             <form id="formRetirarUsuario" method="POST" action="">
                 {% csrf_token %}
-                <div class="modal-body usuario-detalle-body">
-                    <label class="usuario-detalle-label mb-2" for="retirar_motivo">Motivo (opcional)</label>
+                <div class="modal-body modal-detalle-body">
+                    <label class="modal-detalle-label mb-2" for="retirar_motivo">Motivo (opcional)</label>
                     <textarea class="form-control" name="motivo" id="retirar_motivo" rows="3"></textarea>
                 </div>
                 <!-- Retirar es una acción seria (aunque reversible vía "Reincorporar"),
                      por eso usa el mismo rojo que Eliminar en el menú "Más" de la tabla
                      (consistencia: la misma acción siempre el mismo color, punto 22). -->
-                <div class="modal-footer usuario-detalle-footer">
+                <div class="modal-footer modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
@@ -891,13 +891,13 @@
      ============================================================ -->
 <div class="modal fade" id="modalReactivarRetiroUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuario-modal">
-            <div class="modal-header usuario-detalle-header">
+        <div class="modal-content modal-detalle">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-arrow-repeat text-success"></i> <span>Reincorporar Empleado</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Reincorporar a <strong id="reactivar_retiro_usuario_nombre">...</strong>
                     </p>
                 </div>
@@ -905,7 +905,7 @@
             </div>
             <form id="formReactivarRetiroUsuario" method="POST" action="">
                 {% csrf_token %}
-                <div class="modal-body usuario-detalle-body">
+                <div class="modal-body modal-detalle-body">
                     <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="modo" id="modo_pendiente" value="pendiente" checked>
                         <label class="form-check-label" for="modo_pendiente">
@@ -919,7 +919,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="modal-footer usuario-detalle-footer">
+                <div class="modal-footer modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
@@ -937,13 +937,13 @@
      ============================================================ -->
 <div class="modal fade" id="modalEnviarCredenciales" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuario-modal">
-            <div class="modal-header usuario-detalle-header">
+        <div class="modal-content modal-detalle">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-envelope-fill text-info"></i> <span>Reenviar Credenciales</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">
+                    <p class="modal-detalle-subtitulo mb-0">
                         Enviar usuario y documento a <strong id="credenciales_usuario_nombre">...</strong>
                     </p>
                 </div>
@@ -951,7 +951,7 @@
             </div>
             <form id="formEnviarCredenciales" method="POST" action="">
                 {% csrf_token %}
-                <div class="modal-footer usuario-detalle-footer">
+                <div class="modal-footer modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </button>
@@ -969,19 +969,19 @@
      ============================================================ -->
 <div class="modal fade" id="modalEliminarUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content usuario-modal">
+        <div class="modal-content modal-detalle">
 
-            <div class="modal-header usuario-detalle-header">
+            <div class="modal-header modal-detalle-header">
                 <div>
-                    <div class="usuario-detalle-titulo">
+                    <div class="modal-detalle-titulo">
                         <i class="bi bi-trash text-danger"></i> <span>Eliminar Usuario</span>
                     </div>
-                    <p class="usuario-detalle-subtitulo mb-0">Eliminación permanente — solo cuentas sin actividad</p>
+                    <p class="modal-detalle-subtitulo mb-0">Eliminación permanente — solo cuentas sin actividad</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body usuario-detalle-body text-center py-4">
+            <div class="modal-body modal-detalle-body text-center py-4">
                 <div class="confirm-modal-icon confirm-modal-icon--danger mb-3">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
@@ -995,7 +995,7 @@
                 </div>
             </div>
 
-            <div class="modal-footer usuario-detalle-footer">
+            <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
                 </button>

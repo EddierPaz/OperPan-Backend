@@ -34,7 +34,9 @@
           <span class="text-muted">Empleados activos</span>
           <h3 class="mt-1">{{ total_empleados_activos }}</h3>
         </div>
-        <i class="bi bi-people-fill fs-2" style="color:#A40706;"></i>
+        <div class="icono-circular">
+          <i class="bi bi-people-fill"></i>
+        </div>
       </div>
     </div>
     <div class="col-md-3 col-sm-6">
@@ -44,7 +46,9 @@
           <h3 class="mt-1">{{ resumen_asistencia.presentes }} / {{ resumen_asistencia.programados }}</h3>
           <small class="text-muted">{{ resumen_asistencia.ausentes }} ausentes</small>
         </div>
-        <i class="bi bi-calendar-check fs-2" style="color:#A40706;"></i>
+        <div class="icono-circular">
+          <i class="bi bi-calendar-check"></i>
+        </div>
       </div>
     </div>
     <div class="col-md-3 col-sm-6">
@@ -54,7 +58,9 @@
           <h3 class="mt-1">{{ kpis_tareas.pendientes }}</h3>
           <small class="text-muted">{{ kpis_tareas.vencidas }} vencidas</small>
         </div>
-        <i class="bi bi-list-check fs-2" style="color:#A40706;"></i>
+        <div class="icono-circular">
+          <i class="bi bi-list-check"></i>
+        </div>
       </div>
     </div>
     <div class="col-md-3 col-sm-6">
@@ -66,7 +72,9 @@
             Permisos {{ permisos_pendientes }} · Incap. {{ incapacidades_pendientes }} · Cert. {{ certificados_pendientes }}
           </small>
         </div>
-        <i class="bi bi-envelope-paper fs-2" style="color:#A40706;"></i>
+        <div class="icono-circular">
+          <i class="bi bi-envelope-paper"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -77,7 +85,7 @@
     <div class="col-lg-4 col-md-6">
       <div class="card-block asistencia-card">
         <div class="card-title">
-          <span><i class="bi bi-clock-history me-2" style="color:#A40706;"></i> Asistencia del día</span>
+          <span><i class="bi bi-clock-history me-2 icon-primary"></i> Asistencia del día</span>
           <a href="{% url 'asistencia:horarios' %}" class="card-link-icon">
             <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
@@ -122,7 +130,7 @@
     <div class="col-lg-4 col-md-6">
       <div class="card-block tareas-card">
         <div class="card-title">
-          <span><i class="bi bi-list-task me-2" style="color:#A40706;"></i> Tareas pendientes</span>
+          <span><i class="bi bi-list-task me-2 icon-primary"></i> Tareas pendientes</span>
           <a href="{% url 'tareas:admin_tareas_list' %}" class="card-link-icon">
             <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
@@ -172,7 +180,7 @@
     <div class="col-lg-4 col-md-12">
       <div class="card-block novedades-card">
         <div class="card-title">
-          <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Novedades pendientes</span>
+          <span><i class="bi bi-envelope-paper me-2 icon-primary"></i> Novedades pendientes</span>
           <a href="{% url 'novedades:novedades_admin' %}" class="card-link-icon">
             <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
@@ -218,7 +226,7 @@
     <div class="col-lg-4 col-md-6">
       <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-pie-chart me-2" style="color:#A40706;"></i> Estado de tareas</span>
+          <span><i class="bi bi-pie-chart me-2 icon-primary"></i> Estado de tareas</span>
         </div>
         <div class="chart-container">
           <canvas id="chartTareas" width="200" height="180"></canvas>
@@ -228,7 +236,7 @@
     <div class="col-lg-4 col-md-6">
       <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-calendar-check me-2" style="color:#A40706;"></i> Asistencia hoy</span>
+          <span><i class="bi bi-calendar-check me-2 icon-primary"></i> Asistencia hoy</span>
         </div>
         <div class="chart-container">
           <canvas id="chartAsistencia" width="200" height="180"></canvas>
@@ -238,7 +246,7 @@
     <div class="col-lg-4 col-md-12">
       <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Novedades pendientes</span>
+          <span><i class="bi bi-envelope-paper me-2 icon-primary"></i> Novedades pendientes</span>
         </div>
         <div class="chart-container">
           <canvas id="chartNovedades" width="200" height="180"></canvas>
@@ -252,7 +260,7 @@
     <div class="col-12">
       <div class="card-block actividad-card">
         <div class="card-title">
-          <span><i class="bi bi-clock me-2" style="color:#A40706;"></i> Actividad reciente</span>
+          <span><i class="bi bi-clock me-2 icon-primary"></i> Actividad reciente</span>
         </div>
         {% if actividad_reciente %}
           <div class="actividad-feed">

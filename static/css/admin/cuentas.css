@@ -1,10 +1,10 @@
 /* ==============================================
-   MÓDULO DE USUARIOS 
+   MÓDULO DE CUENTAS / USUARIOS (ADMIN)
    ============================================== */
 
 .badge-rol-admin {
-  background: #EDE9FE;
-  color: #5B21B6;
+  background: var(--color-purple-bg);
+  color: var(--color-purple-text);
   padding: 0.35rem 0.8rem;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -12,12 +12,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid #DDD6FE;
+  border: 1px solid var(--color-purple);
 }
 
 .badge-rol-empleado {
-  background: #E0F2FE;
-  color: #0369A1;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
   padding: 0.35rem 0.8rem;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -25,12 +25,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid #BAE6FD;
+  border: 1px solid var(--color-info);
 }
 
 .badge-inactive {
-  background: #FEF3C7;
-  color: #92400E;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
   padding: 0.35rem 0.8rem;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -38,12 +38,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid #FDE68A;
+  border: 1px solid var(--color-warning);
 }
 
+/* No se usa hoy en content.html (Suspendida e Inactiva comparten
+   badge-inactive), pero se deja tokenizada por si se reactiva. */
 .badge-retirado {
-  background: #FEE2E2;
-  color: #991B1B;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
   padding: 0.35rem 0.8rem;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -51,7 +53,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid #FCA5A5;
+  border: 1px solid var(--color-danger);
 }
 
 .badge-subtext {
@@ -62,23 +64,20 @@
 }
 
 /* ==============================================
-   NUEVOS ESTILOS PARA LA TABLA DE USUARIOS
+   TABLA DE USUARIOS
    ============================================== */
-
-/* 1. COLUMNA: Usuario (Badge distintivo) */
 .usuario-badge {
-  background-color: #f0f4f8;
+  background-color: var(--color-surface-subtle);
   padding: 0.25rem 0.6rem;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #1a2b3c;
+  color: var(--color-text);
   display: inline-block;
   letter-spacing: 0.3px;
-  border: 1px solid #dce3ec;
+  border: 1px solid var(--color-border-soft);
 }
 
-/* 2. COLUMNA: Nombre y cargo */
 .nombre-cargo {
   display: flex;
   flex-direction: column;
@@ -88,16 +87,15 @@
 .nombre-empleado {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #131d26;
+  color: var(--color-text);
 }
 
 .cargo-empleado {
   font-size: 0.75rem;
-  color: #6c7a89;
+  color: var(--color-text-muted);
   font-weight: 400;
 }
 
-/* 3. COLUMNA: Acciones - Centrado */
 .acciones-container {
   display: flex;
   align-items: center;
@@ -106,13 +104,11 @@
   flex-wrap: wrap;
 }
 
-/* Texto de las acciones (visible en desktop) */
 .accion-texto {
   font-size: 0.75rem;
   margin-left: 0.15rem;
 }
 
-/* Ocultar texto en móvil, mostrar solo iconos */
 @media (max-width: 768px) {
   .accion-texto {
     display: none;
@@ -149,7 +145,6 @@
   }
 }
 
-/* Tablets */
 @media (max-width: 992px) {
   .btn-action {
     padding: 0.3rem 0.5rem !important;
@@ -166,159 +161,5 @@
 
   .btn-action-icon i {
     font-size: 1rem !important;
-  }
-}
-
-/* ==============================================
-   MODALES (se mantienen igual)
-   ============================================== */
-
-.usuario-modal {
-  border: none;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
-}
-
-/* HEADER */
-.usuario-detalle-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #edf2f7;
-  background: #ffffff;
-}
-
-.usuario-detalle-titulo {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: #A40706;
-  font-size: 1.15rem;
-  font-weight: 700;
-}
-
-.usuario-detalle-titulo i {
-  font-size: 1.25rem;
-}
-
-.usuario-detalle-subtitulo {
-  margin-top: 0.25rem;
-  margin-left: 1.85rem;
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-/* BODY */
-.usuario-detalle-body {
-  padding: 1.5rem;
-  background: #ffffff;
-}
-
-/* GRID */
-.usuario-detalle-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-/* ITEMS (CASILLAS) */
-.usuario-detalle-item {
-  padding: 0.9rem 1rem;
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
-  border-radius: 12px;
-}
-
-.usuario-detalle-label {
-  display: block;
-  margin-bottom: 0.25rem;
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.usuario-detalle-value {
-  display: block;
-  color: #1e293b;
-  font-size: 0.92rem;
-  font-weight: 600;
-  word-break: break-word;
-}
-
-.usuario-detalle-value .form-control,
-.usuario-detalle-value .form-select {
-  font-weight: 400;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.9rem;
-}
-
-.usuario-detalle-value .form-control:focus,
-.usuario-detalle-value .form-select:focus {
-  border-color: #A40706;
-  box-shadow: 0 0 0 3px rgba(164, 7, 6, 0.08);
-}
-
-/* BLOQUE LARGO (títulos de sección) */
-.usuario-detalle-bloque-largo {
-  grid-column: 1 / -1;
-  padding: 0.5rem 1rem;
-  background: #ffffff;
-  border-bottom: 2px solid #A40706;
-  border-radius: 0;
-}
-
-.usuario-detalle-bloque-largo-label {
-  display: block;
-  color: #A40706;
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-/* FOOTER */
-.usuario-detalle-footer {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #edf2f7;
-  background: #ffffff;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.6rem;
-}
-
-/* BOTONES DE MODAL */
-.usuario-modal-btn {
-  border: none;
-  border-radius: 25px;
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-danger {
-  background: #dc3545;
-  color: #ffffff;
-  border: 1.5px solid #dc3545;
-}
-
-.btn-danger:hover {
-  background: #b02a37;
-  border-color: #b02a37;
-}
-
-/* ── RESPONSIVE MODALES ── */
-@media (max-width: 768px) {
-  .usuario-detalle-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .usuario-detalle-bloque-largo {
-    grid-column: 1;
   }
 }

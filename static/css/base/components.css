@@ -541,54 +541,6 @@
 
 /* ============================================================
    SISTEMA GLOBAL DE MODALES DE DETALLE (.modal-detalle-*)
-   Para modales de "ver / crear / editar registro": header con
-   ícono + título + subtítulo, body con grid de datos en tarjetas,
-   y footer de acciones. Reemplaza lo que cada módulo venía
-   reinventando por su cuenta (tarea-detalle-*, usuario-detalle-*,
-   novedad-detalle-*, tarea-modal, usuario-modal, novedad-modal).
-   Ningún módulo debe volver a crear su propio header/body/grid/
-   item/footer de modal: siempre se usan estas clases. Si un
-   módulo necesita un detalle puntual, agrega una clase
-   modificadora propia (ej. .modal-detalle-item.item-horario)
-   sin redefinir la base.
-
-   Estructura esperada:
-     <div class="modal-content modal-detalle">
-       <div class="modal-detalle-header">
-         <div>
-           <div class="modal-detalle-titulo">
-             <i class="bi bi-clipboard-check"></i><span>Título</span>
-           </div>
-           <p class="modal-detalle-subtitulo mb-0">Subtítulo</p>
-         </div>
-         <button class="btn-close" data-bs-dismiss="modal"></button>
-       </div>
-
-       <div class="modal-detalle-body">
-         <div class="modal-detalle-grid">
-           <div class="modal-detalle-bloque-largo">
-             <span class="modal-detalle-bloque-largo-label">
-               <i class="bi bi-person-vcard me-1"></i> Sección
-             </span>
-           </div>
-           <div class="modal-detalle-item">
-             <span class="modal-detalle-label">Campo</span>
-             <span class="modal-detalle-value">Valor</span>
-           </div>
-         </div>
-       </div>
-
-       <div class="modal-detalle-footer">
-         <button class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
-         <button class="btn-action btn-action-save">Guardar</button>
-       </div>
-     </div>
-   Los botones del footer SIEMPRE usan .btn-action + el color
-   semántico que corresponda (btn-action-save, btn-action-cancel,
-   btn-action-approve, btn-action-reject, btn-action-delete,
-   btn-action-download...). Nunca una clase de botón propia del
-   módulo (quedan eliminadas: tarea-modal-btn, usuario-modal-btn,
-   novedad-modal-btn, novedad-modal-btn-aprobar, btn-danger).
    ============================================================ */
 .modal-detalle {
   background: var(--color-surface);
@@ -978,6 +930,12 @@
   white-space: nowrap;
 }
 
+.badge-neutral {
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
 .badge-active {
   background: var(--color-success-bg);
   color: var(--color-success-text);
@@ -1317,4 +1275,37 @@
     flex: 1 1 auto;
     width: 100%;
   }
+}
+
+/* ============================================================
+   BOTÓN CERRAR (X) 
+   ============================================================ */
+.btn-close {
+  --bx-close-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+  background: transparent;
+  opacity: 1;
+  box-sizing: content-box;
+  width: 18px;
+  height: 18px;
+  padding: 6px;
+  -webkit-mask-image: var(--bx-close-icon);
+  mask-image: var(--bx-close-icon);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 18px 18px;
+  mask-size: 18px 18px;
+  background-color: var(--color-primary);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-close:hover {
+  background-color: var(--color-primary-hover);
+  transform: scale(1.08);
+}
+
+.btn-close:focus {
+  box-shadow: var(--shadow-focus-soft);
+  opacity: 1;
 }

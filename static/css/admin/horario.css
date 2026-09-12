@@ -1,0 +1,90 @@
+/* ==============================================
+   MÓDULO DE HORARIOS (ADMIN)
+   ============================================== */
+
+.calendario-wrapper {
+  width: 100%;
+}
+
+.dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dia-semana {
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.dias-calendario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.dia-btn {
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 12px;
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.dia-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.dia-btn.seleccionado {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.dia-btn--ultimo {
+  border-style: dashed;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dia-btn--ultimo:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.dia-vacio {
+  width: 100%;
+  min-height: 56px;
+}
+
+@media (max-width: 768px) {
+  .filtros-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro-buscar,
+  .filtro-select,
+  .filtro-btn-limpiar {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
