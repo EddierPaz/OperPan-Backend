@@ -18,7 +18,7 @@
         </div>
 
         <div class="card-grid-footer">
-            <button type="button" class="card-grid-btn btn-ver-detalle"
+            <button type="button" class="btn-action btn-action-view btn-ver-detalle"
                     data-titulo="{{ i.titulo|default:'Incapacidad médica' }}"
                     data-subtitulo="Incapacidad · {{ i.fecha_inicio|date:'d/m/Y' }} → {{ i.fecha_fin|date:'d/m/Y' }}"
                     data-motivo="{{ i.descripcion|escapejs }}"

@@ -4,181 +4,82 @@
 
 /* Formulario moderno */
 .form-section {
-    background: white;
-    border-radius: 28px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    border: 1px solid #EDF2F7;
-}
-
-/* ── Botones corporativos adicionales ── */
-.btn-corporate-sec {
-    background: rgb(54, 144, 166);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 40px;
-    font-weight: 500;
-    transition: 0.2s;
-    cursor: pointer;
-}
-
-.btn-corporate-sec:hover {
-    background: rgb(42, 112, 130);
-    color: white;
-}
-
-.btn-corporate-thi {
-    background: rgb(0, 128, 0);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 40px;
-    font-weight: 500;
-    transition: 0.2s;
-    cursor: pointer;
-}
-
-.btn-corporate-thi:hover {
-    background: rgb(0, 100, 0);
-    color: white;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-soft);
 }
 
 /* Tarjetas de tareas */
 .task-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1.2rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid #EDF2F7;
-    overflow: visible !important;
-    position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--color-border-soft);
+  overflow: visible !important;
+  position: relative;
 }
 
 .task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .task-card:has(.dropdown-menu.show) {
-    z-index: 100;
-}
-
-/* Menú de Opciones Tres Puntos */
-.dropdown-menu {
-    border-radius: 14px !important;
-    border: 1px solid #EDF2F7 !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-    padding: 0.5rem 0 !important;
-    min-width: 155px;
-}
-
-.dropdown-item {
-    padding: 0.55rem 1rem !important;
-    font-weight: 500;
-    transition: background-color 0.15s ease;
-}
-
-.dropdown-item:hover {
-    background-color: #F8FAFC;
-}
-
-/* ── Prioridades ── */
-.priority-high {
-    color: #B91C1C;
-    background: #FEF2F0;
-    padding: 0.2rem 0.6rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-.priority-medium {
-    color: #C77A00;
-    background: #FFF3E0;
-    padding: 0.2rem 0.6rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-.priority-low {
-    color: #1E7B48;
-    background: #E0F2E9;
-    padding: 0.2rem 0.6rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-/* ── Estados de tarea ── */
-.badge-status {
-    padding: 0.3rem 0.8rem;
-    border-radius: 40px;
-    font-size: 0.75rem;
-}
-
-.badge-pendiente {
-    background: #FFF3E0;
-    color: #C77A00;
-}
-
-.badge-progreso {
-    background: #E6F0FA;
-    color: #1A5D9C;
-}
-
-.badge-finalizada {
-    background: #E0F2E9;
-    color: #1E7B48;
+  z-index: 100;
 }
 
 /* ── Buscador ── */
 .search-input-group {
-    background: white;
-    border-radius: 40px;
-    border: 1px solid #E9ECF3;
-    padding: 0.25rem 0.5rem 0.25rem 1rem;
-    display: flex;
-    align-items: center;
-    transition: 0.2s;
+  background: var(--color-surface);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  display: flex;
+  align-items: center;
+  transition: 0.2s;
 }
 
 .search-input-group:focus-within {
-    border-color: #A40706;
-    box-shadow: 0 0 0 0.25rem rgba(164, 7, 6, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
 }
 
 .search-input-group .search-input {
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent;
-    font-size: 0.9rem;
-    color: #475569;
-    outline: none;
-    width: 100%;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+  outline: none;
+  width: 100%;
 }
 
 .search-input-group .btn-search-addon {
-    border: none;
-    background: transparent;
-    color: #475569;
-    padding: 0.4rem 0.8rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.2s;
+  border: none;
+  background: transparent;
+  color: var(--color-text-soft);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .search-input-group .btn-search-addon:hover {
-    background-color: #F1F5F9;
-    color: #A40706;
+  background-color: var(--color-surface-subtle);
+  color: var(--color-primary);
 }
 
 .text-title {
-    font-weight: bold;
-    font-size: 1.25rem;
-    color: #a40706;
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: var(--color-primary);
 }

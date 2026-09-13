@@ -14,7 +14,7 @@
                 <span class="text-muted">Días con asistencia</span>
                 <h3 class="mt-1 mb-0">{{ dias_asistencia }}</h3>
             </div>
-            <div class="icono-circular bg-success-subtle text-success">
+            <div class="icono-circular icono-success">
                 <i class="bi bi-check-circle-fill fs-4"></i>
             </div>
         </div>
@@ -25,7 +25,7 @@
                 <span class="text-muted">Días sin asistencia</span>
                 <h3 class="mt-1 mb-0">{{ dias_sin_asistencia }}</h3>
             </div>
-            <div class="icono-circular bg-danger-subtle text-danger">
+            <div class="icono-circular icono-danger">
                 <i class="bi bi-x-circle-fill fs-4"></i>
             </div>
         </div>
@@ -36,7 +36,7 @@
                 <span class="text-muted">Retardos</span>
                 <h3 class="mt-1 mb-0">{{ retardos }}</h3>
             </div>
-            <div class="icono-circular bg-warning-subtle text-warning">
+            <div class="icono-circular icono-warning">
                 <i class="bi bi-hourglass-split fs-4"></i>
             </div>
         </div>
@@ -45,47 +45,56 @@
 
 <!-- Estado de hoy -->
 <div class="employee-card p-3 mb-4">
-    <h5 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Estado de hoy</h5>
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="d-flex flex-wrap gap-3">
-                <span class="text-muted">Turno:</span>
-                <span class="fw-semibold">{{ estado_hoy.turno|default:"No asignado" }}</span>
+    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Estado de hoy</h5>
+
+    <div class="estado-hoy-body">
+        <div class="estado-hoy-status
+            {% if estado_hoy.estado == 'PRESENTE' %}estado-hoy-status--presente
+            {% elif estado_hoy.estado == 'TARDE' %}estado-hoy-status--tarde
+            {% elif estado_hoy.estado == 'AUSENTE' %}estado-hoy-status--ausente
+            {% elif estado_hoy.estado == 'DESCANSO' %}estado-hoy-status--descanso
+            {% endif %}">
+            <div class="estado-hoy-status-icon">
+                <i class="bi
+                    {% if estado_hoy.estado == 'PRESENTE' %}bi-check-circle-fill
+                    {% elif estado_hoy.estado == 'TARDE' %}bi-clock-fill
+                    {% elif estado_hoy.estado == 'AUSENTE' %}bi-x-circle-fill
+                    {% elif estado_hoy.estado == 'DESCANSO' %}bi-moon-stars-fill
+                    {% else %}bi-question-circle-fill{% endif %}"></i>
             </div>
-            <div class="d-flex flex-wrap gap-3">
-                <span class="text-muted">Entrada programada:</span>
-                <span class="fw-semibold">{{ estado_hoy.hora_entrada_prog|time:"H:i"|default:"--:--" }}</span>
-            </div>
-            <div class="d-flex flex-wrap gap-3">
-                <span class="text-muted">Salida programada:</span>
-                <span class="fw-semibold">{{ estado_hoy.hora_salida_prog|time:"H:i"|default:"--:--" }}</span>
+            <div>
+                <span class="estado-hoy-status-label">
+                    {% if estado_hoy.estado == 'PRESENTE' %}Presente
+                    {% elif estado_hoy.estado == 'TARDE' %}Tarde
+                    {% elif estado_hoy.estado == 'AUSENTE' %}Ausente
+                    {% elif estado_hoy.estado == 'DESCANSO' %}Descanso
+                    {% elif estado_hoy.estado == 'SIN_HORARIO' %}Sin horario
+                    {% else %}Sin información{% endif %}
+                </span>
+                {% if estado_hoy.tardanza_minutos %}
+                    <span class="estado-hoy-status-sub">{{ estado_hoy.tardanza_minutos }} min de retraso</span>
+                {% endif %}
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="d-flex flex-wrap gap-3">
-                <span class="text-muted">Estado:</span>
-                {% if estado_hoy.estado == 'PRESENTE' %}
-                    <span class="badge-status badge-presente">Presente</span>
-                {% elif estado_hoy.estado == 'TARDE' %}
-                    <span class="badge-status badge-tarde">Tarde</span>
-                {% elif estado_hoy.estado == 'AUSENTE' %}
-                    <span class="badge-status badge-ausente">Ausente</span>
-                {% elif estado_hoy.estado == 'DESCANSO' %}
-                    <span class="badge-status badge-descanso">Descanso</span>
-                {% elif estado_hoy.estado == 'SIN_HORARIO' %}
-                    <span class="badge-status badge-secondary">Sin horario</span>
-                {% else %}
-                    <span class="badge-status badge-secondary">Sin información</span>
-                {% endif %}
-                {% if estado_hoy.tardanza_minutos %}
-                    <span class="text-warning">({{ estado_hoy.tardanza_minutos }} min de retraso)</span>
-                {% endif %}
+
+        <div class="estado-hoy-grid">
+            <div class="estado-hoy-item">
+                <span class="estado-hoy-item-label">Turno</span>
+                <span class="estado-hoy-item-value">{{ estado_hoy.turno|default:"No asignado" }}</span>
+            </div>
+            <div class="estado-hoy-item">
+                <span class="estado-hoy-item-label">Entrada programada</span>
+                <span class="estado-hoy-item-value">{{ estado_hoy.hora_entrada_prog|time:"H:i"|default:"--:--" }}</span>
+            </div>
+            <div class="estado-hoy-item">
+                <span class="estado-hoy-item-label">Salida programada</span>
+                <span class="estado-hoy-item-value">{{ estado_hoy.hora_salida_prog|time:"H:i"|default:"--:--" }}</span>
             </div>
             {% if estado_hoy.hora_entrada_real %}
-                <div class="d-flex flex-wrap gap-3">
-                    <span class="text-muted">Entrada real:</span>
-                    <span class="fw-semibold">{{ estado_hoy.hora_entrada_real|time:"H:i" }}</span>
-                </div>
+            <div class="estado-hoy-item">
+                <span class="estado-hoy-item-label">Entrada real</span>
+                <span class="estado-hoy-item-value">{{ estado_hoy.hora_entrada_real|time:"H:i" }}</span>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -117,7 +126,7 @@
             <tbody>
                 {% for asistencia in asistencias %}
                 <tr>
-                    <td class="fw-semibold text-dark">{{ asistencia.fecha|date:"d/m/Y" }}</td>
+                    <td class="fw-semibold">{{ asistencia.fecha|date:"d/m/Y" }}</td>
                     <td>
                         {% if asistencia.hora_marcada %}
                             {{ asistencia.hora_marcada|time:"H:i" }}
@@ -172,7 +181,7 @@
             </tbody>
         </table>
     </div>
-    <div class="p-3 bg-light border-top text-center">
+    <div class="p-3 border-top text-center" style="background: var(--color-surface-subtle);">
         <a href="?filtro=mes" class="btn-action btn-action-create btn-sm px-4">
             <i class="bi bi-calendar-week me-1"></i> Ver mes completo
         </a>

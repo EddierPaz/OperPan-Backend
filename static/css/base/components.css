@@ -115,20 +115,6 @@
 
 /* ============================================================
    SISTEMA GLOBAL DE ACCIONES (.btn-action-*)
-   Una única acción = una única clase, reutilizable en TODOS
-   los módulos (horarios, cuentas, tareas, novedades, etc).
-   Ningún módulo debe crear su propio botón de Ver/Editar/
-   Eliminar/etc: siempre se usa una de estas clases.
-
-   Uso:
-     <button class="btn-action btn-action-view" title="Ver"
-             aria-label="Ver">
-       <i class="bi bi-eye"></i> Ver
-     </button>
-
-   Solo-ícono (tablas con poco espacio): agregar
-   "btn-action-icon-only" además del modificador de color, y
-   SIEMPRE incluir title + aria-label (accesibilidad).
    ============================================================ */
 .btn-action {
   border: none;
@@ -167,8 +153,7 @@
   box-shadow: var(--shadow-focus);
 }
 
-/* Ver: azul/info — consultar información (nunca rojo institucional,
-   ese color queda reservado a eliminar/rechazar) */
+/* Ver: azul/info — consultar información  */
 .btn-action-view {
   background: var(--color-action-view);
   color: #ffffff;
@@ -304,8 +289,7 @@
   color: #ffffff;
 }
 
-/* Filtrar: variante "outline" gris, para no competir visualmente
-   con las acciones de fila (se usa sobre todo junto a filtros-toolbar) */
+/* Filtrar: variante "outline" gris */
 .btn-action-filter {
   background: var(--color-surface);
   color: var(--color-text-soft);
@@ -318,20 +302,14 @@
   border-color: var(--color-border);
 }
 
-/* ── Variante solo-ícono: SIN texto, botón cuadrado/circular
-   compacto. Se combina con el color de acción que corresponda,
-   ej: class="btn-action btn-action-view btn-action-icon-only".
-   Usar en tablas con poco espacio (punto 20 del Design System);
-   SIEMPRE con title + aria-label ya que no hay texto visible. ── */
+/* ── Variante solo-ícono */
 .btn-action-icon-only {
   width: var(--action-height);
   height: var(--action-height);
   padding: 0;
 }
 
-/* ── Variante solo-ícono neutra (gris): botón circular sin color
-   de acción propio (Nivel 2/3 en tablas y tarjetas con poco
-   espacio). ── */
+/* ── Variante solo-ícono neutra (gris). ── */
 .btn-action-icon {
   width: var(--action-height);
   height: var(--action-height);
@@ -353,10 +331,7 @@
   border-color: var(--color-primary);
 }
 
-/* "Más" (⋮): siempre neutro/gris, nunca cambia de color —
-   es el punto de entrada a acciones secundarias, no una acción
-   en sí misma. Úsese junto a .btn-action-icon:
-   class="btn-action-icon btn-action-more" */
+/* "Más" (⋮) */
 .btn-action-more {
   background: var(--color-surface-subtle);
   color: var(--color-text-soft);
@@ -370,26 +345,6 @@
 
 /* ============================================================
    MENÚ "MÁS" GLOBAL (dropdown de acciones secundarias)
-   Reutiliza Bootstrap Dropdown; esto solo aplica el estilo.
-   Estructura esperada:
-     <div class="dropdown">
-       <button class="btn-action btn-action-icon btn-action-more"
-               data-bs-toggle="dropdown" title="Más acciones"
-               aria-label="Más acciones">
-         <i class="bi bi-three-dots-vertical"></i>
-       </button>
-       <ul class="dropdown-menu action-menu">
-         <li><a class="action-menu-item" href="#">
-               <i class="bi bi-pencil"></i> Editar</a></li>
-         <li><a class="action-menu-item" href="#">
-               <i class="bi bi-pause-circle"></i> Suspender</a></li>
-         <li><hr class="action-menu-divider"></li>
-         <li><a class="action-menu-item action-menu-item--danger" href="#">
-               <i class="bi bi-trash"></i> Eliminar</a></li>
-       </ul>
-     </div>
-   Mostrar SOLO las acciones válidas para el estado actual del
-   registro (ej. una cuenta suspendida no debe mostrar "Suspender").
    ============================================================ */
 .action-menu {
   background: var(--color-surface);
@@ -451,33 +406,6 @@
 
 /* ============================================================
    MODAL DE CONFIRMACIÓN GLOBAL
-   Un único modal para Eliminar/Suspender/Retirar/Rechazar en
-   TODO OperPan. Reutiliza el modal de Bootstrap; el título,
-   descripción, ícono y texto del botón se cambian por JS/contexto,
-   nunca se crea un modal nuevo por módulo.
-   Estructura esperada (una sola instancia en base.html o
-   incluida vía {% include %} donde se necesite):
-     <div class="modal fade confirm-modal" id="confirmModal">
-       <div class="modal-dialog modal-dialog-centered">
-         <div class="modal-content">
-           <div class="modal-body confirm-modal-body">
-             <div class="confirm-modal-icon confirm-modal-icon--danger">
-               <i class="bi bi-x-lg"></i>
-             </div>
-             <h5 class="confirm-modal-title">¿Eliminar registro?</h5>
-             <p class="confirm-modal-text">Esta acción no se puede deshacer.</p>
-           </div>
-           <div class="confirm-modal-footer">
-             <button class="btn-action btn-action-cancel" data-bs-dismiss="modal">Cancelar</button>
-             <button class="btn-action btn-action-delete" id="confirmModalAccept">Eliminar</button>
-           </div>
-         </div>
-       </div>
-     </div>
-   La clase modificadora del ícono (--danger/--warning/--success)
-   determina el color según el tipo de acción a confirmar. El
-   ícono estándar es "bi-x-lg" para todas las variantes: solo
-   cambia el color de fondo/texto según --danger/--warning/--success.
    ============================================================ */
 .confirm-modal .modal-content {
   background: var(--color-surface);
@@ -590,9 +518,7 @@
   gap: 1rem;
 }
 
-/* Modificador: un .modal-detalle-item que debe ocupar el ancho
-   completo del grid (ej. un período de fechas, la fecha de
-   solicitud) en vez de compartir fila con otro campo. */
+/* Modificador: un .modal-detalle-item  */
 .modal-detalle-item-full {
   grid-column: 1 / -1;
 }
@@ -638,11 +564,7 @@
   box-shadow: var(--shadow-focus-soft);
 }
 
-/* Bloque largo: separador de sección dentro del grid (ocupa las
-   2 columnas). Variante por defecto: línea inferior roja (la que
-   ya usaban tareas/cuentas). Variante --caja: tarjeta con borde
-   completo, pensada para bloques de texto largo (la que ya usaba
-   novedades para descripción/motivo). */
+/* Bloque largo: separador de sección dentro del grid  */
 .modal-detalle-bloque-largo {
   grid-column: 1 / -1;
   padding: 0.5rem 1rem;
@@ -677,8 +599,7 @@
   line-height: 1.6;
 }
 
-/* Caja de motivo de rechazo dentro de un detalle (antes
-   novedad-detalle-rechazo / novedad-motivo-rechazo) */
+/* Caja de motivo de rechazo dentro de un detalle  */
 .modal-detalle-rechazo {
   grid-column: 1 / -1;
   padding: 0.9rem 1rem;
@@ -712,6 +633,7 @@
 }
 
 @media (max-width: 576px) {
+
   .modal-detalle-header,
   .modal-detalle-body,
   .modal-detalle-footer {
@@ -788,6 +710,22 @@
 
 .icono-circular i {
   font-size: 1.4rem;
+}
+
+/* Modificadores semánticos  */
+.icono-circular.icono-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.icono-circular.icono-danger {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.icono-circular.icono-warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 /* ============================================================
@@ -878,13 +816,7 @@
   box-shadow: var(--shadow-focus);
 }
 
-/* Campos deshabilitados / autocompletados (ej. "Cargo"): deben
-   verse visiblemente "apagados" a propósito —así el usuario
-   entiende que no se editan— pero SIN romper el tema ni quedar
-   blancos. Un tono más plano que el input activo + texto muted.
-   El !important y -webkit-text-fill-color son necesarios porque
-   Chrome/Safari fuerzan su propio blanco en inputs disabled/
-   readonly y no siempre alcanza con la especificidad normal. */
+/* Campos deshabilitados / autocompletados . */
 .form-control:disabled,
 .form-control[readonly],
 .form-select:disabled {
@@ -896,9 +828,7 @@
   cursor: not-allowed;
 }
 
-/* Respaldo para utilidades de Bootstrap que fijan su color con
-   !important y por eso no heredan el remapeo de variables --bs-*
-   (pasa puntualmente con .text-muted y .text-secondary). */
+/* Respaldo para utilidades de Bootstrap  */
 [data-theme="dark"] .text-muted,
 [data-theme="dark"] .text-secondary {
   color: var(--color-text-muted) !important;
@@ -906,12 +836,6 @@
 
 /* ============================================================
    ÍCONOS NATIVOS DE BOOTSTRAP EN TEMA OSCURO
-   La flecha del acordeón (.accordion-button::after) es un SVG
-   con trazo oscuro fijo, no un ícono de Bootstrap Icons — por
-   eso no responde a "color". Se soluciona invirtiéndolo con
-   filter (ver --icon-filter-invert en variables.css). Esta regla
-   es GLOBAL: cualquier módulo con acordeón (Asistencia, Tareas,
-   el que venga) la hereda sin tener que repetirla.
    ============================================================ */
 .accordion-button::after {
   filter: var(--icon-filter-invert);
@@ -957,8 +881,60 @@
 }
 
 /* ============================================================
-   TARJETAS DE HISTORIAL (request-card) — permisos, incapacidades,
-   certificados. Compartida entre los 3 tipos.
+   ESTADO VACÍO GLOBAL 
+   ============================================================ */
+.empty-state {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: var(--radius-circle);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+.empty-state-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 0.35rem;
+}
+
+.empty-state-text {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Variante compacta */
+.empty-state--compact {
+  padding: 1.75rem 1.25rem;
+}
+
+.empty-state--compact .empty-state-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state--compact .empty-state-title {
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   TARJETAS DE HISTORIAL (request-card) 
    ============================================================ */
 .request-card {
   display: flex;
@@ -1114,6 +1090,18 @@
 .novedades-tab.active {
   background: var(--color-primary);
   color: white !important;
+}
+
+/* Focus accesible pero coherente con el tema */
+.novedades-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Fallback para navegadores que aún no soportan :focus-visible
+   pero sí :focus en clicks (Safari viejo). */
+.novedades-tab:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* ============================================================

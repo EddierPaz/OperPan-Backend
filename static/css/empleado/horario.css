@@ -1,8 +1,31 @@
-/* Días del calendario - Fondo pastel + borde según estado */
+/* ============================================================
+   MÓDULO DE HORARIO (EMPLEADO)
+   ============================================================ */
+
+/* ── Cabecera de días de la semana ── */
+.dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Rejilla del calendario ── */
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+/* ── Celda de día ── */
 .dia-card {
-    border: 2px solid #e5e7eb; /* Borde gris claro por defecto */
-    background: #ffffff;
-    transition: all 0.2s ease;
+    border: 2px solid var(--color-border);
+    background: var(--color-surface-subtle);
     border-radius: 12px;
     padding: 0.75rem 0.5rem;
     text-align: center;
@@ -10,31 +33,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 700;
+    color: var(--color-text);
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
-.dia-card-presente {
-    background: #dcfce7 !important;  /* Verde pastel */
-    border-color: var(--color-success) !important;
-}
-
-.dia-card-tarde {
-    background: #fef9c3 !important;  /* Amarillo pastel */
-    border-color: var(--color-warning) !important;
-}
-
-.dia-card-ausente {
-    background: #fee2e2 !important;  /* Rojo pastel */
-    border-color: var(--color-danger) !important;
-}
-
-.dia-card-descanso {
-    background: #dbeafe !important;  /* Azul pastel */
-    border-color: #3690A6 !important;
-}
-
-.dia-card-futuro {
-    background: #ffffff !important;
-    border-color: #e5e7eb !important;
+.dia-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
 }
 
 .dia-card small {
@@ -44,13 +50,47 @@
     opacity: 0.8;
 }
 
-/* Leyenda */
-.leyenda-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.5rem;
+/* Estados del día */
+.dia-card-presente {
+    background: var(--color-success-bg);
+    border-color: var(--color-success);
+    color: var(--color-success-text);
 }
 
+.dia-card-tarde {
+    background: var(--color-warning-bg);
+    border-color: var(--color-warning);
+    color: var(--color-warning-text);
+}
+
+.dia-card-ausente {
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger);
+    color: var(--color-danger-text);
+}
+
+.dia-card-descanso {
+    background: var(--color-purple-bg);
+    border-color: var(--color-purple);
+    color: var(--color-purple-text);
+}
+
+/* Día futuro */
+.dia-card-futuro {
+    background: var(--color-surface);
+    border-color: var(--color-border-soft);
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+/* Hueco de relleno del calendario  */
+.dia-card-vacio {
+    background: transparent;
+    border: none;
+    min-height: 70px;
+}
+
+/* ── Leyenda ── */
 .leyenda-item {
     display: inline-flex;
     align-items: center;
@@ -64,12 +104,12 @@
     width: 18px;
     height: 18px;
     border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid var(--color-border-soft);
     flex-shrink: 0;
 }
 
-.leyenda-presente { background: #dcfce7; border-color: var(--color-success); }
-.leyenda-tarde { background: #fef9c3; border-color: var(--color-warning); }
-.leyenda-ausente { background: #fee2e2; border-color: var(--color-danger); }
-.leyenda-descanso { background: #dbeafe; border-color: #3690A6; }
-.leyenda-futuro { background: #ffffff; border-color: #e5e7eb; }
+.leyenda-presente { background: var(--color-success-bg); border-color: var(--color-success); }
+.leyenda-tarde { background: var(--color-warning-bg); border-color: var(--color-warning); }
+.leyenda-ausente { background: var(--color-danger-bg); border-color: var(--color-danger); }
+.leyenda-descanso { background: var(--color-purple-bg); border-color: var(--color-purple); }
+.leyenda-futuro { background: var(--color-surface); border-color: var(--color-border-soft); }

@@ -203,9 +203,12 @@
         {% endfor %}
     {% else %}
         <div class="col-12">
-            <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
-                <i class="bi bi-inbox fs-3 d-block text-muted mb-2"></i>
-                No hay tareas con el filtro seleccionado.
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <p class="empty-state-title">Sin tareas</p>
+                <p class="empty-state-text">No hay tareas con el filtro seleccionado.</p>
             </div>
         </div>
     {% endif %}

@@ -36,7 +36,7 @@
         <div class="col-md-6">
             <a href="{% url 'asistencia:empleado' %}" class="card-block card-link">
                 <div class="card-title">
-                    <span><i class="bi bi-clock-history me-2" style="color:#A40706;"></i> Mi jornada</span>
+                    <span><i class="bi bi-clock-history me-2" style="color:var(--color-primary);"></i> Mi jornada</span>
                     <i class="bi bi-arrow-right-circle text-muted"></i>
                 </div>
                 <div class="jornada-info">
@@ -73,7 +73,7 @@
                         <div class="col-12 mt-2">
                             <small class="text-muted">Próximo descanso</small>
                             <p class="fw-bold mb-0">
-                                <i class="bi bi-calendar-day me-1" style="color:#A40706;"></i>
+                                <i class="bi bi-calendar-day me-1" style="color:var(--color-primary);"></i>
                                 {{ proximo_descanso.fecha|date:"d/m/Y" }}
                             </p>
                         </div>
@@ -87,7 +87,7 @@
         <div class="col-md-6">
             <div class="card-block">
                 <div class="card-title">
-                    <span><i class="bi bi-bar-chart-steps me-2" style="color:#A40706;"></i> Resumen del mes</span>
+                    <span><i class="bi bi-bar-chart-steps me-2" style="color:var(--color-primary);"></i> Resumen del mes</span>
                 </div>
                 <div class="row g-2 text-center">
                     <div class="col-4">
@@ -147,7 +147,7 @@
         <div class="col-md-6">
             <div class="card-block tareas-card">
                 <div class="card-title">
-                    <span><i class="bi bi-list-task me-2" style="color:#A40706;"></i> Mis tareas pendientes</span>
+                    <span><i class="bi bi-list-task me-2" style="color:var(--color-primary);"></i> Mis tareas pendientes</span>
                     <a href="{% url 'tareas:empleado_tareas_list' %}" class="btn-link-modulo">
                         Ir al módulo <i class="bi bi-arrow-right"></i>
                     </a>
@@ -217,7 +217,7 @@
         <div class="col-md-6">
             <div class="card-block">
                 <div class="card-title">
-                    <span><i class="bi bi-calendar-month me-2" style="color:#A40706;"></i> Mi asistencia del mes</span>
+                    <span><i class="bi bi-calendar-month me-2" style="color:var(--color-primary);"></i> Mi asistencia del mes</span>
                     <a href="{% url 'asistencia:empleado' %}" class="btn-link-modulo">
                         Ver todo <i class="bi bi-arrow-right"></i>
                     </a>
@@ -255,7 +255,7 @@
         <div class="col-md-4 col-sm-6">
             <div class="card-block chart-card">
                 <div class="card-title">
-                    <span><i class="bi bi-pie-chart me-2" style="color:#A40706;"></i> Estado de tareas</span>
+                    <span><i class="bi bi-pie-chart me-2" style="color:var(--color-primary);"></i> Estado de tareas</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="chartTareas" width="200" height="180"></canvas>
@@ -265,7 +265,7 @@
         <div class="col-md-4 col-sm-6">
             <div class="card-block chart-card">
                 <div class="card-title">
-                    <span><i class="bi bi-calendar-check me-2" style="color:#A40706;"></i> Asistencia (mes)</span>
+                    <span><i class="bi bi-calendar-check me-2" style="color:var(--color-primary);"></i> Asistencia (mes)</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="chartAsistencia" width="200" height="180"></canvas>
@@ -275,7 +275,7 @@
         <div class="col-md-4 col-sm-12">
             <div class="card-block chart-card">
                 <div class="card-title">
-                    <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Solicitudes pendientes</span>
+                    <span><i class="bi bi-envelope-paper me-2" style="color:var(--color-primary);"></i> Solicitudes pendientes</span>
                 </div>
                 <div class="chart-container">
                     <canvas id="chartSolicitudes" width="200" height="180"></canvas>
@@ -290,7 +290,7 @@
         <div class="col-md-6">
             <a href="{% url 'novedades:solicitudes_empleado' %}" class="card-block card-link solicitudes-card">
                 <div class="card-title">
-                    <span><i class="bi bi-envelope-paper me-2" style="color:#A40706;"></i> Mis solicitudes</span>
+                    <span><i class="bi bi-envelope-paper me-2" style="color:var(--color-primary);"></i> Mis solicitudes</span>
                     <i class="bi bi-arrow-right-circle text-muted"></i>
                 </div>
                 <div class="solicitudes-content">
@@ -335,7 +335,7 @@
         <div class="col-md-6">
             <a href="{% url 'memorandos:memorandos_empleado' %}" class="card-block card-link memorandos-card">
                 <div class="card-title">
-                    <span><i class="bi bi-file-pdf me-2" style="color:#A40706;"></i> Mis memorandos</span>
+                    <span><i class="bi bi-file-pdf me-2" style="color:var(--color-primary);"></i> Mis memorandos</span>
                     <i class="bi bi-arrow-right-circle text-muted"></i>
                 </div>
                 <div class="memorandos-content text-center py-3">
@@ -365,7 +365,7 @@
         <div class="col-12">
             <div class="card-block actividad-card">
                 <div class="card-title">
-                    <span><i class="bi bi-clock me-2" style="color:#A40706;"></i> Mi actividad reciente</span>
+                    <span><i class="bi bi-clock me-2" style="color:var(--color-primary);"></i> Mi actividad reciente</span>
                 </div>
                 {% if actividad_reciente %}
                     <div class="actividad-feed">
@@ -410,7 +410,7 @@
 
 <!-- Toast -->
 <div class="toast-message" id="liveToast" style="display: none;">
-    <div class="bg-white rounded-3 shadow p-3 border-start border-4 border-danger">
+    <div class="rounded-3 shadow p-3 border-start border-4 border-danger" style="background: var(--color-surface); color: var(--color-text);">
         <div class="d-flex gap-2 align-items-center">
             <i class="bi bi-info-circle-fill text-danger fs-5"></i>
             <span id="toastMsg">Mensaje</span>

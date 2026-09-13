@@ -132,11 +132,7 @@
   /* Botones secundarios (Cancelar, Cerrar) */
   --color-action-neutral-hover: #444444;
 
-  /* ── Filtro para íconos nativos "quemados" en SVG (ej. la
-     flecha del acordeón de Bootstrap): no son texto ni Bootstrap
-     Icons, son background-image con un trazo oscuro fijo dentro
-     del propio SVG, así que ningún color/var los toca — hay que
-     invertirlos con filter. En claro no hace falta (none). ── */
+  /* ── Filtro para íconos nativos  */
   --icon-filter-invert: none;
 }
 
@@ -215,6 +211,19 @@
   --bs-heading-color: var(--color-text);
   --bs-link-color: var(--color-primary);
   --bs-link-hover-color: var(--color-primary-hover);
+  --bs-light-rgb: 32, 36, 43;
+  --bs-light-bg-subtle: var(--color-surface-subtle);
+  --bs-light-border-subtle: var(--color-border-soft);
+  --bs-light-text-emphasis: var(--color-text);
+
+  --bs-secondary-rgb: 32, 36, 43;
+  --bs-secondary-bg-subtle: var(--color-surface-subtle);
+  --bs-secondary-border-subtle: var(--color-border-soft);
+  --bs-secondary-text-emphasis: var(--color-text);
+
+  --bs-info-bg-subtle: var(--color-info-bg);
+  --bs-info-border-subtle: var(--color-info-bg);
+  --bs-info-text-emphasis: var(--color-info-text);
 
   --icon-filter-invert: invert(1) brightness(1.7);
 }

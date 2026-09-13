@@ -20,7 +20,7 @@
         </div>
 
         <div class="card-grid-footer">
-            <button type="button" class="card-grid-btn btn-ver-detalle"
+            <button type="button" class="btn-action btn-action-view btn-ver-detalle"
                     data-titulo="{{ c.get_tipo_display|default:'Certificado' }}"
                     data-subtitulo="Certificado · Solicitado el {{ c.fecha_solicitud|date:'d/m/Y' }}"
                     data-motivo="{{ c.proposito|default:'Solicitud de certificado'|escapejs }}"
