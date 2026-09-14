@@ -2,19 +2,19 @@
    1. VARIABLES GLOBALES Y RESET
    ========================================================================== */
 :root {
-  --rojo: #A40706 !important;
-  --rojo-hover: #8a0605 !important;
-  --rojo-light: rgba(164, 7, 6, 0.08) !important;
-  --negro: #000000 !important;
-  --blanco: #FFFFFF !important;
-  --gris-fondo: #F5F5F5 !important;
-  --gris-borde: #EAEAEA !important;
-  --gris-oscuro: #2B2B2B !important;
-  --gris-medio: #6B7280 !important;
-  --gris-claro: #D1D5DB !important;
-  --sombra: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
-  --sombra-hover: 0 8px 36px rgba(164, 7, 6, 0.12) !important;
-  --radio: 10px !important;
+  --rojo: #A40706;
+  --rojo-hover: #8a0605;
+  --rojo-light: rgba(164, 7, 6, 0.08);
+  --negro: #000000;
+  --blanco: #FFFFFF;
+  --gris-fondo: #F5F5F5;
+  --gris-borde: #EAEAEA;
+  --gris-oscuro: #2B2B2B;
+  --gris-medio: #6B7280;
+  --gris-claro: #D1D5DB;
+  --sombra: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --sombra-hover: 0 8px 36px rgba(164, 7, 6, 0.12);
+  --radio: 10px;
 }
 
 * {
@@ -934,6 +934,41 @@ html body .navbar .btn-nav-login:hover,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================================
    7. DESARROLLADORES (ALTURA FIJA, SOLO ANCHO VARIABLE)
    ========================================================================== */
@@ -1152,6 +1187,7 @@ html body .navbar .btn-nav-login:hover,
   color: #fff;
   transform: rotate(45deg);
 }
+
 
 
 

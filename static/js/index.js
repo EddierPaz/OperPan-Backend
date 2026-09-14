@@ -152,4 +152,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ----------------------------------------------------------------------
+       8. TOGGLE DE TEMA (CLARO / OSCURO) — HOMEPAGE
+       Preferencia independiente del panel (clave: 'home-theme')
+       ---------------------------------------------------------------------- */
+    (function () {
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+
+        if (!toggleBtn || !icon) return; // Si no existe el botón, salir
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                icon.className = 'bi bi-sun-fill';
+            } else {
+                icon.className = 'bi bi-moon-fill';
+            }
+            // Clave distinta a la del panel ('theme') para no interferir
+            localStorage.setItem('home-theme', theme);
+        }
+
+        function getInitialTheme() {
+            const stored = localStorage.getItem('home-theme');
+            if (stored) return stored;
+            // Respetar preferencia del sistema operativo
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+
+        // Establecer tema inicial
+        setTheme(getInitialTheme());
+
+        // Evento clic
+        toggleBtn.addEventListener('click', function () {
+            const current = html.getAttribute('data-theme') || 'light';
+            setTheme(current === 'light' ? 'dark' : 'light');
+        });
+
+        // Escuchar cambios de preferencia del sistema (solo si no hay preferencia guardada)
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            mediaQuery.addEventListener('change', function (e) {
+                if (!localStorage.getItem('home-theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+    })();
+
+
+
 });
