@@ -1,0 +1,226 @@
+/* ==========================================================================
+   THEME-HOME.CSS - MODO OSCURO PARA EL HOMEPAGE DE OPERPAN
+   Independiente del sistema de temas del panel (variables.css).
+   Se activa con: <html data-theme="dark">
+   ========================================================================== */
+
+/* ==========================================================================
+   1. REDEFINICIÓN DE VARIABLES DEL HOMEPAGE (style.css)
+   Mapea las variables simples del homepage a la paleta oscura del panel.
+   ========================================================================== */
+[data-theme="dark"] {
+  /* ── Marca (rojo OperPan más brillante para contraste) ── */
+  --rojo: #E4534F;
+  --rojo-hover: #EF6B67;
+  --rojo-light: rgba(228, 83, 79, 0.16);
+
+  /* ── Fondos y superficies ── */
+  --blanco: #101317;          /* Fondo principal (antes: blanco) */
+  --gris-fondo: #1A1E24;      /* Superficie / gris claro (antes: #F5F5F5) */
+  --gris-borde: #2C313A;      /* Bordes (antes: #EAEAEA) */
+
+  /* ── Textos ── */
+  --gris-oscuro: #E8EAED;     /* Texto principal (antes: #2B2B2B) */
+  --gris-medio: #A3ABB8;      /* Texto secundario (antes: #6B7280) */
+  --gris-claro: #C7CBD3;      /* Texto terciario (antes: #D1D5DB) */
+
+  /* ── Sombras (más fuertes porque el negro sobre negro no se ve) ── */
+  --sombra: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --sombra-hover: 0 8px 36px rgba(228, 83, 79, 0.18);
+
+  /* ⚠️ --negro NO se reasigna. Se queda en #000000 porque se usa
+     tanto para textos como para fondos oscuros (footer, navbar scrolled).
+     Los textos que lo usan se sobrescriben individualmente más abajo. */
+}
+
+/* ==========================================================================
+   2. OVERRIDES DE TEXTOS QUE USAN --negro COMO COLOR
+   (En modo claro es negro, en oscuro debe ser claro)
+   ========================================================================== */
+[data-theme="dark"] .hero-title,
+[data-theme="dark"] .hero-title span,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .oferta-preview-title,
+[data-theme="dark"] .accede-card-content h3,
+[data-theme="dark"] .modal-title,
+[data-theme="dark"] .hero-img-overlay .ov-text .value {
+  color: var(--gris-oscuro) !important;
+}
+
+/* El span del hero mantiene el rojo pero más claro */
+[data-theme="dark"] .hero-title span {
+  color: var(--rojo) !important;
+}
+
+/* ==========================================================================
+   3. OVERRIDES DE UTILIDADES DE BOOTSTRAP USADAS EN EL HOMEPAGE
+   ========================================================================== */
+[data-theme="dark"] .bg-light {
+  background-color: var(--gris-fondo) !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: var(--blanco) !important;
+}
+
+[data-theme="dark"] .text-dark {
+  color: var(--gris-oscuro) !important;
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--gris-medio) !important;
+}
+
+[data-theme="dark"] .text-white-50 {
+  color: rgba(232, 234, 237, 0.6) !important;
+}
+
+/* Cards de Bootstrap */
+[data-theme="dark"] .card {
+  background-color: var(--gris-fondo) !important;
+  color: var(--gris-oscuro) !important;
+  border-color: var(--gris-borde) !important;
+}
+
+/* ==========================================================================
+   4. OVERRIDES ESPECÍFICOS DEL HOMEPAGE
+   ========================================================================== */
+
+/* ── Navbar ── */
+[data-theme="dark"] html body #navbar.navbar {
+  background-color: var(--blanco) !important;
+}
+
+[data-theme="dark"] html body #navbar.navbar.scrolled {
+  background-color: #000000 !important;
+}
+
+/* ── Hero: overlay más oscuro ── */
+[data-theme="dark"] .hero-overlay {
+  background: linear-gradient(180deg, rgba(10, 2, 2, 0.92) 0%, rgba(120, 5, 5, 0.94) 100%);
+}
+
+/* ── Banda infinita: cards con colores hardcodeados ── */
+[data-theme="dark"] .band-card {
+  background: #1A1E24 !important;
+  border-color: #2C313A !important;
+}
+
+[data-theme="dark"] .band-card-content h5 {
+  color: var(--gris-oscuro) !important;
+}
+
+[data-theme="dark"] .band-card-content p {
+  color: var(--gris-medio) !important;
+}
+
+[data-theme="dark"] .band-card-icon {
+  background-color: rgba(228, 83, 79, 0.16) !important;
+  color: var(--rojo) !important;
+}
+
+/* ── Sección Accede: columna derecha con color hardcodeado ── */
+[data-theme="dark"] .accede-right {
+  background-color: #0A0C10 !important;
+}
+
+/* ── Tarjetas de categorías (panadería, pastelería, etc.) ── */
+[data-theme="dark"] .cat-content {
+  background-color: var(--gris-fondo) !important;
+}
+
+/* ── Tarjetas de desarrolladores: fondo rojo hardcodeado ── */
+[data-theme="dark"] .team-card {
+  background: #1A1E24 !important;
+}
+
+/* ── Acordeón móvil de desarrolladores ── */
+[data-theme="dark"] .team-accordion .accordion-item {
+  background-color: var(--gris-fondo) !important;
+  border-color: var(--gris-borde) !important;
+}
+
+[data-theme="dark"] .team-accordion .accordion-button {
+  background-color: var(--gris-fondo) !important;
+  color: var(--gris-oscuro) !important;
+}
+
+[data-theme="dark"] .team-accordion .accordion-button:not(.collapsed) {
+  background-color: #20242B !important;
+  color: var(--rojo) !important;
+}
+
+[data-theme="dark"] .team-accordion .accordion-body {
+  background-color: var(--gris-fondo) !important;
+  color: var(--gris-oscuro) !important;
+}
+
+[data-theme="dark"] .accordion-body .team-social a {
+  color: var(--gris-oscuro) !important;
+}
+
+[data-theme="dark"] .team-accordion .accordion-body .team-card-footer {
+  background: #20242B !important;
+  color: var(--gris-medio) !important;
+}
+
+/* ── Footer: ya es oscuro, pero aseguramos que sus textos funcionen ── */
+[data-theme="dark"] footer {
+  background-color: #000000 !important;
+  color: var(--gris-claro) !important;
+}
+
+/* ── Scrollbar ── */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #1A1E24;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--rojo);
+  border-color: #1A1E24;
+}
+
+/* ==========================================================================
+   5. BOTÓN DE TEMA EN EL NAVBAR DEL HOMEPAGE
+   ========================================================================== */
+.theme-toggle-home {
+  background: transparent;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--gris-oscuro);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  padding: 0;
+}
+
+.theme-toggle-home:hover {
+  background: rgba(164, 7, 6, 0.08);
+  color: var(--rojo);
+  transform: scale(1.05);
+}
+
+.theme-toggle-home:focus-visible {
+  outline: 2px solid var(--rojo);
+  outline-offset: 2px;
+}
+
+/* Cuando el navbar está scrolled (fondo negro) */
+html body #navbar.navbar.scrolled .theme-toggle-home {
+  color: #f0f0f0;
+}
+
+html body #navbar.navbar.scrolled .theme-toggle-home:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--rojo);
+}
+
+/* En modo oscuro el icono es claro (por --gris-oscuro ya redefinido) */
+[data-theme="dark"] .theme-toggle-home {
+  color: var(--gris-oscuro);
+}

@@ -20,6 +20,7 @@
     <!-- Favicon & Estilos Propios -->
     <link rel="icon" type="image/png" href="{% static 'img/LOGO OPERPAN.png' %}" />
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/theme-home.css' %}" /> <!-- Agrego el css para la Homepage-->   
 </head>
 
 <body>
@@ -50,11 +51,16 @@
                     <li class="nav-item"><a class="nav-link" href="#productos">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#accede">Accede</a></li>
                     <li class="nav-item"><a class="nav-link" href="#desarrolladores">Desarrolladores</a></li>
-                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                        <a class="nav-link btn-nav-login" href="{% url 'login' %}">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
-                        </a>
-                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <button type="button" id="themeToggle" class="theme-toggle-home" aria-label="Cambiar tema">
+                        <i class="bi bi-moon-fill ms-1 me-2" id="themeIcon"></i>
+                    </button>
+                </li>
+                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <a class="nav-link btn-nav-login" href="{% url 'login' %}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión
+                    </a>
+                </li>
                 </ul>
             </div>
         </div>
