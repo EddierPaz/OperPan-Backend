@@ -276,12 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("ver-salida").textContent = data.hora_salida;
                     document.getElementById("ver-descanso").textContent = data.descanso || "Sin asignar";
                     document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
-                    const ciclo = document.getElementById("ver-ciclo");
-                    if (ciclo) {
-                        ciclo.textContent = (data.ciclo_inicio && data.ciclo_fin)
-                            ? data.ciclo_inicio + " — " + data.ciclo_fin
-                            : "Sin definir";
-                    }
+                    document.getElementById("ver-ciclo-inicio").textContent = data.ciclo_inicio || "Sin definir";
+                    document.getElementById("ver-ciclo-fin").textContent = data.ciclo_fin || "Sin definir";
                     const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
                     modalVer.show();
                 })

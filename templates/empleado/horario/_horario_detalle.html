@@ -33,14 +33,10 @@
         <div class="info-box">
             <span class="text-muted">Vigencia</span>
             <h5 class="mt-2 mb-0">
-                {% if horario.fecha_inicio and horario.fecha_fin %}
-                    {{ horario.fecha_inicio|date:"d/m/Y" }} - {{ horario.fecha_fin|date:"d/m/Y" }}
-                {% elif horario.fecha_inicio %}
-                    Desde {{ horario.fecha_inicio|date:"d/m/Y" }}
-                {% elif horario.ciclo_inicio and horario.fecha_fin %}
-                    {{ horario.ciclo_inicio|date:"d/m/Y" }} - {{ horario.fecha_fin|date:"d/m/Y" }}
+                {% if horario.ciclo_inicio and horario.vigencia_fin %}
+                    {{ horario.ciclo_inicio|date:"d/m/Y" }} - {{ horario.vigencia_fin|date:"d/m/Y" }}
                 {% elif horario.ciclo_inicio %}
-                    Desde {{ horario.ciclo_inicio|date:"d/m/Y" }}
+                    {{ horario.ciclo_inicio|date:"d/m/Y" }}
                 {% else %}
                     No definida
                 {% endif %}

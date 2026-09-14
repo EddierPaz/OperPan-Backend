@@ -124,47 +124,53 @@
                 </tr>
             </thead>
             <tbody>
-                {% for asistencia in asistencias %}
+                {% for dia in historial %}
                 <tr>
-                    <td class="fw-semibold">{{ asistencia.fecha|date:"d/m/Y" }}</td>
+                    <td class="fw-semibold">{{ dia.fecha|date:"d/m/Y" }}</td>
                     <td>
-                        {% if asistencia.hora_marcada %}
-                            {{ asistencia.hora_marcada|time:"H:i" }}
+                        {% if dia.hora_marcada %}
+                            {{ dia.hora_marcada|time:"H:i" }}
                         {% else %}
                             <span class="text-muted">--:--</span>
                         {% endif %}
                     </td>
                     <td>
-                        {% if asistencia.hora_marcada %}
+                        {% if dia.es_descanso %}
+                            <span class="text-muted"><i class="bi bi-moon-stars-fill me-1"></i>Descanso</span>
+                        {% elif dia.hora_marcada %}
                             <span class="badge-registro registrada"><i class="bi bi-check-circle-fill me-1"></i>Registrada</span>
                         {% else %}
                             <span class="badge-registro no-registrada"><i class="bi bi-x-circle-fill me-1"></i>No registrada</span>
                         {% endif %}
                     </td>
                     <td class="text-end">
-                        {% if asistencia.estado == 'PRESENTE' %}
+                        {% if dia.es_descanso %}
+                            <span class="badge-status badge-secondary">Descanso</span>
+                        {% elif dia.estado == 'PRESENTE' %}
                             <span class="badge-status badge-presente">Presente</span>
-                        {% elif asistencia.estado == 'TARDE' %}
+                        {% elif dia.estado == 'TARDE' %}
                             <span class="badge-status badge-tarde">Tarde</span>
-                        {% elif asistencia.estado == 'AUSENTE' %}
+                        {% elif dia.estado == 'AUSENTE' %}
                             <span class="badge-status badge-ausente">Ausente</span>
+                        {% else %}
+                            <span class="badge-status badge-secondary">Pendiente</span>
                         {% endif %}
                     </td>
                     <td class="text-end">
                         <button type="button" class="btn-action btn-action-view btn-action-icon-only"
                                 data-bs-toggle="modal" data-bs-target="#modalDetalleAsistencia"
-                                data-fecha="{{ asistencia.fecha|date:'d/m/Y' }}"
-                                data-hora-registro="{% if asistencia.hora_marcada %}{{ asistencia.hora_marcada|time:'H:i' }}{% else %}--:--{% endif %}"
-                                data-turno="{% if horario %}{{ horario.get_turno_display }}{% else %}No asignado{% endif %}"
-                                data-entrada-prog="{% if horario %}{{ horario.hora_entrada|time:'H:i' }}{% else %}--:--{% endif %}"
-                                data-estado="{{ asistencia.estado }}"
-                                data-es-descanso="false"
+                                data-fecha="{{ dia.fecha|date:'d/m/Y' }}"
+                                data-hora-registro="{% if dia.hora_marcada %}{{ dia.hora_marcada|time:'H:i' }}{% else %}--:--{% endif %}"
+                                data-turno="{{ dia.turno }}"
+                                data-entrada-prog="{% if dia.hora_entrada_prog %}{{ dia.hora_entrada_prog|time:'H:i' }}{% else %}--:--{% endif %}"
+                                data-estado="{{ dia.estado }}"
+                                data-es-descanso="{% if dia.es_descanso %}true{% else %}false{% endif %}"
                                 data-nombre="{{ request.user.perfil.nombre_completo }}"
                                 data-documento="{{ request.user.perfil.identificacion }}"
                                 data-cargo="{{ request.user.perfil.get_cargo_display }}"
-                                data-salida-prog="{% if horario %}{{ horario.hora_salida|time:'H:i' }}{% else %}--:--{% endif %}"
+                                data-salida-prog="{% if dia.hora_salida_prog %}{{ dia.hora_salida_prog|time:'H:i' }}{% else %}--:--{% endif %}"
                                 data-salida-real="--:--"
-                                data-tardanza="{% if asistencia.estado == 'TARDE' and horario.hora_entrada %}{% with prog=horario.hora_entrada real=asistencia.hora_marcada %}{% if real > prog %}{{ real|time:'H:i' }}{% else %}0{% endif %}{% endwith %}{% else %}0{% endif %}"
+                                data-tardanza="{{ dia.tardanza_display }}"
                                 title="Ver detalle" aria-label="Ver detalle">
                             <i class="bi bi-eye"></i>
                         </button>
@@ -174,7 +180,7 @@
                 <tr>
                     <td colspan="5" class="text-center py-4 text-muted">
                         <i class="bi bi-inbox fs-3 d-block mb-2 text-secondary"></i>
-                        No tienes asistencias registradas en este período.
+                        No tienes horario asignado, así que no hay historial para mostrar.
                     </td>
                 </tr>
                 {% endfor %}

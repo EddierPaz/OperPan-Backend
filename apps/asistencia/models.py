@@ -48,7 +48,37 @@ class Horario(models.Model):
     ciclo_inicio = models.DateField(
         null=True,
         blank=True,
-        help_text="Fecha en que arrancó el ciclo de descanso vigente."
+        help_text="Fecha en que arrancó el ciclo vigente de este horario."
+    )
+
+    # =====================================================
+    # CAMPOS NUEVOS - GENERACIÓN AUTOMÁTICA DE CICLOS
+    # =====================================================
+
+    ciclo_anterior = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='ciclos_siguientes',
+        help_text="Ciclo (Horario) del cual este es la continuación automática."
+    )
+
+    es_ciclo_cerrado = models.BooleanField(
+        default=False,
+        help_text="True cuando este ciclo ya venció y fue reemplazado por el siguiente."
+    )
+
+    es_generado_automaticamente = models.BooleanField(
+        default=False,
+        help_text="True si este Horario fue creado por el sistema (no manualmente por el admin)."
+    )
+
+    dia_descanso_semana = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="0=Lunes...6=Domingo. Solo aplica a turno FIJO: el día de descanso "
+                   "se repite siempre en este día de la semana en cada ciclo."
     )
 
     def __str__(self):
@@ -75,6 +105,12 @@ class DescansoEmpleado(models.Model):
 
     es_descanso = models.BooleanField(
         default=True
+    )
+
+    fue_generado_automaticamente = models.BooleanField(
+        default=False,
+        help_text="True si esta fecha de descanso fue calculada por el sistema "
+                   "al generar un nuevo ciclo automáticamente."
     )
 
     class Meta:

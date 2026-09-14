@@ -2,13 +2,16 @@ from pathlib import Path
 import environ
 import os
 
-
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-u4pp=fbxptdt#zn2-uoq%&hfpl6v)ufd$qs640a#p56ggqejty'
+# ── Variables de entorno ──────────────────────
+# Se leen primero para que SECRET_KEY, DEBUG y las credenciales de correo
+# vengan siempre del .env (nunca hardcodeadas en este archivo).
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = []
 
@@ -26,7 +29,7 @@ INSTALLED_APPS = [
     'apps.memorandos',
     'apps.asistencia',
     'apps.tareas',
-    
+
     # Aplicación para consumo de API de Gmail
     'apps.notificaciones',
 ]
@@ -64,21 +67,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# ── Base de datos ─────────────────────────────
 
-
-
-
-
-
-# Base de datos:
-
-
-# db.sqlite3 -- Esta base de datos aun le falta, pero puede funcionar para MAC
-    
-    # Modificacion para MAC
-        # Esto es optimo para trabajar en código desde dispositivos mac
-        
-        # Lo que se debe hacer es comentar y descomentar:
+# db.sqlite3 -- Esta base de datos es la que se usa por defecto (óptima
+# para trabajar desde Mac). Para producción/XAMPP, comenta este bloque
+# y descomenta el bloque MySQL de abajo.
 
 DATABASES = {
     "default": {
@@ -87,25 +80,23 @@ DATABASES = {
     }
 }
 
-
-
-# XAMPP - unicamente funcional el windows:
-    # Esta BD es mejor para nutrirla y es la verdad al momento de ejecutar producción
+# XAMPP - únicamente funcional en Windows:
+# Esta BD es mejor para nutrirla y es la verdad al momento de ejecutar producción
 
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': 'operpan',
-
+#
 #         # root es el usuario por defecto en xampp:
 #             # En el cambio del 4/09/2026 - Modifique a usuario y contraseña por defecto
 #             # En vez de tener un usuario de OperPan y una contraseña debido a que muchas veces
 #             # Los computadores pueden tener atributos que alteran los privilegios de usuarios en xampp sobre las db
 #             # Por ende es mejor tenerlo asi para tener un mejor flujo de trabajo:
-#         'USER': 'root',       
-
-#         # No tenemos contraseña para usar la por defecto   
-#         'PASSWORD': '',          
+#         'USER': 'root',
+#
+#         # No tenemos contraseña para usar la por defecto
+#         'PASSWORD': '',
 #         'HOST': 'localhost',
 #         'PORT': '3306',
 #         'OPTIONS': {
@@ -113,39 +104,6 @@ DATABASES = {
 #         },
 #     }
 # }
-
-
-
-
-
-
-# ---
-
-
-# Este pedazo de codigo corresponde a la nueva implementación de variables de entorno para GMAIL API
-# 26/08/2026 - Santiago M.
-
-env = environ.Env()
-# Leer el archivo .env (debe estar en la raíz del proyecto)
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
-# Reemplazar las variables sensibles
-SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=True)
-# ... etc.
-
-
-# ---
-
-
-
-
-
-
-
-
-
-AUTH_USER_MODEL = 'usuarios.User'
 
 # ── Usuario personalizado ─────────────────────
 AUTH_USER_MODEL = 'usuarios.User'
@@ -185,15 +143,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CONFIGURACIÓN DE CORREO
 # ===============================
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# En desarrollo (DEBUG=True) los correos se imprimen en la consola de
+# runserver en vez de enviarse de verdad — evita gastar el límite diario
+# de Gmail mientras pruebas login, recuperación de contraseña, asistencia, etc.
+# Para forzar el envío real en desarrollo, pon EMAIL_BACKEND_REAL=True en tu .env
+if DEBUG and not env.bool('EMAIL_BACKEND_REAL', default=False):
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "operpangestion@gmail.com"   # Cambia por tu correo
-EMAIL_HOST_PASSWORD = "xyem pixd lphs ftmu"
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-SITE_URL = "http://127.0.0.1:8000"
+SITE_URL = env('SITE_URL', default='http://127.0.0.1:8000')
