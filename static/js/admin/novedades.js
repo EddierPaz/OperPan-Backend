@@ -1548,7 +1548,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (sinResultados) sinResultados.classList.add('d-none');
 
         tbody.innerHTML = data.map(m => {
-            const tipoBadge = `<span class="badge text-dark badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
+            const tipoBadge = `<span class="badge badge-neutral badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
             const btnDescarga = m.archivo_pdf
                 ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF">
                     <i class="bi bi-download"></i>

@@ -142,11 +142,11 @@
 
                     <div class="d-flex flex-column gap-1 text-muted small mb-3">
                         <span>
-                            <i class="bi bi-calendar-event me-1"></i> Límite: <strong class="text-dark">{{ tarea.fecha_limite|date:"Y-m-d" }}</strong>
+                            <i class="bi bi-calendar-event me-1"></i> Límite: <strong>{{ tarea.fecha_limite|date:"Y-m-d" }}</strong>
                             {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}
                         </span>
                         <span>
-                            <i class="bi bi-clock-history me-1"></i> Asignada: <strong class="text-dark">{{ tarea.fecha_asignacion|date:"d/m/Y" }}</strong>
+                            <i class="bi bi-clock-history me-1"></i> Asignada: <strong>{{ tarea.fecha_asignacion|date:"d/m/Y" }}</strong>
                         </span>
                     </div>
                 </div>

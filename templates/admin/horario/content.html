@@ -117,17 +117,17 @@
           <!-- Descanso próximo -->
           <td>
             {% if horario.proximo_descanso %}
-            <span class="badge bg-light text-dark border">{{ horario.proximo_descanso.fecha|date:"d/m/Y" }}</span>
+              <span class="badge badge-neutral">{{ horario.proximo_descanso.fecha|date:"d/m/Y" }}</span>
             {% else %}
-            <span class="text-muted small">Sin descanso próximo</span>
+              <span class="text-muted small">Sin descanso próximo</span>
             {% endif %}
           </td>
 
           <!-- Vigencia: ciclo + estado -->
           <td>
-            <div class="badge bg-light text-dark border">
+            <span class="badge badge-neutral">
               {{ horario.ciclo_inicio|date:"d/m/Y" }} → {{ horario.vigencia_fin|date:"d/m/Y"|default:"—" }}
-            </div>
+            </span>
           </td>
 
           <!-- Acciones -->

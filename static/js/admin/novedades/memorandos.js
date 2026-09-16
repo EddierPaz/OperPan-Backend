@@ -201,7 +201,7 @@
         tbody.innerHTML = data.map(m => {
 
             const tipoBadge =
-                `<span class="badge text-dark badge-memorando-${m.tipo_raw || 'default'}">
+                `<span class="badge badge-neutral badge-memorando-${m.tipo_raw || 'default'}">
                     ${m.tipo || 'Sin tipo'}
                 </span>`;
 
