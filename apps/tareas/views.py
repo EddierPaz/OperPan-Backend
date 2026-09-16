@@ -22,10 +22,15 @@ from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 # ============ VISTAS DEL ADMINISTRADOR ============
 # ==========================================
 
-@login_required
-@admin_required
-def admin_tareas_list(request):
-
+def _build_tareas_context(request, form=None, editando=False, tarea_actual=None):
+    """
+    Construye el contexto completo de la vista admin_tareas_list.
+    Se extrajo a una función aparte para poder reutilizarlo desde
+    admin_tarea_create y admin_tarea_edit cuando el formulario es
+    inválido: así se puede volver a renderizar la página con el modal
+    abierto, los datos que el usuario escribió y los errores de cada
+    campo, en vez de perderlos con un redirect.
+    """
     kpis = Task.get_kpis_administrador()
 
     tareas = Task.objects.select_related(
@@ -75,19 +80,6 @@ def admin_tareas_list(request):
     }
     total_hoy = tareas_hoy.count()
 
-    editando = False
-    tarea_actual = None
-    form = TaskForm()
-
-    edit_id = request.GET.get('edit')
-    if edit_id:
-        try:
-            tarea_actual = Task.objects.get(pk=edit_id)
-            form = TaskForm(instance=tarea_actual)
-            editando = True
-        except Task.DoesNotExist:
-            messages.error(request, "La tarea que intentas editar no existe.")
-
     detalle_id = request.GET.get('detalle')
     tarea_detalle = None
     if detalle_id:
@@ -95,6 +87,9 @@ def admin_tareas_list(request):
             tarea_detalle = Task.objects.get(pk=detalle_id)
         except Task.DoesNotExist:
             messages.error(request, "La tarea que intentas consultar no existe.")
+
+    if form is None:
+        form = TaskForm()
 
     # --- Datos para el autocompletado (empleado -> cargo + horario activo) ---
     empleados_qs = PerfilEmpleado.objects.filter(user__rol='empleado', estado='activo')
@@ -134,6 +129,27 @@ def admin_tareas_list(request):
         'cargo_area_map': json.dumps(CARGO_AREA_MAP),
         'otra_value': OTRA_VALUE,
     }
+    return context
+
+
+@login_required
+@admin_required
+def admin_tareas_list(request):
+
+    editando = False
+    tarea_actual = None
+    form = TaskForm()
+
+    edit_id = request.GET.get('edit')
+    if edit_id:
+        try:
+            tarea_actual = Task.objects.get(pk=edit_id)
+            form = TaskForm(instance=tarea_actual)
+            editando = True
+        except Task.DoesNotExist:
+            messages.error(request, "La tarea que intentas editar no existe.")
+
+    context = _build_tareas_context(request, form=form, editando=editando, tarea_actual=tarea_actual)
     return render(request, 'admin/tareas/tareas.html', context)
 
 
@@ -172,6 +188,10 @@ def admin_tarea_create(request):
             return redirect('tareas:admin_tareas_list')
         else:
             messages.error(request, "❌ Por favor corrige los errores del formulario.")
+            # editando=False: sigue siendo una creación (aún no existe pk),
+            # el modal se reabre solo por tener form.errors, no por editando.
+            context = _build_tareas_context(request, form=form, editando=False)
+            return render(request, 'admin/tareas/tareas.html', context)
     return redirect('tareas:admin_tareas_list')
 
 
@@ -207,6 +227,8 @@ def admin_tarea_edit(request, pk):
             return redirect('tareas:admin_tareas_list')
         else:
             messages.error(request, "Por favor corrige los errores del formulario.")
+            context = _build_tareas_context(request, form=form, editando=True, tarea_actual=tarea)
+            return render(request, 'admin/tareas/tareas.html', context)
     return redirect('tareas:admin_tareas_list')
 
 

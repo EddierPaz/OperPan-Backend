@@ -60,7 +60,11 @@
                             <span class="modal-detalle-label">Cargo</span>
                             <span class="modal-detalle-value">
                                 <input type="text" class="form-control bg-light" id="id_cargo_display" readonly disabled placeholder="—">
+                                <!-- El área de la tarea se deriva automáticamente del cargo del
+                                     empleado (ver tareas.js: actualizarArea) y viaja oculta en el POST. -->
+                                <input type="hidden" name="area" id="id_area" value="{{ form.area.value|default:'' }}">
                             </span>
+                            {% if form.area.errors %}<div class="invalid-feedback d-block">{{ form.area.errors }}</div>{% endif %}
                         </div>
 
                         <!-- Turno -->

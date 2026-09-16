@@ -94,9 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const empleadosData = leerJSON('empleados-data', {});
     const tareasPorCargo = leerJSON('tareas-por-cargo', {});
+    const cargoAreaMap = leerJSON('cargo-area-map', {});
 
     const empleadoSelect = document.getElementById('id_empleado');
     const cargoDisplay = document.getElementById('id_cargo_display');
+    const areaInput = document.getElementById('id_area');
     const turnoSelect = document.getElementById('id_turno_asociado');
     const turnoDisplay = document.getElementById('id_turno_display');
     const tituloPreset = document.getElementById('id_titulo_preset');
@@ -123,6 +125,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const month = String(manana.getMonth() + 1).padStart(2, '0');
         const day = String(manana.getDate()).padStart(2, '0');
         fechaInput.setAttribute('min', `${year}-${month}-${day}`);
+    }
+
+    // El campo "area" de la tarea no se elige manualmente: se deriva del
+    // cargo del empleado seleccionado, usando el mapa cargo -> área que
+    // ya se serializa en tareas.html (json_script "cargo-area-map").
+    function actualizarArea(cargo) {
+        if (!areaInput) return;
+        areaInput.value = cargoAreaMap[cargo] || '';
     }
 
     function aplicarTurnoAutomatico(turnoValue, turnoLabel) {
@@ -355,12 +365,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const emp = empleadosData[this.value];
             if (!emp) {
                 if (cargoDisplay) cargoDisplay.value = '';
+                actualizarArea('');
                 permitirTurnoManual('');
                 if (tituloPreset) tituloPreset.innerHTML = '<option value="">Selecciona un empleado primero</option>';
                 actualizarLimiteHora(null, null);
                 return;
             }
             if (cargoDisplay) cargoDisplay.value = emp.cargo_display || '';
+            actualizarArea(emp.cargo);
             if (emp.turno) {
                 aplicarTurnoAutomatico(emp.turno, emp.turno_display);
             } else {
@@ -391,27 +403,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 4. CARGA DE DATOS EXISTENTES (EDICIÓN)
+    // 4. CARGA DE DATOS EXISTENTES (EDICIÓN Y RE-APERTURA TRAS ERROR)
     // ==========================================
-    const editando = taskForm.dataset.editando === '1';
-    if (editando) {
-        const empleadoActual = taskForm.dataset.empleadoActual;
-        const tituloActual = taskForm.dataset.tituloActual;
-        const turnoActual = taskForm.dataset.turnoActual;
+    // Estos data-* se llenan tanto al editar una tarea existente como al
+    // reabrir el modal después de un intento de creación fallido (el
+    // formulario vuelve con los mismos datos que el usuario ya había
+    // elegido). Por eso esta repoblación no debe depender de "editando".
+    const empleadoActual = taskForm.dataset.empleadoActual;
+    const tituloActual = taskForm.dataset.tituloActual;
+    const turnoActual = taskForm.dataset.turnoActual;
 
-        if (empleadoActual && empleadoSelect) {
-            empleadoSelect.value = empleadoActual;
-            const emp = empleadosData[empleadoActual];
-            if (emp) {
-                if (cargoDisplay) cargoDisplay.value = emp.cargo_display || '';
-                if (emp.turno) {
-                    aplicarTurnoAutomatico(emp.turno, emp.turno_display);
-                } else {
-                    permitirTurnoManual(turnoActual);
-                }
-                actualizarLimiteHora(emp.hora_entrada, emp.hora_salida);
-                poblarTitulos(emp.cargo, tituloActual);
+    if (empleadoActual && empleadoSelect) {
+        empleadoSelect.value = empleadoActual;
+        const emp = empleadosData[empleadoActual];
+        if (emp) {
+            if (cargoDisplay) cargoDisplay.value = emp.cargo_display || '';
+            actualizarArea(emp.cargo);
+            if (emp.turno) {
+                aplicarTurnoAutomatico(emp.turno, emp.turno_display);
+            } else {
+                permitirTurnoManual(turnoActual);
             }
+            actualizarLimiteHora(emp.hora_entrada, emp.hora_salida);
+            poblarTitulos(emp.cargo, tituloActual);
         }
     }
 
