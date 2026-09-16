@@ -51,6 +51,36 @@
 [data-theme="dark"] .hero-title span {
   color: var(--rojo) !important;
 }
+/* ==========================================================================
+   PÍLDORAS DEL HERO EN MODO OSCURO (ESTADO NORMAL + HOVER)
+   ========================================================================== */
+
+/* 1. Estado Normal: Letra blanca, fondo más visible y borde definido */
+[data-theme="dark"] .hero-pill-badge-dark {
+  color: #ffffff !important;
+  /* Aumentamos la opacidad del fondo de 0.1 a 0.2 para que no se vea "oscuro" */
+  background-color: rgba(255, 255, 255, 0.2) !important; 
+  /* Borde más sólido para delimitar bien la píldora */
+  border: 1px solid rgba(255, 255, 255, 0.6) !important; 
+}
+
+/* 2. Iconos en Estado Normal: Blancos */
+[data-theme="dark"] .hero-pill-badge-dark i {
+  color: #ffffff !important;
+}
+
+/* 3. Estado Hover: El que te gustó (Fondo blanco sólido, letra roja) */
+[data-theme="dark"] .hero-pill-badge-dark:hover {
+  color: #A40706 !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  transform: translateY(-2px);
+}
+
+/* 4. Iconos en Hover: También cambian a rojo */
+[data-theme="dark"] .hero-pill-badge-dark:hover i {
+  color: #A40706 !important;
+}
 
 /* ==========================================================================
    3. OVERRIDES DE UTILIDADES DE BOOTSTRAP USADAS EN EL HOMEPAGE

@@ -81,7 +81,7 @@ html body #navbar.navbar.scrolled .nav-link:hover {
 }
 
 html body #navbar.navbar.scrolled .logo-text span {
-  color: var(--blanco) !important;
+  color: #ffffff !important; /* Blanco literal: --blanco se reasigna a oscuro en modo dark */
 }
 
 html body #navbar.navbar.scrolled .logo-text small {
