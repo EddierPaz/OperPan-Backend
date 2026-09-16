@@ -354,3 +354,41 @@
     margin: 0;
   }
 }
+
+/* ==============================================
+   15/09/2026: Botón "Asistencia no marcada" (ausente fuera de tolerancia)
+   ============================================== */
+.btn-asistencia-no-marcada {
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FCA5A5;
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.btn-asistencia-no-marcada:hover {
+    background: #DC3545;
+    color: #ffffff;
+    border-color: #DC3545;
+}
+.btn-asistencia-no-marcada:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+}
+
+/* Modal rojo para "Asistencia no marcada" */
+.modal-detalle-header--danger {
+    border-bottom-color: #FEE2E2;
+}
+.modal-detalle-titulo--danger {
+    color: #B91C1C;
+}
+.modal-detalle-titulo--danger i {
+    color: #B91C1C;
+}

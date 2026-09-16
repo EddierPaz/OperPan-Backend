@@ -98,33 +98,43 @@
                 <td>{{ horario.empleado.get_cargo_display }}</td>
                 <td>{{ horario.hora_entrada|time:"H:i" }}</td>
                 <td>
-                  {% if horario.asistencia %}
-                  {{ horario.asistencia.hora_marcada|time:"H:i" }}
+                  {% if horario.asistencia and horario.asistencia.hora_marcada %}
+                    {{ horario.asistencia.hora_marcada|time:"H:i" }}
                   {% else %}
-                  <span class="text-muted">Sin marcar</span>
+                    <span class="text-muted">Sin marcar</span>
                   {% endif %}
                 </td>
                 <td>
-                  {% if horario.asistencia %}
-                  {% if horario.asistencia.estado == "PRESENTE" %}
-                  <span class="badge badge-active">Presente</span>
-                  {% elif horario.asistencia.estado == "TARDE" %}
-                  <span class="badge badge-pendiente">Tarde</span>
-                  {% elif horario.asistencia.estado == "AUSENTE" %}
-                  <span class="badge badge-rechazado">Ausente</span>
-                  {% endif %}
+                  {% if horario.estado_hoy == "PRESENTE" %}
+                    <span class="badge badge-active">Presente</span>
+                  {% elif horario.estado_hoy == "TARDE" %}
+                    <span class="badge badge-pendiente">
+                      Tarde{% if horario.minutos_tarde_display %} · {{ horario.minutos_tarde_display }}{% endif %}
+                    </span>
+                  {% elif horario.estado_hoy == "AUSENTE" %}
+                    <span class="badge badge-rechazado">Ausente</span>
                   {% else %}
-                  <span class="badge bg-secondary">Sin registrar</span>
+                    <span class="badge bg-secondary">Sin registrar</span>
                   {% endif %}
                 </td>
                 <td>
-                  {% if horario.asistencia %}
-                  <span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>
+                  {% if horario.tipo_accion == 'registrado' %}
+                    <span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>
+                  {% elif horario.tipo_accion == 'no_marcada' %}
+                    <button type="button"
+                            class="btn btn-sm btn-asistencia-no-marcada"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalAsistenciaNoMarcada"
+                            data-empleado="{{ horario.empleado.nombre_completo }}"
+                            data-turno="{{ horario.get_turno_display }}"
+                            data-hora="{{ horario.hora_entrada|time:'H:i' }}">
+                      <i class="bi bi-x-circle"></i> Asistencia no marcada
+                    </button>
                   {% else %}
-                  <button class="btn btn-sm btn-outline-corporate btn-registrar-asistencia"
-                    data-horario-id="{{ horario.id }}">
-                    <i class="bi bi-fingerprint"></i> Registrar
-                  </button>
+                    <button class="btn btn-sm btn-outline-corporate btn-registrar-asistencia"
+                            data-horario-id="{{ horario.id }}">
+                      <i class="bi bi-fingerprint"></i> Registrar
+                    </button>
                   {% endif %}
                 </td>
               </tr>

@@ -1,0 +1,28 @@
+<div class="modal fade" id="modalAsistenciaNoMarcada" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-detalle">
+      <div class="modal-detalle-header modal-detalle-header--danger">
+        <div>
+          <div class="modal-detalle-titulo modal-detalle-titulo--danger">
+            <i class="bi bi-x-circle-fill"></i>
+            <span>Registro de asistencia Ausente</span>
+          </div>
+          <p class="modal-detalle-subtitulo mb-0" id="noMarcadaEmpleado"></p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-detalle-body">
+        <p class="mb-2">
+          Ya pasó más de <strong>1 hora</strong> desde el inicio de la jornada
+          y esta asistencia <strong>no fue registrada</strong>.
+        </p>
+        <p class="mb-0 text-muted small">
+          Turno: <span id="noMarcadaTurno"></span> · Entrada programada: <span id="noMarcadaHora"></span>
+        </p>
+      </div>
+      <div class="modal-detalle-footer">
+        <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>

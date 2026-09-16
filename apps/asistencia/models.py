@@ -151,6 +151,15 @@ class Asistencia(models.Model):
         blank=True
     )
 
+    # NUEVO (15/09/2026): minutos de tardanza.
+    # Solo se llena cuando estado=TARDE.
+    # Si estado=PRESENTE o AUSENTE, queda NULL.
+    minutos_tarde = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Minutos de tardanza. Solo aplica cuando estado=TARDE."
+    )
+
     fecha_registro = models.DateTimeField(
         auto_now=True
     )

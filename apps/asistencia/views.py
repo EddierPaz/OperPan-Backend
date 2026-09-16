@@ -40,8 +40,122 @@ from .services.horario_service import (
 # Fin de importaciones:
 
 
-def _contexto_base():
+# =============================================================================
+# HELPERS DE ASISTENCIA (15/09/2026)
+# =============================================================================
+
+def formatear_tardanza(minutos):
+    """
+    Formatea minutos de tardanza en algo legible:
+        15  → '15 min'
+        60  → '1h'
+        400 → '6h 40min'
+    """
+    if minutos is None:
+        return None
+    if minutos < 60:
+        return f"{minutos} min"
+    horas = minutos // 60
+    mins = minutos % 60
+    if mins == 0:
+        return f"{horas}h"
+    return f"{horas}h {mins}min"
+
+
+def calcular_estado_y_minutos(horario, hora_marcada):
+    """
+    Calcula el estado y los minutos de tardanza al marcar asistencia.
+
+    Reglas (15/09/2026):
+        - Marcó dentro de los primeros 30 min desde la entrada
+          → PRESENTE, sin minutos de tardanza.
+        - Marcó después de 30 min
+          → TARDE, con los minutos exactos de tardanza.
+
+    Devuelve una tupla (estado, minutos_tarde).
+    """
+    entrada_dt = datetime.combine(date.today(), horario.hora_entrada)
+    marcada_dt = datetime.combine(date.today(), hora_marcada)
+    diferencia_minutos = int((marcada_dt - entrada_dt).total_seconds() / 60)
+
+    if diferencia_minutos <= 30:
+        return "PRESENTE", None
+    else:
+        return "TARDE", diferencia_minutos
+
+
+def generar_ausentes_pendientes(dias_atras=30):
+    """
+    Genera registros AUSENTE para días pasados sin marcado (generación lazy).
+
+    Recorre los últimos `dias_atras` días. Por cada día pasado donde el
+    empleado tenía horario vigente y no era descanso, si no existe un
+    registro de Asistencia, lo crea con estado=AUSENTE.
+
+    - No toca el día de hoy (ese lo computa dinámicamente _contexto_base).
+    - No toca días de descanso.
+    - Es idempotente gracias al unique_together (horario, fecha).
+    """
     hoy = timezone.localdate()
+    desde = hoy - timedelta(days=dias_atras)
+
+    horarios = Horario.objects.filter(
+        ciclo_inicio__isnull=False,
+        ciclo_inicio__lte=hoy
+    )
+
+    for horario in horarios:
+        # Rango efectivo de este horario dentro de los últimos N días
+        rango_inicio = max(horario.ciclo_inicio, desde)
+        rango_fin = ciclo_fin(horario)
+        if rango_fin is None or rango_fin >= hoy:
+            rango_fin = hoy - timedelta(days=1)
+        if rango_inicio > rango_fin:
+            continue
+
+        # Fechas de descanso de este horario (en el rango)
+        descansos = set(
+            DescansoEmpleado.objects.filter(
+                horario=horario,
+                fecha__gte=rango_inicio,
+                fecha__lte=rango_fin,
+                es_descanso=True,
+            ).values_list('fecha', flat=True)
+        )
+
+        # Fechas ya registradas
+        existentes = set(
+            Asistencia.objects.filter(
+                horario=horario,
+                fecha__gte=rango_inicio,
+                fecha__lte=rango_fin,
+            ).values_list('fecha', flat=True)
+        )
+
+        # Crear ausentes donde falte
+        cursor = rango_inicio
+        while cursor <= rango_fin:
+            if cursor not in descansos and cursor not in existentes:
+                Asistencia.objects.create(
+                    horario=horario,
+                    fecha=cursor,
+                    estado='AUSENTE',
+                    hora_marcada=None,
+                    minutos_tarde=None,
+                )
+            cursor += timedelta(days=1)
+
+
+# =============================================================================
+# CONTEXTO BASE DEL DASHBOARD
+# =============================================================================
+
+def _contexto_base():
+    # Generar ausentes pendientes antes de calcular KPIs (lazy generation).
+    generar_ausentes_pendientes(dias_atras=30)
+
+    hoy = timezone.localdate()
+    ahora = timezone.localtime().time()
     proximos_dias = []
 
     for _ in range(hoy.weekday()):
@@ -56,9 +170,7 @@ def _contexto_base():
             "indice": i,
         })
 
-    # 1. Obtenemos los horarios activos (uno por empleado, en teoría) y nos
-    #    aseguramos de que cada uno esté al día con su ciclo. Si el cron no
-    #    corrió, esto genera aquí mismo los ciclos que hicieran falta.
+    # 1. Horarios activos (uno por empleado, en teoría)
     horarios_qs = (
         Horario.objects
         .filter(estado=True, es_ciclo_cerrado=False)
@@ -83,8 +195,6 @@ def _contexto_base():
         )
         horarios.append(horario_vigente)
 
-    # 2. ORDENAR: Por la fecha de descanso más cercana (ascendente).
-    # Los que no tengan descanso quedan al final.
     horarios.sort(key=lambda h: h.proximo_descanso.fecha if h.proximo_descanso else date.max)
 
     turnos_hoy = {
@@ -111,26 +221,48 @@ def _contexto_base():
 
         asistencia = (
             Asistencia.objects
-            .filter(
-                horario=horario,
-                fecha=hoy
-            )
+            .filter(horario=horario, fecha=hoy)
             .first()
         )
 
         horario.asistencia = asistencia
 
+        # ============================================================
+        # 15/09/2026: Calcular estado del día (para la tabla del dashboard)
+        # Reglas:
+        #   - Ya marcó → usamos su estado real.
+        #   - No marcó y pasaron >60 min desde hora_entrada → AUSENTE.
+        #   - No marcó y pasaron <=60 min → pendiente (botón Registrar).
+        # ============================================================
+        horario.estado_hoy = None
+        horario.minutos_tarde_display = None
+        horario.tipo_accion = 'pendiente'   # pendiente | registrado | no_marcada
+
+        if asistencia:
+            horario.estado_hoy = asistencia.estado
+            horario.minutos_tarde_display = formatear_tardanza(asistencia.minutos_tarde)
+            horario.tipo_accion = 'registrado'
+        else:
+            if horario.hora_entrada:
+                entrada_dt = datetime.combine(hoy, horario.hora_entrada)
+                ahora_dt = datetime.combine(hoy, ahora)
+                minutos_transcurridos = (ahora_dt - entrada_dt).total_seconds() / 60
+
+                if minutos_transcurridos > 60:
+                    horario.estado_hoy = 'AUSENTE'
+                    horario.tipo_accion = 'no_marcada'
+                # else: queda pendiente (dentro de los 60 min de tolerancia)
+
         if horario.turno in turnos_hoy:
             turnos_hoy[horario.turno].append(horario)
 
-        if asistencia:
-            if asistencia.estado == "PRESENTE":
-                presentes += 1
-            elif asistencia.estado == "TARDE":
-                tardanzas += 1
-            elif asistencia.estado == "AUSENTE":
-                ausentes += 1
+        # KPIs
+        if horario.estado_hoy == "PRESENTE":
+            presentes += 1
+        elif horario.estado_hoy == "TARDE":
+            tardanzas += 1
         else:
+            # AUSENTE o pendiente → cuenta como ausente
             ausentes += 1
 
     resumen_asistencia = {
@@ -159,10 +291,9 @@ def _contexto_base():
     }
 
 
-# ---
-
-
-# Cambio el 7 de sep para historial de asistencia con filtros y paginación
+# =============================================================================
+# VISTA PRINCIPAL DEL DASHBOARD
+# =============================================================================
 
 @login_required
 @admin_required
@@ -191,11 +322,9 @@ def asistencia_dashboard(request):
     return render(request, 'admin/asistencia/asistencia.html', context)
 
 
-# ---
-
-
-# Helper para obtener resumen de un empleado
-# Cambio del 7 de sep 26
+# =============================================================================
+# RESUMEN POR EMPLEADO (para el gráfico de barras)
+# =============================================================================
 
 def obtener_resumen_empleado(empleado):
     """
@@ -250,9 +379,9 @@ def obtener_resumen_empleado(empleado):
     }
 
 
-# 7 sep/2026 Ahora bien, esta nueva función tiene mucha importancia ya que es fundamental para el modal:
-
-# Se agregaron filtros de rango y fecha unica para el 8 de sep
+# =============================================================================
+# HISTORIAL DE ASISTENCIA POR EMPLEADO (modal)
+# =============================================================================
 
 @login_required
 @admin_required
@@ -312,8 +441,9 @@ def asistencia_empleado_historial(request, empleado_id):
     })
 
 
-# Fin.
-
+# =============================================================================
+# CRUD DE HORARIOS
+# =============================================================================
 
 def horarios(request):
     if request.method == "POST":
@@ -619,14 +749,22 @@ def eliminar_horario(request, id):
     return redirect("asistencia:horarios")
 
 
-# Cambio del 8 de septiembre del 2026:
-
-    # Se cambio porque el dropdown de asistencia del admin, se recargaba por el metodo POST
-    # Ahora se implemento AJAX para siempre tener el dropdown abierto cuando se esta registrando asistencia.
-
-    # Ahora valida si registrar o no la asistencia dependiendo de si corresponde al turno o
+# =============================================================================
+# REGISTRO DE ASISTENCIA (desde el dashboard del admin)
+# =============================================================================
 
 def registrar_asistencia(request):
+    """
+    Registra la asistencia de un empleado para el día de hoy.
+
+    Reglas de negocio (15/09/2026):
+        - Si la hora actual NO está dentro del rango [hora_entrada, hora_salida]
+          del horario → se rechaza con un toast amarillo.
+        - Si está dentro:
+            · Marcó dentro de los primeros 30 min → PRESENTE
+            · Marcó después de 30 min → TARDE (con minutos de tardanza)
+        - Si ya existe registro para hoy → se devuelve el existente sin duplicar.
+    """
     if request.method != "POST":
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'error': 'Método no permitido'}, status=405)
@@ -642,7 +780,7 @@ def registrar_asistencia(request):
     hoy = timezone.localdate()
     hora_actual = timezone.localtime().time()
 
-    # VALIDACIÓN DE TURNO
+    # VALIDACIÓN DE RANGO HORARIO
     hora_entrada = horario.hora_entrada
     hora_salida = horario.hora_salida
 
@@ -665,19 +803,21 @@ def registrar_asistencia(request):
             return JsonResponse({
                 'success': True,
                 'estado': asistencia_existente.estado,
-                'hora_marcada': asistencia_existente.hora_marcada.strftime('%H:%M'),
+                'hora_marcada': asistencia_existente.hora_marcada.strftime('%H:%M') if asistencia_existente.hora_marcada else None,
                 'estado_display': asistencia_existente.get_estado_display(),
+                'minutos_tarde': asistencia_existente.minutos_tarde,
                 'ya_registrado': True
             })
         return redirect("asistencia:asistencia_dashboard")
 
-    # Registrar nueva asistencia
-    estado = "PRESENTE" if hora_actual <= hora_entrada else "TARDE"
+    # Registrar nueva asistencia con la nueva regla de negocio
+    estado, minutos_tarde = calcular_estado_y_minutos(horario, hora_actual)
     asistencia = Asistencia.objects.create(
         horario=horario,
         fecha=hoy,
         estado=estado,
         hora_marcada=hora_actual,
+        minutos_tarde=minutos_tarde,
     )
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -686,11 +826,16 @@ def registrar_asistencia(request):
             'estado': asistencia.estado,
             'hora_marcada': asistencia.hora_marcada.strftime('%H:%M'),
             'estado_display': asistencia.get_estado_display(),
+            'minutos_tarde': minutos_tarde,
             'ya_registrado': False
         })
 
     return redirect("asistencia:asistencia_dashboard")
 
+
+# =============================================================================
+# VISTA DE ASISTENCIA DEL EMPLEADO (historial personal)
+# =============================================================================
 
 def asistencia_empleado(request):
     perfil = request.user.perfil
@@ -868,7 +1013,10 @@ def asistencia_empleado(request):
     })
 
 
-# Cambio del 7 de septiembre
+# =============================================================================
+# DETALLE DE UNA ASISTENCIA ESPECÍFICA (para el modal del admin)
+# =============================================================================
+
 @login_required
 @admin_required
 def asistencia_detalle(request, asistencia_id):
@@ -889,9 +1037,14 @@ def asistencia_detalle(request, asistencia_id):
         'cargo': asistencia.horario.empleado.get_cargo_display() or 'Sin cargo',
         'hora_programada': asistencia.horario.hora_entrada.strftime('%H:%M') if asistencia.horario.hora_entrada else 'N/A',
         'hora_marcada': asistencia.hora_marcada.strftime('%H:%M') if asistencia.hora_marcada else 'N/A',
+        'minutos_tarde': asistencia.minutos_tarde,
     }
     return JsonResponse(data)
 
+
+# =============================================================================
+# VISTAS DEL EMPLEADO (horario propio)
+# =============================================================================
 
 @login_required
 def empleado_horario(request):
@@ -998,9 +1151,9 @@ def empleado_horario_detalle(request, id):
     return JsonResponse({'html': html, 'metadatos': metadatos})
 
 
-# ============================================================
-# ADMIN - ASISTENCIA POR EMPLEADO
-# ============================================================
+# =============================================================================
+# ADMIN - ASISTENCIA POR EMPLEADO (redirige al módulo de horarios filtrado)
+# =============================================================================
 
 @login_required
 @admin_required
@@ -1018,9 +1171,9 @@ def asistencia_empleado_admin(request, empleado_id):
     return redirect(f"{reverse('asistencia:horarios')}?empleado={empleado_id}")
 
 
-# ============================================================
+# =============================================================================
 # ADMIN - CAMBIAR ESTADO DE ASISTENCIA (AJAX)
-# ============================================================
+# =============================================================================
 
 @login_required
 @admin_required
