@@ -23,8 +23,15 @@ from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 # ==========================================
 
 def _verificar_memorandos_throttled():
-    if cache.get('verif_memorandos_throttle'):
+    """
+    Ejecuta la verificación de memorandos por TAREAS VENCIDAS para
+    todos los empleados activos, con throttle de 30 min.
+
+    NO incluye asistencia: cada app verifica lo suyo.
+    """
+    if cache.get('verif_memorandos_tareas_throttle'):
         return
+
     from apps.memorandos.services import verificar_y_generar_memorando
     from apps.usuarios.models import PerfilEmpleado as _Perfil
 
@@ -32,14 +39,17 @@ def _verificar_memorandos_throttled():
         try:
             verificar_y_generar_memorando(emp)
         except Exception as e:
-            print(f"[tareas.views] Error verificando memorando para "
+            print(f"[tareas.views] Error verificando memos para "
                   f"{emp.pk}: {e}")
 
-    cache.set('verif_memorandos_throttle', True, timeout=1800)  # 30 min
+    cache.set('verif_memorandos_tareas_throttle', True, timeout=1800)  # 30 min
 
 
 def _verificar_memorando_empleado(user):
-
+    """
+    Verifica los memorandos por tareas vencidas del empleado autenticado.
+    Sin throttle (una llamada por request).
+    """
     perfil = getattr(user, 'perfil', None)
     if perfil is None:
         return
@@ -49,18 +59,22 @@ def _verificar_memorando_empleado(user):
     try:
         verificar_y_generar_memorando(perfil)
     except Exception as e:
-        print(f"[tareas.views] Error verificando memorando para "
+        print(f"[tareas.views] Error verificando memo para "
               f"{perfil.pk}: {e}")
 
 
 def _verificar_memorando_tarea_vencida(tarea):
-
+    """
+    Dispara la verificación de memorandos por tareas vencidas del
+    empleado dueño de una tarea vencida. Se usa desde las vistas donde
+    el empleado intenta operar sobre una tarea ya vencida.
+    """
     from apps.memorandos.services import verificar_y_generar_memorando
 
     try:
         verificar_y_generar_memorando(tarea.empleado)
     except Exception as e:
-        print(f"[tareas.views] Error verificando memorando para "
+        print(f"[tareas.views] Error verificando memo para "
               f"{tarea.empleado_id}: {e}")
 
 
@@ -69,6 +83,14 @@ def _verificar_memorando_tarea_vencida(tarea):
 # ==========================================
 
 def _build_tareas_context(request, form=None, editando=False, tarea_actual=None):
+    """
+    Construye el contexto completo de la vista admin_tareas_list.
+    Se extrajo a una función aparte para poder reutilizarlo desde
+    admin_tarea_create y admin_tarea_edit cuando el formulario es
+    inválido: así se puede volver a renderizar la página con el modal
+    abierto, los datos que el usuario escribió y los errores de cada
+    campo, en vez de perderlos con un redirect.
+    """
     kpis = Task.get_kpis_administrador()
 
     tareas = Task.objects.select_related(
@@ -108,7 +130,7 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
 
     tareas = tareas.order_by('-prioridad', 'fecha_limite')
 
-    # --- Tareas de HOY, agrupadas por estado (respeta búsqueda/filtros ya aplicados) ---
+    # --- Tareas de HOY, agrupadas por estado ---
     hoy = date.today()
     tareas_hoy = tareas.filter(fecha_limite=hoy)
     tareas_hoy_por_estado = {
@@ -173,8 +195,9 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
 @admin_required
 def admin_tareas_list(request):
 
+    # ▼▼▼ Verificación on-demand (throttle 30 min, solo tareas) ▼▼▼
     _verificar_memorandos_throttled()
-
+    # ▲▲▲
 
     editando = False
     tarea_actual = None
@@ -228,8 +251,6 @@ def admin_tarea_create(request):
             return redirect('tareas:admin_tareas_list')
         else:
             messages.error(request, "❌ Por favor corrige los errores del formulario.")
-            # editando=False: sigue siendo una creación (aún no existe pk),
-            # el modal se reabre solo por tener form.errors, no por editando.
             context = _build_tareas_context(request, form=form, editando=False)
             return render(request, 'admin/tareas/tareas.html', context)
     return redirect('tareas:admin_tareas_list')
@@ -363,7 +384,9 @@ def admin_tareas_vencidas(request):
 @login_required
 def empleado_tareas_list(request):
 
+    # ▼▼▼ Verificación on-demand del propio empleado ▼▼▼
     _verificar_memorando_empleado(request.user)
+    # ▲▲▲
 
     empleado = request.user
     kpis = Task.get_kpis_empleado(empleado)
@@ -408,7 +431,9 @@ def empleado_tarea_detail(request, pk):
 
     if request.method == 'POST':
         if tarea.esta_vencida:
+            # ▼▼▼ Verificación de memorando al tocar tarea vencida ▼▼▼
             _verificar_memorando_tarea_vencida(tarea)
+            # ▲▲▲
             messages.error(request, f"La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
             return redirect('tareas:empleado_tareas_list')
 
@@ -430,6 +455,7 @@ def empleado_tarea_marcar_progreso(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
 
+        # ▼▼▼ Verificación de memorando si la tarea está vencida ▼▼▼
         if tarea.esta_vencida:
             _verificar_memorando_tarea_vencida(tarea)
             messages.error(
@@ -437,7 +463,7 @@ def empleado_tarea_marcar_progreso(request, pk):
                 f"La tarea '{tarea.titulo}' está vencida y no se puede modificar."
             )
             return redirect('tareas:empleado_tareas_list')
-   
+        # ▲▲▲
 
         if tarea.estado == EstadoTarea.PENDIENTE:
             if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
@@ -470,6 +496,7 @@ def empleado_tarea_marcar_finalizada(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
 
+        # ▼▼▼ Verificación de memorando si la tarea está vencida ▼▼▼
         if tarea.esta_vencida:
             _verificar_memorando_tarea_vencida(tarea)
             messages.error(
@@ -477,6 +504,7 @@ def empleado_tarea_marcar_finalizada(request, pk):
                 f"La tarea '{tarea.titulo}' está vencida y no se puede modificar."
             )
             return redirect('tareas:empleado_tareas_list')
+        # ▲▲▲
 
         if tarea.estado == EstadoTarea.EN_PROGRESO:
             evidencia = request.FILES.get('evidencia')

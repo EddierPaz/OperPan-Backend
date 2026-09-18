@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404, redirect, render   # Atajos de r
 from django.template.loader import render_to_string     # Renderizar templates a string (para AJAX)
 from django.urls import reverse                         # Generar URLs inversas
 from django.utils import timezone                       # Zona horaria y fechas locales
+from django.core.cache import cache
 
 # =============================================================================
 # IMPORTS DE APPS DEL PROYECTO
@@ -39,6 +40,50 @@ from .services.horario_service import (
 
 # Fin de importaciones:
 
+# ============================================================
+# VERIFICACIÓN ON-DEMAND DE MEMORANDOS
+# ============================================================
+
+def _verificar_memorandos_asistencia_throttled():
+    """
+    Ejecuta la verificación de memorandos por ASISTENCIA (tardanzas
+    y ausencias) para todos los empleados activos, con throttle de
+    30 min.
+
+    NO incluye tareas: cada app verifica lo suyo.
+    """
+    if cache.get('verif_memorandos_asistencia_throttle'):
+        return
+
+    from apps.memorandos.services import verificar_memorandos_asistencia
+    from apps.usuarios.models import PerfilEmpleado
+
+    for emp in PerfilEmpleado.objects.filter(user__rol='empleado', estado='activo'):
+        try:
+            verificar_memorandos_asistencia(emp)
+        except Exception as e:
+            print(f"[asistencia.views] Error verificando memos para "
+                  f"{emp.pk}: {e}")
+
+    cache.set('verif_memorandos_asistencia_throttle', True, timeout=1800)
+
+
+def _verificar_memorandos_asistencia_empleado(user):
+    """
+    Verifica solo el memorando de asistencia del empleado autenticado.
+    Sin throttle (una llamada por request).
+    """
+    perfil = getattr(user, 'perfil', None)
+    if perfil is None:
+        return
+
+    from apps.memorandos.services import verificar_memorandos_asistencia
+
+    try:
+        verificar_memorandos_asistencia(perfil)
+    except Exception as e:
+        print(f"[asistencia.views] Error verificando memo para "
+              f"{perfil.pk}: {e}")
 
 def _contexto_base():
     hoy = timezone.localdate()
@@ -167,6 +212,9 @@ def _contexto_base():
 @login_required
 @admin_required
 def asistencia_dashboard(request):
+
+    _verificar_memorandos_asistencia_throttled()
+
     # Obtener contexto base (día actual, KPIs, turnos, etc.)
     context = _contexto_base()
 
@@ -882,6 +930,9 @@ def registrar_asistencia(request):
 
 
 def asistencia_empleado(request):
+
+    _verificar_memorandos_asistencia_empleado(request.user)
+
     from .services.novedades_calendario import obtener_novedades_por_fecha
 
     perfil = request.user.perfil

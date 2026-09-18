@@ -155,6 +155,24 @@ class Asistencia(models.Model):
         auto_now=True
     )
 
+    # ------------------------------------------------------------------
+    # NUEVO: vínculo al memorando generado automáticamente cuando esta
+    # asistencia (TARDE o AUSENTE) formó parte de una acumulación
+    # >= umbral en el mismo mes calendario.
+    # Si esta asistencia nunca disparó un memorando, queda en NULL.
+    # Se usa referencia por string 'memorandos.Memorando' para evitar
+    # import circular.
+    # ------------------------------------------------------------------
+    memorando_generado = models.ForeignKey(
+        'memorandos.Memorando',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='asistencias_origen',
+        help_text='Memorando generado automáticamente por acumulación '
+                  'de tardanzas o ausencias.'
+    )
+
     class Meta:
         unique_together = (
             'horario',
@@ -162,4 +180,7 @@ class Asistencia(models.Model):
         )
 
     def __str__(self):
-        return f"{self.horario.empleado.nombre_completo()} - {self.fecha} - {self.get_estado_display() if self.estado else 'Sin marcar'}"
+        return (
+            f"{self.horario.empleado.nombre_completo()} - {self.fecha} - "
+            f"{self.get_estado_display() if self.estado else 'Sin marcar'}"
+        )
