@@ -20,8 +20,6 @@ from apps.usuarios.decorators import admin_required as admin_required_html
 from apps.usuarios.decorators import empleado_required
 from .pdfs import generar_certificado_pdf
 
-# Gmail API
-from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 
 
 # ============================================================
@@ -123,8 +121,6 @@ def solicitudes_empleado(request):
                 permiso.empleado = perfil
                 permiso.save()
 
-                # Notificar a administradores
-                admins = obtener_correo_admin()
                 contexto_admin = {
                     'empleado_nombre': perfil.nombre_completo(),
                     'tipo_solicitud': permiso.get_tipo_display(),
@@ -132,13 +128,7 @@ def solicitudes_empleado(request):
                     'fecha_fin': permiso.fecha_fin.strftime('%d/%m/%Y'),
                     'motivo': permiso.justificacion,
                 }
-                for admin_email in admins:
-                    enviar_notificacion(
-                        destinatario=admin_email,
-                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
-                        template_name='emails/solicitud_creada_admin.html',
-                        contexto=contexto_admin
-                    )
+                
 
                 messages.success(request, '✅ Permiso creado correctamente.')
                 return redirect('novedades:solicitudes_empleado')
@@ -159,8 +149,6 @@ def solicitudes_empleado(request):
                 incapacidad.empleado = perfil
                 incapacidad.save()
 
-                # Notificar a administradores
-                admins = obtener_correo_admin()
                 contexto_admin = {
                     'empleado_nombre': perfil.nombre_completo(),
                     'tipo_solicitud': 'Incapacidad',
@@ -168,13 +156,7 @@ def solicitudes_empleado(request):
                     'fecha_fin': incapacidad.fecha_fin.strftime('%d/%m/%Y'),
                     'motivo': incapacidad.descripcion,
                 }
-                for admin_email in admins:
-                    enviar_notificacion(
-                        destinatario=admin_email,
-                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
-                        template_name='emails/solicitud_creada_admin.html',
-                        contexto=contexto_admin
-                    )
+                
 
                 messages.success(request, '✅ Incapacidad creada correctamente.')
                 return redirect('novedades:solicitudes_empleado')
@@ -195,8 +177,6 @@ def solicitudes_empleado(request):
                 certificado.empleado = perfil
                 certificado.save()
 
-                # Notificar a administradores
-                admins = obtener_correo_admin()
                 contexto_admin = {
                     'empleado_nombre': perfil.nombre_completo(),
                     'tipo_solicitud': 'Certificado',
@@ -204,13 +184,6 @@ def solicitudes_empleado(request):
                     'fecha_fin': 'N/A',
                     'motivo': certificado.proposito,
                 }
-                for admin_email in admins:
-                    enviar_notificacion(
-                        destinatario=admin_email,
-                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
-                        template_name='emails/solicitud_creada_admin.html',
-                        contexto=contexto_admin
-                    )
 
                 messages.success(request, '✅ Certificado creado correctamente.')
                 return redirect('novedades:solicitudes_empleado')
@@ -232,8 +205,6 @@ def solicitudes_empleado(request):
                 permiso.tipo = tipo_solicitud
                 permiso.save()
 
-                # Notificar a administradores
-                admins = obtener_correo_admin()
                 contexto_admin = {
                     'empleado_nombre': perfil.nombre_completo(),
                     'tipo_solicitud': permiso.get_tipo_display(),
@@ -241,13 +212,6 @@ def solicitudes_empleado(request):
                     'fecha_fin': permiso.fecha_fin.strftime('%d/%m/%Y'),
                     'motivo': permiso.justificacion,
                 }
-                for admin_email in admins:
-                    enviar_notificacion(
-                        destinatario=admin_email,
-                        asunto=f"📩 Nueva solicitud de {perfil.nombre_completo()}",
-                        template_name='emails/solicitud_creada_admin.html',
-                        contexto=contexto_admin
-                    )
 
                 messages.success(request, f'✅ Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.')
                 return redirect('novedades:solicitudes_empleado')
@@ -365,25 +329,7 @@ def editar_permiso(request, pk):
     if request.FILES.get('archivo'):
         permiso.archivo = request.FILES['archivo']
     permiso.save()
-
-    # =====================================================
-    # NOTIFICACIÓN A ADMINISTRADORES (EDICIÓN)
-    # =====================================================
-    admins = obtener_correo_admin()
-    contexto_admin = {
-        'empleado_nombre': request.user.perfil.nombre_completo(),
-        'tipo_solicitud': permiso.get_tipo_display(),
-        'fecha_inicio': permiso.fecha_inicio.strftime('%d/%m/%Y'),
-        'fecha_fin': permiso.fecha_fin.strftime('%d/%m/%Y'),
-        'motivo': permiso.justificacion,
-    }
-    for admin_email in admins:
-        enviar_notificacion(
-            destinatario=admin_email,
-            asunto=f"✏️ Solicitud editada por {request.user.perfil.nombre_completo()}",
-            template_name='emails/solicitud_editada_admin.html',
-            contexto=contexto_admin
-        )
+    
 
     messages.success(request, '✅ Permiso actualizado correctamente.')
     return JsonResponse({'status': 'ok', 'mensaje': '✅ Permiso actualizado correctamente.'})
@@ -828,12 +774,6 @@ def permiso_aprobar(request, pk):
         'fecha_inicio': p.fecha_inicio.strftime('%d/%m/%Y'),
         'fecha_fin': p.fecha_fin.strftime('%d/%m/%Y'),
     }
-    enviar_notificacion(
-        destinatario=p.empleado.correo,
-        asunto="✅ Tu solicitud ha sido aprobada",
-        template_name='emails/solicitud_aprobada.html',
-        contexto=contexto
-    )
 
     return JsonResponse({'status': 'ok', 'mensaje': 'Permiso aprobado'})
 
@@ -873,12 +813,6 @@ def permiso_rechazar(request, pk):
         'tipo_solicitud': p.get_tipo_display(),
         'motivo_rechazo': p.motivo_rechazo,
     }
-    enviar_notificacion(
-        destinatario=p.empleado.correo,
-        asunto="Tu solicitud ha sido rechazada",
-        template_name='emails/solicitud_rechazada.html',
-        contexto=contexto
-    )
 
     return JsonResponse({'status': 'ok', 'mensaje': 'Permiso rechazado'})
 
@@ -980,12 +914,6 @@ def incapacidad_aprobar(request, pk):
         'fecha_inicio': i.fecha_inicio.strftime('%d/%m/%Y'),
         'fecha_fin': i.fecha_fin.strftime('%d/%m/%Y'),
     }
-    enviar_notificacion(
-        destinatario=i.empleado.correo,
-        asunto="✅ Tu solicitud ha sido aprobada",
-        template_name='emails/solicitud_aprobada.html',
-        contexto=contexto
-    )
 
     return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad aprobada'})
 
@@ -1024,12 +952,6 @@ def incapacidad_rechazar(request, pk):
         'fecha_inicio': i.fecha_inicio.strftime('%d/%m/%Y'),
         'fecha_fin': i.fecha_fin.strftime('%d/%m/%Y'),
     }
-    enviar_notificacion(
-        destinatario=i.empleado.correo,
-        asunto="Tu solicitud ha sido rechazada",
-        template_name='emails/solicitud_rechazada.html',
-        contexto=contexto
-    )
     
     return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad rechazada'})
 
@@ -1183,12 +1105,6 @@ def certificado_aprobar(request, pk):
         'fecha_inicio': c.fecha_solicitud.strftime('%d/%m/%Y'),
         'fecha_fin': 'N/A',
     }
-    enviar_notificacion(
-        destinatario=c.empleado.correo,
-        asunto="✅ Tu solicitud ha sido aprobada",
-        template_name='emails/solicitud_aprobada.html',
-        contexto=contexto
-    )
 
     return JsonResponse({'status': 'ok', 'mensaje': 'Certificado aprobado'})
 
@@ -1235,12 +1151,6 @@ def certificado_rechazar(request, pk):
         'fecha_inicio': c.fecha_solicitud.strftime('%d/%m/%Y'),
         'fecha_fin': 'N/A',
     }
-    enviar_notificacion(
-        destinatario=c.empleado.correo,
-        asunto="Tu solicitud ha sido rechazada",
-        template_name='emails/solicitud_rechazada.html',
-        contexto=contexto
-    )
 
     return JsonResponse({'status': 'ok', 'mensaje': 'Certificado rechazado'})
 

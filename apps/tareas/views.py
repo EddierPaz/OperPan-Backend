@@ -14,8 +14,6 @@ from apps.usuarios.decorators import admin_required
 from apps.usuarios.models import PerfilEmpleado
 from apps.asistencia.models import Horario
 
-# Gmail API
-from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 
 
 # ==========================================
@@ -237,12 +235,6 @@ def admin_tarea_create(request):
                 'fecha_limite': tarea.fecha_limite.strftime('%d/%m/%Y'),
                 'prioridad': tarea.get_prioridad_display(),
             }
-            enviar_notificacion(
-                destinatario=tarea.empleado.correo,
-                asunto=f"📋 Nueva tarea asignada: {tarea.titulo}",
-                template_name='emails/tarea_asignada.html',
-                contexto=contexto
-            )
 
             messages.success(
                 request,
@@ -277,12 +269,6 @@ def admin_tarea_edit(request, pk):
                 'fecha_limite': tarea_editada.fecha_limite.strftime('%d/%m/%Y'),
                 'prioridad': tarea_editada.get_prioridad_display(),
             }
-            enviar_notificacion(
-                destinatario=tarea_editada.empleado.correo,
-                asunto=f"✏️ Tarea actualizada: {tarea_editada.titulo}",
-                template_name='emails/tarea_editada.html',
-                contexto=contexto
-            )
 
             messages.success(request, f"Tarea '{tarea.titulo}' actualizada exitosamente.")
             return redirect('tareas:admin_tareas_list')
@@ -308,12 +294,6 @@ def admin_tarea_delete(request, pk):
             'empleado_nombre': tarea.empleado.nombre_completo(),
             'titulo': tarea.titulo,
         }
-        enviar_notificacion(
-            destinatario=tarea.empleado.correo,
-            asunto=f"🗑️ Tarea eliminada: {tarea.titulo}",
-            template_name='emails/tarea_eliminada.html',
-            contexto=contexto
-        )
 
         tarea.delete()
         messages.error(request, f"Tarea '{titulo}' de {empleado_nombre} eliminada exitosamente.")
@@ -341,12 +321,6 @@ def admin_tarea_cambiar_estado(request, pk):
                 'titulo': tarea.titulo,
                 'estado_nuevo': tarea.get_estado_display(),
             }
-            enviar_notificacion(
-                destinatario=tarea.empleado.correo,
-                asunto=f"Estado de tarea actualizado",
-                template_name='emails/tarea_estado_cambiado.html',
-                contexto=contexto
-            )
             messages.success(request, f"Tarea '{tarea.titulo}' finalizada exitosamente.")
         else:
             messages.error(request, "No se pudo finalizar la tarea.")
@@ -455,7 +429,6 @@ def empleado_tarea_marcar_progreso(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
 
-        # ▼▼▼ Verificación de memorando si la tarea está vencida ▼▼▼
         if tarea.esta_vencida:
             _verificar_memorando_tarea_vencida(tarea)
             messages.error(
@@ -463,26 +436,9 @@ def empleado_tarea_marcar_progreso(request, pk):
                 f"La tarea '{tarea.titulo}' está vencida y no se puede modificar."
             )
             return redirect('tareas:empleado_tareas_list')
-        # ▲▲▲
 
         if tarea.estado == EstadoTarea.PENDIENTE:
             if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
-                # =====================================================
-                # NOTIFICACIÓN A ADMINISTRADORES
-                # =====================================================
-                admins = obtener_correo_admin()
-                for admin_email in admins:
-                    contexto_admin = {
-                        'empleado_nombre': tarea.empleado.nombre_completo(),
-                        'titulo': tarea.titulo,
-                        'estado_nuevo': tarea.get_estado_display(),
-                    }
-                    enviar_notificacion(
-                        destinatario=admin_email,
-                        asunto=f"Tarea en progreso por {tarea.empleado.nombre_completo()}",
-                        template_name='emails/tarea_estado_cambiado_admin.html',
-                        contexto=contexto_admin
-                    )
                 messages.success(request, f"Tarea '{tarea.titulo}' marcada como 'En progreso'.")
             else:
                 messages.error(request, "No se pudo marcar la tarea como 'En progreso'.")
@@ -496,7 +452,6 @@ def empleado_tarea_marcar_finalizada(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
 
-        # ▼▼▼ Verificación de memorando si la tarea está vencida ▼▼▼
         if tarea.esta_vencida:
             _verificar_memorando_tarea_vencida(tarea)
             messages.error(
@@ -504,29 +459,12 @@ def empleado_tarea_marcar_finalizada(request, pk):
                 f"La tarea '{tarea.titulo}' está vencida y no se puede modificar."
             )
             return redirect('tareas:empleado_tareas_list')
-        # ▲▲▲
 
         if tarea.estado == EstadoTarea.EN_PROGRESO:
             evidencia = request.FILES.get('evidencia')
             if evidencia:
                 tarea.evidencia = evidencia
             if tarea.cambiar_estado(EstadoTarea.FINALIZADA, request.user):
-                # =====================================================
-                # NOTIFICACIÓN A ADMINISTRADORES
-                # =====================================================
-                admins = obtener_correo_admin()
-                for admin_email in admins:
-                    contexto_admin = {
-                        'empleado_nombre': tarea.empleado.nombre_completo(),
-                        'titulo': tarea.titulo,
-                        'estado_nuevo': tarea.get_estado_display(),
-                    }
-                    enviar_notificacion(
-                        destinatario=admin_email,
-                        asunto=f"Tarea finalizada por {tarea.empleado.nombre_completo()}",
-                        template_name='emails/tarea_estado_cambiado_admin.html',
-                        contexto=contexto_admin
-                    )
                 messages.success(request, f"Tarea '{tarea.titulo}' marcada como 'Finalizada'.")
             else:
                 messages.error(request, "No se pudo marcar la tarea como 'Finalizada'.")

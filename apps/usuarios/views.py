@@ -10,6 +10,7 @@ from django.utils.dateparse import parse_date
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from apps.usuarios.utils import get_logo_base64
 
 from .models import User, PerfilEmpleado, RegistroAuditoriaCuenta
 from .forms import UserForm, PerfilEmpleadoForm
@@ -46,17 +47,26 @@ def _enviar_correo_credenciales(perfil):
         "username": perfil.user.username,
         "documento": perfil.numero_documento,
         "login_url": login_url,
+        "logo_base64": get_logo_base64(),
+        "year": timezone.now().year,
     }
     html_content = render_to_string("login/credenciales_email.html", contexto_email)
 
     email = EmailMultiAlternatives(
         subject="Bienvenido a OperPan - Tus credenciales de acceso",
-        body=f"Usuario: {perfil.user.username}\nContraseña inicial: {perfil.numero_documento}",
+        body=(
+            f"Usuario: {perfil.user.username}\n"
+            f"Contraseña inicial: {perfil.numero_documento}"
+        ),
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[perfil.correo],
     )
     email.attach_alternative(html_content, "text/html")
-    email.send(fail_silently=False)
+
+    try:
+        email.send(fail_silently=True)
+    except Exception as e:
+        print(f"[usuarios] Error enviando credenciales a {perfil.correo}: {e}")
 
 
 # ========================
@@ -66,23 +76,18 @@ def _enviar_correo_credenciales(perfil):
 @login_required
 @admin_required
 def admin_dashboard(request):
-    # 1. Contexto base de asistencia (ya existente)
     contexto = _contexto_base()
 
-    # 2. Empleados activos
     total_empleados_activos = PerfilEmpleado.objects.filter(estado='activo').count()
 
-    # 3. KPIs de tareas (método existente)
     kpis_tareas = Task.get_kpis_administrador()
 
-    # 4. Tareas pendientes / en progreso: ordenadas por fecha más antigua primero (vencidas primero)
     tareas_pendientes_qs = Task.objects.filter(
         estado__in=['PENDIENTE', 'EN_PROGRESO']
     ).select_related('empleado').order_by('fecha_limite', 'prioridad')
 
-    tareas_pendientes_mostrar = list(tareas_pendientes_qs[:20])  # máximo 20 para el dashboard
+    tareas_pendientes_mostrar = list(tareas_pendientes_qs[:20])
 
-    # 5. Novedades pendientes (conteos y listas para iterar en el template)
     permisos_pendientes_qs = Permiso.objects.filter(estado='pendiente').select_related('empleado')
     incapacidades_pendientes_qs = Incapacidad.objects.filter(estado='pendiente').select_related('empleado')
     certificados_pendientes_qs = Certificado.objects.filter(estado='pendiente').select_related('empleado')
@@ -92,7 +97,6 @@ def admin_dashboard(request):
     certificados_pendientes = certificados_pendientes_qs.count()
     total_solicitudes_pendientes = permisos_pendientes + incapacidades_pendientes + certificados_pendientes
 
-    # --- Construir lista unificada de novedades pendientes (ordenadas por fecha) ---
     novedades_pendientes = []
     for p in permisos_pendientes_qs:
         novedades_pendientes.append({
@@ -118,24 +122,21 @@ def admin_dashboard(request):
             'empleado': c.empleado,
             'fecha': c.fecha_solicitud,
             'detalle': c.get_tipo_display(),
-            'url': reverse('novedades:novedades_admin'),  # no hay detalle individual
+            'url': reverse('novedades:novedades_admin'),
             'id': c.id,
         })
 
-    # Ordenar por fecha descendente (más reciente primero) y tomar 20
     novedades_pendientes.sort(key=lambda x: x['fecha'], reverse=True)
     novedades_pendientes_mostrar = novedades_pendientes[:20]
 
-    # 6. ASISTENCIA: filtrar por turno según hora actual y mostrar ausentes, o tardanzas si no hay ausentes
     hora_actual = timezone.localtime().time()
 
-    # Determinar turno actual
     if hora_actual >= datetime.strptime('04:00', '%H:%M').time() and hora_actual < datetime.strptime('13:00', '%H:%M').time():
         turno_actual = 'MANANA'
     elif hora_actual >= datetime.strptime('13:00', '%H:%M').time() and hora_actual < datetime.strptime('23:00', '%H:%M').time():
         turno_actual = 'TARDE'
     else:
-        turno_actual = None  # fuera de horario laboral
+        turno_actual = None
 
     ausentes_hoy = []
     tardanzas_hoy = []
@@ -152,7 +153,6 @@ def admin_dashboard(request):
                     'asistencia': horario.asistencia,
                 })
 
-    # Si no hay ausentes, mostrar tardanzas
     if ausentes_hoy:
         lista_asistencia = ausentes_hoy
         estado_label = 'Ausente'
@@ -162,7 +162,6 @@ def admin_dashboard(request):
         estado_label = 'Tarde'
         badge_color = 'bg-warning text-dark'
 
-    # 7. Feed de actividad (últimos 8 eventos combinados)
     ultimos_permisos = Permiso.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimas_incapacidades = Incapacidad.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimos_certificados = Certificado.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
@@ -211,11 +210,9 @@ def admin_dashboard(request):
             'modelo': 'tarea'
         })
 
-    # Ordenar por fecha descendente y tomar 8
     actividad.sort(key=lambda x: x['fecha'], reverse=True)
     actividad = actividad[:8]
 
-    # Asignar URLs reales a cada ítem del feed
     for item in actividad:
         if item['modelo'] == 'permiso':
             item['url'] = reverse('novedades:permiso_detalle', args=[item['id']])
@@ -226,7 +223,6 @@ def admin_dashboard(request):
         elif item['modelo'] == 'tarea':
             item['url'] = reverse('tareas:admin_tarea_edit', args=[item['id']])
 
-    # 8. Datos para gráficas (en formato JSON para Chart.js)
     asistencia_data = {
         'labels': ['Presentes', 'Tardanzas', 'Ausentes'],
         'values': [
@@ -257,7 +253,6 @@ def admin_dashboard(request):
         'colors': ['#007bff', '#dc3545', '#6c757d']
     }
 
-    # 9. Contexto final
     contexto.update({
         'total_empleados_activos': total_empleados_activos,
         'kpis_tareas': kpis_tareas,
@@ -274,7 +269,6 @@ def admin_dashboard(request):
         'novedades_chart_data': json.dumps(novedades_data),
         'perfil': request.user.perfil,
         'today': date.today(),
-
         'lista_asistencia': lista_asistencia,
         'estado_asistencia_label': estado_label,
         'badge_asistencia_color': badge_color,
@@ -287,10 +281,6 @@ def admin_dashboard(request):
 def employee_dashboard(request):
     perfil = request.user.perfil
     hoy = date.today()
-
-    # ============================================================
-    # 1. HORARIO Y ASISTENCIA DEL DÍA
-    # ============================================================
 
     horario = (
         Horario.objects
@@ -339,10 +329,6 @@ def employee_dashboard(request):
             estado_asistencia = "No ha sido marcado"
             badge_color = "bg-secondary"
 
-    # ============================================================
-    # 2. HISTORIAL DE ASISTENCIA (últimos 30 días)
-    # ============================================================
-
     historial_asistencia = []
     if horario:
         asistencias_historial = (
@@ -362,10 +348,6 @@ def employee_dashboard(request):
                     'bg-secondary'
                 )
             })
-
-    # ============================================================
-    # 3. ESTADÍSTICAS DE ASISTENCIA (últimos 30 días)
-    # ============================================================
 
     estadisticas_asistencia = {
         'dias_trabajados': 0,
@@ -390,10 +372,6 @@ def employee_dashboard(request):
             estadisticas_asistencia['tardanzas'] = tardanzas
             estadisticas_asistencia['ausencias'] = ausencias
 
-    # ============================================================
-    # 4. TAREAS DEL EMPLEADO
-    # ============================================================
-
     tareas_pendientes = (
         Task.objects
         .filter(empleado=perfil)
@@ -408,24 +386,12 @@ def employee_dashboard(request):
 
     kpis_tareas = Task.get_kpis_empleado(request.user)
 
-    # ============================================================
-    # 5. SOLICITUDES PENDIENTES
-    # ============================================================
-
     permisos_pendientes = Permiso.objects.filter(empleado=perfil, estado='pendiente').count()
     incapacidades_pendientes = Incapacidad.objects.filter(empleado=perfil, estado='pendiente').count()
     certificados_pendientes = Certificado.objects.filter(empleado=perfil, estado='pendiente').count()
     total_solicitudes_pendientes = permisos_pendientes + incapacidades_pendientes + certificados_pendientes
 
-    # ============================================================
-    # 6. MEMORANDOS
-    # ============================================================
-
     total_memorandos = Memorando.objects.filter(empleado=perfil, estado='emitido').count()
-
-    # ============================================================
-    # 7. ACTIVIDAD RECIENTE (feed personal)
-    # ============================================================
 
     actividad = []
 
@@ -492,10 +458,6 @@ def employee_dashboard(request):
     actividad.sort(key=lambda x: x['fecha'], reverse=True)
     actividad = actividad[:8]
 
-    # ============================================================
-    # 8. DATOS PARA GRÁFICAS (Chart.js)
-    # ============================================================
-
     tareas_chart_data = {
         'labels': ['Pendientes', 'En progreso', 'Finalizadas'],
         'values': [
@@ -528,10 +490,6 @@ def employee_dashboard(request):
         'values': [permisos_pendientes, incapacidades_pendientes, certificados_pendientes],
         'colors': ['#007bff', '#dc3545', '#6c757d']
     }
-
-    # ============================================================
-    # 9. CONTEXTO FINAL
-    # ============================================================
 
     context = {
         'perfil': perfil,
@@ -572,8 +530,8 @@ def employee_dashboard(request):
 # GESTIÓN DE USUARIOS
 # ========================
 
-#@login_required
-#@admin_required
+@login_required
+@admin_required
 def user_list_create(request):
     usuarios = PerfilEmpleado.objects.select_related("user").all()
     cargos = PerfilEmpleado._meta.get_field('cargo').choices
@@ -588,7 +546,6 @@ def user_list_create(request):
             user.email = perfil_form.cleaned_data["correo"]
             user.estado_cuenta = User.EstadoCuenta.PENDIENTE
             user.debe_cambiar_password = True
-            # RN-CT-01: la contraseña inicial SIEMPRE es el documento, nunca la digita el admin.
             user.set_password(numero_documento)
             user.save()
 
@@ -597,7 +554,6 @@ def user_list_create(request):
             perfil.estado = 'activo'
             perfil.save()
 
-            # RF-CT-10: auditar la creación.
             _registrar_auditoria(
                 usuario_afectado=user,
                 ejecutado_por=request.user,
@@ -605,7 +561,6 @@ def user_list_create(request):
                 estado_nuevo=user.estado_cuenta,
             )
 
-            # RF-CT-02: envío de credenciales opcional, marcado desde el modal.
             if request.POST.get("enviar_credenciales"):
                 try:
                     _enviar_correo_credenciales(perfil)
@@ -666,8 +621,6 @@ def user_update(request, user_id):
         perfil.eps = request.POST.get("eps", perfil.eps)
         perfil.arl = request.POST.get("arl", perfil.arl)
         perfil.fondo_pension = request.POST.get("fondo_pension", perfil.fondo_pension)
-        # perfil.estado (laboral) YA NO se toca aquí (RN-CT-08) — usar
-        # user_retirar / user_reactivar_retiro para eso.
         perfil.save()
 
         rol_anterior = user.rol
@@ -696,11 +649,6 @@ def user_update(request, user_id):
 @login_required
 @admin_required
 def user_delete(request, user_id):
-    """
-    Eliminación FÍSICA — caso excepcional: solo cuentas PENDIENTE que nunca
-    completaron su primer acceso. Para dar de baja a alguien con historial,
-    usar user_retirar.
-    """
     if request.method == "POST":
         try:
             user = User.objects.get(id=user_id)
@@ -795,7 +743,6 @@ def user_reactivar(request, user_id):
 @login_required
 @admin_required
 def user_retirar(request, user_id):
-    """RN-CT-05 / RN-CT-09: retiro nunca borra, y sincroniza ambos estados."""
     user = get_object_or_404(User, id=user_id)
     perfil = user.perfil
 
@@ -830,11 +777,6 @@ def user_retirar(request, user_id):
 @login_required
 @admin_required
 def user_reactivar_retiro(request, user_id):
-    """
-    Reingreso laboral. Por higiene de seguridad (sección I), el default es
-    volver a PENDIENTE (fuerza nuevo cambio de contraseña) en vez de ACTIVA
-    directa. El admin puede elegir 'activa_directa' explícitamente.
-    """
     user = get_object_or_404(User, id=user_id)
     perfil = user.perfil
 
@@ -868,8 +810,8 @@ def user_reactivar_retiro(request, user_id):
     return redirect("user_list")
 
 
-#@login_required
-#@admin_required
+@login_required
+@admin_required
 def user_send_credentials(request, user_id):
     user = get_object_or_404(User, id=user_id)
 
@@ -882,7 +824,6 @@ def user_send_credentials(request, user_id):
             _enviar_correo_credenciales(user.perfil)
             messages.success(request, f"Credenciales reenviadas a {user.perfil.correo}.")
         except Exception as e:
-            # Esto te mostrará el error real en la consola
             print(f"ERROR al enviar correo: {e}")
             messages.error(request, f"No se pudo enviar el correo: {str(e)}")
 
@@ -925,6 +866,7 @@ def employee_profile_update(request):
 
     return redirect("employee_profile")
 
+
 @login_required
 def employee_password_update(request):
     if request.method == "POST":
@@ -947,7 +889,6 @@ def employee_password_update(request):
             messages.error(request, "La nueva contraseña debe tener al menos 8 caracteres.")
             return redirect("employee_profile")
 
-        # RN-CT-04: nunca puede quedar igual al número de documento.
         if password_nueva == perfil.numero_documento:
             messages.error(request, "La contraseña no puede ser igual a tu número de documento.")
             return redirect("employee_profile")

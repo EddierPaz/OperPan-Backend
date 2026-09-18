@@ -15,9 +15,6 @@ from .forms import MemorandoForm, MemorandoFiltroForm
 from .pdfs import generar_pdf_memorando
 from apps.usuarios.models import PerfilEmpleado
 
-# Gmail API
-from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
-
 
 # ============================================================
 # VISTAS PARA MEMORANDOS (ADMIN)
@@ -56,12 +53,6 @@ def memorando_crear(request):
         'asunto': memorando.asunto,
         'consecutivo': memorando.consecutivo,
     }
-    enviar_notificacion(
-        destinatario=memorando.empleado.correo,
-        asunto=f"📄 Nuevo memorando: {memorando.consecutivo}",
-        template_name='emails/memorando_creado.html',
-        contexto=contexto
-    )
 
     try:
         pdf_path = generar_pdf_memorando(memorando)

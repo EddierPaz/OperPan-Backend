@@ -7,6 +7,8 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
+from apps.usuarios.utils import get_logo_base64
+
 
 from apps.usuarios.models import User, PerfilEmpleado, PasswordResetToken
 from apps.usuarios.forms import EstablecerPasswordForm
@@ -96,17 +98,32 @@ def primer_acceso_view(request):
 def password_reset_documento(request):
     if request.method == "POST":
         documento = request.POST.get("documento", "").strip()
+        reset_url = None
+
         try:
             perfil = PerfilEmpleado.objects.get(numero_documento=documento)
 
-            # Sección Q: no revelamos si la cuenta está suspendida/inactiva —
-            # el token se emite igual, el bloqueo ocurre al hacer login después.
+            # Invalidar tokens previos del mismo usuario.
+            # Evita acumulación de tokens activos y reduce superficie de ataque.
+            PasswordResetToken.objects.filter(
+                user=perfil.user,
+                usado=False,
+            ).update(usado=True)
+
+            # Crear el nuevo token.
             token_obj = PasswordResetToken.objects.create(user=perfil.user)
             reset_url = request.build_absolute_uri(
                 reverse("password_reset_confirmar", args=[str(token_obj.token)])
             )
-            contexto_email = {"nombre": perfil.primer_nombre, "reset_url": reset_url}
-            html_content = render_to_string("login/password_reset_email.html", contexto_email)
+            contexto_email = {
+                "nombre": perfil.primer_nombre,
+                "reset_url": reset_url,
+                "logo_base64": get_logo_base64(),
+                "year": timezone.now().year,
+            }
+            html_content = render_to_string(
+                "login/password_reset_email.html", contexto_email
+            )
 
             email = EmailMultiAlternatives(
                 subject="Recupera tu contraseña - OperPan",
@@ -115,15 +132,32 @@ def password_reset_documento(request):
                 to=[perfil.correo],
             )
             email.attach_alternative(html_content, "text/html")
-            email.send(fail_silently=False)
+
+            # fail_silently=True: si Gmail falla (credenciales caducadas, sin red),
+            # no rompemos la vista con error 500. El usuario recibe el mensaje
+            # genérico de "revisa tu correo" y no filtramos si el documento existe.
+            try:
+                email.send(fail_silently=True)
+            except Exception as e:
+                print(f"[password_reset] Error enviando correo a {perfil.correo}: {e}")
 
         except PerfilEmpleado.DoesNotExist:
             pass  # mismo mensaje genérico, no se filtra si el documento existe
 
-        messages.success(
-            request,
-            "Si el documento existe en nuestro sistema, recibirás un correo con instrucciones."
-        )
+        # En modo DEBUG, además del correo mostramos el link en el mensaje de
+        # éxito para poder probar sin ir a la bandeja. NUNCA en producción.
+        if settings.DEBUG and reset_url:
+            messages.success(
+                request,
+                f"Si el documento existe en el sistema, recibirás un correo. "
+                f"[DEBUG] Link: {reset_url}"
+            )
+        else:
+            messages.success(
+                request,
+                "Si el documento existe en nuestro sistema, "
+                "recibirás un correo con instrucciones."
+            )
         return redirect("login")
 
     return render(request, "login/password_reset.html")

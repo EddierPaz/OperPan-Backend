@@ -22,7 +22,6 @@ from django.core.cache import cache
 # =============================================================================
 from apps.usuarios.models import PerfilEmpleado         # Modelo de empleado
 from apps.usuarios.decorators import admin_required     # Decorador para restringir a admin
-from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin  # Envío de emails
 
 # Modelos locales
 from .models import Asistencia, DescansoEmpleado, Horario
@@ -628,12 +627,6 @@ def horarios(request):
             'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
         }
 
-        enviar_notificacion(
-            destinatario=empleado.correo,
-            asunto="🕒 Nuevo horario asignado",
-            template_name='emails/horario_asignado.html',
-            contexto=contexto
-        )
 
         if fecha_descanso_obj:
             DescansoEmpleado.objects.create(
@@ -807,12 +800,7 @@ def editar_horario(request, id):
             'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
             'fecha_descanso': fecha_descanso_str if fecha_descanso_str else 'A definir',
         }
-        enviar_notificacion(
-            destinatario=horario.empleado.correo,
-            asunto="✏️ Horario actualizado",
-            template_name='emails/horario_editado.html',
-            contexto=contexto
-        )
+        
 
         messages.success(request, "Horario actualizado correctamente.")
         return redirect("asistencia:horarios")
@@ -842,12 +830,6 @@ def eliminar_horario(request, id):
         'empleado_nombre': horario.empleado.nombre_completo(),
         'turno': horario.get_turno_display(),
     }
-    enviar_notificacion(
-        destinatario=horario.empleado.correo,
-        asunto="🚫 Horario eliminado",
-        template_name='emails/horario_eliminado.html',
-        contexto=contexto
-    )
 
     horario.estado = False
     horario.save(update_fields=["estado"])
@@ -1415,12 +1397,7 @@ def cambiar_estado_asistencia(request):
             'fecha': hoy.strftime('%d/%m/%Y'),
             'estado': estado_display,
         }
-        enviar_notificacion(
-            destinatario=empleado.correo,
-            asunto=f"📋 Asistencia registrada - {estado_display}",
-            template_name='emails/asistencia_registrada.html',
-            contexto=contexto
-        )
+        
 
         return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
     except PerfilEmpleado.DoesNotExist:

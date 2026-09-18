@@ -1,4 +1,5 @@
 from pathlib import Path
+from django import http
 import environ
 import os
 
@@ -29,9 +30,6 @@ INSTALLED_APPS = [
     'apps.memorandos',
     'apps.asistencia',
     'apps.tareas',
-
-    # Aplicación para consumo de API de Gmail
-    'apps.notificaciones',
 ]
 
 # ── Middleware ────────────────────────────────
@@ -143,10 +141,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CONFIGURACIÓN DE CORREO
 # ===============================
 
-# En desarrollo (DEBUG=True) los correos se imprimen en la consola de
-# runserver en vez de enviarse de verdad — evita gastar el límite diario
-# de Gmail mientras pruebas login, recuperación de contraseña, asistencia, etc.
-# Para forzar el envío real en desarrollo, pon EMAIL_BACKEND_REAL=True en tu .env
+# ===============================
+# CONFIGURACIÓN DE CORREO
+# ===============================
+
 if DEBUG and not env.bool('EMAIL_BACKEND_REAL', default=False):
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:

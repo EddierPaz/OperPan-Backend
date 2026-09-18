@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.utils import timezone
 
 from ..models import Permiso, Certificado
-from apps.notificaciones.utils import enviar_notificacion
 
 
 MOTIVO_RECHAZO_AUTOMATICO = (
@@ -51,23 +50,6 @@ def rechazar_solicitudes_vencidas():
 
         permisos_rechazados += 1
 
-        # Notificar al empleado
-        try:
-            enviar_notificacion(
-                destinatario=permiso.empleado.correo,
-                asunto='Tu solicitud ha sido rechazada automáticamente',
-                template_name='emails/solicitud_rechazada.html',
-                contexto={
-                    'empleado_nombre': permiso.empleado.nombre_completo(),
-                    'tipo_solicitud': permiso.get_tipo_display(),
-                    'motivo_rechazo': permiso.motivo_rechazo,
-                }
-            )
-        except Exception as e:
-            print(
-                f'Error enviando notificación del permiso '
-                f'{permiso.id}: {e}'
-            )
 
     # ============================================================
     # CERTIFICADOS
@@ -94,23 +76,6 @@ def rechazar_solicitudes_vencidas():
 
         certificados_rechazados += 1
 
-        # Notificar al empleado
-        try:
-            enviar_notificacion(
-                destinatario=certificado.empleado.correo,
-                asunto='Tu solicitud ha sido rechazada automáticamente',
-                template_name='emails/solicitud_rechazada.html',
-                contexto={
-                    'empleado_nombre': certificado.empleado.nombre_completo(),
-                    'tipo_solicitud': certificado.get_tipo_display(),
-                    'motivo_rechazo': certificado.motivo_rechazo,
-                }
-            )
-        except Exception as e:
-            print(
-                f'Error enviando notificación del certificado '
-                f'{certificado.id}: {e}'
-            )
 
     return {
         'permisos_rechazados': permisos_rechazados,
