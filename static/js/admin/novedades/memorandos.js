@@ -274,7 +274,11 @@
                     </td>
 
                     <td data-label="Generado por">
-                        ${m.generado_por || '—'}
+                        ${m.es_automatico
+                            ? `<span class="text-muted fst-italic">
+                                   <i class="bi bi-robot me-1"></i>Sistema
+                               </span>`
+                            : (m.generado_por || '—')}
                     </td>
 
                     <td data-label="Acciones">

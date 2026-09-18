@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
 from django.urls import reverse
-
+from django.core.cache import cache
 from .models import Task, EstadoTarea
 from .forms import TaskForm, TaskFilterForm
 from .constants import TAREAS_POR_CARGO, CARGO_AREA_MAP, OTRA_VALUE
@@ -19,18 +19,56 @@ from apps.notificaciones.utils import enviar_notificacion, obtener_correo_admin
 
 
 # ==========================================
+# ============ VERIFICACIÓN MEMORANDOS ============
+# ==========================================
+
+def _verificar_memorandos_throttled():
+    if cache.get('verif_memorandos_throttle'):
+        return
+    from apps.memorandos.services import verificar_y_generar_memorando
+    from apps.usuarios.models import PerfilEmpleado as _Perfil
+
+    for emp in _Perfil.objects.filter(user__rol='empleado', estado='activo'):
+        try:
+            verificar_y_generar_memorando(emp)
+        except Exception as e:
+            print(f"[tareas.views] Error verificando memorando para "
+                  f"{emp.pk}: {e}")
+
+    cache.set('verif_memorandos_throttle', True, timeout=1800)  # 30 min
+
+
+def _verificar_memorando_empleado(user):
+
+    perfil = getattr(user, 'perfil', None)
+    if perfil is None:
+        return
+
+    from apps.memorandos.services import verificar_y_generar_memorando
+
+    try:
+        verificar_y_generar_memorando(perfil)
+    except Exception as e:
+        print(f"[tareas.views] Error verificando memorando para "
+              f"{perfil.pk}: {e}")
+
+
+def _verificar_memorando_tarea_vencida(tarea):
+
+    from apps.memorandos.services import verificar_y_generar_memorando
+
+    try:
+        verificar_y_generar_memorando(tarea.empleado)
+    except Exception as e:
+        print(f"[tareas.views] Error verificando memorando para "
+              f"{tarea.empleado_id}: {e}")
+
+
+# ==========================================
 # ============ VISTAS DEL ADMINISTRADOR ============
 # ==========================================
 
 def _build_tareas_context(request, form=None, editando=False, tarea_actual=None):
-    """
-    Construye el contexto completo de la vista admin_tareas_list.
-    Se extrajo a una función aparte para poder reutilizarlo desde
-    admin_tarea_create y admin_tarea_edit cuando el formulario es
-    inválido: así se puede volver a renderizar la página con el modal
-    abierto, los datos que el usuario escribió y los errores de cada
-    campo, en vez de perderlos con un redirect.
-    """
     kpis = Task.get_kpis_administrador()
 
     tareas = Task.objects.select_related(
@@ -123,7 +161,6 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
         'editando': editando,
         'tarea_actual': tarea_actual,
         'tarea_detalle': tarea_detalle,
-        # Serialización segura a JSON string para que el script JavaScript lo lea limpio
         'empleados_data': json.dumps(empleados_data),
         'tareas_por_cargo': json.dumps(TAREAS_POR_CARGO),
         'cargo_area_map': json.dumps(CARGO_AREA_MAP),
@@ -135,6 +172,9 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
 @login_required
 @admin_required
 def admin_tareas_list(request):
+
+    _verificar_memorandos_throttled()
+
 
     editando = False
     tarea_actual = None
@@ -259,7 +299,6 @@ def admin_tarea_delete(request, pk):
     return redirect('tareas:admin_tareas_list')
 
 
-
 @login_required
 @admin_required
 def admin_tarea_cambiar_estado(request, pk):
@@ -323,6 +362,9 @@ def admin_tareas_vencidas(request):
 
 @login_required
 def empleado_tareas_list(request):
+
+    _verificar_memorando_empleado(request.user)
+
     empleado = request.user
     kpis = Task.get_kpis_empleado(empleado)
     tareas = Task.objects.filter(empleado__user=request.user).select_related(
@@ -358,7 +400,7 @@ def empleado_tareas_list(request):
         'puede_cambiar': tarea_detalle and tarea_detalle.estado != EstadoTarea.FINALIZADA and not tarea_detalle.esta_vencida,
     }
     return render(request, 'empleado/tareas/tareas.html', context)
-    
+
 
 @login_required
 def empleado_tarea_detail(request, pk):
@@ -366,9 +408,10 @@ def empleado_tarea_detail(request, pk):
 
     if request.method == 'POST':
         if tarea.esta_vencida:
+            _verificar_memorando_tarea_vencida(tarea)
             messages.error(request, f"La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
             return redirect('tareas:empleado_tareas_list')
-        
+
         nuevo_estado = request.POST.get('estado')
         if nuevo_estado in [EstadoTarea.EN_PROGRESO, EstadoTarea.FINALIZADA]:
             if tarea.cambiar_estado(nuevo_estado, request.user):
@@ -386,6 +429,16 @@ def empleado_tarea_detail(request, pk):
 def empleado_tarea_marcar_progreso(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
+
+        if tarea.esta_vencida:
+            _verificar_memorando_tarea_vencida(tarea)
+            messages.error(
+                request,
+                f"La tarea '{tarea.titulo}' está vencida y no se puede modificar."
+            )
+            return redirect('tareas:empleado_tareas_list')
+   
+
         if tarea.estado == EstadoTarea.PENDIENTE:
             if tarea.cambiar_estado(EstadoTarea.EN_PROGRESO, request.user):
                 # =====================================================
@@ -416,6 +469,15 @@ def empleado_tarea_marcar_progreso(request, pk):
 def empleado_tarea_marcar_finalizada(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
+
+        if tarea.esta_vencida:
+            _verificar_memorando_tarea_vencida(tarea)
+            messages.error(
+                request,
+                f"La tarea '{tarea.titulo}' está vencida y no se puede modificar."
+            )
+            return redirect('tareas:empleado_tareas_list')
+
         if tarea.estado == EstadoTarea.EN_PROGRESO:
             evidencia = request.FILES.get('evidencia')
             if evidencia:

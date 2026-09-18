@@ -104,6 +104,18 @@ class Task(models.Model):
         help_text='Foto o documento opcional como evidencia de finalización'
     )
 
+    # ------------------------------------------------------------------
+    # NUEVO: vínculo al memorando generado automáticamente.
+    # ------------------------------------------------------------------
+    memorando_generado = models.ForeignKey(
+        'memorandos.Memorando',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tareas_origen',
+        help_text='Memorando generado automáticamente por acumulación de vencidas'
+    )
+
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_limite})"
 
