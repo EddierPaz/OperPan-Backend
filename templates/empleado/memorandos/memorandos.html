@@ -44,6 +44,74 @@
         </div>
     </div>
 </div>
+
+{# ==================== MODAL DETALLE DE MEMORANDO ==================== #}
+<div class="modal fade" id="miMemorandoDetalleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content modal-detalle">
+
+            <div class="modal-header modal-detalle-header">
+                <div>
+                    <div class="modal-detalle-titulo">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        <span>Detalle del memorando</span>
+                    </div>
+                    <p class="modal-detalle-subtitulo mb-0" id="miMemoSubtitulo">—</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body modal-detalle-body">
+                <div class="modal-detalle-grid">
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Consecutivo</span>
+                        <span class="modal-detalle-value" id="miMemoConsecutivo">—</span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Tipo</span>
+                        <span class="modal-detalle-value" id="miMemoTipo">—</span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha de emisión</span>
+                        <span class="modal-detalle-value" id="miMemoFecha">—</span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Origen</span>
+                        <span class="modal-detalle-value" id="miMemoOrigen">—</span>
+                    </div>
+
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-label">Asunto</span>
+                        <span class="modal-detalle-value" id="miMemoAsunto">—</span>
+                    </div>
+
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
+                        <span class="modal-detalle-bloque-largo-label">Contenido</span>
+                        <pre class="modal-detalle-bloque-largo-texto"
+                             id="miMemoContenido"
+                             style="white-space: pre-wrap; font-family: inherit; margin: 0;">—</pre>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer modal-detalle-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </button>
+                <a href="#" id="miMemoDescargarBtn" target="_blank"
+                   class="btn-action btn-action-save" style="display:none;">
+                    <i class="bi bi-download"></i> Descargar PDF
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
