@@ -414,6 +414,63 @@
   border: 1px solid var(--color-border);
 }
 
+/* ============================================================
+   ESTADOS NUEVOS: Permiso / Incapacidad / Cambio de turno
+   ============================================================ */
+
+/* ── Badges del historial ── */
+.badge-status.badge-permiso {
+    background-color: var(--color-permiso-bg);
+    color: var(--color-permiso-text);
+}
+
+.badge-status.badge-incapacidad {
+    background-color: var(--color-incapacidad-bg);
+    color: var(--color-incapacidad-text);
+}
+
+.badge-status.badge-cambio-turno {
+    background-color: var(--color-cambio-turno-bg);
+    color: var(--color-cambio-turno-text);
+}
+
+/* ── Bloque "Estado de hoy" ── */
+.estado-hoy-status--permiso {
+    background: var(--color-permiso-bg);
+    border-color: var(--color-permiso-bg);
+}
+.estado-hoy-status--permiso .estado-hoy-status-icon {
+    background: var(--color-permiso);
+    color: #ffffff;
+}
+.estado-hoy-status--permiso .estado-hoy-status-label {
+    color: var(--color-permiso-text);
+}
+
+.estado-hoy-status--incapacidad {
+    background: var(--color-incapacidad-bg);
+    border-color: var(--color-incapacidad-bg);
+}
+.estado-hoy-status--incapacidad .estado-hoy-status-icon {
+    background: var(--color-incapacidad);
+    color: #ffffff;
+}
+.estado-hoy-status--incapacidad .estado-hoy-status-label {
+    color: var(--color-incapacidad-text);
+}
+
+.estado-hoy-status--cambio-turno {
+    background: var(--color-cambio-turno-bg);
+    border-color: var(--color-cambio-turno-bg);
+}
+.estado-hoy-status--cambio-turno .estado-hoy-status-icon {
+    background: var(--color-cambio-turno);
+    color: #ffffff;
+}
+.estado-hoy-status--cambio-turno .estado-hoy-status-label {
+    color: var(--color-cambio-turno-text);
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .employee-card {

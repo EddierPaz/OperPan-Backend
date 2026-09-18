@@ -75,6 +75,28 @@
   min-height: 56px;
 }
 
+/* ============================================================
+   ESTADOS NUEVOS EN EL CALENDARIO (ADMIN)
+   ============================================================ */
+
+.dia-permiso {
+  background: var(--color-permiso-bg);
+  border-color: var(--color-permiso);
+  color: var(--color-permiso-text);
+}
+
+.dia-incapacidad {
+  background: var(--color-incapacidad-bg);
+  border-color: var(--color-incapacidad);
+  color: var(--color-incapacidad-text);
+}
+
+.dia-cambio-turno {
+  background: var(--color-cambio-turno-bg);
+  border-color: var(--color-cambio-turno);
+  color: var(--color-cambio-turno-text);
+}
+
 @media (max-width: 768px) {
   .filtros-toolbar {
     flex-direction: column;

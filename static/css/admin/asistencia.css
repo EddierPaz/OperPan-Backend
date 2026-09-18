@@ -243,6 +243,7 @@
   background: var(--color-success-bg);
   border-color: var(--color-success);
 }
+
 .dia-presente .dia-numero {
   color: var(--color-success-text);
 }
@@ -251,6 +252,7 @@
   background: var(--color-warning-bg);
   border-color: var(--color-warning);
 }
+
 .dia-tarde .dia-numero {
   color: var(--color-warning-text);
 }
@@ -259,6 +261,7 @@
   background: var(--color-danger-bg);
   border-color: var(--color-danger);
 }
+
 .dia-ausente .dia-numero {
   color: var(--color-danger-text);
 }
@@ -279,6 +282,43 @@
 /* ── LISTA DE EMPLEADOS ── */
 .empleado-item.d-none {
   display: none !important;
+}
+
+/* ============================================================
+   ESTADOS NUEVOS EN EL MODAL DE HISTORIAL (ADMIN)
+   ============================================================ */
+
+.badge-estado.badge-permiso {
+  background: var(--color-permiso-bg);
+  color: var(--color-permiso-text);
+}
+
+.badge-estado.badge-incapacidad {
+  background: var(--color-incapacidad-bg);
+  color: var(--color-incapacidad-text);
+}
+
+.badge-estado.badge-cambio-turno {
+  background: var(--color-cambio-turno-bg);
+  color: var(--color-cambio-turno-text);
+}
+
+.dia-permiso {
+  background: var(--color-permiso-bg);
+  border-color: var(--color-permiso);
+  color: var(--color-permiso-text);
+}
+
+.dia-incapacidad {
+  background: var(--color-incapacidad-bg);
+  border-color: var(--color-incapacidad);
+  color: var(--color-incapacidad-text);
+}
+
+.dia-cambio-turno {
+  background: var(--color-cambio-turno-bg);
+  border-color: var(--color-cambio-turno);
+  color: var(--color-cambio-turno-text);
 }
 
 /* ── RESPONSIVE ── */

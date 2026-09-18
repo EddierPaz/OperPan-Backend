@@ -16,21 +16,48 @@
       <tr>
         <td>{{ reg.fecha }}</td>
         <td>
-          <span class="badge badge-estado 
-            {% if reg.estado == 'Presente' %}badge-presente
-            {% elif reg.estado == 'Tarde' %}badge-tarde
-            {% elif reg.estado == 'Ausente' %}badge-ausente
-            {% else %}badge-sin-registro{% endif %}">
-            {{ reg.estado }}
-          </span>
+          {% if reg.estado == 'PERMISO' %}
+            <span class="badge badge-estado badge-permiso">
+              <i class="bi bi-calendar-check-fill me-1"></i>Permiso
+            </span>
+          {% elif reg.estado == 'INCAPACIDAD' %}
+            <span class="badge badge-estado badge-incapacidad">
+              <i class="bi bi-heart-pulse-fill me-1"></i>Incapacidad
+            </span>
+          {% elif reg.estado == 'CAMBIO_TURNO' %}
+            <span class="badge badge-estado badge-cambio-turno">
+              <i class="bi bi-arrow-repeat me-1"></i>Cambio de turno
+            </span>
+          {% elif reg.estado == 'DESCANSO' %}
+            <span class="badge badge-estado badge-sin-registro">
+              <i class="bi bi-moon-stars-fill me-1"></i>Descanso
+            </span>
+          {% elif reg.estado == 'PRESENTE' %}
+            <span class="badge badge-estado badge-presente">Presente</span>
+          {% elif reg.estado == 'TARDE' %}
+            <span class="badge badge-estado badge-tarde">Tarde</span>
+          {% elif reg.estado == 'AUSENTE' %}
+            <span class="badge badge-estado badge-ausente">Ausente</span>
+          {% else %}
+            <span class="badge badge-estado badge-sin-registro">
+              {{ reg.estado|default:"Sin registro" }}
+            </span>
+          {% endif %}
         </td>
         <td>{{ reg.turno }}</td>
         <td>{{ reg.hora_programada }}</td>
         <td>{{ reg.hora_marcada }}</td>
         <td>
-          <button class="btn-action btn-action-view btn-ver-detalle-lista" data-id="{{ reg.id }}" data-bs-toggle="modal" data-bs-target="#modalDetalleAsistencia">
-            <i class="bi bi-eye"></i>
-          </button>
+          {% if reg.id %}
+            <button class="btn-action btn-action-view btn-ver-detalle-lista"
+                    data-id="{{ reg.id }}"
+                    data-bs-toggle="modal" data-bs-target="#modalDetalleAsistencia"
+                    title="Ver detalle">
+              <i class="bi bi-eye"></i>
+            </button>
+          {% else %}
+            <span class="text-muted small">—</span>
+          {% endif %}
         </td>
       </tr>
       {% empty %}

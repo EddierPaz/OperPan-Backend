@@ -3,24 +3,19 @@
 <!-- Fila principal de información -->
 <div class="row g-3 mb-4">
 
-    <!-- Turno -->
     <div class="col-md-3">
         <div class="info-box">
             <span class="text-muted">Turno</span>
-            <h5 class="mt-2 mb-0">
-                {{ horario.get_turno_display }}
-            </h5>
+            <h5 class="mt-2 mb-0">{{ horario.get_turno_display }}</h5>
         </div>
     </div>
 
-    <!-- Horario -->
     <div class="col-md-3">
         <div class="info-box">
             <span class="text-muted">Horario</span>
             <h5 class="mt-2 mb-0">
                 {% if horario.hora_entrada and horario.hora_salida %}
-                    {{ horario.hora_entrada|time:"H:i" }} -
-                    {{ horario.hora_salida|time:"H:i" }}
+                    {{ horario.hora_entrada|time:"H:i" }} - {{ horario.hora_salida|time:"H:i" }}
                 {% else %}
                     Sin definir
                 {% endif %}
@@ -28,7 +23,6 @@
         </div>
     </div>
 
-    <!-- Vigencia -->
     <div class="col-md-3">
         <div class="info-box">
             <span class="text-muted">Vigencia</span>
@@ -44,7 +38,6 @@
         </div>
     </div>
 
-    <!-- Próximo descanso -->
     <div class="col-md-3">
         <div class="info-box">
             <span class="text-muted">Próximo descanso</span>
@@ -63,7 +56,6 @@
 <!-- Calendario -->
 <div class="employee-card p-4">
 
-    <!-- Días de la semana -->
     <div class="dias-semana">
         <div>Lun</div>
         <div>Mar</div>
@@ -74,7 +66,6 @@
         <div>Dom</div>
     </div>
 
-    <!-- Rejilla del calendario -->
     <div class="calendario-grid">
         {% for dia in calendario %}
             {% if dia %}
@@ -84,12 +75,14 @@
                         {% elif estado == 'PRESENTE' %}dia-card-presente
                         {% elif estado == 'TARDE' %}dia-card-tarde
                         {% elif estado == 'AUSENTE' %}dia-card-ausente
-                        {% else %}dia-card-futuro{% endif %}">
+                        {% elif estado == 'PERMISO' %}dia-card-permiso
+                        {% elif estado == 'INCAPACIDAD' %}dia-card-incapacidad
+                        {% elif estado == 'CAMBIO_TURNO' %}dia-card-cambio-turno
+                        {% else %}dia-card-futuro{% endif %}"
+                        title="{{ dia.fecha|date:'d/m/Y' }} — {{ dia.estado_texto }}">
 
                         <div>
-                            <div class="fw-bold">
-                                {{ dia.numero }}
-                            </div>
+                            <div class="fw-bold">{{ dia.numero }}</div>
                         </div>
                     </div>
                 {% endwith %}
@@ -104,32 +97,42 @@
 <div class="row g-2 mt-3">
     <div class="col-auto">
         <span class="leyenda-item">
-            <span class="leyenda-color leyenda-presente"></span>
-            Presente
+            <span class="leyenda-color leyenda-presente"></span> Presente
         </span>
     </div>
     <div class="col-auto">
         <span class="leyenda-item">
-            <span class="leyenda-color leyenda-tarde"></span>
-            Tarde
+            <span class="leyenda-color leyenda-tarde"></span> Tarde
         </span>
     </div>
     <div class="col-auto">
         <span class="leyenda-item">
-            <span class="leyenda-color leyenda-ausente"></span>
-            Ausente
+            <span class="leyenda-color leyenda-ausente"></span> Ausente
         </span>
     </div>
     <div class="col-auto">
         <span class="leyenda-item">
-            <span class="leyenda-color leyenda-descanso"></span>
-            Descanso
+            <span class="leyenda-color leyenda-descanso"></span> Descanso
         </span>
     </div>
     <div class="col-auto">
         <span class="leyenda-item">
-            <span class="leyenda-color leyenda-futuro"></span>
-            Pendiente
+            <span class="leyenda-color leyenda-permiso"></span> Permiso
         </span>
     </div>
-</div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-incapacidad"></span> Incapacidad
+        </span>
+    </div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-cambio-turno"></span> Cambio de turno
+        </span>
+    </div>
+    <div class="col-auto">
+        <span class="leyenda-item">
+            <span class="leyenda-color leyenda-futuro"></span> Pendiente
+        </span>
+    </div>
+</div> 

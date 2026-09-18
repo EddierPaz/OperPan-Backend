@@ -113,3 +113,40 @@
 .leyenda-ausente { background: var(--color-danger-bg); border-color: var(--color-danger); }
 .leyenda-descanso { background: var(--color-purple-bg); border-color: var(--color-purple); }
 .leyenda-futuro { background: var(--color-surface); border-color: var(--color-border-soft); }
+
+/* ============================================================
+   ESTADOS NUEVOS EN EL CALENDARIO
+   ============================================================ */
+
+/* ── Días del calendario ── */
+.dia-card-permiso {
+    background: var(--color-permiso-bg);
+    border-color: var(--color-permiso);
+    color: var(--color-permiso-text);
+}
+
+.dia-card-incapacidad {
+    background: var(--color-incapacidad-bg);
+    border-color: var(--color-incapacidad);
+    color: var(--color-incapacidad-text);
+}
+
+.dia-card-cambio-turno {
+    background: var(--color-cambio-turno-bg);
+    border-color: var(--color-cambio-turno);
+    color: var(--color-cambio-turno-text);
+}
+
+/* ── Leyenda ── */
+.leyenda-permiso {
+    background: var(--color-permiso-bg);
+    border-color: var(--color-permiso);
+}
+.leyenda-incapacidad {
+    background: var(--color-incapacidad-bg);
+    border-color: var(--color-incapacidad);
+}
+.leyenda-cambio-turno {
+    background: var(--color-cambio-turno-bg);
+    border-color: var(--color-cambio-turno);
+}

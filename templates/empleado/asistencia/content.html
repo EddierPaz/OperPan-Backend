@@ -53,6 +53,9 @@
             {% elif estado_hoy.estado == 'TARDE' %}estado-hoy-status--tarde
             {% elif estado_hoy.estado == 'AUSENTE' %}estado-hoy-status--ausente
             {% elif estado_hoy.estado == 'DESCANSO' %}estado-hoy-status--descanso
+            {% elif estado_hoy.estado == 'PERMISO' %}estado-hoy-status--permiso
+            {% elif estado_hoy.estado == 'INCAPACIDAD' %}estado-hoy-status--incapacidad
+            {% elif estado_hoy.estado == 'CAMBIO_TURNO' %}estado-hoy-status--cambio-turno
             {% endif %}">
             <div class="estado-hoy-status-icon">
                 <i class="bi
@@ -60,6 +63,9 @@
                     {% elif estado_hoy.estado == 'TARDE' %}bi-clock-fill
                     {% elif estado_hoy.estado == 'AUSENTE' %}bi-x-circle-fill
                     {% elif estado_hoy.estado == 'DESCANSO' %}bi-moon-stars-fill
+                    {% elif estado_hoy.estado == 'PERMISO' %}bi-calendar-check-fill
+                    {% elif estado_hoy.estado == 'INCAPACIDAD' %}bi-heart-pulse-fill
+                    {% elif estado_hoy.estado == 'CAMBIO_TURNO' %}bi-arrow-repeat
                     {% else %}bi-question-circle-fill{% endif %}"></i>
             </div>
             <div>
@@ -68,11 +74,21 @@
                     {% elif estado_hoy.estado == 'TARDE' %}Tarde
                     {% elif estado_hoy.estado == 'AUSENTE' %}Ausente
                     {% elif estado_hoy.estado == 'DESCANSO' %}Descanso
+                    {% elif estado_hoy.estado == 'PERMISO' %}
+                        Permiso
+                        {% if estado_hoy.novedad.detalle.tipo %}
+                            ({{ estado_hoy.novedad.detalle.get_tipo_display }})
+                        {% endif %}
+                    {% elif estado_hoy.estado == 'INCAPACIDAD' %}Incapacidad
+                    {% elif estado_hoy.estado == 'CAMBIO_TURNO' %}Cambio de turno
                     {% elif estado_hoy.estado == 'SIN_HORARIO' %}Sin horario
                     {% else %}Sin información{% endif %}
                 </span>
                 {% if estado_hoy.tardanza_minutos %}
                     <span class="estado-hoy-status-sub">{{ estado_hoy.tardanza_minutos }} min de retraso</span>
+                {% endif %}
+                {% if estado_hoy.novedad.detalle.nuevo_horario and estado_hoy.estado == 'CAMBIO_TURNO' %}
+                    <span class="estado-hoy-status-sub">Nuevo horario: {{ estado_hoy.novedad.detalle.nuevo_horario }}</span>
                 {% endif %}
             </div>
         </div>
@@ -137,6 +153,12 @@
                     <td>
                         {% if dia.es_descanso %}
                             <span class="text-muted"><i class="bi bi-moon-stars-fill me-1"></i>Descanso</span>
+                        {% elif dia.novedad_tipo == 'PERMISO' %}
+                            <span class="text-muted"><i class="bi bi-calendar-check me-1"></i>Permiso aprobado</span>
+                        {% elif dia.novedad_tipo == 'INCAPACIDAD' %}
+                            <span class="text-muted"><i class="bi bi-heart-pulse me-1"></i>Incapacidad aprobada</span>
+                        {% elif dia.novedad_tipo == 'CAMBIO_TURNO' and not dia.hora_marcada %}
+                            <span class="text-muted"><i class="bi bi-arrow-repeat me-1"></i>Cambio de turno</span>
                         {% elif dia.hora_marcada %}
                             <span class="badge-registro registrada"><i class="bi bi-check-circle-fill me-1"></i>Registrada</span>
                         {% else %}
@@ -146,6 +168,18 @@
                     <td class="text-end">
                         {% if dia.es_descanso %}
                             <span class="badge-status badge-secondary">Descanso</span>
+                        {% elif dia.estado == 'PERMISO' %}
+                            <span class="badge-status badge-permiso">
+                                <i class="bi bi-calendar-check-fill me-1"></i>Permiso
+                            </span>
+                        {% elif dia.estado == 'INCAPACIDAD' %}
+                            <span class="badge-status badge-incapacidad">
+                                <i class="bi bi-heart-pulse-fill me-1"></i>Incapacidad
+                            </span>
+                        {% elif dia.estado == 'CAMBIO_TURNO' %}
+                            <span class="badge-status badge-cambio-turno">
+                                <i class="bi bi-arrow-repeat me-1"></i>Cambio de turno
+                            </span>
                         {% elif dia.estado == 'PRESENTE' %}
                             <span class="badge-status badge-presente">Presente</span>
                         {% elif dia.estado == 'TARDE' %}
@@ -165,6 +199,8 @@
                                 data-entrada-prog="{% if dia.hora_entrada_prog %}{{ dia.hora_entrada_prog|time:'H:i' }}{% else %}--:--{% endif %}"
                                 data-estado="{{ dia.estado }}"
                                 data-es-descanso="{% if dia.es_descanso %}true{% else %}false{% endif %}"
+                                data-es-novedad="{% if dia.es_novedad %}true{% else %}false{% endif %}"
+                                data-novedad-tipo="{{ dia.novedad_tipo|default:'' }}"
                                 data-nombre="{{ request.user.perfil.nombre_completo }}"
                                 data-documento="{{ request.user.perfil.identificacion }}"
                                 data-cargo="{{ request.user.perfil.get_cargo_display }}"

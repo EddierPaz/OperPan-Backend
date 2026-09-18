@@ -44,6 +44,22 @@
   --color-purple-bg: #f1e8fd;
   --color-purple-text: #6d28d9;
 
+  /* ── Estados de novedades (permisos / incapacidades / cambios de turno) ── */
+  --color-permiso: #3b82f6;
+  --color-permiso-hover: #2563eb;
+  --color-permiso-bg: #dbeafe;
+  --color-permiso-text: #1e40af;
+
+  --color-incapacidad: #ec4899;
+  --color-incapacidad-hover: #db2777;
+  --color-incapacidad-bg: #fce7f3;
+  --color-incapacidad-text: #9d174d;
+
+  --color-cambio-turno: #14b8a6;
+  --color-cambio-turno-hover: #0d9488;
+  --color-cambio-turno-bg: #ccfbf1;
+  --color-cambio-turno-text: #115e59;
+
   /* ── Neutros (fondo, texto, bordes) ── */
   --color-bg: #f4f7fc;
   --color-surface: var(--color-white);
@@ -174,6 +190,22 @@
   --color-purple-hover: #8b5cf6;
   --color-purple-bg: rgba(167, 139, 250, 0.16);
   --color-purple-text: #c4b5fd;
+
+  /* ── Estados de novedades (permisos / incapacidades / cambios de turno) ── */
+  --color-permiso: #60a5fa;
+  --color-permiso-hover: #3b82f6;
+  --color-permiso-bg: rgba(59, 130, 246, 0.16);
+  --color-permiso-text: #93c5fd;
+
+  --color-incapacidad: #f472b6;
+  --color-incapacidad-hover: #ec4899;
+  --color-incapacidad-bg: rgba(236, 72, 153, 0.16);
+  --color-incapacidad-text: #f9a8d4;
+
+  --color-cambio-turno: #2dd4bf;
+  --color-cambio-turno-hover: #14b8a6;
+  --color-cambio-turno-bg: rgba(20, 184, 166, 0.16);
+  --color-cambio-turno-text: #5eead4;
 
   /* ── Neutros ── */
   --color-bg: #101317;

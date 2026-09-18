@@ -53,25 +53,64 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 2. GRÁFICOS DE BARRAS HORIZONTALES (empleados)
     // ==========================================
-
+    // Se muestran 7 categorías: Presente, Tarde, Ausente, Descanso,
+    // Permiso, Incapacidad y Cambio turno. Las categorías con valor 0
+    // no pintan barra (gracias al datalabels formatter).
     function inicializarGraficos() {
-        document.querySelectorAll('.empleado-grafico canvas').forEach(function(canvas) {
+        document.querySelectorAll('.empleado-grafico canvas').forEach(function (canvas) {
             const parent = canvas.closest('.asistencia-card-empleado');
             if (!parent) return;
 
-            let data = {presente: 0, tarde: 0, ausente: 0, descanso: 0};
+            let data = {
+                presente: 0,
+                tarde: 0,
+                ausente: 0,
+                descanso: 0,
+                permiso: 0,
+                incapacidad: 0,
+                cambio_turno: 0,
+            };
             if (parent.dataset.resumen) {
                 try {
-                    data = JSON.parse(parent.dataset.resumen);
-                } catch(e) {
+                    data = Object.assign(data, JSON.parse(parent.dataset.resumen));
+                } catch (e) {
                     console.warn('Error al parsear resumen:', e);
                 }
             }
 
             const ctx = canvas.getContext('2d');
-            const labels = ['Presente', 'Tarde', 'Ausente', 'Descanso'];
-            const values = [data.presente || 0, data.tarde || 0, data.ausente || 0, data.descanso || 0];
-            const colors = ['#28A745', '#FFC107', '#DC3545', '#2E86C1'];
+
+            const labels = [
+                'Presente',
+                'Tarde',
+                'Ausente',
+                'Descanso',
+                'Permiso',
+                'Incapacidad',
+                'Cambio turno',
+            ];
+            const values = [
+                data.presente || 0,
+                data.tarde || 0,
+                data.ausente || 0,
+                data.descanso || 0,
+                data.permiso || 0,
+                data.incapacidad || 0,
+                data.cambio_turno || 0,
+            ];
+            const colors = [
+                '#28A745',   // presente     verde
+                '#FFC107',   // tarde        ámbar
+                '#DC3545',   // ausente      rojo
+                '#7C3AED',   // descanso     morado
+                '#3B82F6',   // permiso      azul
+                '#EC4899',   // incapacidad  rosa
+                '#14B8A6',   // cambio turno teal
+            ];
+            const borders = [
+                '#1E7E34', '#D39E00', '#BD2130', '#6D28D9',
+                '#2563EB', '#DB2777', '#0D9488',
+            ];
 
             new Chart(ctx, {
                 type: 'bar',
@@ -80,10 +119,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     datasets: [{
                         data: values,
                         backgroundColor: colors,
-                        borderColor: ['#1E7E34', '#D39E00', '#BD2130', '#1B6FA8'],
+                        borderColor: borders,
                         borderWidth: 1,
                         borderRadius: 4,
-                        barThickness: 16,
+                        barThickness: 12,
                     }]
                 },
                 options: {
@@ -94,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     return context.parsed.x + ' días';
                                 }
                             }
@@ -103,8 +142,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             anchor: 'end',
                             align: 'end',
                             color: '#1E293B',
-                            font: { weight: 'bold', size: 11 },
-                            formatter: function(value) {
+                            font: { weight: 'bold', size: 10 },
+                            formatter: function (value) {
                                 return value > 0 ? value : '';
                             },
                             offset: 2
@@ -143,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const empleadoId = selectEmpleado.value;
         const items = document.querySelectorAll('.empleado-item');
 
-        items.forEach(function(item) {
+        items.forEach(function (item) {
             const nombre = (item.dataset.nombre || '').toLowerCase();
             const id = item.dataset.id || '';
             let mostrar = true;
@@ -171,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
         selectEmpleado.addEventListener('change', filtrarEmpleados);
     }
     if (btnLimpiarEmpleados) {
-        btnLimpiarEmpleados.addEventListener('click', function() {
+        btnLimpiarEmpleados.addEventListener('click', function () {
             inputBuscarEmpleado.value = '';
             selectEmpleado.value = '';
             filtrarEmpleados();
@@ -220,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-ver-historial');
         if (!btn) return;
         empleadoIdActual = btn.dataset.empleadoId;
@@ -256,34 +295,34 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(url, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalHistorialTitulo').textContent = 'Historial de Asistencia de ' + data.empleado_nombre;
-            document.getElementById('modalHistorialSubTitulo').textContent = data.empleado_cargo || '';
-            contenedor.innerHTML = data.html;
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('modalHistorialTitulo').textContent = 'Historial de Asistencia de ' + data.empleado_nombre;
+                document.getElementById('modalHistorialSubTitulo').textContent = data.empleado_cargo || '';
+                contenedor.innerHTML = data.html;
 
-            if (modalHistorialInstance) {
-                modalHistorialInstance.show();
-            }
+                if (modalHistorialInstance) {
+                    modalHistorialInstance.show();
+                }
 
-            document.querySelectorAll('.btn-ver-detalle-lista').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const id = this.dataset.id;
-                    if (id) {
-                        if (modalHistorialInstance) {
-                            modalHistorialInstance.hide();
+                document.querySelectorAll('.btn-ver-detalle-lista').forEach(function (btn) {
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const id = this.dataset.id;
+                        if (id) {
+                            if (modalHistorialInstance) {
+                                modalHistorialInstance.hide();
+                            }
+                            abrirDetalleAsistencia(id);
                         }
-                        abrirDetalleAsistencia(id);
-                    }
+                    });
                 });
+            })
+            .catch(function (error) {
+                console.error('Error al cargar historial:', error);
+                contenedor.innerHTML = '<div class="alert alert-danger">Error al cargar los datos. Intenta de nuevo.</div>';
+                mostrarToast('Error al cargar el historial. Intenta de nuevo.', 'danger');
             });
-        })
-        .catch(function(error) {
-            console.error('Error al cargar historial:', error);
-            contenedor.innerHTML = '<div class="alert alert-danger">Error al cargar los datos. Intenta de nuevo.</div>';
-            mostrarToast('Error al cargar el historial. Intenta de nuevo.', 'danger');
-        });
     }
 
     function abrirDetalleAsistencia(asistenciaId) {
@@ -317,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     modalDetalleInstance.show();
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Error al cargar detalle:', error);
                 mostrarToast('No se pudo cargar el detalle de la asistencia.', 'danger');
                 if (empleadoIdActual && modalHistorialInstance) {
@@ -334,9 +373,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.querySelectorAll('#filtroTurnoInterno, #filtroEstadoInterno').forEach(function(el) {
+    document.querySelectorAll('#filtroTurnoInterno, #filtroEstadoInterno').forEach(function (el) {
         if (el) {
-            el.addEventListener('change', function() {
+            el.addEventListener('change', function () {
                 if (empleadoIdActual && modalHistorialInstance) {
                     cargarHistorialEmpleado(empleadoIdActual);
                 }
@@ -344,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('limpiarFiltrosInternos')?.addEventListener('click', function() {
+    document.getElementById('limpiarFiltrosInternos')?.addEventListener('click', function () {
         document.getElementById('filtroTurnoInterno').value = '';
         document.getElementById('filtroEstadoInterno').value = '';
         document.getElementById('fechaUnicaSeleccionadaHistorial').value = '';
@@ -376,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function () {
             modalFechaInstance = null;
             const fechaSeleccionada = document.getElementById('fechaUnicaSeleccionadaHistorial')?.value;
             if (fechaSeleccionada && empleadoIdActual) {
-                setTimeout(function() {
+                setTimeout(function () {
                     if (modalHistorialInstance) {
                         cargarHistorialEmpleado(empleadoIdActual);
                     }
@@ -394,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const desde = document.getElementById('fechaDesdeSeleccionadaHistorial')?.value;
             const hasta = document.getElementById('fechaHastaSeleccionadaHistorial')?.value;
             if (desde && hasta && empleadoIdActual) {
-                setTimeout(function() {
+                setTimeout(function () {
                     if (modalHistorialInstance) {
                         cargarHistorialEmpleado(empleadoIdActual);
                     }
@@ -403,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.getElementById('aplicarFechaUnicaHistorial')?.addEventListener('click', function() {
+    document.getElementById('aplicarFechaUnicaHistorial')?.addEventListener('click', function () {
         const input = document.getElementById('fechaUnicaInputHistorial');
         if (input && input.value) {
             document.getElementById('fechaUnicaSeleccionadaHistorial').value = input.value;
@@ -416,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('aplicarRangoFechasHistorial')?.addEventListener('click', function() {
+    document.getElementById('aplicarRangoFechasHistorial')?.addEventListener('click', function () {
         const desde = document.getElementById('fechaDesdeInputHistorial');
         const hasta = document.getElementById('fechaHastaInputHistorial');
         if (desde && hasta && desde.value && hasta.value) {
@@ -487,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return cookieValue;
     }
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-registrar-asistencia');
         if (!btn) return;
 
@@ -511,56 +550,56 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: formData
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    let errorMsg = text;
-                    try {
-                        const json = JSON.parse(text);
-                        if (json.error) errorMsg = json.error;
-                    } catch (e) {}
-                    throw new Error(errorMsg || 'Error al registrar la asistencia.');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                mostrarToast('Asistencia registrada correctamente.', 'success');
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        let errorMsg = text;
+                        try {
+                            const json = JSON.parse(text);
+                            if (json.error) errorMsg = json.error;
+                        } catch (e) { }
+                        throw new Error(errorMsg || 'Error al registrar la asistencia.');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    mostrarToast('Asistencia registrada correctamente.', 'success');
 
-                const row = btn.closest('tr');
-                if (!row) return;
+                    const row = btn.closest('tr');
+                    if (!row) return;
 
-                const estadoCell = row.querySelector('td:nth-child(5)');
-                if (estadoCell) {
-                    const badge = estadoCell.querySelector('.badge');
-                    if (badge) {
-                        badge.textContent = data.estado_display;
-                        badge.className = 'badge ' + (data.estado === 'PRESENTE' ? 'badge-active' : 'badge-pendiente');
+                    const estadoCell = row.querySelector('td:nth-child(5)');
+                    if (estadoCell) {
+                        const badge = estadoCell.querySelector('.badge');
+                        if (badge) {
+                            badge.textContent = data.estado_display;
+                            badge.className = 'badge ' + (data.estado === 'PRESENTE' ? 'badge-active' : 'badge-pendiente');
+                        }
                     }
-                }
 
-                const horaCell = row.querySelector('td:nth-child(4)');
-                if (horaCell) {
-                    horaCell.textContent = data.hora_marcada;
-                }
+                    const horaCell = row.querySelector('td:nth-child(4)');
+                    if (horaCell) {
+                        horaCell.textContent = data.hora_marcada;
+                    }
 
-                const actionCell = btn.closest('td');
-                if (actionCell) {
-                    actionCell.innerHTML = '<span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>';
+                    const actionCell = btn.closest('td');
+                    if (actionCell) {
+                        actionCell.innerHTML = '<span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>';
+                    }
+                } else {
+                    mostrarToast(data.error || 'Error al registrar la asistencia.', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHtml;
                 }
-            } else {
-                mostrarToast(data.error || 'Error al registrar la asistencia.', 'warning');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarToast(error.message || 'Error de conexión. Intenta de nuevo.', 'warning');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            mostrarToast(error.message || 'Error de conexión. Intenta de nuevo.', 'warning');
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-        });
+            });
     });
 
     // ==========================================
