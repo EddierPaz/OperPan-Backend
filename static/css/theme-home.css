@@ -190,7 +190,7 @@
 }
 
 [data-theme="dark"] .team-accordion .accordion-body .team-card-footer {
-  background: #20242B !important;
+  background: #e8ebef !important;
   color: var(--gris-medio) !important;
 }
 
@@ -200,6 +200,9 @@
   color: var(--gris-claro) !important;
 }
 
+[data-theme="dark"] .team-card-content{
+  color: var(--gris-oscuro);
+}
 /* ── Scrollbar ── */
 [data-theme="dark"] ::-webkit-scrollbar-track {
   background: #1A1E24;

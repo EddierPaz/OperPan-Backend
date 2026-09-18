@@ -67,3 +67,12 @@ TAREAS_POR_CARGO = {
         {'value': 'revisar_greca', 'label': 'Revisar funcionamiento de la greca', 'prioridad': 'BAJA'},
     ],
 }
+
+
+# ============================================================
+# REGLAS DE NEGOCIO — MEMORANDOS AUTOMÁTICOS
+# ============================================================
+# Cantidad de tareas vencidas SIN memorando previo que dispara
+# la emisión automática de un memorando de llamado de atención.
+# Cada bloque de N tareas vencidas genera 1 memorando.
+UMBRAL_TAREAS_VENCIDAS_MEMORANDO = 3

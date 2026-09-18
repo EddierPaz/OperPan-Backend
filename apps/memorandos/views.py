@@ -124,6 +124,7 @@ def memorandos_lista(request):
             'fecha_emision': m.fecha_emision.isoformat(),
             'estado': m.get_estado_display(),
             'generado_por': m.generado_por.username if m.generado_por else None,
+            'es_automatico': m.generado_por is None,   # ← NUEVO
             'archivo_pdf': m.archivo_pdf.url if m.archivo_pdf else None,
             'descargas': m.descargas,
         }
@@ -182,6 +183,7 @@ def mis_memorandos_api(request):
             'contenido': m.contenido,
             'fecha_emision': m.fecha_emision.isoformat(),
             'generado_por': m.generado_por.username if m.generado_por else None,
+            'es_automatico': m.generado_por is None,   # ← NUEVO
             'archivo_pdf': m.archivo_pdf.url if m.archivo_pdf else None,
             'descargas': m.descargas,
         }
