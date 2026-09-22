@@ -60,8 +60,6 @@
                             <span class="modal-detalle-label">Cargo</span>
                             <span class="modal-detalle-value">
                                 <input type="text" class="form-control bg-light" id="id_cargo_display" readonly disabled placeholder="—">
-                                <!-- El área de la tarea se deriva automáticamente del cargo del
-                                     empleado (ver tareas.js: actualizarArea) y viaja oculta en el POST. -->
                                 <input type="hidden" name="area" id="id_area" value="{{ form.area.value|default:'' }}">
                             </span>
                             {% if form.area.errors %}<div class="invalid-feedback d-block">{{ form.area.errors }}</div>{% endif %}
@@ -143,7 +141,7 @@
                             {% if form.fecha_limite.errors %}<div class="invalid-feedback d-block">{{ form.fecha_limite.errors }}</div>{% endif %}
                         </div>
 
-                        <!-- Hora límite (OBLIGATORIO) -->
+                        <!-- Hora límite -->
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Hora límite <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
@@ -193,14 +191,28 @@
             <div class="modal-body modal-detalle-body">
                 <div class="modal-detalle-grid">
 
-                    <!-- INFORMACIÓN GENERAL -->
+                    <!-- ESTADO Y PRIORIDAD -->
                     <div class="modal-detalle-bloque-largo">
                         <span class="modal-detalle-bloque-largo-label">
-                            <i class="bi bi-clipboard-check me-1"></i> Información General
+                            <i class="bi bi-info-circle me-1"></i> Estado general
                         </span>
                     </div>
 
-                    <!-- Prioridad -->
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-value">
+                            {% if tarea_detalle.esta_vencida %}
+                                <span class="badge priority-high">Vencida</span>
+                            {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                                <span class="badge badge-status badge-pendiente">{{ tarea_detalle.get_estado_display }}</span>
+                            {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                                <span class="badge badge-status badge-progreso">{{ tarea_detalle.get_estado_display }}</span>
+                            {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                                <span class="badge badge-status badge-finalizada">{{ tarea_detalle.get_estado_display }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Prioridad</span>
                         <span class="modal-detalle-value">
@@ -214,77 +226,258 @@
                         </span>
                     </div>
 
-                    <!-- Estado -->
+                    <!-- DESCRIPCIÓN -->
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
+                            <i class="bi bi-file-text me-1"></i> Descripción
+                        </span>
+                    </div>
+
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
+                    </div>
+
+                    <!-- ASIGNACIÓN -->
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
+                            <i class="bi bi-person-badge me-1"></i> Asignación
+                        </span>
+                    </div>
+
                     <div class="modal-detalle-item">
-                        <span class="modal-detalle-label">Estado</span>
+                        <span class="modal-detalle-label">Asignado a</span>
+                        <span class="modal-detalle-value">{{ tarea_detalle.empleado.nombre_completo }}</span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Cargo</span>
                         <span class="modal-detalle-value">
-                            {% if tarea_detalle.estado == 'PENDIENTE' %}
-                                <span class="badge badge-status badge-pendiente">{{ tarea_detalle.get_estado_display }}</span>
-                            {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                                <span class="badge badge-status badge-progreso">{{ tarea_detalle.get_estado_display }}</span>
-                            {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                                <span class="badge badge-status badge-finalizada">{{ tarea_detalle.get_estado_display }}</span>
+                            {{ tarea_detalle.empleado.get_cargo_display|default:"—" }}
+                        </span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Turno</span>
+                        <span class="modal-detalle-value">
+                            {{ tarea_detalle.get_turno_asociado_display|default:"—" }}
+                        </span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Área</span>
+                        <span class="modal-detalle-value">
+                            {{ tarea_detalle.get_area_display|default:"—" }}
+                        </span>
+                    </div>
+
+                    <!-- FECHAS -->
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
+                            <i class="bi bi-calendar-event me-1"></i> Fechas
+                        </span>
+                    </div>
+
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Fecha límite</span>
+                        <span class="modal-detalle-value">
+                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
+                            {% if tarea_detalle.hora_limite %}
+                                <span class="text-muted">— {{ tarea_detalle.hora_limite|time:"H:i" }}</span>
                             {% endif %}
                         </span>
                     </div>
 
-                    <!-- Descripción -->
-                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
-                        <span class="modal-detalle-label">Descripción</span>
-                        <span class="modal-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
-                    </div>
-
-                    <!-- Asignado a -->
                     <div class="modal-detalle-item">
-                        <span class="modal-detalle-label"><i class="bi bi-person-badge me-1"></i> Asignado a</span>
-                        <span class="modal-detalle-value">{{ tarea_detalle.empleado.nombre_completo }}</span>
-                    </div>
-
-                    <!-- Turno -->
-                    <div class="modal-detalle-item">
-                        <span class="modal-detalle-label"><i class="bi bi-clock me-1"></i> Turno</span>
+                        <span class="modal-detalle-label">Asignada el</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.get_turno_asociado_display|default:tarea_detalle.turno_asociado|default:"—" }}
+                            {{ tarea_detalle.fecha_asignacion|date:"Y-m-d H:i" }}
                         </span>
                     </div>
 
-                    <!-- Fecha y Hora Límite -->
-                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
-                        <span class="modal-detalle-label"><i class="bi bi-calendar-event me-1"></i> Fecha y Hora Límite</span>
-                        <span class="modal-detalle-value">
-                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
-                            {% if tarea_detalle.hora_limite %}{{ tarea_detalle.hora_limite|time:"H:i" }}{% endif %}
+                    {% if tarea_detalle.fecha_finalizacion %}
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Finalizada el</span>
+                        <span class="modal-detalle-value text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            {{ tarea_detalle.fecha_finalizacion|date:"Y-m-d H:i" }}
                         </span>
                     </div>
+                    {% endif %}
 
-                    {% if tarea_detalle.estado == 'FINALIZADA' %}
+                    {% if tarea_detalle.ultimo_cambio_por %}
+                    <div class="modal-detalle-item">
+                        <span class="modal-detalle-label">Último cambio por</span>
+                        <span class="modal-detalle-value">
+                            {{ tarea_detalle.ultimo_cambio_por.username }}
+                        </span>
+                    </div>
+                    {% endif %}
+
                     <!-- EVIDENCIA -->
+                    {% if tarea_detalle.estado == 'FINALIZADA' %}
                     <div class="modal-detalle-bloque-largo">
                         <span class="modal-detalle-bloque-largo-label">
-                            <i class="bi bi-check-circle-fill me-1"></i> Tarea Finalizada
+                            <i class="bi bi-paperclip me-1"></i> Evidencia de finalización
                         </span>
                     </div>
                     <div class="modal-detalle-item" style="grid-column: 1 / -1;">
                         {% if tarea_detalle.evidencia %}
-                            <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer" class="btn-action btn-action-download">
-                                <i class="bi bi-paperclip"></i> Ver evidencia
-                            </a>
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer"
+                                   class="btn-action btn-action-download">
+                                    <i class="bi bi-paperclip"></i> Ver evidencia
+                                </a>
+                                <a href="{{ tarea_detalle.evidencia.url }}" download
+                                   class="btn-action btn-action-view">
+                                    <i class="bi bi-download"></i> Descargar
+                                </a>
+                            </div>
+                            <div class="text-muted small mt-2">
+                                <i class="bi bi-file-earmark me-1"></i>
+                                {{ tarea_detalle.evidencia.name }}
+                            </div>
                         {% else %}
-                            <span class="modal-detalle-value fw-normal text-muted">El empleado no adjuntó archivo de evidencia.</span>
+                            <span class="modal-detalle-value fw-normal text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                El empleado no adjuntó archivo de evidencia.
+                            </span>
                         {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- MEMORANDO -->
+                    {% if tarea_detalle.memorando_generado %}
+                    <div class="modal-detalle-bloque-largo">
+                        <span class="modal-detalle-bloque-largo-label">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> Memorando asociado
+                        </span>
+                    </div>
+                    <div class="modal-detalle-item" style="grid-column: 1 / -1;">
+                        <span class="modal-detalle-value">
+                            <i class="bi bi-robot text-info me-1"></i>
+                            {{ tarea_detalle.memorando_generado.consecutivo }}
+                            — {{ tarea_detalle.memorando_generado.asunto }}
+                        </span>
                     </div>
                     {% endif %}
 
                 </div>
             </div>
 
+            {# ==================== FOOTER CON ACCIONES DINÁMICAS ==================== #}
             <div class="modal-footer modal-detalle-footer">
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-action btn-action-cancel">Cerrar</a>
+
+                {% if tarea_detalle.esta_vencida %}
+                    <span class="text-muted small me-auto">
+                        <i class="bi bi-lock me-1"></i>
+                        Tarea vencida — no se puede modificar
+                    </span>
+
+                {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
+                    <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea_detalle.pk %}?estado=FINALIZADA&next={% url 'tareas:admin_tareas_list' %}"
+                       class="btn-action btn-corporate-thi">
+                        <i class="bi bi-check-circle"></i> Finalizar tarea
+                    </a>
+
+                {% elif tarea_detalle.estado == 'FINALIZADA' and tarea_detalle.puede_reabrirse %}
+                    <button type="button"
+                            class="btn-action btn-corporate-sec btn-reabrir-tarea"
+                            data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea_detalle.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                            data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea_detalle.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                            data-titulo="{{ tarea_detalle.titulo }}"
+                            data-empleado="{{ tarea_detalle.empleado.nombre_completo }}"
+                            data-estado-default="EN_PROGRESO">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                    </button>
+
+                {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                    <span class="text-muted small me-auto">
+                        <i class="bi bi-lock me-1"></i>
+                        Tarea finalizada — su fecha límite ya pasó
+                    </span>
+
+                {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                    <span class="text-muted small me-auto">
+                        <i class="bi bi-clock me-1"></i>
+                        Esperando inicio del empleado
+                    </span>
+                {% endif %}
+
+                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-action btn-action-cancel">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </a>
             </div>
+
         </div>
     </div>
 </div>
 {% endif %}
+
+{# ==================== MODAL REABRIR TAREA ==================== #}
+<div class="modal fade" id="modalReabrirTarea" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-detalle">
+
+            <div class="modal-header modal-detalle-header">
+                <div>
+                    <div class="modal-detalle-titulo">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Reabrir tarea</span>
+                    </div>
+                    <p class="modal-detalle-subtitulo mb-0" id="reabrirSubtitulo">—</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body modal-detalle-body">
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Selecciona el estado al que se va a revertir la tarea. La evidencia adjunta por el empleado se conserva.
+                </p>
+
+                <div class="d-flex flex-column gap-2">
+                    <label class="estado-option-card" style="cursor: pointer;">
+                        <input type="radio" name="nuevo_estado_reabrir"
+                               value="EN_PROGRESO" class="form-check-input mt-1" checked>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold d-flex align-items-center gap-2">
+                                <i class="bi bi-arrow-repeat text-primary"></i>
+                                En progreso
+                            </div>
+                            <small class="text-muted">
+                                El empleado puede continuar trabajando en la tarea.
+                            </small>
+                        </div>
+                    </label>
+
+                    <label class="estado-option-card" style="cursor: pointer;">
+                        <input type="radio" name="nuevo_estado_reabrir"
+                               value="PENDIENTE" class="form-check-input mt-1">
+                        <div class="flex-grow-1">
+                            <div class="fw-bold d-flex align-items-center gap-2">
+                                <i class="bi bi-arrow-counterclockwise text-warning"></i>
+                                Pendiente
+                            </div>
+                            <small class="text-muted">
+                                Se reinicia desde cero. Se limpia la fecha de finalización.
+                            </small>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="modal-footer modal-detalle-footer">
+                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="button" class="btn-action btn-corporate-sec" id="btnConfirmarReabrir">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 {# ==================== MODAL ELIMINAR TAREA ==================== #}
 <div class="modal fade confirm-modal" id="confirmModal" tabindex="-1">

@@ -84,6 +84,87 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+        // ==========================================
+    // 2.5 MODAL REABRIR TAREA (delegación de eventos)
+    // ==========================================
+    const modalReabrirEl = document.getElementById('modalReabrirTarea');
+    let modalReabrirInstance = null;
+
+    if (modalReabrirEl && typeof bootstrap !== 'undefined') {
+        modalReabrirInstance = new bootstrap.Modal(modalReabrirEl);
+    }
+
+    // Delegación: captura clicks en cualquier botón con .btn-reabrir-tarea
+    // (funciona en tarjetas, dropdowns y modal de detalle)
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-reabrir-tarea');
+        if (!btn) return;
+
+        e.preventDefault();
+
+        if (!modalReabrirInstance) {
+            console.error('[Reabrir] bootstrap.Modal no disponible');
+            return;
+        }
+
+        // Si el botón está dentro de un dropdown, cerrarlo primero
+        const dropdownMenu = btn.closest('.dropdown-menu');
+        if (dropdownMenu) {
+            const dropdownToggle = dropdownMenu.closest('.dropdown')
+                ?.querySelector('[data-bs-toggle="dropdown"]');
+            if (dropdownToggle) {
+                const dd = bootstrap.Dropdown.getInstance(dropdownToggle);
+                if (dd) dd.hide();
+            }
+        }
+
+        // Leer data-* del botón
+        const urlEnProgreso = btn.dataset.urlEnProgreso || '';
+        const urlPendiente  = btn.dataset.urlPendiente  || '';
+        const titulo        = btn.dataset.titulo        || 'Tarea';
+        const empleado      = btn.dataset.empleado      || '';
+        const estadoDefault = btn.dataset.estadoDefault || 'EN_PROGRESO';
+
+        // Guardar URLs en el modal
+        modalReabrirEl.dataset.urlEnProgreso = urlEnProgreso;
+        modalReabrirEl.dataset.urlPendiente  = urlPendiente;
+
+        // Subtítulo
+        const subtitulo = document.getElementById('reabrirSubtitulo');
+        if (subtitulo) {
+            subtitulo.textContent = empleado ? `${titulo} — ${empleado}` : titulo;
+        }
+
+        // Preseleccionar el radio correspondiente
+        const radio = modalReabrirEl.querySelector(
+            `input[name="nuevo_estado_reabrir"][value="${estadoDefault}"]`
+        );
+        if (radio) radio.checked = true;
+
+        // Abrir el modal
+        modalReabrirInstance.show();
+    });
+
+    // Botón confirmar del modal
+    const btnConfirmar = document.getElementById('btnConfirmarReabrir');
+    if (btnConfirmar && modalReabrirEl) {
+        btnConfirmar.addEventListener('click', function () {
+            const seleccionado = modalReabrirEl.querySelector(
+                'input[name="nuevo_estado_reabrir"]:checked'
+            );
+            if (!seleccionado) return;
+
+            const estado = seleccionado.value;
+            const url = estado === 'PENDIENTE'
+                ? modalReabrirEl.dataset.urlPendiente
+                : modalReabrirEl.dataset.urlEnProgreso;
+
+            if (url) {
+                window.location.href = url;
+            }
+        });
+    }
+
     // ==========================================
     // 3. AUTOCOMPLETADO Y LÓGICA DEL FORMULARIO
     // ==========================================
@@ -158,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 3.1 VALIDACIÓN DE HORA LÍMITE (NUEVO)
+    // 3.1 VALIDACIÓN DE HORA LÍMITE
     // ==========================================
     function validarHoraLimite(horaEntrada, horaSalida) {
         if (!horaInput) return;
@@ -405,10 +486,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 4. CARGA DE DATOS EXISTENTES (EDICIÓN Y RE-APERTURA TRAS ERROR)
     // ==========================================
-    // Estos data-* se llenan tanto al editar una tarea existente como al
-    // reabrir el modal después de un intento de creación fallido (el
-    // formulario vuelve con los mismos datos que el usuario ya había
-    // elegido). Por eso esta repoblación no debe depender de "editando".
     const empleadoActual = taskForm.dataset.empleadoActual;
     const tituloActual = taskForm.dataset.tituloActual;
     const turnoActual = taskForm.dataset.turnoActual;

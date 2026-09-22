@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from apps.usuarios.models import PerfilEmpleado, User
+from datetime import date, timedelta
 
 
 # ============================================================
@@ -205,3 +206,69 @@ class Task(models.Model):
 
         self.save()
         return True
+
+    def reabrir(self, usuario):
+        """
+        Reabre una tarea previamente finalizada y la devuelve a EN_PROGRESO.
+
+        - Limpia `fecha_finalizacion`.
+        - NO borra `evidencia` (se conserva por si el empleado ya había
+          subido algo; puede sobreescribirla al volver a finalizar).
+        - Usa .update() para no re-ejecutar full_clean() (que valida que
+          hora_limite esté dentro del horario actual del empleado).
+
+        Retorna True si se reabrió, False si no estaba finalizada.
+        """
+        if self.estado != EstadoTarea.FINALIZADA:
+            return False
+
+        Task.objects.filter(pk=self.pk).update(
+            estado=EstadoTarea.EN_PROGRESO,
+            ultimo_cambio_por=usuario,
+            fecha_finalizacion=None,
+        )
+        self.refresh_from_db()
+        return True
+
+    def revertir_a_pendiente(self, usuario):
+        """
+        Revierte una tarea FINALIZADA a PENDIENTE. Útil cuando el empleado
+        marcó como terminada una tarea que en realidad no había empezado
+        (o que se necesita reiniciar desde cero).
+
+        - Limpia `fecha_finalizacion`.
+        - NO borra `evidencia` (mismo criterio que `reabrir`).
+
+        Retorna True si se revirtió, False si no estaba finalizada.
+        """
+        if self.estado != EstadoTarea.FINALIZADA:
+            return False
+
+        Task.objects.filter(pk=self.pk).update(
+            estado=EstadoTarea.PENDIENTE,
+            ultimo_cambio_por=usuario,
+            fecha_finalizacion=None,
+        )
+        self.refresh_from_db()
+        return True
+
+    @property
+    def puede_reabrirse(self):
+        """
+        True si:
+            - La tarea está FINALIZADA
+            - Y la fecha límite original + DIAS_MARGEN_REAPERTURA
+              todavía no ha pasado.
+
+        Pasado el margen, la tarea queda como histórica y no se puede
+        reabrir ni revertir. Esto evita que un admin modifique tareas
+        muy antiguas, alterando métricas y memorandos ya emitidos.
+        """
+        from .constants import DIAS_MARGEN_REAPERTURA
+
+        if self.estado != EstadoTarea.FINALIZADA:
+            return False
+
+        hoy = timezone.localdate()
+        fecha_tope = self.fecha_limite + timedelta(days=DIAS_MARGEN_REAPERTURA)
+        return fecha_tope >= hoy

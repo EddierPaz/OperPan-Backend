@@ -76,3 +76,11 @@ TAREAS_POR_CARGO = {
 # la emisión automática de un memorando de llamado de atención.
 # Cada bloque de N tareas vencidas genera 1 memorando.
 UMBRAL_TAREAS_VENCIDAS_MEMORANDO = 3
+
+# ============================================================
+# REAPERTURA DE TAREAS
+# ============================================================
+# Días de margen después de `fecha_limite` durante los cuales una
+# tarea FINALIZADA todavía se puede reabrir. Pasado este margen,
+# la tarea queda como histórica y no admite cambios.
+DIAS_MARGEN_REAPERTURA = 2

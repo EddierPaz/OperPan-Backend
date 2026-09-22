@@ -307,27 +307,64 @@ def admin_tarea_cambiar_estado(request, pk):
     nuevo_estado = request.GET.get('estado')
     next_url = request.GET.get('next', request.META.get('HTTP_REFERER', 'tareas:admin_tareas_list'))
 
+    # Si está vencida (y no finalizada), no se puede tocar
     if tarea.esta_vencida:
         messages.error(request, f"La tarea '{tarea.titulo}' está vencida y no se puede modificar.")
         return redirect(next_url)
 
+    # =========================================================
+    # CASO 1 — Admin finaliza una tarea en progreso
+    # =========================================================
     if nuevo_estado == EstadoTarea.FINALIZADA and tarea.estado == EstadoTarea.EN_PROGRESO:
         if tarea.cambiar_estado(nuevo_estado, request.user):
-            # =====================================================
-            # NOTIFICACIÓN AL EMPLEADO (ADMIN FINALIZÓ)
-            # =====================================================
-            contexto = {
-                'empleado_nombre': tarea.empleado.nombre_completo(),
-                'titulo': tarea.titulo,
-                'estado_nuevo': tarea.get_estado_display(),
-            }
             messages.success(request, f"Tarea '{tarea.titulo}' finalizada exitosamente.")
         else:
             messages.error(request, "No se pudo finalizar la tarea.")
+
+    # =========================================================
+    # CASO 2 — Admin reabre o revierte una tarea finalizada
+    # =========================================================
+    elif tarea.estado == EstadoTarea.FINALIZADA and nuevo_estado in (EstadoTarea.EN_PROGRESO, EstadoTarea.PENDIENTE):
+        # Verificación: solo se puede reabrir dentro del margen
+        if not tarea.puede_reabrirse:
+            from .constants import DIAS_MARGEN_REAPERTURA
+            messages.error(
+                request,
+                f"No se puede reabrir la tarea '{tarea.titulo}'. "
+                f"Su fecha límite fue el {tarea.fecha_limite} y ya pasaron más de "
+                f"{DIAS_MARGEN_REAPERTURA} días desde entonces."
+            )
+            return redirect(next_url)
+
+        if nuevo_estado == EstadoTarea.EN_PROGRESO:
+            if tarea.reabrir(request.user):
+                messages.success(
+                    request,
+                    f"Tarea '{tarea.titulo}' reabierta. El empleado puede continuar trabajando en ella."
+                )
+            else:
+                messages.error(request, "No se pudo reabrir la tarea.")
+        else:  # PENDIENTE
+            if tarea.revertir_a_pendiente(request.user):
+                messages.success(
+                    request,
+                    f"Tarea '{tarea.titulo}' revertida a 'Pendiente'. Se reinicia desde cero."
+                )
+            else:
+                messages.error(request, "No se pudo revertir la tarea.")
+
+    # =========================================================
+    # Restricciones
+    # =========================================================
     elif nuevo_estado == EstadoTarea.EN_PROGRESO:
-        messages.error(request, "Los administradores no pueden iniciar tareas. Solo los empleados pueden hacerlo.")
+        messages.error(
+            request,
+            "Los administradores no pueden iniciar tareas. Solo los empleados pueden hacerlo."
+        )
+
     elif nuevo_estado == EstadoTarea.PENDIENTE:
         messages.error(request, "Los administradores no pueden revertir tareas a 'Pendiente'.")
+
     else:
         messages.error(request, "Acción no permitida para administradores.")
 

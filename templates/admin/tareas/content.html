@@ -125,22 +125,36 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                             {# ============================================================ #}
                             <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
                                 {% if tarea.esta_vencida %}
-                                    {# TAREA VENCIDA: solo ver detalles #}
                                     <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
                                        class="btn-action btn-action-view">
                                         <i class="bi bi-eye"></i> Ver detalles
                                     </a>
                                 {% elif tarea.estado == 'PENDIENTE' %}
-                                    {# ADMIN: NO MUESTRA BOTÓN "INICIAR" - solo el dropdown #}
                                     <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
                                 {% elif tarea.estado == 'EN_PROGRESO' %}
-                                    {# ADMIN: SOLO PUEDE FINALIZAR #}
                                     <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
                                        class="btn-action btn-corporate-thi">
                                         <i class="bi bi-check-circle"></i> Finalizar
                                     </a>
+                                {% elif tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                                    {# FINALIZADA Y REABRIBLE: ver + reabrir #}
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                                           class="btn-action btn-action-view">
+                                            <i class="bi bi-eye"></i> Ver
+                                        </a>
+                                        <button type="button"
+                                                class="btn-action btn-corporate-sec btn-reabrir-tarea"
+                                                data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                                                data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                                                data-titulo="{{ tarea.titulo }}"
+                                                data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                                data-estado-default="EN_PROGRESO">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                                        </button>
+                                    </div>
                                 {% else %}
-                                    {# FINALIZADA: solo ver detalles #}
+                                    {# FINALIZADA ANTIGUA: solo ver detalles #}
                                     <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
                                        class="btn-action btn-action-view">
                                         <i class="bi bi-eye"></i> Ver detalles
@@ -158,12 +172,36 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                                 <i class="bi bi-eye text-secondary"></i> Ver detalles
                                             </a>
                                         </li>
-                                        {# ADMIN puede editar (si no está finalizada Y no está vencida) #}
                                         {% if tarea.estado != 'FINALIZADA' and not tarea.esta_vencida %}
                                         <li>
                                             <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
                                                 <i class="bi bi-pencil text-primary"></i> Editar
                                             </a>
+                                        </li>
+                                        {% endif %}
+                                        {# Solo si es finalizada Y reabrible #}
+                                        {% if tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                                        <li>
+                                            <button type="button"
+                                                    class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
+                                                    data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                                                    data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                                                    data-titulo="{{ tarea.titulo }}"
+                                                    data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                                    data-estado-default="EN_PROGRESO">
+                                                <i class="bi bi-arrow-counterclockwise text-info"></i> Reabrir (a En progreso)
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button"
+                                                    class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
+                                                    data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                                                    data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                                                    data-titulo="{{ tarea.titulo }}"
+                                                    data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                                    data-estado-default="PENDIENTE">
+                                                <i class="bi bi-arrow-repeat text-warning"></i> Revertir a Pendiente
+                                            </button>
                                         </li>
                                         {% endif %}
                                         <li><hr class="dropdown-divider my-1"></li>
@@ -283,22 +321,36 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                 {# ============================================================ #}
                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
                     {% if tarea.esta_vencida %}
-                        {# TAREA VENCIDA: solo ver detalles #}
                         <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
                            class="btn-action btn-action-view">
                             <i class="bi bi-eye"></i> Ver detalles
                         </a>
                     {% elif tarea.estado == 'PENDIENTE' %}
-                        {# ADMIN: NO MUESTRA BOTÓN "INICIAR" - solo el dropdown #}
                         <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
                     {% elif tarea.estado == 'EN_PROGRESO' %}
-                        {# ADMIN: SOLO PUEDE FINALIZAR #}
                         <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
                            class="btn-action btn-corporate-thi">
                             <i class="bi bi-check-circle"></i> Finalizar
                         </a>
+                    {% elif tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                        {# FINALIZADA Y REABRIBLE: ver + reabrir #}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                               class="btn-action btn-action-view">
+                                <i class="bi bi-eye"></i> Ver
+                            </a>
+                            <button type="button"
+                                    class="btn-action btn-corporate-sec btn-reabrir-tarea"
+                                    data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                                    data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                                    data-titulo="{{ tarea.titulo }}"
+                                    data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                    data-estado-default="EN_PROGRESO">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reabrir
+                            </button>
+                        </div>
                     {% else %}
-                        {# FINALIZADA: solo ver detalles #}
+                        {# FINALIZADA ANTIGUA: solo ver detalles #}
                         <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
                            class="btn-action btn-action-view">
                             <i class="bi bi-eye"></i> Ver detalles
@@ -317,12 +369,36 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                     <i class="bi bi-eye text-secondary"></i> Ver detalles
                                 </a>
                             </li>
-                            {# ADMIN puede editar (si no está finalizada Y no está vencida) #}
                             {% if tarea.estado != 'FINALIZADA' and not tarea.esta_vencida %}
                             <li>
                                 <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
                                     <i class="bi bi-pencil text-primary"></i> Editar
                                 </a>
+                            </li>
+                            {% endif %}
+                            {# Solo si es finalizada Y reabrible #}
+                            {% if tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
+                                        data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                                        data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                                        data-titulo="{{ tarea.titulo }}"
+                                        data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                        data-estado-default="EN_PROGRESO">
+                                    <i class="bi bi-arrow-counterclockwise text-info"></i> Reabrir (a En progreso)
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
+                                        data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
+                                        data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
+                                        data-titulo="{{ tarea.titulo }}"
+                                        data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                        data-estado-default="PENDIENTE">
+                                    <i class="bi bi-arrow-repeat text-warning"></i> Revertir a Pendiente
+                                </button>
                             </li>
                             {% endif %}
                             <li><hr class="dropdown-divider my-1"></li>
