@@ -22,7 +22,19 @@ def login_view(request):
     if request.method == "POST":
         identificador = request.POST.get("username", "").strip()
         contrasena = request.POST.get("password", "")
+        
+        # 1. Django devuelve None si la cuenta está inactiva (is_active=False)
         user = authenticate(request, username=identificador, password=contrasena)
+
+        # 2. EL ARREGLO: Si devolvió None, buscamos al usuario manualmente
+        if user is None:
+            try:
+                user_db = User.objects.get(username=identificador)
+                # Si la contraseña es correcta, pero está inactivo, lo "rescatamos"
+                if user_db.check_password(contrasena) and not user_db.is_active:
+                    user = user_db
+            except User.DoesNotExist:
+                pass
 
         if user is not None:
             # is_active ya es el espejo de estado_cuenta (RN-CT-07), pero el
