@@ -14,7 +14,7 @@ from apps.usuarios.utils import get_logo_base64
 
 from .models import User, PerfilEmpleado, RegistroAuditoriaCuenta
 from .forms import UserForm, PerfilEmpleadoForm
-from .decorators import admin_required
+from .decorators import admin_required, empleado_required
 from apps.asistencia.models import Horario, Asistencia, DescansoEmpleado
 from apps.asistencia.views import _contexto_base
 from apps.tareas.models import Task, EstadoTarea

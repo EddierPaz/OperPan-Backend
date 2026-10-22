@@ -10,7 +10,7 @@ from django.core.cache import cache
 from .models import Task, EstadoTarea
 from .forms import TaskForm, TaskFilterForm
 from .constants import TAREAS_POR_CARGO, CARGO_AREA_MAP, OTRA_VALUE
-from apps.usuarios.decorators import admin_required
+from apps.usuarios.decorators import admin_required, empleado_required
 from apps.usuarios.models import PerfilEmpleado
 from apps.asistencia.models import Horario
 

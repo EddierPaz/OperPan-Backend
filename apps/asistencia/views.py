@@ -21,7 +21,7 @@ from django.core.cache import cache
 # IMPORTS DE APPS DEL PROYECTO
 # =============================================================================
 from apps.usuarios.models import PerfilEmpleado         # Modelo de empleado
-from apps.usuarios.decorators import admin_required     # Decorador para restringir a admin
+from apps.usuarios.decorators import admin_required, empleado_required     # Decorador para restringir a admin
 
 # Modelos locales
 from .models import Asistencia, DescansoEmpleado, Horario
