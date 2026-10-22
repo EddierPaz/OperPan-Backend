@@ -156,20 +156,12 @@ def password_reset_documento(request):
         except PerfilEmpleado.DoesNotExist:
             pass  # mismo mensaje genérico, no se filtra si el documento existe
 
-        # En modo DEBUG, además del correo mostramos el link en el mensaje de
-        # éxito para poder probar sin ir a la bandeja. NUNCA en producción.
-        if settings.DEBUG and reset_url:
-            messages.success(
-                request,
-                f"Si el documento existe en el sistema, recibirás un correo. "
-                f"[DEBUG] Link: {reset_url}"
-            )
-        else:
-            messages.success(
-                request,
-                "Si el documento existe en nuestro sistema, "
-                "recibirás un correo con instrucciones."
-            )
+        # El usuario SIEMPRE ve este mensaje, sin importar nada.
+        messages.success(
+            request,
+            "Si el documento existe en nuestro sistema, "
+            "recibirás un correo con instrucciones."
+        )
         return redirect("login")
 
     return render(request, "login/password_reset.html")
