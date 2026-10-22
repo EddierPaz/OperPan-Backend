@@ -393,6 +393,7 @@ def admin_tareas_vencidas(request):
 # ==========================================
 
 @login_required
+@empleado_required
 def empleado_tareas_list(request):
 
     # ▼▼▼ Verificación on-demand del propio empleado ▼▼▼
@@ -435,8 +436,8 @@ def empleado_tareas_list(request):
     }
     return render(request, 'empleado/tareas/tareas.html', context)
 
-
 @login_required
+@empleado_required
 def empleado_tarea_detail(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
 
@@ -462,6 +463,7 @@ def empleado_tarea_detail(request, pk):
 
 
 @login_required
+@empleado_required
 def empleado_tarea_marcar_progreso(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':
@@ -485,6 +487,7 @@ def empleado_tarea_marcar_progreso(request, pk):
 
 
 @login_required
+@empleado_required
 def empleado_tarea_marcar_finalizada(request, pk):
     tarea = get_object_or_404(Task, pk=pk, empleado__user=request.user)
     if request.method == 'POST':

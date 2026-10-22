@@ -278,6 +278,7 @@ def admin_dashboard(request):
 
 
 @login_required
+@empleado_required
 def employee_dashboard(request):
     perfil = request.user.perfil
     hoy = date.today()
@@ -530,8 +531,8 @@ def employee_dashboard(request):
 # GESTIÓN DE USUARIOS
 # ========================
 
-#@login_required
-#@admin_required
+@login_required
+@admin_required
 def user_list_create(request):
     usuarios = PerfilEmpleado.objects.select_related("user").all()
     cargos = PerfilEmpleado._meta.get_field('cargo').choices
@@ -835,6 +836,7 @@ def user_send_credentials(request, user_id):
 # ========================
 
 @login_required
+@empleado_required
 def employee_profile(request):
     perfil = request.user.perfil
     return render(
@@ -847,6 +849,7 @@ def employee_profile(request):
 
 
 @login_required
+@empleado_required
 def employee_profile_update(request):
     if request.method == "POST":
         perfil = request.user.perfil
@@ -868,6 +871,7 @@ def employee_profile_update(request):
 
 
 @login_required
+@empleado_required
 def employee_password_update(request):
     if request.method == "POST":
         user = request.user

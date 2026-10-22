@@ -550,7 +550,8 @@ def asistencia_empleado_historial(request, empleado_id):
 
 # Fin.
 
-
+@login_required
+@admin_required
 def horarios(request):
     if request.method == "POST":
         empleado_id = request.POST.get("empleado")
@@ -644,7 +645,8 @@ def horarios(request):
         _contexto_base()
     )
 
-
+@login_required
+@admin_required
 def horario_json(request, id):
     """
     Devuelve el estado actual (de solo lectura) de un horario puntual,
@@ -684,7 +686,8 @@ def horario_json(request, id):
         "tiene_asistencia": horario.tiene_asistencia_registrada(),
     })
 
-
+@login_required
+@admin_required
 def editar_horario(request, id):
     horario = get_object_or_404(Horario, id=id)
 
@@ -807,7 +810,8 @@ def editar_horario(request, id):
 
     return redirect("asistencia:horarios")
 
-
+@login_required
+@admin_required
 def eliminar_horario(request, id):
     horario = get_object_or_404(Horario, id=id)
 
@@ -845,6 +849,7 @@ def eliminar_horario(request, id):
 
     # Ahora valida si registrar o no la asistencia dependiendo de si corresponde al turno o
 
+@login_required
 def registrar_asistencia(request):
     if request.method != "POST":
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -910,7 +915,8 @@ def registrar_asistencia(request):
 
     return redirect("asistencia:asistencia_dashboard")
 
-
+@login_required
+@empleado_required
 def asistencia_empleado(request):
 
     _verificar_memorandos_asistencia_empleado(request.user)
@@ -1165,7 +1171,7 @@ def asistencia_detalle(request, asistencia_id):
 
 
 @login_required
-@login_required
+@empleado_required
 def empleado_horario(request):
     from .services.novedades_calendario import obtener_novedades_por_fecha
 
@@ -1261,6 +1267,7 @@ def empleado_horario(request):
 
 
 @login_required
+@empleado_required
 def empleado_horario_detalle(request, id):
     from .services.novedades_calendario import obtener_novedades_por_fecha
 
