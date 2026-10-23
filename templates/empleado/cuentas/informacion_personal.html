@@ -249,7 +249,10 @@
                             <div class="modal-detalle-item">
                                 <span class="modal-detalle-label">Teléfono</span>
                                 <span class="modal-detalle-value">
-                                    <input type="text" id="id_telefono" name="telefono" class="form-control" value="{{ perfil.telefono }}">
+                                    <input type="tel" id="id_telefono" name="telefono" class="form-control" 
+        value="{{ perfil.telefono }}" 
+        pattern="[0-9\s]+" 
+        title="Solo se permiten números">
                                 </span>
                             </div>
                             <div class="modal-detalle-item">
@@ -267,7 +270,10 @@
                             <div class="modal-detalle-item">
                                 <span class="modal-detalle-label">Ciudad</span>
                                 <span class="modal-detalle-value">
-                                    <input type="text" id="id_ciudad" name="ciudad" class="form-control" value="{{ perfil.ciudad }}">
+                                    <input type="text" id="id_ciudad" name="ciudad" class="form-control" 
+        value="{{ perfil.ciudad }}" 
+        pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" 
+        title="Solo se permiten letras">
                                 </span>
                             </div>
                         </div>
