@@ -854,15 +854,28 @@ def employee_profile_update(request):
     if request.method == "POST":
         perfil = request.user.perfil
 
+        # --- VALIDACIÓN BÁSICA  ---
+        # 1. Traemos el dato y le quitamos los espacios en blanco
+        telefono = request.POST.get("telefono", "").strip()
+
+        # 2. La regla básica: ¿Está vacío?, ¿No es un número?, ¿Es muy corto?
+        # (isdigit() es una función nativa de Python que dice si el texto es solo números)
+        if not telefono or not telefono.isdigit() or len(telefono) < 7:
+            messages.error(request, "El teléfono es obligatorio y debe tener al menos 7 números válidos.")
+            return redirect("employee_profile")
+        # --------------------------------------
+
+        # Si pasó la validación, guardamos los datos
         perfil.genero = request.POST.get("genero")
         perfil.estado_civil = request.POST.get("estado_civil")
-        perfil.telefono = request.POST.get("telefono")
+        perfil.telefono = telefono  # Guardamos el dato ya limpio
         perfil.correo = request.POST.get("correo")
         perfil.direccion = request.POST.get("direccion")
         perfil.ciudad = request.POST.get("ciudad")
         perfil.contacto_emergencia = request.POST.get("contacto_emergencia")
         perfil.parentesco_emergencia = request.POST.get("parentesco_emergencia")
         perfil.telefono_emergencia = request.POST.get("telefono_emergencia")
+
         perfil.save()
 
         messages.success(request, "Los cambios se guardaron correctamente.")

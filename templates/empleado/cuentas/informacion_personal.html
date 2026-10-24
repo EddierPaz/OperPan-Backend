@@ -250,9 +250,11 @@
                                 <span class="modal-detalle-label">Teléfono</span>
                                 <span class="modal-detalle-value">
                                     <input type="tel" id="id_telefono" name="telefono" class="form-control" 
-        value="{{ perfil.telefono }}" 
-        pattern="[0-9\s]+" 
-        title="Solo se permiten números">
+                                value="{{ perfil.telefono }}" 
+                                pattern="[0-9\s]+" 
+                                title="Solo se permiten números"
+                                required 
+                                minlength="7">
                                 </span>
                             </div>
                             <div class="modal-detalle-item">
