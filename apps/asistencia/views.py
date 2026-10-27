@@ -547,57 +547,41 @@ def asistencia_empleado_historial(request, empleado_id):
         'empleado_cargo': empleado.get_cargo_display() or 'Sin cargo',
     })
 
-
-# Fin.
-
 @login_required
 @admin_required
 def horarios(request):
     if request.method == "POST":
         empleado_id = request.POST.get("empleado")
         turno = request.POST.get("turno")
-        hora_entrada_str = request.POST.get("hora_entrada")
-        hora_salida_str = request.POST.get("hora_salida")
         fecha_descanso = request.POST.get("fecha_descanso")
 
-        empleado = get_object_or_404(
-            PerfilEmpleado,
-            id=empleado_id
-        )
+        empleado = get_object_or_404(PerfilEmpleado, id=empleado_id)
 
-        if Horario.objects.filter(
-            empleado=empleado,
-            estado=True
-        ).exists():
-            messages.error(
-                request,
-                f"El empleado {empleado.nombre_completo()} ya tiene un horario activo asignado."
-            )
+        if Horario.objects.filter(empleado=empleado, estado=True).exists():
+            messages.error(request, f"El empleado {empleado.nombre_completo()} ya tiene un horario activo asignado.")
             return redirect("asistencia:horarios")
 
-        # Convertir strings de hora a objetos time de Python de forma segura
-        hora_entrada_obj = (
-            datetime.strptime(hora_entrada_str, '%H:%M').time()
-            if hora_entrada_str else None
-        )
-
-        hora_salida_obj = (
-            datetime.strptime(hora_salida_str, '%H:%M').time()
-            if hora_salida_str else None
-        )
-
         # =====================================================
+        # ASIGNACIÓN AUTOMÁTICA DE HORAS (FIJAS POR JORNADA)
+        # =====================================================
+        if turno == "MANANA":
+            hora_entrada_obj = datetime.strptime("05:00", "%H:%M").time()
+            hora_salida_obj = datetime.strptime("13:00", "%H:%M").time()
+        elif turno == "TARDE":
+            hora_entrada_obj = datetime.strptime("13:00", "%H:%M").time()
+            hora_salida_obj = datetime.strptime("22:00", "%H:%M").time()
+        elif turno == "FIJO":
+            hora_entrada_obj = datetime.strptime("08:00", "%H:%M").time()
+            hora_salida_obj = datetime.strptime("17:00", "%H:%M").time()
+        else:
+            messages.error(request, "Turno inválido.")
+            return redirect("asistencia:horarios")
+
         # PERÍODO DEL HORARIO
-        # =====================================================
         fecha_inicio = timezone.localdate()
         fecha_fin = fecha_inicio + timedelta(days=dias_ciclo(turno) - 1)
 
-        # =====================================================
-        # DÍA DE DESCANSO SEMANAL (solo turno FIJO)
-        # Se deriva de la fecha de descanso elegida por el admin; a partir
-        # de acá, cada ciclo automático repetirá el descanso en este mismo
-        # día de la semana, sin que el admin tenga que volver a elegirlo.
-        # =====================================================
+        # DÍA DE DESCANSO SEMANAL
         dia_descanso_semana = None
         fecha_descanso_obj = None
         if fecha_descanso:
@@ -616,18 +600,6 @@ def horarios(request):
             ciclo_inicio=fecha_inicio,
             dia_descanso_semana=dia_descanso_semana,
         )
-
-        # =====================================================
-        # NOTIFICACIÓN AL EMPLEADO
-        # =====================================================
-        contexto = {
-            'empleado_nombre': empleado.nombre_completo(),
-            'turno': horario.get_turno_display(),
-            'hora_entrada': horario.hora_entrada.strftime('%H:%M') if horario.hora_entrada else '',
-            'hora_salida': horario.hora_salida.strftime('%H:%M') if horario.hora_salida else '',
-            'fecha_descanso': fecha_descanso if fecha_descanso else 'A definir',
-        }
-
 
         if fecha_descanso_obj:
             DescansoEmpleado.objects.create(

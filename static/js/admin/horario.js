@@ -80,8 +80,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const empleadoSelect = document.getElementById("empleadoSelect");
     const cargoInput = document.getElementById("cargoInput");
     const turnoSelect = document.getElementById("turnoSelect");
-    const horaEntrada = document.getElementById("horaEntrada");
-    const horaSalida = document.getElementById("horaSalida");
+    
+    // AQUÍ ESTÁ EL CAMBIO: Apuntan a los IDs únicos del Modal de Crear
+    const crearEntrada = document.getElementById("crear-entrada");
+    const crearSalida = document.getElementById("crear-salida");
+    
     const cicloCrear = document.getElementById("ciclo14x1");
     const inputCrear = document.getElementById("fechaDescansoInput");
     const labelCrear = document.getElementById("descansoLabel");
@@ -98,20 +101,20 @@ document.addEventListener('DOMContentLoaded', function () {
         turnoSelect.addEventListener("change", function () {
             switch (this.value) {
                 case "MANANA":
-                    if(horaEntrada) horaEntrada.value = "05:00";
-                    if(horaSalida) horaSalida.value = "13:00";
+                    if(crearEntrada) crearEntrada.value = "05:00";
+                    if(crearSalida) crearSalida.value = "13:00";
                     break;
                 case "TARDE":
-                    if(horaEntrada) horaEntrada.value = "13:00";
-                    if(horaSalida) horaSalida.value = "22:00";
+                    if(crearEntrada) crearEntrada.value = "13:00";
+                    if(crearSalida) crearSalida.value = "22:00";
                     break;
                 case "FIJO":
-                    if(horaEntrada) horaEntrada.value = "08:00";
-                    if(horaSalida) horaSalida.value = "17:00";
+                    if(crearEntrada) crearEntrada.value = "08:00";
+                    if(crearSalida) crearSalida.value = "17:00";
                     break;
                 default:
-                    if(horaEntrada) horaEntrada.value = "";
-                    if(horaSalida) horaSalida.value = "";
+                    if(crearEntrada) crearEntrada.value = "";
+                    if(crearSalida) crearSalida.value = "";
             }
             actualizarDiasCalendario(cicloCrear, this.value, inputCrear, labelCrear, textoCrear);
         });
