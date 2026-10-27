@@ -110,11 +110,6 @@
         </form>
       </div>
 
-      <!-- Footer: antes botones .modal-detalle-btn con distintos colores
-           inconsistentes entre módulos (btn-outline-corporate para Cancelar
-           Y Limpiar, sin distinción). Ahora usa el sistema global:
-           Cancelar/Limpiar = gris neutro, Guardar = verde (acción de
-           confirmación positiva). -->
       <div class="modal-footer modal-detalle-footer">
         <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
           <i class="bi bi-x-circle"></i> Cancelar
@@ -169,7 +164,7 @@
               </span>
             </div>
 
-            <!-- Jornada -->
+            <!-- Jornada (Editable) -->
             <div class="modal-detalle-item">
               <span class="modal-detalle-label">Jornada <span class="text-danger">*</span></span>
               <span class="modal-detalle-value">
@@ -181,19 +176,19 @@
               </span>
             </div>
 
-            <!-- Hora Entrada -->
+            <!-- Hora Entrada (Bloqueada, se actualiza sola) -->
             <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Hora entrada <span class="text-danger">*</span></span>
+              <span class="modal-detalle-label">Hora entrada (Fija por jornada)</span>
               <span class="modal-detalle-value">
-                <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" required>
+                <input id="editar-entrada" type="time" name="hora_entrada" class="form-control" readonly style="background-color: #e9ecef; cursor: not-allowed;" required>
               </span>
             </div>
 
-            <!-- Hora Salida -->
+            <!-- Hora Salida (Bloqueada, se actualiza sola) -->
             <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Hora salida <span class="text-danger">*</span></span>
+              <span class="modal-detalle-label">Hora salida (Fija por jornada)</span>
               <span class="modal-detalle-value">
-                <input id="editar-salida" type="time" name="hora_salida" class="form-control" required>
+                <input id="editar-salida" type="time" name="hora_salida" class="form-control" readonly style="background-color: #e9ecef; cursor: not-allowed;" required>
               </span>
             </div>
 

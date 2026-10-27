@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // ==========================================
-    // 1. TOAST
+    // 1. SISTEMA DE NOTIFICACIONES (TOAST)
     // ==========================================
     function mostrarToast(mensaje, tipo = 'warning') {
         const container = document.getElementById('toastContainer');
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 2. CALENDARIO DE CICLO (crear y editar horario)
+    // 2. LÓGICA DE CALENDARIOS Y FORMULARIOS
     // ==========================================
     function diasVisibles(turno) {
         return turno === "FIJO" ? 7 : 15;
@@ -76,17 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Autocompletar cargo al seleccionar empleado
+    // --- Configuración del Modal: Crear Horario ---
     const empleadoSelect = document.getElementById("empleadoSelect");
     const cargoInput = document.getElementById("cargoInput");
-    if (empleadoSelect && cargoInput) {
-        empleadoSelect.addEventListener("change", function () {
-            const opcion = this.options[this.selectedIndex];
-            cargoInput.value = opcion.dataset.cargo || "";
-        });
-    }
-
-    // Calendario para crear horario
     const turnoSelect = document.getElementById("turnoSelect");
     const horaEntrada = document.getElementById("horaEntrada");
     const horaSalida = document.getElementById("horaSalida");
@@ -95,24 +87,31 @@ document.addEventListener('DOMContentLoaded', function () {
     const labelCrear = document.getElementById("descansoLabel");
     const textoCrear = document.getElementById("descansoFechaTexto");
 
+    if (empleadoSelect && cargoInput) {
+        empleadoSelect.addEventListener("change", function () {
+            const opcion = this.options[this.selectedIndex];
+            cargoInput.value = opcion.dataset.cargo || "";
+        });
+    }
+
     if (turnoSelect) {
         turnoSelect.addEventListener("change", function () {
             switch (this.value) {
                 case "MANANA":
-                    horaEntrada.value = "05:00";
-                    horaSalida.value = "13:00";
+                    if(horaEntrada) horaEntrada.value = "05:00";
+                    if(horaSalida) horaSalida.value = "13:00";
                     break;
                 case "TARDE":
-                    horaEntrada.value = "13:00";
-                    horaSalida.value = "22:00";
+                    if(horaEntrada) horaEntrada.value = "13:00";
+                    if(horaSalida) horaSalida.value = "22:00";
                     break;
                 case "FIJO":
-                    horaEntrada.value = "08:00";
-                    horaSalida.value = "17:00";
+                    if(horaEntrada) horaEntrada.value = "08:00";
+                    if(horaSalida) horaSalida.value = "17:00";
                     break;
                 default:
-                    horaEntrada.value = "";
-                    horaSalida.value = "";
+                    if(horaEntrada) horaEntrada.value = "";
+                    if(horaSalida) horaSalida.value = "";
             }
             actualizarDiasCalendario(cicloCrear, this.value, inputCrear, labelCrear, textoCrear);
         });
@@ -123,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cicloCrear.addEventListener("click", function (e) {
             const btn = e.target.closest(".dia-btn");
             if (!btn || btn.style.display === "none") return;
+            
             cicloCrear.querySelectorAll(".dia-btn").forEach(b => b.classList.remove("seleccionado"));
             btn.classList.add("seleccionado");
             inputCrear.value = btn.dataset.fecha;
@@ -131,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Limpiar formulario crear horario
     const btnLimpiar = document.getElementById("btnLimpiarHorario");
     if (btnLimpiar) {
         btnLimpiar.addEventListener("click", function () {
@@ -149,21 +148,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Calendario para editar horario
+    // --- Configuración del Modal: Editar Horario ---
     const cicloEditar = document.getElementById("ciclo14x1Editar");
     const inputEditar = document.getElementById("fechaDescansoEditarInput");
     const labelEditar = document.getElementById("descansoEditarLabel");
     const textoEditar = document.getElementById("descansoEditarFechaTexto");
     const editarTurnoSelect = document.getElementById("editar-turno");
 
-    // Variables para controlar el estado del descanso
     let descansoPasado = false;
     let fechaDescansoActual = null;
     let cicloInicio = null;
     let cicloFin = null;
-    let turnoActual = null;
 
-    // Crear elemento para mensaje de advertencia en el modal de edición
     const modalEditarBody = document.querySelector('#modalEditarHorario .modal-body');
     let avisoEdicion = null;
     if (modalEditarBody) {
@@ -174,8 +170,32 @@ document.addEventListener('DOMContentLoaded', function () {
         modalEditarBody.insertBefore(avisoEdicion, modalEditarBody.firstChild);
     }
 
+    // Función para actualizar las horas de forma automática según el turno
+    function sincronizarHoras(turno) {
+        const entradaInput = document.getElementById("editar-entrada");
+        const salidaInput = document.getElementById("editar-salida");
+        if (!entradaInput || !salidaInput) return;
+
+        switch (turno) {
+            case "MANANA":
+                entradaInput.value = "05:00";
+                salidaInput.value = "13:00";
+                break;
+            case "TARDE":
+                entradaInput.value = "13:00";
+                salidaInput.value = "22:00";
+                break;
+            case "FIJO":
+                entradaInput.value = "08:00";
+                salidaInput.value = "17:00";
+                break;
+        }
+    }
+
     if (editarTurnoSelect) {
         editarTurnoSelect.addEventListener("change", function () {
+            // Al cambiar la jornada, las horas se ajustan automáticamente
+            sincronizarHoras(this.value);
             actualizarDiasCalendario(cicloEditar, this.value, inputEditar, labelEditar, textoEditar);
         });
     }
@@ -198,10 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (descansoPasado) {
-                mostrarToast(
-                    "El descanso de este ciclo ya ocurrió. No se puede modificar.",
-                    "warning"
-                );
+                mostrarToast("El descanso de este ciclo ya ocurrió. No se puede modificar.", "warning");
                 return;
             }
 
@@ -209,12 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const fechaInicio = new Date(cicloInicio + 'T00:00:00');
                 const fechaFin = new Date(cicloFin + 'T00:00:00');
                 if (fechaSeleccionada < fechaInicio || fechaSeleccionada > fechaFin) {
-                    const inicioStr = fechaInicio.toLocaleDateString('es-ES');
-                    const finStr = fechaFin.toLocaleDateString('es-ES');
-                    mostrarToast(
-                        `La fecha debe estar dentro del ciclo actual (${inicioStr} - ${finStr}).`,
-                        "warning"
-                    );
+                    mostrarToast(`La fecha debe estar dentro del ciclo actual.`, "warning");
                     return;
                 }
             }
@@ -228,17 +240,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 3. VER / EDITAR / ELIMINAR HORARIO (modales)
+    // 3. ACCIONES DE LA TABLA
     // ==========================================
-
     const modalEliminarElement = document.getElementById("modalEliminarHorario");
     const formEliminarHorario = document.getElementById("formEliminarHorario");
-    const btnConfirmarEliminar = formEliminarHorario
-        ? formEliminarHorario.querySelector('button[type="submit"]')
-        : null;
-    const eliminarBodyElement = modalEliminarElement
-        ? modalEliminarElement.querySelector(".modal-body")
-        : null;
+    const btnConfirmarEliminar = formEliminarHorario ? formEliminarHorario.querySelector('button[type="submit"]') : null;
+    const eliminarBodyElement = modalEliminarElement ? modalEliminarElement.querySelector(".modal-body") : null;
 
     let avisoBloqueo = null;
     if (eliminarBodyElement) {
@@ -246,8 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
         avisoBloqueo.id = "eliminarHorarioBloqueadoMsg";
         avisoBloqueo.className = "text-danger small mt-3 mb-0";
         avisoBloqueo.style.display = "none";
-        avisoBloqueo.innerHTML = '<i class="bi bi-shield-exclamation me-1"></i> ' +
-            "Este horario ya tiene asistencia registrada y no se puede eliminar.";
+        avisoBloqueo.innerHTML = '<i class="bi bi-shield-exclamation me-1"></i> Este horario ya tiene asistencia registrada y no se puede eliminar.';
         eliminarBodyElement.appendChild(avisoBloqueo);
     }
 
@@ -260,15 +266,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.addEventListener("click", function (e) {
+        
+        // 3.1 ACCIÓN: VER DETALLE
         const btnVer = e.target.closest(".btn-ver-horario");
         if (btnVer) {
             const id = btnVer.dataset.id;
             fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) {
+                .then(res => {
                     if (!res.ok) throw new Error("Error en la respuesta del servidor");
                     return res.json();
                 })
-                .then(function (data) {
+                .then(data => {
                     document.getElementById("ver-empleado").textContent = data.empleado;
                     document.getElementById("ver-cargo").textContent = data.cargo;
                     document.getElementById("ver-turno").textContent = data.turno;
@@ -278,41 +286,41 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
                     document.getElementById("ver-ciclo-inicio").textContent = data.ciclo_inicio || "Sin definir";
                     document.getElementById("ver-ciclo-fin").textContent = data.ciclo_fin || "Sin definir";
-                    const modalVer = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario"));
-                    modalVer.show();
+                    
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario")).show();
                 })
-                .catch(function (err) {
+                .catch(err => {
                     console.error(err);
                     mostrarToast("No se pudo cargar la información del horario.", "danger");
                 });
         }
 
+        // 3.2 ACCIÓN: EDITAR
         const btnEditar = e.target.closest(".btn-editar-horario");
         if (btnEditar) {
             const id = btnEditar.dataset.id;
             fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) {
+                .then(res => {
                     if (!res.ok) throw new Error("Error en la respuesta del servidor");
                     return res.json();
                 })
-                .then(function (data) {
+                .then(data => {
                     descansoPasado = data.descanso_pasado || false;
                     fechaDescansoActual = data.descanso_fecha || null;
                     cicloInicio = data.ciclo_inicio || null;
                     cicloFin = data.ciclo_fin || null;
-                    turnoActual = data.turno_valor || null;
 
                     document.getElementById("editar-empleado").value = data.empleado;
                     document.getElementById("editar-cargo").value = data.cargo;
                     document.getElementById("editar-turno").value = data.turno_valor;
-                    document.getElementById("editar-entrada").value = data.hora_entrada;
-                    document.getElementById("editar-salida").value = data.hora_salida;
+                    
+                    // Sincroniza las horas en base al turno al abrir el modal
+                    sincronizarHoras(data.turno_valor);
+
                     document.getElementById("formEditar").action = "/asistencia/horarios/" + id + "/editar/";
 
                     const labelActual = document.getElementById("descanso-actual-label");
-                    if (labelActual) {
-                        labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
-                    }
+                    if (labelActual) labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
 
                     if (avisoEdicion) {
                         const hoy = new Date();
@@ -323,30 +331,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (descansoPasado || esHoyOAntes) {
                             const fechaStr = fechaDesc ? fechaDesc.toLocaleDateString('es-ES') : 'fecha desconocida';
                             avisoEdicion.classList.remove('d-none');
-                            avisoEdicion.innerHTML = `
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <strong>Atención:</strong> El descanso de este ciclo (${fechaStr}) 
-                                ${descansoPasado ? 'ya ocurrió' : 'está en el día de hoy'}. 
-                                No se puede modificar. El siguiente descanso se generará automáticamente.
-                            `;
+                            avisoEdicion.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i> <strong>Atención:</strong> El descanso de este ciclo (${fechaStr}) ${descansoPasado ? 'ya ocurrió' : 'está en el día de hoy'}. No se puede modificar.`;
                             cicloEditar.style.pointerEvents = 'none';
                             cicloEditar.style.opacity = '0.5';
-                            cicloEditar.style.cursor = 'not-allowed';
-                            const btnLimpiarEditar = document.getElementById('btnLimpiarEditar');
-                            if (btnLimpiarEditar) {
-                                btnLimpiarEditar.disabled = true;
-                                btnLimpiarEditar.style.opacity = '0.5';
-                            }
                         } else {
                             avisoEdicion.classList.add('d-none');
                             cicloEditar.style.pointerEvents = 'auto';
                             cicloEditar.style.opacity = '1';
-                            cicloEditar.style.cursor = 'default';
-                            const btnLimpiarEditar = document.getElementById('btnLimpiarEditar');
-                            if (btnLimpiarEditar) {
-                                btnLimpiarEditar.disabled = false;
-                                btnLimpiarEditar.style.opacity = '1';
-                            }
                         }
                     }
 
@@ -358,24 +349,18 @@ document.addEventListener('DOMContentLoaded', function () {
                             if (data.descanso_fecha && b.dataset.fecha === data.descanso_fecha) {
                                 b.classList.add("seleccionado");
                             }
-                        });
-                    }
-
-                    if (cicloEditar) {
-                        const hoy = new Date();
-                        hoy.setHours(0, 0, 0, 0);
-                        cicloEditar.querySelectorAll(".dia-btn").forEach(function (b) {
+                            
                             const fechaStr = b.dataset.fecha;
                             if (fechaStr) {
                                 const fecha = new Date(fechaStr + 'T00:00:00');
-                                if (fecha <= hoy) {
+                                const hoyBtn = new Date();
+                                hoyBtn.setHours(0,0,0,0);
+                                if (fecha <= hoyBtn) {
                                     b.style.opacity = '0.3';
                                     b.style.cursor = 'not-allowed';
-                                    b.title = fecha < hoy ? 'Fecha pasada - No seleccionable' : 'Hoy - No seleccionable';
                                 } else {
                                     b.style.opacity = '1';
                                     b.style.cursor = 'pointer';
-                                    b.title = '';
                                 }
                             }
                         });
@@ -385,45 +370,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (labelEditar) labelEditar.style.display = "none";
                     if (textoEditar) textoEditar.textContent = "";
 
-                    const modalEditar = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEditarHorario"));
-                    modalEditar.show();
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEditarHorario")).show();
                 })
-                .catch(function (err) {
+                .catch(err => {
                     console.error(err);
                     mostrarToast("No se pudo cargar la información para editar el horario.", "danger");
                 });
         }
 
+        // 3.3 ACCIÓN: ELIMINAR
         const btnEliminar = e.target.closest(".btn-eliminar-horario");
         if (btnEliminar) {
             e.preventDefault();
             const id = btnEliminar.dataset.id;
             const nombre = btnEliminar.dataset.empleado || "empleado";
 
-            if (formEliminarHorario) {
-                formEliminarHorario.action = "/asistencia/horarios/" + id + "/eliminar/";
-            }
+            if (formEliminarHorario) formEliminarHorario.action = "/asistencia/horarios/" + id + "/eliminar/";
+            
             const nombreSpan = document.getElementById("eliminar-empleado-nombre");
-            if (nombreSpan) {
-                nombreSpan.textContent = nombre;
-            }
+            if (nombreSpan) nombreSpan.textContent = nombre;
 
             bloquearEliminacion(false);
-
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario"));
-            modal.show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById("modalEliminarHorario")).show();
 
             fetch("/asistencia/horarios/" + id + "/json/")
-                .then(function (res) {
-                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
-                    return res.json();
-                })
-                .then(function (data) {
-                    bloquearEliminacion(!!data.tiene_asistencia);
-                })
-                .catch(function (err) {
-                    console.error(err);
-                });
+                .then(res => res.json())
+                .then(data => bloquearEliminacion(!!data.tiene_asistencia))
+                .catch(err => console.error(err));
         }
     });
 
@@ -449,7 +422,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const turno = selectTurno ? selectTurno.value.toLowerCase() : "";
 
             filas.forEach(fila => {
-                // Leemos los atributos data-* que ya están en minúsculas
                 const empleado = (fila.dataset.empleado || "").toLowerCase();
                 const turnoFila = (fila.dataset.turno || "").toLowerCase();
 
@@ -461,9 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         inputBuscar.addEventListener("input", aplicarFiltros);
-        if (selectTurno) {
-            selectTurno.addEventListener("change", aplicarFiltros);
-        }
+        if (selectTurno) selectTurno.addEventListener("change", aplicarFiltros);
 
         const btnLimpiarFiltros = document.getElementById("limpiarFiltrosHorarios");
         if (btnLimpiarFiltros) {
@@ -474,5 +444,4 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
-
 });

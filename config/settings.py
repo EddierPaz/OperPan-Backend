@@ -94,7 +94,7 @@ DATABASES = {
          'USER': 'root',
 
          # No tenemos contraseña para usar la por defecto
-         'PASSWORD': '',
+         'PASSWORD': 'Eddier2929*',
          'HOST': 'localhost',
          'PORT': '3306',
          'OPTIONS': {
