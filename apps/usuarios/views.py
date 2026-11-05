@@ -574,8 +574,20 @@ def user_list_create(request):
             messages.success(request, "Usuario creado correctamente.")
             return redirect("user_list")
 
-        messages.error(request, "Corrige los errores del formulario.")
-    else:
+        # --- INICIO DEL ARREGLO DEL BUG (CUEN-005) ---
+        if not user_form.is_valid() or not perfil_form.is_valid():
+            # Extraemos los errores de Usuario
+            for field, errors in user_form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error}")
+            
+            # Extraemos los errores de Perfil (documento duplicado)
+            for field, errors in perfil_form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error en {field}: {error}")
+        # --- FIN DEL ARREGLO ---
+
+    else: # <-- Ojo, el else debe quedar alineado con el if de arriba
         user_form = UserForm()
         perfil_form = PerfilEmpleadoForm()
 
