@@ -22,6 +22,12 @@ def tareas_vencidas_sin_memorando(empleado):
 
     Ordenadas por fecha/hora límite ascendente (las más antiguas primero).
     """
+    # --- INICIO DEL GUARDIÁN (Fase 1) ---
+    # Si el empleado NO está activo (ej. está retirado), devolvemos un QuerySet vacío.
+    if empleado.estado != 'activo':
+        return Task.objects.none()
+    # --- FIN DEL GUARDIÁN ---
+
     hoy = date.today()
     ahora = timezone.localtime(timezone.now()).time()
 
@@ -132,14 +138,13 @@ def verificar_y_generar_memorando(empleado):
     Revisa si el empleado acumuló suficientes tareas vencidas para
     disparar un memorando. Si es así, lo emite y devuelve el objeto;
     si no, devuelve None.
-
-    Es idempotente: una tarea ya vinculada a un memorando no vuelve a
-    contar. Por lo tanto:
-        - 3 vencidas sin memo  → 1 memorando (con esas 3)
-        - 6 vencidas sin memo  → 1 memorando (con las 3 más antiguas);
-                                  al siguiente llamado, otro memo con
-                                  las 3 restantes.
     """
+    # --- INICIO DEL ARREGLO (FASE 1) ---
+    # Validar que el empleado esté activo antes de generar memorandos
+    if empleado.estado != 'activo': 
+        return None
+    # --- FIN DEL ARREGLO ---
+
     vencidas = list(tareas_vencidas_sin_memorando(empleado))
 
     if len(vencidas) < UMBRAL_TAREAS_VENCIDAS_MEMORANDO:
