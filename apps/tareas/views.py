@@ -13,6 +13,7 @@ from .constants import TAREAS_POR_CARGO, CARGO_AREA_MAP, OTRA_VALUE
 from apps.usuarios.decorators import admin_required, empleado_required
 from apps.usuarios.models import PerfilEmpleado
 from apps.asistencia.models import Horario
+from django.core.paginator import Paginator
 
 
 
@@ -128,6 +129,19 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
 
     tareas = tareas.order_by('-prioridad', 'fecha_limite')
 
+
+        # --- INICIO DE LA PAGINACIÓN (FASE 2) ---
+    # 1. Atrapamos el número de página de la URL (ej. ?page=2). Si no hay, usamos la página 1.
+    page_number = request.GET.get('page', 1)
+    
+    # 2. Creamos la "bandeja" (Paginator) diciendo que solo queremos 10 tareas por página.
+    paginator = Paginator(tareas, 10) 
+    
+    # 3. Obtenemos la página solicitada. 
+    # get_page() es mágico: si le pides la página 999 y solo hay 5, te da la 5 sin dar error.
+    page_obj = paginator.get_page(page_number)
+    # --- FIN DE LA PAGINACIÓN ---
+
     # --- Tareas de HOY, agrupadas por estado ---
     hoy = date.today()
     tareas_hoy = tareas.filter(fecha_limite=hoy)
@@ -170,7 +184,7 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
 
     context = {
         "fecha_hoy": timezone.localdate(),
-        'tareas': tareas,
+        'tareas': page_obj,
         'tareas_hoy_por_estado': tareas_hoy_por_estado,
         'total_hoy': total_hoy,
         'kpis': kpis,
@@ -189,7 +203,7 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
     return context
 
 
-@login_required
+@login_required   #AAAA
 @admin_required
 def admin_tareas_list(request):
 
