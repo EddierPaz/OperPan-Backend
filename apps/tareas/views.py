@@ -98,8 +98,16 @@ def _build_tareas_context(request, form=None, editando=False, tarea_actual=None)
 
     filter_form = TaskFilterForm(request.GET or None)
     if filter_form.is_valid():
-        if filter_form.cleaned_data.get('estado'):
-            tareas = tareas.filter(estado=filter_form.cleaned_data['estado'])
+        # --- INICIO DEL ARREGLO ---
+        estado_filtro = filter_form.cleaned_data.get('estado')
+        
+        if estado_filtro == 'VENCIDA':
+            tareas = tareas.filter(fecha_limite__lt=date.today()).exclude(estado=EstadoTarea.FINALIZADA)
+        elif estado_filtro:
+            tareas = tareas.filter(estado=estado_filtro)
+        # --- FIN DEL ARREGLO ---
+
+        # Los demás filtros se quedan exactamente igual:
         if filter_form.cleaned_data.get('empleado'):
             tareas = tareas.filter(empleado=filter_form.cleaned_data['empleado'])
         if filter_form.cleaned_data.get('area'):

@@ -53,10 +53,10 @@ class TaskForm(forms.ModelForm):
 
         return hora_limite
 
-
 class TaskFilterForm(forms.Form):
+    # Agregamos 'VENCIDA' a las opciones válidas
     estado = forms.ChoiceField(
-        choices=[('', 'Todos los estados')] + list(EstadoTarea.choices),
+        choices=[('', 'Todos los estados'), ('VENCIDA', 'Vencidas')] + list(EstadoTarea.choices),
         required=False
     )
     empleado = forms.ModelChoiceField(
