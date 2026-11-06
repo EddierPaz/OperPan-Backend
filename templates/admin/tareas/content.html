@@ -425,4 +425,52 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
             </div>
         </div>
     {% endif %}
-</div>
+</div> <!-- AQUÍ TERMINA EL CONTENEDOR DE TAREAS (tasksContainer) -->
+
+
+
+
+
+<!--Aquí empieza la paginación -->
+
+{% if tareas.paginator.num_pages > 1 %}
+<nav aria-label="Navegación de páginas" class="mt-5 mb-5">
+    <ul class="pagination justify-content-center gap-1">
+        
+        <!-- Botón Anterior -->
+        <li class="page-item {% if not tareas.has_previous %}disabled{% endif %}">
+            <a class="page-link rounded-3 shadow-sm border-0" 
+               href="{% if tareas.has_previous %}?page={{ tareas.previous_page_number }}{% else %}#{% endif %}" 
+               style="background-color: #1a1a1a; color: white;">
+               &laquo; Anterior
+            </a>
+        </li>
+
+        <!-- Números de Página (Lógica Inteligente) -->
+        {% for num in tareas.paginator.page_range %}
+            {# Mostramos solo las páginas que están a 2 de distancia de la actual #}
+            {% if num == tareas.number %}
+                <!-- Página Actual (Color OperPan) -->
+                <li class="page-item active">
+                    <a class="page-link rounded-3 shadow-sm border-0" href="?page={{ num }}" style="background-color: #A40706; color: white;">{{ num }}</a>
+                </li>
+            {% elif num > tareas.number|add:"-3" and num < tareas.number|add:"3" %}
+                <!-- Páginas cercanas -->
+                <li class="page-item">
+                    <a class="page-link rounded-3 shadow-sm border-0" href="?page={{ num }}" style="background-color: #1a1a1a; color: white;">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Botón Siguiente -->
+        <li class="page-item {% if not tareas.has_next %}disabled{% endif %}">
+            <a class="page-link rounded-3 shadow-sm border-0" 
+               href="{% if tareas.has_next %}?page={{ tareas.next_page_number }}{% else %}#{% endif %}" 
+               style="background-color: #1a1a1a; color: white;">
+               Siguiente &raquo;
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+{% endif %}
