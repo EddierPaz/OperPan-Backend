@@ -431,8 +431,9 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
 
 
 
-<!--Aquí empieza la paginación -->
-
+<!-- ========================================== -->
+<!-- PAGINACIÓN (CON CONSERVACIÓN DE FILTROS/ sin filtros al cambiar de pagina se borra lo que ya busco el usuario)   -->
+<!-- ========================================== -->
 {% if tareas.paginator.num_pages > 1 %}
 <nav aria-label="Navegación de páginas" class="mt-5 mb-5">
     <ul class="pagination justify-content-center gap-1">
@@ -440,24 +441,46 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
         <!-- Botón Anterior -->
         <li class="page-item {% if not tareas.has_previous %}disabled{% endif %}">
             <a class="page-link rounded-3 shadow-sm border-0" 
-               href="{% if tareas.has_previous %}?page={{ tareas.previous_page_number }}{% else %}#{% endif %}" 
+               href="?page={% if tareas.has_previous %}{{ tareas.previous_page_number }}{% else %}1{% endif %}
+               {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+               {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
+               {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
+               {% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}
+               {% if request.GET.turno %}&turno={{ request.GET.turno }}{% endif %}
+               {% if request.GET.busqueda %}&busqueda={{ request.GET.busqueda }}{% endif %}
+               {% if request.GET.vencidas %}&vencidas={{ request.GET.vencidas }}{% endif %}" 
                style="background-color: #1a1a1a; color: white;">
                &laquo; Anterior
             </a>
         </li>
 
-        <!-- Números de Página (Lógica Inteligente) -->
+        <!-- Números de Página -->
         {% for num in tareas.paginator.page_range %}
-            {# Mostramos solo las páginas que están a 2 de distancia de la actual #}
             {% if num == tareas.number %}
-                <!-- Página Actual (Color OperPan) -->
                 <li class="page-item active">
-                    <a class="page-link rounded-3 shadow-sm border-0" href="?page={{ num }}" style="background-color: #A40706; color: white;">{{ num }}</a>
+                    <a class="page-link rounded-3 shadow-sm border-0" 
+                       href="?page={{ num }}
+                       {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+                       {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
+                       {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
+                       {% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}
+                       {% if request.GET.turno %}&turno={{ request.GET.turno }}{% endif %}
+                       {% if request.GET.busqueda %}&busqueda={{ request.GET.busqueda }}{% endif %}
+                       {% if request.GET.vencidas %}&vencidas={{ request.GET.vencidas }}{% endif %}" 
+                       style="background-color: #A40706; color: white;">{{ num }}</a>
                 </li>
             {% elif num > tareas.number|add:"-3" and num < tareas.number|add:"3" %}
-                <!-- Páginas cercanas -->
                 <li class="page-item">
-                    <a class="page-link rounded-3 shadow-sm border-0" href="?page={{ num }}" style="background-color: #1a1a1a; color: white;">{{ num }}</a>
+                    <a class="page-link rounded-3 shadow-sm border-0" 
+                       href="?page={{ num }}
+                       {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+                       {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
+                       {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
+                       {% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}
+                       {% if request.GET.turno %}&turno={{ request.GET.turno }}{% endif %}
+                       {% if request.GET.busqueda %}&busqueda={{ request.GET.busqueda }}{% endif %}
+                       {% if request.GET.vencidas %}&vencidas={{ request.GET.vencidas }}{% endif %}" 
+                       style="background-color: #1a1a1a; color: white;">{{ num }}</a>
                 </li>
             {% endif %}
         {% endfor %}
@@ -465,7 +488,14 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
         <!-- Botón Siguiente -->
         <li class="page-item {% if not tareas.has_next %}disabled{% endif %}">
             <a class="page-link rounded-3 shadow-sm border-0" 
-               href="{% if tareas.has_next %}?page={{ tareas.next_page_number }}{% else %}#{% endif %}" 
+               href="?page={% if tareas.has_next %}{{ tareas.next_page_number }}{% else %}{{ tareas.paginator.num_pages }}{% endif %}
+               {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
+               {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
+               {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
+               {% if request.GET.prioridad %}&prioridad={{ request.GET.prioridad }}{% endif %}
+               {% if request.GET.turno %}&turno={{ request.GET.turno }}{% endif %}
+               {% if request.GET.busqueda %}&busqueda={{ request.GET.busqueda }}{% endif %}
+               {% if request.GET.vencidas %}&vencidas={{ request.GET.vencidas }}{% endif %}" 
                style="background-color: #1a1a1a; color: white;">
                Siguiente &raquo;
             </a>
