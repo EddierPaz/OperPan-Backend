@@ -100,9 +100,7 @@ def _contexto_base():
             "indice": i,
         })
 
-    # 1. Obtenemos los horarios activos (uno por empleado, en teoría) y nos
-    #    aseguramos de que cada uno esté al día con su ciclo. Si el cron no
-    #    corrió, esto genera aquí mismo los ciclos que hicieran falta.
+    # 1. Obtenemos los horarios activos
     horarios_qs = (
         Horario.objects
         .filter(estado=True, es_ciclo_cerrado=False)
@@ -128,7 +126,6 @@ def _contexto_base():
         horarios.append(horario_vigente)
 
     # 2. ORDENAR: Por la fecha de descanso más cercana (ascendente).
-    # Los que no tengan descanso quedan al final.
     horarios.sort(key=lambda h: h.proximo_descanso.fecha if h.proximo_descanso else date.max)
 
     turnos_hoy = {
@@ -141,6 +138,9 @@ def _contexto_base():
     presentes = 0
     tardanzas = 0
     ausentes = 0
+
+    # Obtenemos la hora actual en la zona horaria configurada en Django
+    hora_actual = timezone.localtime().time()
 
     for horario in horarios:
         descanso_hoy = (
@@ -163,6 +163,24 @@ def _contexto_base():
         )
 
         horario.asistencia = asistencia
+
+        # --- LÓGICA DE 60 MINUTOS (COMPARACIÓN DE HORAS PURAS) ---
+        if horario.hora_entrada:
+            # Usamos una fecha dummy para poder sumar los 60 minutos sin afectar el día
+            dummy_date = date(2000, 1, 1)
+            entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
+            limite_hora = (entrada_dt + timedelta(minutes=60)).time()
+            
+            if hora_actual > limite_hora:
+                horario.puede_registrar = False
+                horario.estado_tiempo = "AUSENTE_AUTOMATICO"
+            else:
+                horario.puede_registrar = True
+                horario.estado_tiempo = "A_TIEMPO"
+        else:
+            horario.puede_registrar = False
+            horario.estado_tiempo = "SIN_HORA"
+        # --------------------------------------------------------
 
         if horario.turno in turnos_hoy:
             turnos_hoy[horario.turno].append(horario)
@@ -807,6 +825,8 @@ def eliminar_horario(request, id):
 
     # Ahora valida si registrar o no la asistencia dependiendo de si corresponde al turno o
 
+# Cambio del 10 de Noviembre - Validación de 60 minutos.
+
 @login_required
 def registrar_asistencia(request):
     if request.method != "POST":
@@ -824,17 +844,14 @@ def registrar_asistencia(request):
     hoy = timezone.localdate()
     hora_actual = timezone.localtime().time()
 
-    # VALIDACIÓN DE TURNO
-    hora_entrada = horario.hora_entrada
-    hora_salida = horario.hora_salida
+    # --- VALIDACIÓN DE TIEMPO: LÍMITE DE 60 MINUTOS ---
+    if horario.hora_entrada:
+        dummy_date = date(2000, 1, 1)
+        entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
+        limite_hora = (entrada_dt + timedelta(minutes=60)).time()
 
-    if hora_entrada and hora_salida:
-        if not (hora_entrada <= hora_actual <= hora_salida):
-            nombre_turno = horario.get_turno_display()
-            mensaje = (
-                f"No puedes marcar asistencia del turno {nombre_turno} "
-                f"(rango {hora_entrada.strftime('%H:%M')} - {hora_salida.strftime('%H:%M')})."
-            )
+        if hora_actual > limite_hora:
+            mensaje = "El plazo de 60 minutos ha vencido. El empleado se considera Ausente automático."
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'error': mensaje}, status=400)
             messages.error(request, mensaje)
@@ -847,14 +864,26 @@ def registrar_asistencia(request):
             return JsonResponse({
                 'success': True,
                 'estado': asistencia_existente.estado,
-                'hora_marcada': asistencia_existente.hora_marcada.strftime('%H:%M'),
+                'hora_marcada': asistencia_existente.hora_marcada.strftime('%H:%M') if asistencia_existente.hora_marcada else 'N/A',
                 'estado_display': asistencia_existente.get_estado_display(),
                 'ya_registrado': True
             })
         return redirect("asistencia:asistencia_dashboard")
 
+    # --- LÓGICA DE TOLERANCIA DE 15 MINUTOS ---
+    if horario.hora_entrada:
+        dummy_date = date(2000, 1, 1)
+        entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
+        limite_tolerancia_hora = (entrada_dt + timedelta(minutes=15)).time()
+        
+        if hora_actual <= limite_tolerancia_hora:
+            estado = "PRESENTE"
+        else:
+            estado = "TARDE"
+    else:
+        estado = "PRESENTE" # Fallback por si no hay hora de entrada
+
     # Registrar nueva asistencia
-    estado = "PRESENTE" if hora_actual <= hora_entrada else "TARDE"
     asistencia = Asistencia.objects.create(
         horario=horario,
         fecha=hoy,
@@ -1363,7 +1392,6 @@ def cambiar_estado_asistencia(request):
             'estado': estado_display,
         }
         
-
         return JsonResponse({'status': 'ok', 'mensaje': 'Estado actualizado'})
     except PerfilEmpleado.DoesNotExist:
         return JsonResponse({'error': 'Empleado no encontrado'}, status=404)
