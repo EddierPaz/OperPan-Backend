@@ -16,14 +16,23 @@ DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = []
 
-# ── Apps ──────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    
+    # --- NUEVAS APPS DE CLOUDINARY ---
+    'cloudinary_storage',
+    # ---------------------------------
+    
     'django.contrib.staticfiles',
+    
+    # --- APP DE CLOUDINARY ---
+    'cloudinary',
+    # -------------------------
+    
     'apps.usuarios',
     'apps.login',
     'apps.novedades',
@@ -31,7 +40,6 @@ INSTALLED_APPS = [
     'apps.asistencia',
     'apps.tareas',
 ]
-
 # ── Middleware ────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,7 +140,24 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ── Archivos media ────────────────────────────
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# MEDIA_ROOT = BASE_DIR / 'media'  # Comentado: ya no guardaremos archivos en el disco local
+
+# ── Configuración de Cloudinary ───────────────
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+}
+
+# Configuración de almacenamiento por defecto (Django 4.2+)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 # ── PK por defecto ────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

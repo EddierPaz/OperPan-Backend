@@ -2,8 +2,10 @@ asgiref==3.11.1
 certifi==2026.7.22
 cffi==2.1.1
 charset-normalizer==3.4.9
+cloudinary==1.47.0
 cryptography==50.0.1
 Django==4.2.24
+django-cloudinary-storage==0.3.0
 django-environ==0.14.0
 Faker==40.36.0
 google-api-core==2.34.0
@@ -26,6 +28,7 @@ pyparsing==3.3.2
 reportlab==5.0.0
 requests==2.34.2
 requests-oauthlib==2.0.0
+six==1.17.0
 sqlparse==0.5.5
 tzdata==2026.2
 uritemplate==4.2.0

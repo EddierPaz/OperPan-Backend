@@ -3,10 +3,11 @@ import os
 
 from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, HttpResponseForbidden, Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.core.files.base import ContentFile
 
 from apps.usuarios.decorators import admin_required_json as admin_required
 from apps.usuarios.decorators import empleado_required, empleado_required_json
@@ -24,7 +25,7 @@ from apps.usuarios.models import PerfilEmpleado
 @login_required
 @admin_required
 def memorando_crear(request):
-    """Crea un nuevo memorando, genera el PDF y lo almacena."""
+    """Crea un nuevo memorando, genera el PDF y lo almacena en Cloudinary."""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
 
@@ -42,22 +43,22 @@ def memorando_crear(request):
 
     memorando = form.save(commit=False)
     memorando.generado_por = request.user
-    memorando.save()  # genera el consecutivo automáticamente
+    memorando.save()  # Genera el consecutivo automáticamente
 
     # =====================================================
-    # NOTIFICACIÓN AL EMPLEADO (DESPUÉS DE GUARDAR)
+    # GENERACIÓN Y SUBIDA DEL PDF A CLOUDINARY
     # =====================================================
-    contexto = {
-        'empleado_nombre': memorando.empleado.nombre_completo(),
-        'tipo': memorando.get_tipo_display(),
-        'asunto': memorando.asunto,
-        'consecutivo': memorando.consecutivo,
-    }
-
     try:
-        pdf_path = generar_pdf_memorando(memorando)
-        memorando.archivo_pdf = pdf_path
-        memorando.save(update_fields=['archivo_pdf'])
+        # NOTA: generar_pdf_memorando DEBE devolver los bytes del PDF (buffer), 
+        # no una ruta local. (Revisa el archivo pdfs.py)
+        pdf_bytes = generar_pdf_memorando(memorando) 
+        
+        # Guardamos el archivo forzando la subida a Cloudinary
+        memorando.archivo_pdf.save(
+            f'{memorando.consecutivo}.pdf', 
+            ContentFile(pdf_bytes), 
+            save=True
+        )
     except Exception as e:
         print(f"Error al generar PDF para memorando {memorando.id}: {e}")
 
@@ -115,7 +116,7 @@ def memorandos_lista(request):
             'fecha_emision': m.fecha_emision.isoformat(),
             'estado': m.get_estado_display(),
             'generado_por': m.generado_por.username if m.generado_por else None,
-            'es_automatico': m.generado_por is None,   # ← NUEVO
+            'es_automatico': m.generado_por is None,
             'archivo_pdf': m.archivo_pdf.url if m.archivo_pdf else None,
             'descargas': m.descargas,
         }
@@ -174,7 +175,7 @@ def mis_memorandos_api(request):
             'contenido': m.contenido,
             'fecha_emision': m.fecha_emision.isoformat(),
             'generado_por': m.generado_por.username if m.generado_por else None,
-            'es_automatico': m.generado_por is None,   # ← NUEVO
+            'es_automatico': m.generado_por is None,
             'archivo_pdf': m.archivo_pdf.url if m.archivo_pdf else None,
             'descargas': m.descargas,
         }
@@ -189,7 +190,7 @@ def mis_memorandos_api(request):
 
 @login_required
 def memorando_descargar(request, pk):
-    """Descarga el PDF de un memorando (admin o empleado dueño)."""
+    """Descarga el PDF de un memorando (admin o empleado dueño) usando Cloudinary."""
     try:
         memorando = Memorando.objects.select_related('empleado', 'generado_por').get(pk=pk)
     except Memorando.DoesNotExist:
@@ -206,22 +207,12 @@ def memorando_descargar(request, pk):
     if not memorando.archivo_pdf:
         return JsonResponse({'error': 'El memorando no tiene archivo PDF asociado.'}, status=404)
 
-    # Verificar que el archivo existe físicamente
-    if not os.path.exists(memorando.archivo_pdf.path):
-        # Si el PDF no existe, intentar regenerarlo
-        try:
-            from .pdfs import generar_pdf_memorando
-            pdf_path = generar_pdf_memorando(memorando)
-            memorando.archivo_pdf = pdf_path
-            memorando.save(update_fields=['archivo_pdf'])
-        except Exception as e:
-            return JsonResponse({'error': f'Error al regenerar el PDF: {str(e)}'}, status=500)
-
     # Incrementar contador de descargas
     memorando.descargas += 1
     memorando.save(update_fields=['descargas'])
 
-    # Servir el archivo
-    response = FileResponse(memorando.archivo_pdf.open('rb'), as_attachment=True)
-    response['Content-Disposition'] = f'attachment; filename="{memorando.consecutivo}.pdf"'
-    return response
+    # Redirigir directamente a la URL de Cloudinary
+    try:
+        return redirect(memorando.archivo_pdf.url)
+    except ValueError:
+        return JsonResponse({'error': 'No se pudo obtener la URL del archivo en Cloudinary.'}, status=500)

@@ -4,6 +4,7 @@
 # ============================================================
 
 import os
+from io import BytesIO  # <-- NUEVA IMPORTACIÓN
 from datetime import datetime, date
 from django.conf import settings
 
@@ -355,24 +356,14 @@ def generar_memorando_pdf(memorando=None, output_path=None, logo_path=None, **kw
     consecutivo = _primero(memorando, "consecutivo", "codigo", default=kwargs.get("consecutivo", "MEM-2026-000"))
     fecha = _primero(memorando, "fecha", "fecha_emision", default=kwargs.get("fecha", datetime.now()))
 
-    # Manejo de rutas y directorios
-    media_root = getattr(settings, "MEDIA_ROOT", os.path.join(os.getcwd(), "media"))
-    if not output_path:
-        output_path = kwargs.get("ruta")
+    # =====================================================
+    # CAMBIO CLAVE: Usar BytesIO en lugar de escribir en disco
+    # =====================================================
+    buffer = BytesIO()
 
-    if not output_path:
-        dir_memorandos = os.path.join(media_root, "memorandos")
-        os.makedirs(dir_memorandos, exist_ok=True)
-        absolute_output_path = os.path.join(dir_memorandos, f"{consecutivo}.pdf")
-    else:
-        absolute_output_path = os.path.abspath(output_path)
-        directorio = os.path.dirname(absolute_output_path)
-        if directorio:
-            os.makedirs(directorio, exist_ok=True)
-
-    # Configuración inicial del lienzo
+    # Configuración inicial del lienzo apuntando al buffer en memoria
     w, h = A4
-    c = canvas.Canvas(absolute_output_path, pagesize=A4)
+    c = canvas.Canvas(buffer, pagesize=A4)
     c.setTitle(f"OperPan - {consecutivo}")
 
     # 1. Capas base
@@ -518,11 +509,10 @@ def generar_memorando_pdf(memorando=None, output_path=None, logo_path=None, **kw
     c.showPage()
     c.save()
 
-    try:
-        rel_path = os.path.relpath(absolute_output_path, media_root)
-        return rel_path.replace("\\", "/")
-    except ValueError:
-        return absolute_output_path
+    # =====================================================
+    # CAMBIO CLAVE: Devolvemos los bytes del PDF, no una ruta
+    # =====================================================
+    return buffer.getvalue()
 
 
 # ============================================================
