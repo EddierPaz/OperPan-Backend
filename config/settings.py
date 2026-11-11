@@ -6,15 +6,14 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Variables de entorno ──────────────────────
-# Se leen primero para que SECRET_KEY, DEBUG y las credenciales de correo
-# vengan siempre del .env (nunca hardcodeadas en este archivo).
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=True)
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+# Dominios permitidos (con el dominio correcto de PythonAnywhere)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'operppan.pythonanywhere.com'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
 # ── Middleware ────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <-- Requerido para producción
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,12 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ── Base de datos ─────────────────────────────
-
-# db.sqlite3 -- Esta base de datos es la que se usa por defecto (óptima
-# para trabajar desde Mac). Para producción/XAMPP, comenta este bloque
-# y descomenta el bloque MySQL de abajo.
-
+# ── Base de datos (SQLite) ────────────────────
 DATABASES = {
    "default": {
        "ENGINE": "django.db.backends.sqlite3",
@@ -86,22 +81,12 @@ DATABASES = {
    }
 }
 
-# XAMPP - únicamente funcional en Windows:
-# Esta BD es mejor para nutrirla y es la verdad al momento de ejecutar producción
-
+# XAMPP - MySQL (Comentado para producción)
 # DATABASES = {
 #      'default': {
 #          'ENGINE': 'django.db.backends.mysql',
 #          'NAME': 'operpan',
-
-#          # root es el usuario por defecto en xampp:
-#              # En el cambio del 4/09/2026 - Modifique a usuario y contraseña por defecto
-#              # En vez de tener un usuario de OperPan y una contraseña debido a que muchas veces
-#              # Los computadores pueden tener atributos que alteran los privilegios de usuarios en xampp sobre las db
-#              # Por ende es mejor tenerlo asi para tener un mejor flujo de trabajo:
 #          'USER': 'root',
-
-#          # No tenemos contraseña para usar la por defecto
 #          'PASSWORD': '',
 #          'HOST': 'localhost',
 #          'PORT': '3306',
@@ -133,10 +118,27 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# ── Archivos estáticos ────────────────────────
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# ============================================================
+# CONFIGURACIÓN DINÁMICA DE ARCHIVOS ESTÁTICOS
+# ============================================================
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+if DEBUG:
+    # EN LOCAL: Usa la carpeta static/ normal
+    STATIC_URL = '/static/'
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+else:
+    # EN PRODUCCIÓN (PythonAnywhere): Usa WhiteNoise local. 
+    # IMPORTANTE: NO USAR JSDELIVR AQUÍ.
+    STATIC_URL = '/static/' 
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    }
 
 # ── Archivos media ────────────────────────────
 MEDIA_URL = '/media/'
@@ -165,11 +167,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ===============================
 # CONFIGURACIÓN DE CORREO
 # ===============================
-
-# ===============================
-# CONFIGURACIÓN DE CORREO
-# ===============================
-
 if DEBUG and not env.bool('EMAIL_BACKEND_REAL', default=False):
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
