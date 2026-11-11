@@ -12,7 +12,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 
-# Dominios permitidos (Lee del .env, pero deja estos por defecto)
+# Dominios permitidos (con el dominio correcto de PythonAnywhere)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'operppan.pythonanywhere.com'])
 
 # ── Apps ──────────────────────────────────────
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
 # ── Middleware ────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Requerido para producción
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <-- Requerido para producción
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,6 +73,21 @@ DATABASES = {
    }
 }
 
+# XAMPP - MySQL (Comentado para producción)
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.mysql',
+#          'NAME': 'operpan',
+#          'USER': 'root',
+#          'PASSWORD': '',
+#          'HOST': 'localhost',
+#          'PORT': '3306',
+#          'OPTIONS': {
+#              'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#          },
+#      }
+#  }
+
 # ── Usuario personalizado ─────────────────────
 AUTH_USER_MODEL = 'usuarios.User'
 
@@ -109,8 +124,9 @@ if DEBUG:
         "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     }
 else:
-    # EN PRODUCCIÓN (PythonAnywhere): Usa jsDelivr y WhiteNoise
-    STATIC_URL = 'https://cdn.jsdelivr.net/gh/EddierPaz/operpan-static@main/'
+    # EN PRODUCCIÓN (PythonAnywhere): Usa WhiteNoise local. 
+    # IMPORTANTE: NO USAR JSDELIVR AQUÍ.
+    STATIC_URL = '/static/' 
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
