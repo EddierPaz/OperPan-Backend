@@ -10,9 +10,9 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False) # Importante: False en producción
+DEBUG = env.bool('DEBUG', default=False)
 
-# Aquí añadimos tu dominio de PythonAnywhere
+# Dominios permitidos (Lee del .env, pero deja estos por defecto)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'operppan.pythonanywhere.com'])
 
 # ── Apps ──────────────────────────────────────
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
 # ── Middleware ────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <-- Añadido para producción
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Requerido para producción
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,28 +66,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # ── Base de datos (SQLite) ────────────────────
-# Se deja SQLite como pediste. Recuerda subir el archivo db.sqlite3 a PythonAnywhere.
 DATABASES = {
    "default": {
        "ENGINE": "django.db.backends.sqlite3",
        "NAME": BASE_DIR / "db.sqlite3",
    }
 }
-
-# XAMPP - MySQL (Comentado para producción)
-# DATABASES = {
-#      'default': {
-#          'ENGINE': 'django.db.backends.mysql',
-#          'NAME': 'operpan',
-#          'USER': 'root',
-#          'PASSWORD': '',
-#          'HOST': 'localhost',
-#          'PORT': '3306',
-#          'OPTIONS': {
-#              'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#          },
-#      }
-#  }
 
 # ── Usuario personalizado ─────────────────────
 AUTH_USER_MODEL = 'usuarios.User'
@@ -111,22 +95,26 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# ── Archivos estáticos (jsDelivr) ─────────────
-# Apuntamos al repositorio de GitHub que acabas de crear.
-STATIC_URL = 'https://cdn.jsdelivr.net/gh/EddierPaz/operpan-static@main/'
-
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# ============================================================
+# CONFIGURACIÓN DINÁMICA DE ARCHIVOS ESTÁTICOS
+# ============================================================
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Almacenamiento con WhiteNoise para el panel de admin
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+if DEBUG:
+    # EN LOCAL: Usa la carpeta static/ normal
+    STATIC_URL = '/static/'
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+else:
+    # EN PRODUCCIÓN (PythonAnywhere): Usa jsDelivr y WhiteNoise
+    STATIC_URL = 'https://cdn.jsdelivr.net/gh/EddierPaz/operpan-static@main/'
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    }
 
 # ── Archivos media ────────────────────────────
 MEDIA_URL = '/media/'
