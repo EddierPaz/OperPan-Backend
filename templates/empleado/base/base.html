@@ -34,48 +34,58 @@
 
             <nav class="nav-menu">
                 <ul>
+                    <!-- Dashboard -->
                     <li class="{% block active_inicio %}{% endblock %}">
-                        <a href="{% url 'employee_dashboard' %}">
-                            <i class="bi bi-grid-3x3-gap-fill"></i>
-                            Inicio
+                        <a href="{% url 'employee_dashboard' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</span>
                         </a>
                     </li>
+                    <!-- Asistencia -->
                     <li class="{% block active_asistencia %}{% endblock %}">
-                        <a href="{% url 'asistencia:empleado' %}">
-                            <i class="bi bi-clock-history"></i>
-                            Asistencia
+                        <a href="{% url 'asistencia:empleado' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-clock-history"></i> Asistencia</span>
+                            {% if notif_empleado_asistencia > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_empleado_asistencia }}</span>
+                            {% endif %}
                         </a>
                     </li>
+                    <!-- Horario -->
                     <li class="{% block active_horario %}{% endblock %}">
-                        <a href="{% url 'asistencia:empleado_horario' %}">
-                            <i class="bi bi-calendar-week"></i>
-                            Horario
+                        <a href="{% url 'asistencia:empleado_horario' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-calendar-week"></i> Horario</span>
                         </a>
                     </li>
+                    <!-- Novedades -->
                     <li class="{% block active_solicitudes %}{% endblock %}">
-                        <a href="{% url 'novedades:solicitudes_empleado' %}">
-                            <i class="bi bi-envelope-paper"></i>
-                            Novedades
+                        <a href="{% url 'novedades:solicitudes_empleado' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-envelope-paper"></i> Novedades</span>
+                            {% if notif_empleado_novedades > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_empleado_novedades }}</span>
+                            {% endif %}
                         </a>
                     </li>
-
+                    <!-- Tareas -->
                     <li class="{% block active_tareas %}{% endblock %}">
-                        <a href="{% url 'tareas:empleado_tareas_list' %}">
-                            <i class="bi bi-list-check"></i>
-                            Tareas Operativas
+                        <a href="{% url 'tareas:empleado_tareas_list' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-list-check"></i> Tareas Operativas</span>
+                            {% if notif_empleado_tareas > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_empleado_tareas }}</span>
+                            {% endif %}
                         </a>
                     </li>
+                    <!-- Perfil -->
                     <li class="{% block active_perfil %}{% endblock %}">
-                        <a href="{% url 'employee_profile' %}">
-                            <i class="bi bi-person-badge"></i>
-                            Información personal
+                        <a href="{% url 'employee_profile' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-person-badge"></i> Información personal</span>
                         </a>
                     </li>
-
+                    <!-- Memorandos -->
                     <li class="{% block active_memorandos %}{% endblock %}">
-                        <a href="{% url 'memorandos:memorandos_empleado' %}">
-                            <i class="bi bi-file-pdf"></i>
-                            Memorandos
+                        <a href="{% url 'memorandos:memorandos_empleado' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-file-pdf"></i> Memorandos</span>
+                            {% if notif_empleado_memorandos > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_empleado_memorandos }}</span>
+                            {% endif %}
                         </a>
                     </li>
                 </ul>

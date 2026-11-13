@@ -6,32 +6,24 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Variables de entorno ──────────────────────
+# Se leen primero para que SECRET_KEY, DEBUG y las credenciales de correo
+# vengan siempre del .env (nunca hardcodeadas en este archivo).
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=True)
 
-# Dominios permitidos (con el dominio correcto de PythonAnywhere)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost', 'operppan.pythonanywhere.com'])
+ALLOWED_HOSTS = []
 
+# ── Apps ──────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    
-    # --- NUEVAS APPS DE CLOUDINARY ---
-    'cloudinary_storage',
-    # ---------------------------------
-    
     'django.contrib.staticfiles',
-    
-    # --- APP DE CLOUDINARY ---
-    'cloudinary',
-    # -------------------------
-    
     'apps.usuarios',
     'apps.login',
     'apps.novedades',
@@ -39,10 +31,10 @@ INSTALLED_APPS = [
     'apps.asistencia',
     'apps.tareas',
 ]
+
 # ── Middleware ────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <-- Requerido para producción
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,6 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.usuarios.context_processors.notificaciones_context', 
             ],
         },
     },
@@ -73,7 +66,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ── Base de datos (SQLite) ────────────────────
+# ── Base de datos ─────────────────────────────
+
+# db.sqlite3 -- Esta base de datos es la que se usa por defecto (óptima
+# para trabajar desde Mac). Para producción/XAMPP, comenta este bloque
+# y descomenta el bloque MySQL de abajo.
+
 DATABASES = {
    "default": {
        "ENGINE": "django.db.backends.sqlite3",
@@ -81,13 +79,23 @@ DATABASES = {
    }
 }
 
-# XAMPP - MySQL (Comentado para producción)
+# XAMPP - únicamente funcional en Windows:
+# Esta BD es mejor para nutrirla y es la verdad al momento de ejecutar producción
+
 # DATABASES = {
 #      'default': {
 #          'ENGINE': 'django.db.backends.mysql',
 #          'NAME': 'operpan',
+
+#          # root es el usuario por defecto en xampp:
+#              # En el cambio del 4/09/2026 - Modifique a usuario y contraseña por defecto
+#              # En vez de tener un usuario de OperPan y una contraseña debido a que muchas veces
+#              # Los computadores pueden tener atributos que alteran los privilegios de usuarios en xampp sobre las db
+#              # Por ende es mejor tenerlo asi para tener un mejor flujo de trabajo:
 #          'USER': 'root',
-#          'PASSWORD': '',
+
+#          # No tenemos contraseña para usar la por defecto
+#          'PASSWORD': 'Eddier2929*',
 #          'HOST': 'localhost',
 #          'PORT': '3306',
 #          'OPTIONS': {
@@ -118,48 +126,14 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
-# ============================================================
-# CONFIGURACIÓN DINÁMICA DE ARCHIVOS ESTÁTICOS
-# ============================================================
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# ── Archivos estáticos ────────────────────────
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-if DEBUG:
-    # EN LOCAL: Usa la carpeta static/ normal
-    STATIC_URL = '/static/'
-    STORAGES = {
-        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
-    }
-else:
-    # EN PRODUCCIÓN (PythonAnywhere): Usa WhiteNoise local. 
-    # IMPORTANTE: NO USAR JSDELIVR AQUÍ.
-    STATIC_URL = '/static/' 
-    STORAGES = {
-        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-    }
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ── Archivos media ────────────────────────────
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'  # Comentado: ya no guardaremos archivos en el disco local
-
-# ── Configuración de Cloudinary ───────────────
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': env('CLOUDINARY_API_KEY'),
-    'API_SECRET': env('CLOUDINARY_API_SECRET'),
-}
-
-# Configuración de almacenamiento por defecto (Django 4.2+)
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ── PK por defecto ────────────────────────────
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -167,6 +141,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ===============================
 # CONFIGURACIÓN DE CORREO
 # ===============================
+
+# ===============================
+# CONFIGURACIÓN DE CORREO
+# ===============================
+
 if DEBUG and not env.bool('EMAIL_BACKEND_REAL', default=False):
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:

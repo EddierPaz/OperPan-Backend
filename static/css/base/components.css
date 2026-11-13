@@ -71,9 +71,9 @@
 }
 
 .btn-corporate-sec {
-  background: #3690A6;
+  background: #3690a6;
   color: #ffffff;
-  border: 1px solid #3690A6;
+  border: 1px solid #3690a6;
   transition: all 0.3s ease;
 }
 
@@ -111,7 +111,6 @@
   border-color: var(--color-text-muted);
   transform: translateY(-2px);
 }
-
 
 /* ============================================================
    SISTEMA GLOBAL DE ACCIONES (.btn-action-*)
@@ -633,7 +632,6 @@
 }
 
 @media (max-width: 576px) {
-
   .modal-detalle-header,
   .modal-detalle-body,
   .modal-detalle-footer {
@@ -667,7 +665,9 @@
   align-items: center;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-border-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   width: 100%;
 }
 
@@ -945,7 +945,9 @@
   border: 1px solid var(--color-border-soft);
   border-left: 4px solid var(--color-border);
   padding: 1rem 1.25rem;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .request-card:hover {
@@ -1237,7 +1239,10 @@
   font-size: 1.4rem;
   color: var(--color-text-on-dark); /* En topbar oscuro */
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .theme-toggle:hover {
@@ -1248,6 +1253,25 @@
 .theme-toggle:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Badge de notificaciones en el sidebar */
+.nav-menu a .badge {
+  font-size: 0.7rem;
+  padding: 0.3em 0.6em;
+  background-color: var(--color-primary) !important; /* El rojo de OperPan */
+  color: white;
+  border-radius: 50rem;
+  font-weight: 700;
+  min-width: 24px; /* Para que los números de 1 dígito no se vean como un círculo perfecto, sino como píldora */
+}
+
+/* Asegurar que el enlace ocupe todo el ancho y empuje la burbuja */
+.nav-menu a {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1285,7 +1309,9 @@
   -webkit-mask-size: 18px 18px;
   mask-size: 18px 18px;
   background-color: var(--color-primary);
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .btn-close:hover {

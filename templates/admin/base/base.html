@@ -42,25 +42,56 @@
 
             <nav class="nav-menu">
                 <ul>
+                    <!-- Dashboard -->
                     <li class="{% block active_inicio %}{% endblock %}">
-                        <a href="{% url 'admin_dashboard' %}"><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</a>
+                        <a href="{% url 'admin_dashboard' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-grid-3x3-gap-fill"></i> Inicio</span>
+                        </a>
                     </li>
+                    <!-- Asistencia -->
                     <li class="{% block active_asistencia %}{% endblock %}">
-                        <a href="{% url 'asistencia:asistencia_dashboard' %}"><i class="bi bi-calendar-check"></i>
-                            Asistencia</a>
+                        <a href="{% url 'asistencia:asistencia_dashboard' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-calendar-check"></i> Asistencia</span>
+                            {% if notif_admin_asistencia > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_admin_asistencia }}</span>
+                            {% endif %}
+                        </a>
                     </li>
+                    <!-- Horarios -->
                     <li class="{% block active_horarios %}{% endblock %}">
-                        <a href="{% url 'asistencia:horarios' %}"><i class="bi bi-calendar3-week"></i> Horarios</a>
+                        <a href="{% url 'asistencia:horarios' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-calendar3-week"></i> Horarios</span>
+                            {% if notif_admin_horarios > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_admin_horarios }}</span>
+                            {% endif %}
+                        </a>
                     </li>
+                    <!-- Cuentas -->
                     <li class="{% block active_cuentas %}{% endblock %}">
-                        <a href="{% url 'user_list' %}"><i class="bi bi-people"></i> Cuentas</a>
+                        <a href="{% url 'user_list' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-people"></i> Cuentas</span>
+                            {% if notif_admin_cuentas > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_admin_cuentas }}</span>
+                            {% endif %}
+                        </a>
                     </li>
+                    <!-- Tareas -->
                     <li class="{% block active_tareas %}{% endblock %}">
-                        <a href="{% url 'tareas:admin_tareas_list' %}"><i class="bi bi-list-task"></i> Tareas
-                            Operativas</a>
+                        <a href="{% url 'tareas:admin_tareas_list' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-list-task"></i> Tareas Operativas</span>
+                            {% if notif_admin_tareas > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_admin_tareas }}</span>
+                            {% endif %}
+                        </a>
                     </li>
+                    <!-- Novedades -->
                     <li class="{% block active_novedades %}{% endblock %}">
-                        <a href="{% url 'novedades:novedades_admin' %}"><i class="bi bi-megaphone"></i> Novedades</a>
+                        <a href="{% url 'novedades:novedades_admin' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-megaphone"></i> Novedades</span>
+                            {% if notif_admin_novedades > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_admin_novedades }}</span>
+                            {% endif %}
+                        </a>
                     </li>
                 </ul>
             </nav>
