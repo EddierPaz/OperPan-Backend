@@ -91,45 +91,80 @@
                 <th>Acción</th>
               </tr>
             </thead>
+
+            <!-- =====================================================================
+
+
+
+
+
+              ACTUALIZACIÓN (10/11/2026): Control visual de tiempos y estados.
+              
+              - Formato de hora: Se usa el filtro |time:"h:i A" para mostrar AM/PM.
+              - Hora Marcada: Si el tiempo expiró y no hay registro, muestra 
+                "No registrada" en tono atenuado para evitar confusiones.
+              - Estado: Evalúa la existencia de la asistencia. Si el sistema ya 
+                bloqueó el tiempo, muestra la etiqueta roja "Ausente". De lo 
+                contrario, mantiene "Sin registrar".
+              - Acción: El botón muta a "Tiempo vencido" (deshabilitado) si se 
+                superó el límite, bloqueando la marcación tardía en la UI.
+
+
+
+
+                
+            ====================================================================== -->
+
             <tbody>
+              <tbody>
               {% for horario in lista_horarios %}
               <tr>
                 <td>{{ horario.empleado.nombre_completo }}</td>
                 <td>{{ horario.empleado.get_cargo_display }}</td>
-                <td>{{ horario.hora_entrada|time:"H:i" }}</td>
+                <!-- Formato AM / PM aplicado con |time:"h:i A" -->
+                <td>{{ horario.hora_entrada|time:"h:i A" }}</td>
+                
                 <td>
-                  {% if horario.asistencia %}
-                  {{ horario.asistencia.hora_marcada|time:"H:i" }}
-                  {% else %}
-                  <span class="text-muted">Sin marcar</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if horario.asistencia %}
-                  {% if horario.asistencia.estado == "PRESENTE" %}
-                  <span class="badge badge-active">Presente</span>
-                  {% elif horario.asistencia.estado == "TARDE" %}
-                  <span class="badge badge-pendiente">Tarde</span>
-                  {% elif horario.asistencia.estado == "AUSENTE" %}
-                  <span class="badge badge-rechazado">Ausente</span>
-                  {% endif %}
-                  {% else %}
-                  <span class="badge bg-secondary">Sin registrar</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if horario.asistencia %}
-                  <span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>
+                  {% if horario.asistencia and horario.asistencia.hora_marcada %}
+                    {{ horario.asistencia.hora_marcada|time:"h:i A" }}
                   {% elif not horario.puede_registrar %}
-                  <!-- Botón rediseñado para parecerse a la UI -->
-                  <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled title="El plazo de 60 minutos ha vencido. Se marcará ausente.">
-                    <i class="bi bi-slash-circle me-1"></i> Tiempo vencido
-                  </button>
+                    <!-- Texto para tiempo vencido -->
+                    <span class="text-muted fw-semibold">No registrada</span>
                   {% else %}
-                  <button class="btn btn-sm btn-outline-corporate btn-registrar-asistencia rounded-pill px-3"
-                    data-horario-id="{{ horario.id }}">
-                    <i class="bi bi-fingerprint me-1"></i> Registrar
-                  </button>
+                    <span class="text-muted">Sin marcar</span>
+                  {% endif %}
+                </td>
+                
+                <td>
+                  {% if horario.asistencia %}
+                    {% if horario.asistencia.estado == "PRESENTE" %}
+                      <span class="badge badge-active">Presente</span>
+                    {% elif horario.asistencia.estado == "TARDE" %}
+                      <span class="badge badge-pendiente">Tarde</span>
+                    {% elif horario.asistencia.estado == "AUSENTE" %}
+                      <!-- Usamos la clase que ya tienes definida en tu CSS para ausente -->
+                      <span class="badge badge-ausente">Ausente</span>
+                    {% endif %}
+                  {% elif not horario.puede_registrar %}
+                    <!-- Respaldo visual por si la BD tarda milisegundos en actualizar -->
+                    <span class="badge badge-ausente">Ausente</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Sin registrar</span>
+                  {% endif %}
+                </td>
+                
+                <td>
+                  {% if horario.asistencia and horario.asistencia.estado != 'AUSENTE' %}
+                    <span class="badge badge-active"><i class="bi bi-check2"></i> Registrado</span>
+                  {% elif not horario.puede_registrar %}
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" disabled title="El plazo de 60 minutos ha vencido.">
+                      <i class="bi bi-slash-circle me-1"></i> Tiempo vencido
+                    </button>
+                  {% else %}
+                    <button class="btn btn-sm btn-outline-corporate btn-registrar-asistencia rounded-pill px-3"
+                      data-horario-id="{{ horario.id }}">
+                      <i class="bi bi-fingerprint me-1"></i> Registrar
+                    </button>
                   {% endif %}
                 </td>
               </tr>

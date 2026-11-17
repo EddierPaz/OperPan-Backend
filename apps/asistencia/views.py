@@ -84,6 +84,28 @@ def _verificar_memorandos_asistencia_empleado(user):
         print(f"[asistencia.views] Error verificando memo para "
               f"{perfil.pk}: {e}")
 
+# =============================================================================
+
+
+
+
+
+# ACTUALIZACIÓN (17/11/2026): Automatización de ausencias por límite de tiempo.
+#
+# Esta función ahora procesa los horarios y aplica la regla de los 60 minutos:
+# 1. Calcula la hora límite sumando 60 min a la hora de entrada del turno.
+# 2. Si la hora actual supera el límite y el empleado no ha marcado, verifica 
+#    que no sea día de descanso ni tenga una novedad aprobada (Permiso/Incapacidad).
+# 3. Si pasa las validaciones, crea automáticamente el registro en la base de 
+#    datos con estado "AUSENTE". Esto asegura que los reportes se actualicen 
+#    sin depender de cronjobs o tareas programadas externas.
+
+
+
+
+
+# =============================================================================
+
 def _contexto_base():
     hoy = timezone.localdate()
     proximos_dias = []
@@ -125,7 +147,7 @@ def _contexto_base():
         )
         horarios.append(horario_vigente)
 
-    # 2. ORDENAR: Por la fecha de descanso más cercana (ascendente).
+    # 2. ORDENAR
     horarios.sort(key=lambda h: h.proximo_descanso.fecha if h.proximo_descanso else date.max)
 
     turnos_hoy = {
@@ -139,8 +161,10 @@ def _contexto_base():
     tardanzas = 0
     ausentes = 0
 
-    # Obtenemos la hora actual en la zona horaria configurada en Django
     hora_actual = timezone.localtime().time()
+
+    # Importamos la función que ya tienes para buscar novedades
+    from .services.novedades_calendario import obtener_novedades_por_fecha
 
     for horario in horarios:
         descanso_hoy = (
@@ -162,11 +186,8 @@ def _contexto_base():
             .first()
         )
 
-        horario.asistencia = asistencia
-
-        # --- LÓGICA DE 60 MINUTOS (COMPARACIÓN DE HORAS PURAS) ---
+        # --- LÓGICA DE 60 MINUTOS Y CREACIÓN AUTOMÁTICA EN BD ---
         if horario.hora_entrada:
-            # Usamos una fecha dummy para poder sumar los 60 minutos sin afectar el día
             dummy_date = date(2000, 1, 1)
             entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
             limite_hora = (entrada_dt + timedelta(minutes=60)).time()
@@ -174,6 +195,20 @@ def _contexto_base():
             if hora_actual > limite_hora:
                 horario.puede_registrar = False
                 horario.estado_tiempo = "AUSENTE_AUTOMATICO"
+                
+                # SI NO HAY ASISTENCIA Y EL TIEMPO VENCIÓ, CREAMOS LA AUSENCIA EN LA BD
+                if not asistencia:
+                    # Buscamos si tiene alguna novedad aprobada para hoy (Permiso, Incapacidad)
+                    novedades_hoy = obtener_novedades_por_fecha(horario.empleado, hoy, hoy)
+                    
+                    # Si 'hoy' no está en las novedades, significa que no tiene permiso ni incapacidad
+                    if hoy not in novedades_hoy:
+                        asistencia = Asistencia.objects.create(
+                            horario=horario,
+                            fecha=hoy,
+                            estado='AUSENTE',
+                            hora_marcada=None
+                        )
             else:
                 horario.puede_registrar = True
                 horario.estado_tiempo = "A_TIEMPO"
@@ -181,6 +216,8 @@ def _contexto_base():
             horario.puede_registrar = False
             horario.estado_tiempo = "SIN_HORA"
         # --------------------------------------------------------
+
+        horario.asistencia = asistencia
 
         if horario.turno in turnos_hoy:
             turnos_hoy[horario.turno].append(horario)
@@ -221,7 +258,12 @@ def _contexto_base():
     }
 
 
-# ---
+
+
+
+
+
+# =============================================================================
 
 
 # Cambio el 7 de sep para historial de asistencia con filtros y paginación
