@@ -69,7 +69,7 @@
           <span class="text-muted">Solicitudes pendientes</span>
           <h3 class="mt-1">{{ total_solicitudes_pendientes }}</h3>
           <small class="text-muted">
-            Permisos {{ permisos_pendientes }} · Incap. {{ incapacidades_pendientes }} · Cert. {{ certificados_pendientes }}
+            Solicitud {{ solicitudes_pendientes }} · Incap. {{ incapacidades_pendientes }} · Cert. {{ certificados_pendientes }}
           </small>
         </div>
         <div class="icono-circular">
@@ -193,7 +193,7 @@
                   <div class="d-flex justify-content-between align-items-center w-100">
                     <div>
                       <i class="bi 
-                        {% if item.tipo == 'permiso' %}bi-file-earmark-text text-primary
+                        {% if item.tipo == 'solicitud' %}bi-file-earmark-text text-primary
                         {% elif item.tipo == 'incapacidad' %}bi-heart-pulse text-danger
                         {% else %}bi-award text-success{% endif %} me-1">
                       </i>
@@ -267,7 +267,7 @@
             {% for item in actividad_reciente %}
               <div class="actividad-item">
                 <div class="actividad-icon">
-                  {% if item.tipo == 'permiso' %}
+                  {% if item.tipo == 'solicitud' %}
                     <i class="bi bi-file-earmark-text text-primary"></i>
                   {% elif item.tipo == 'incapacidad' %}
                     <i class="bi bi-heart-pulse text-danger"></i>

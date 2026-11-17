@@ -288,7 +288,7 @@
     <div class="row g-3 mb-4">
         <!-- Mis solicitudes (card clickeable) -->
         <div class="col-md-6">
-            <a href="{% url 'novedades:solicitudes_empleado' %}" class="card-block card-link solicitudes-card">
+            <a href="{% url 'novedades:novedades_empleado' %}" class="card-block card-link solicitudes-card">
                 <div class="card-title">
                     <span><i class="bi bi-envelope-paper me-2" style="color:var(--color-primary);"></i> Mis solicitudes</span>
                     <i class="bi bi-arrow-right-circle text-muted"></i>
@@ -297,8 +297,8 @@
                     <div class="row g-2 text-center">
                         <div class="col-4">
                             <div class="stat-summary">
-                                <div class="stat-number text-primary">{{ permisos_pendientes }}</div>
-                                <small class="text-muted">Permisos</small>
+                                <div class="stat-number text-primary">{{ solicitudes_pendientes }}</div>
+                                <small class="text-muted">Solicitudes</small>
                             </div>
                         </div>
                         <div class="col-4">

@@ -2,7 +2,7 @@ from django.db import models
 from apps.usuarios.models import PerfilEmpleado, User
 
 
-class Permiso(models.Model):
+class Solicitud(models.Model):
     TIPO_CHOICES = (
         ('personal', 'Personal'),
         ('cambio_turno', 'Cambio de turno'),
@@ -19,17 +19,17 @@ class Permiso(models.Model):
         ('rechazado', 'Rechazado'),
     )
 
-    empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='permisos')
+    empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='solicitudes')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     justificacion = models.TextField()
     nuevo_horario = models.CharField(max_length=100, blank=True, null=True)
-    archivo = models.FileField(upload_to='permisos/', blank=True, null=True)
+    archivo = models.FileField(upload_to='solicitudes/', blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     decision_fecha = models.DateTimeField(null=True, blank=True)
-    decision_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='permisos_decididos')
+    decision_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='solicitudes_decididos')
     motivo_rechazo = models.TextField(blank=True, null=True)
 
     def __str__(self):

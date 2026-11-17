@@ -8,7 +8,7 @@ urlpatterns = [
     # VISTAS PRINCIPALES (HTML)
     # ============================================================
     path('', views.novedades_admin, name='novedades_admin'),
-    path('solicitudes/', views.solicitudes_empleado, name='solicitudes_empleado'),
+    path('novedades/', views.novedades_empleado, name='novedades_empleado'),
 
     # ============================================================
     # API - EMPLEADO (CRUD)
@@ -17,29 +17,29 @@ urlpatterns = [
     # Listar todas las solicitudes del empleado
     path('mis-solicitudes/', views.mis_solicitudes, name='mis_solicitudes'),
 
-    # Crear solicitudes
-    path('permisos/crear/', views.crear_permiso, name='crear_permiso'),
+    # Crear Novedades
+    path('solicitudes/crear/', views.crear_solicitud, name='crear_solicitud'),
     path('incapacidades/crear/', views.crear_incapacidad, name='crear_incapacidad'),
     path('certificados/crear/', views.crear_certificado, name='crear_certificado'),
 
-    # EDITAR solicitudes (EMPLEADO)
-    path('solicitudes/permiso/<int:pk>/editar/', views.editar_permiso, name='editar_permiso'),
-    path('solicitudes/incapacidad/<int:pk>/editar/', views.editar_incapacidad, name='editar_incapacidad'),
-    path('solicitudes/certificado/<int:pk>/editar/', views.editar_certificado, name='editar_certificado'),
+    # EDITAR Novedades (EMPLEADO)
+    path('novedades/solicitud/<int:pk>/editar/', views.editar_solicitud, name='editar_solicitud'),
+    path('novedades/incapacidad/<int:pk>/editar/', views.editar_incapacidad, name='editar_incapacidad'),
+    path('novedades/certificado/<int:pk>/editar/', views.editar_certificado, name='editar_certificado'),
 
     # ELIMINAR solicitudes (EMPLEADO)
-    path('solicitudes/permiso/<int:pk>/eliminar/', views.eliminar_permiso, name='eliminar_permiso'),
-    path('solicitudes/incapacidad/<int:pk>/eliminar/', views.eliminar_incapacidad, name='eliminar_incapacidad'),
-    path('solicitudes/certificado/<int:pk>/eliminar/', views.eliminar_certificado, name='eliminar_certificado'),
+    path('novedades/solicitud/<int:pk>/eliminar/', views.eliminar_solicitud, name='eliminar_solicitud'),
+    path('novedades/incapacidad/<int:pk>/eliminar/', views.eliminar_incapacidad, name='eliminar_incapacidad'),
+    path('novedades/certificado/<int:pk>/eliminar/', views.eliminar_certificado, name='eliminar_certificado'),
 
     # ============================================================
-    # API - ADMIN (PERMISOS)
+    # API - ADMIN (SOLICITUDES)
     # ============================================================
-    path('permisos/pendientes/', views.permisos_pendientes, name='permisos_pendientes'),
-    path('permisos/historial/', views.permisos_historial, name='permisos_historial'),
-    path('permisos/<int:pk>/', views.permiso_detalle, name='permiso_detalle'),
-    path('permisos/<int:pk>/aprobar/', views.permiso_aprobar, name='permiso_aprobar'),
-    path('permisos/<int:pk>/rechazar/', views.permiso_rechazar, name='permiso_rechazar'),
+    path('solicitudes/pendientes/', views.solicitudes_pendientes, name='solicitudes_pendientes'),
+    path('solicitudes/historial/', views.solicitudes_historial, name='solicitudes_historial'),
+    path('solicitudes/<int:pk>/', views.solicitud_detalle, name='solicitudes_detalle'),
+    path('solicitudes/<int:pk>/aprobar/', views.solicitud_aprobar, name='solicitudes_aprobar'),
+    path('solicitudes/<int:pk>/rechazar/', views.solicitud_rechazar, name='solicitudes_rechazar'),
 
     # ============================================================
     # API - ADMIN (INCAPACIDADES)

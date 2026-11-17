@@ -269,14 +269,14 @@ def obtener_resumen_empleado(empleado):
         - Presente / Tarde: días con registro real
         - Ausente: días pasados sin marcar y sin novedad
         - Descanso: días de descanso programado
-        - Permiso / Incapacidad / Cambio turno: días cubiertos por
+        - Solicitud / Incapacidad / Cambio turno: días cubiertos por
           una solicitud aprobada
     """
     from .services.novedades_calendario import obtener_novedades_por_fecha
 
     vacio = {
         'presente': 0, 'tarde': 0, 'ausente': 0, 'descanso': 0,
-        'permiso': 0, 'incapacidad': 0, 'cambio_turno': 0,
+        'solicitud': 0, 'incapacidad': 0, 'cambio_turno': 0,
     }
 
     hoy = timezone.localdate()
@@ -343,8 +343,8 @@ def obtener_resumen_empleado(empleado):
 
         if novedad:
             tipo = novedad['tipo']
-            if tipo == 'PERMISO':
-                resumen['permiso'] += 1
+            if tipo == 'SOLICITUD':
+                resumen['solicitud'] += 1
             elif tipo == 'INCAPACIDAD':
                 resumen['incapacidad'] += 1
             elif tipo == 'CAMBIO_TURNO':
@@ -388,7 +388,7 @@ def obtener_resumen_empleado(empleado):
 def asistencia_empleado_historial(request, empleado_id):
     """
     Vista AJAX que devuelve HTML parcial para el modal de historial.
-    Recorre día a día para incluir permisos, incapacidades y cambios
+    Recorre día a día para incluir solicitudes, incapacidades y cambios
     de turno, además de las asistencias reales.
     """
     from .services.novedades_calendario import obtener_novedades_por_fecha
@@ -482,7 +482,7 @@ def asistencia_empleado_historial(request, empleado_id):
         es_novedad = False
         novedad_tipo = None
 
-        if novedad_dia and novedad_dia['tipo'] in ('PERMISO', 'INCAPACIDAD'):
+        if novedad_dia and novedad_dia['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
             estado_final = novedad_dia['tipo']
             hora_programada = 'N/A'
             hora_marcada = 'N/A'
@@ -953,8 +953,8 @@ def asistencia_empleado(request):
 
         novedad_hoy = novedades_por_fecha.get(hoy)
 
-        if novedad_hoy and novedad_hoy['tipo'] in ('PERMISO', 'INCAPACIDAD'):
-            # Permiso o incapacidad: no trabaja → estado y novedad
+        if novedad_hoy and novedad_hoy['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
+            # Solicitud o incapacidad: no trabaja → estado y novedad
             estado_hoy['estado'] = novedad_hoy['tipo']
             estado_hoy['novedad'] = novedad_hoy
         elif novedad_hoy and novedad_hoy['tipo'] == 'CAMBIO_TURNO':
@@ -1038,9 +1038,9 @@ def asistencia_empleado(request):
             novedad_dia = novedades_por_fecha.get(fecha_cursor)
 
             # --------------------------------------------------
-            # 1. PRIORIDAD: PERMISO / INCAPACIDAD (no trabajó)
+            # 1. PRIORIDAD: SOLICITUD / INCAPACIDAD (no trabajó)
             # --------------------------------------------------
-            if novedad_dia and novedad_dia['tipo'] in ('PERMISO', 'INCAPACIDAD'):
+            if novedad_dia and novedad_dia['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
                 historial.append({
                     'fecha': fecha_cursor,
                     'es_descanso': False,
@@ -1199,12 +1199,12 @@ def empleado_horario(request):
                 novedad = novedades_por_fecha.get(fecha)
 
                 # ----------------------------------------------
-                # 1. PRIORIDAD: PERMISO / INCAPACIDAD
+                # 1. PRIORIDAD: SOLICITUD / INCAPACIDAD
                 # ----------------------------------------------
-                if novedad and novedad['tipo'] in ('PERMISO', 'INCAPACIDAD'):
+                if novedad and novedad['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
                     dia['estado'] = novedad['tipo']
                     dia['estado_texto'] = (
-                        'Permiso' if novedad['tipo'] == 'PERMISO' else 'Incapacidad'
+                        'Solicitud' if novedad['tipo'] == 'SOLICITUD' else 'Incapacidad'
                     )
                     dia['novedad'] = novedad
 
@@ -1276,7 +1276,7 @@ def empleado_horario_detalle(request, id):
     )
 
     # ============================================================
-    # NUEVO: aplicar novedades (permisos / incapacidades / cambios de turno)
+    # NUEVO: aplicar novedades (solicitudes / incapacidades / cambios de turno)
     # ============================================================
     novedades_por_fecha = obtener_novedades_por_fecha(
         horario.empleado, fecha_inicio, fecha_fin
@@ -1288,11 +1288,11 @@ def empleado_horario_detalle(request, id):
 
         novedad = novedades_por_fecha.get(dia['fecha'])
 
-        if novedad and novedad['tipo'] in ('PERMISO', 'INCAPACIDAD'):
+        if novedad and novedad['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
             # Máxima prioridad: no trabajó
             dia['estado'] = novedad['tipo']
             dia['estado_texto'] = (
-                'Permiso' if novedad['tipo'] == 'PERMISO' else 'Incapacidad'
+                'Solicitud' if novedad['tipo'] == 'SOLICITUD' else 'Incapacidad'
             )
         elif novedad and novedad['tipo'] == 'CAMBIO_TURNO':
             # Cambio de turno: si ya marcó asistencia, respetar eso

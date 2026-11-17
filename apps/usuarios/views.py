@@ -11,14 +11,13 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from apps.usuarios.utils import get_logo_base64
-
 from .models import User, PerfilEmpleado, RegistroAuditoriaCuenta
 from .forms import UserForm, PerfilEmpleadoForm
 from .decorators import admin_required, empleado_required
 from apps.asistencia.models import Horario, Asistencia, DescansoEmpleado
 from apps.asistencia.views import _contexto_base
 from apps.tareas.models import Task, EstadoTarea
-from apps.novedades.models import Permiso, Incapacidad, Certificado
+from apps.novedades.models import Solicitud, Incapacidad, Certificado
 from apps.memorandos.models import Memorando
 
 
@@ -88,19 +87,19 @@ def admin_dashboard(request):
 
     tareas_pendientes_mostrar = list(tareas_pendientes_qs[:20])
 
-    permisos_pendientes_qs = Permiso.objects.filter(estado='pendiente').select_related('empleado')
+    solicitudes_pendientes_qs = Solicitud.objects.filter(estado='pendiente').select_related('empleado')
     incapacidades_pendientes_qs = Incapacidad.objects.filter(estado='pendiente').select_related('empleado')
     certificados_pendientes_qs = Certificado.objects.filter(estado='pendiente').select_related('empleado')
 
-    permisos_pendientes = permisos_pendientes_qs.count()
+    solicitudes_pendientes = solicitudes_pendientes_qs.count()
     incapacidades_pendientes = incapacidades_pendientes_qs.count()
     certificados_pendientes = certificados_pendientes_qs.count()
-    total_solicitudes_pendientes = permisos_pendientes + incapacidades_pendientes + certificados_pendientes
+    total_solicitudes_pendientes = solicitudes_pendientes + incapacidades_pendientes + certificados_pendientes
 
     novedades_pendientes = []
-    for p in permisos_pendientes_qs:
+    for p in solicitudes_pendientes_qs:
         novedades_pendientes.append({
-            'tipo': 'permiso',
+            'tipo': 'solicitud',
             'empleado': p.empleado,
             'fecha': p.fecha_solicitud,
             'detalle': p.get_tipo_display(),
@@ -162,22 +161,22 @@ def admin_dashboard(request):
         estado_label = 'Tarde'
         badge_color = 'bg-warning text-dark'
 
-    ultimos_permisos = Permiso.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
+    ultimas_solicitudes = Solicitud.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimas_incapacidades = Incapacidad.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimos_certificados = Certificado.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimas_tareas = Task.objects.select_related('empleado').order_by('-fecha_asignacion')[:8]
 
     actividad = []
 
-    for p in ultimos_permisos:
+    for p in ultimas_solicitudes:
         actividad.append({
-            'tipo': 'permiso',
+            'tipo': 'solicitud',
             'fecha': p.fecha_solicitud,
             'empleado': p.empleado.nombre_completo(),
             'estado': p.get_estado_display(),
             'detalle': f"Solicitud de {p.get_tipo_display()}",
             'id': p.id,
-            'modelo': 'permiso'
+            'modelo': 'solicitud'
         })
     for i in ultimas_incapacidades:
         actividad.append({
@@ -214,8 +213,8 @@ def admin_dashboard(request):
     actividad = actividad[:8]
 
     for item in actividad:
-        if item['modelo'] == 'permiso':
-            item['url'] = reverse('novedades:permiso_detalle', args=[item['id']])
+        if item['modelo'] == 'solicitud':
+            item['url'] = reverse('novedades:solicitudes_detalle', args=[item['id']])
         elif item['modelo'] == 'incapacidad':
             item['url'] = reverse('novedades:incapacidad_detalle', args=[item['id']])
         elif item['modelo'] == 'certificado':
@@ -244,9 +243,9 @@ def admin_dashboard(request):
     }
 
     novedades_data = {
-        'labels': ['Permisos', 'Incapacidades', 'Certificados'],
+        'labels': ['Solicitudes', 'Incapacidades', 'Certificados'],
         'values': [
-            permisos_pendientes,
+            solicitudes_pendientes,
             incapacidades_pendientes,
             certificados_pendientes
         ],
@@ -257,7 +256,7 @@ def admin_dashboard(request):
         'total_empleados_activos': total_empleados_activos,
         'kpis_tareas': kpis_tareas,
         'tareas_pendientes_mostrar': tareas_pendientes_mostrar,
-        'permisos_pendientes': permisos_pendientes,
+        'solicitudes_pendientes': solicitudes_pendientes,
         'incapacidades_pendientes': incapacidades_pendientes,
         'certificados_pendientes': certificados_pendientes,
         'total_solicitudes_pendientes': total_solicitudes_pendientes,
@@ -387,10 +386,10 @@ def employee_dashboard(request):
 
     kpis_tareas = Task.get_kpis_empleado(request.user)
 
-    permisos_pendientes = Permiso.objects.filter(empleado=perfil, estado='pendiente').count()
+    solicitudes_pendientes = Solicitud.objects.filter(empleado=perfil, estado='pendiente').count()
     incapacidades_pendientes = Incapacidad.objects.filter(empleado=perfil, estado='pendiente').count()
     certificados_pendientes = Certificado.objects.filter(empleado=perfil, estado='pendiente').count()
-    total_solicitudes_pendientes = permisos_pendientes + incapacidades_pendientes + certificados_pendientes
+    total_solicitudes_pendientes = solicitudes_pendientes + incapacidades_pendientes + certificados_pendientes
 
     total_memorandos = Memorando.objects.filter(empleado=perfil, estado='emitido').count()
 
@@ -408,14 +407,14 @@ def employee_dashboard(request):
             'color': 'text-info'
         })
 
-    permisos_recientes = Permiso.objects.filter(empleado=perfil).order_by('-fecha_solicitud')[:5]
-    for p in permisos_recientes:
+    solicitudes_recientes = Solicitud.objects.filter(empleado=perfil).order_by('-fecha_solicitud')[:5]
+    for p in solicitudes_recientes:
         actividad.append({
-            'tipo': 'permiso',
+            'tipo': 'solicitud',
             'fecha': p.fecha_solicitud,
             'detalle': f"Solicitud de {p.get_tipo_display()}",
             'estado': p.get_estado_display(),
-            'url': reverse('novedades:solicitudes_empleado'),
+            'url': reverse('novedades:novedades_empleado'),
             'icono': 'file-earmark-text',
             'color': 'text-primary'
         })
@@ -427,7 +426,7 @@ def employee_dashboard(request):
             'fecha': i.fecha_solicitud,
             'detalle': f"Incapacidad: {i.titulo}",
             'estado': i.get_estado_display(),
-            'url': reverse('novedades:solicitudes_empleado'),
+            'url': reverse('novedades:novedades_empleado'),
             'icono': 'heart-pulse',
             'color': 'text-danger'
         })
@@ -439,7 +438,7 @@ def employee_dashboard(request):
             'fecha': c.fecha_solicitud,
             'detalle': f"Certificado de {c.get_tipo_display()}",
             'estado': c.get_estado_display(),
-            'url': reverse('novedades:solicitudes_empleado'),
+            'url': reverse('novedades:novedades_empleado'),
             'icono': 'award',
             'color': 'text-success'
         })
@@ -487,8 +486,8 @@ def employee_dashboard(request):
     }
 
     solicitudes_chart_data = {
-        'labels': ['Permisos', 'Incapacidades', 'Certificados'],
-        'values': [permisos_pendientes, incapacidades_pendientes, certificados_pendientes],
+        'labels': ['Solicitudes', 'Incapacidades', 'Certificados'],
+        'values': [solicitudes_pendientes, incapacidades_pendientes, certificados_pendientes],
         'colors': ['#007bff', '#dc3545', '#6c757d']
     }
 
@@ -508,7 +507,7 @@ def employee_dashboard(request):
         'tareas_pendientes': tareas_pendientes,
         'tareas_completadas': tareas_completadas,
         'kpis_tareas': kpis_tareas,
-        'permisos_pendientes': permisos_pendientes,
+        'solicitudes_pendientes': solicitudes_pendientes,
         'incapacidades_pendientes': incapacidades_pendientes,
         'certificados_pendientes': certificados_pendientes,
         'total_solicitudes_pendientes': total_solicitudes_pendientes,

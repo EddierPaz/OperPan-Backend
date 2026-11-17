@@ -1,6 +1,6 @@
 from datetime import date
 from apps.tareas.models import Task, EstadoTarea
-from apps.novedades.models import Permiso, Incapacidad, Certificado
+from apps.novedades.models import Solicitud, Incapacidad, Certificado
 from apps.memorandos.models import Memorando
 from apps.asistencia.models import Asistencia, Horario
 from .models import User, PerfilEmpleado
@@ -47,7 +47,7 @@ def notificaciones_context(request):
         
         # 5. Novedades: Todas las solicitudes pendientes
         context['notif_admin_novedades'] = (
-            Permiso.objects.filter(estado='pendiente').count() +
+            Solicitud.objects.filter(estado='pendiente').count() +
             Incapacidad.objects.filter(estado='pendiente').count() +
             Certificado.objects.filter(estado='pendiente').count()
         )
@@ -60,9 +60,9 @@ def notificaciones_context(request):
             empleado=perfil
         ).exclude(estado=EstadoTarea.FINALIZADA).count()
         
-        # 2. Solicitudes propias pendientes
+        # 2. Novedades propias pendientes
         context['notif_empleado_novedades'] = (
-            Permiso.objects.filter(empleado=perfil, estado='pendiente').count() +
+            Solicitud.objects.filter(empleado=perfil, estado='pendiente').count() +
             Incapacidad.objects.filter(empleado=perfil, estado='pendiente').count() +
             Certificado.objects.filter(empleado=perfil, estado='pendiente').count()
         )

@@ -1,0 +1,66 @@
+<!-- ================= FORMULARIO INTERNO: SOLICITUD ================= -->
+<div id="formSolicitud" class="dynamic-form" style="display: none;">
+    <div class="modal-detalle-grid mt-3">
+        <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Tipo de solicitud <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
+                <select class="form-select" id="solicitudTipo" name="solicitud-tipo">
+                    <option value="personal" {% if solicitud_form.tipo.value == 'personal' %}selected{% endif %}>Personal</option>
+                    <option value="medico" {% if solicitud_form.tipo.value == 'medico' %}selected{% endif %}>Médico</option>
+                    <option value="academico" {% if solicitud_form.tipo.value == 'academico' %}selected{% endif %}>Académico</option>
+                    <option value="calamidad" {% if solicitud_form.tipo.value == 'calamidad' %}selected{% endif %}>Calamidad doméstica</option>
+                    <option value="otro" {% if solicitud_form.tipo.value == 'otro' %}selected{% endif %}>Otro</option>
+                </select>
+                {% if solicitud_form.tipo.errors %}
+                    <div class="text-danger small">{{ solicitud_form.tipo.errors }}</div>
+                {% endif %}
+            </span>
+        </div>
+        <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Fecha inicio <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
+                <input type="date" class="form-control" id="solicitudFechaInicio" name="solicitud-fecha_inicio" value="{{ solicitud_form.fecha_inicio.value|default:'' }}">
+                {% if solicitud_form.fecha_inicio.errors %}
+                    <div class="text-danger small">{{ solicitud_form.fecha_inicio.errors }}</div>
+                {% endif %}
+            </span>
+        </div>
+        <div class="modal-detalle-item">
+            <span class="modal-detalle-label">Fecha fin <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
+                <input type="date" class="form-control" id="solicitudFechaFin" name="solicitud-fecha_fin" value="{{ solicitud_form.fecha_fin.value|default:'' }}">
+                {% if solicitud_form.fecha_fin.errors %}
+                    <div class="text-danger small">{{ solicitud_form.fecha_fin.errors }}</div>
+                {% endif %}
+            </span>
+        </div>
+        <div class="modal-detalle-item" id="nuevoHorarioGroup" style="display: none;">
+            <span class="modal-detalle-label">Nuevo horario <span class="text-danger">*</span></span>
+            <span class="modal-detalle-value">
+                <select class="form-select" id="cambioTurnoSolicitado" name="solicitud-nuevo_horario">
+                    <option value="Mañana" {% if solicitud_form.nuevo_horario.value == 'Mañana' %}selected{% endif %}>Mañana (6:00 - 14:00)</option>
+                    <option value="Tarde" {% if solicitud_form.nuevo_horario.value == 'Tarde' %}selected{% endif %}>Tarde (14:00 - 22:00)</option>
+                    <option value="Noche" {% if solicitud_form.nuevo_horario.value == 'Noche' %}selected{% endif %}>Noche (22:00 - 6:00)</option>
+                </select>
+                {% if solicitud_form.nuevo_horario.errors %}
+                    <div class="text-danger small">{{ solicitud_form.nuevo_horario.errors }}</div>
+                {% endif %}
+            </span>
+        </div>
+        <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
+            <span class="modal-detalle-bloque-largo-label">Motivo</span>
+            <textarea class="form-control" rows="2" id="solicitudMotivo" name="solicitud-justificacion" placeholder="Explique el motivo de la solicitud">{{ solicitud_form.justificacion.value|default:'' }}</textarea>
+            {% if solicitud_form.justificacion.errors %}
+                <div class="text-danger small">{{ solicitud_form.justificacion.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
+            <span class="modal-detalle-bloque-largo-label">Adjuntar soporte <span class="text-muted">(opcional)</span></span>
+            <input type="file" class="form-control" id="solicitudAdjunto" name="solicitud-archivo" accept=".pdf,.jpg,.png,.jpeg">
+            <small class="file-info text-muted">Formato PDF, JPG, PNG (máx 5MB).</small>
+            {% if solicitud_form.archivo.errors %}
+                <div class="text-danger small">{{ solicitud_form.archivo.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,5 +1,5 @@
 /* ============================================================
-   SOLICITUDES.CSS - OPERPAN (EMPLEADO)
+   novedades.CSS - OPERPAN (EMPLEADO)
    ============================================================ */
 
 /* ============================================================
@@ -11,7 +11,7 @@
 }
 
 /* ============================================================
-   2. CARDS DE SOLICITUDES PENDIENTES
+   2. CARDS DE novedades PENDIENTES
    ============================================================ */
 
 .pending-category-card {
@@ -62,7 +62,7 @@
 }
 
 /* Acento por categoría */
-.pending-permisos .pending-icon {
+.pending-solicitudes .pending-icon {
     background: var(--color-purple-bg);
     color: var(--color-purple-text);
 }
@@ -104,7 +104,7 @@
     justify-content: center;
 }
 
-.pending-permisos .pending-item-icon {
+.pending-solicitudes .pending-item-icon {
     background: var(--color-purple-bg);
     color: var(--color-purple-text);
 }
@@ -259,7 +259,7 @@
    5. GRID DE TARJETAS DE HISTORIAL
    ============================================================ */
 
-.solicitudes-grid {
+.novedades-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
@@ -455,13 +455,13 @@ main.dashboard-container footer i {
 }
 
 @media (max-width: 992px) {
-    .solicitudes-grid {
+    .novedades-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 576px) {
-    .solicitudes-grid {
+    .novedades-grid {
         grid-template-columns: 1fr;
     }
 }

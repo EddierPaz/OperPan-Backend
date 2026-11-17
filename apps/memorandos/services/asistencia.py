@@ -8,7 +8,7 @@ Detecta y emite memorandos automáticos por:
 Reglas:
     - Tardanzas: Asistencia con estado='TARDE' del mes.
     - Ausencias: días donde el empleado tenía horario vigente y no marcó,
-      excluyendo descansos, permisos, incapacidades y cambios de turno.
+      excluyendo descansos, solicitudes, incapacidades y cambios de turno.
     - Umbral: 3 por mes (configurable en apps/asistencia/constants.py).
     - Idempotente: usa el campo `memorando_generado` en Asistencia.
 """
@@ -195,7 +195,7 @@ def _materializar_ausencias_mes(empleado, mes, anio):
         - El empleado tenía horario vigente.
         - No hay registro previo de Asistencia.
         - No es día de descanso.
-        - No tiene permiso/incapacidad/cambio_turno aprobado.
+        - No tiene solicitud/incapacidad/cambio_turno aprobado.
         - Ya pasó (fecha < hoy).
     Devuelve la lista de Asistencia AUSENTE del mes sin memorando.
     """

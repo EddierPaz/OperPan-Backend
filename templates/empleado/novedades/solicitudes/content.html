@@ -1,7 +1,7 @@
-<!-- empleado/solicitudes/permisos/content.html -->
-{% for p in permisos_historial %}
+<!-- empleado/novedades/solicitudes/content.html -->
+{% for p in solicitudes_historial %}
     <div class="request-card request-card-grid request-{{ p.estado|slugify }}"
-        data-tipo="permiso"
+        data-tipo="solicitud"
         data-estado="{{ p.estado|slugify }}">
 
         <h6 class="card-grid-title">{{ p.get_tipo_display }}</h6>
@@ -18,15 +18,15 @@
         </div>
 
         <div class="card-grid-footer">
-            <button type="button" class="btn-action btn-action-view btn-ver-detalle"
+            <<button type="button" class="btn-action btn-action-view btn-ver-detalle"
                     data-titulo="{{ p.get_tipo_display }}"
-                    data-subtitulo="Permiso · {{ p.fecha_inicio|date:'d/m/Y' }} → {{ p.fecha_fin|date:'d/m/Y' }}"
+                    data-subtitulo="Solicitud · {{ p.fecha_inicio|date:'d/m/Y' }} → {{ p.fecha_fin|date:'d/m/Y' }}"
                     data-motivo="{{ p.justificacion|escapejs }}"
                     data-estado="{{ p.get_estado_display|default:p.estado }}"
                     data-estado-slug="{{ p.estado|slugify }}"
                     data-motivo-rechazo="{{ p.motivo_rechazo|default:''|escapejs }}"
                     data-archivo="{% if p.archivo %}{{ p.archivo.url }}{% endif %}"
-                    data-tipo="permiso">
+                    data-tipo="solicitud">
                 <i class="bi bi-eye"></i> Ver detalles
             </button>
         </div>

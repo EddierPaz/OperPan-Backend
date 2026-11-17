@@ -1,38 +1,35 @@
-<!-- empleado/solicitudes/permisos/pending.html -->
+<!-- ================= TARJETA PENDIENTE: SOLICITUD ================= -->
 <div class="col-lg-4 col-md-6">
-    <div class="pending-category-card pending-permisos">
+    <div class="pending-category-card pending-solicitudes">
         <div class="pending-card-header">
             <div class="pending-icon"><i class="bi bi-calendar-event"></i></div>
             <div>
-                <h5 class="mb-0">Permisos</h5>
-                <span>{{ permisos_pendientes|length }} pendiente{{ permisos_pendientes|length|pluralize }}</span>
+                <h5 class="mb-0">Solicitudes</h5>
+                <span>{{ solicitudes_pendientes|length }} pendiente{{ solicitudes_pendientes|length|pluralize }}</span>
             </div>
         </div>
         <div class="pending-card-body">
-            {% if permisos_pendientes %}
-                {% for p in permisos_pendientes|slice:":3" %}
+            {% if solicitudes_pendientes %}
+                {% for p in solicitudes_pendientes|slice:":3" %}
                     <div class="pending-item">
-                        <div class="pending-item-icon pending-item-permisos"><i class="bi bi-file-earmark-text"></i></div>
+                        <div class="pending-item-icon pending-item-solicitudes"><i class="bi bi-file-earmark-text"></i></div>
                         <div class="pending-item-info">
                             <strong>{{ p.get_tipo_display }}</strong>
                             <small>{{ p.fecha_inicio|date:"d/m/Y" }} → {{ p.fecha_fin|date:"d/m/Y" }}</small>
                         </div>
                         <div class="pending-actions">
-                            <button type="button"
-                                    class="btn-action btn-action-icon"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    title="Opciones">
+                            <button type="button" class="btn-action btn-action-icon" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-end action-menu">
                                 <li>
+                                    <!-- URL CORREGIDA: editar_solicitud -->
                                     <button type="button"
                                             class="action-menu-item btn-editar-solicitud"
-                                            data-url="{% url 'novedades:editar_permiso' p.id %}"
+                                            data-url="{% url 'novedades:editar_solicitud' p.id %}"
                                             data-id="{{ p.id }}"
-                                            data-tipo="permiso"
+                                            data-tipo="solicitud"
                                             data-inicio="{{ p.fecha_inicio|date:'Y-m-d' }}"
                                             data-fin="{{ p.fecha_fin|date:'Y-m-d' }}"
                                             data-motivo="{{ p.justificacion }}"
@@ -42,9 +39,10 @@
                                 </li>
                                 <li><hr class="action-menu-divider"></li>
                                 <li>
+                                    <!-- URL CORREGIDA: eliminar_solicitud -->
                                     <button type="button"
                                             class="action-menu-item action-menu-item--danger btn-eliminar-solicitud"
-                                            data-url="{% url 'novedades:eliminar_permiso' p.id %}">
+                                            data-url="{% url 'novedades:eliminar_solicitud' p.id %}">
                                         <i class="bi bi-trash3"></i>
                                         Eliminar
                                     </button>
@@ -54,12 +52,12 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-pending"><i class="bi bi-check-circle"></i> <span>No tienes permisos pendientes.</span></div>
+                <div class="empty-pending"><i class="bi bi-check-circle"></i> <span>No tienes solicitudes pendientes.</span></div>
             {% endif %}
         </div>
-        {% if permisos_pendientes %}
+        {% if solicitudes_pendientes %}
             <div class="pending-card-footer">
-                <button type="button" class="btn-view-pending" data-scroll-to="historial" data-tipo="permiso">
+                <button type="button" class="btn-view-pending" data-scroll-to="historial" data-tipo="solicitud">
                     Ver todas <i class="bi bi-arrow-right"></i>
                 </button>
             </div>

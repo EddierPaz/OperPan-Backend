@@ -1,23 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Referencias ---
+    // ============================================================
+    // REFERENCIAS AL DOM
+    // ============================================================
     const tipoSelect = document.getElementById('tipoSolicitud');
-    const formPermiso = document.getElementById('formPermiso');
+    const formSolicitud = document.getElementById('formSolicitud');
     const formIncapacidad = document.getElementById('formIncapacidad');
     const formCertificado = document.getElementById('formCertificado');
     const nuevoHorarioGroup = document.getElementById('nuevoHorarioGroup');
-    const solicitudesContainer = document.getElementById('solicitudesContainer');
+    const novedadesContainer = document.getElementById('novedadesContainer');
 
-    // --- 1. Gestión de formularios por tipo ---
+    // ============================================================
+    // LÓGICA DEL MODAL CREAR: Mostrar formulario según el tipo
+    // ============================================================
     const mostrarFormularioSegunTipo = () => {
         if (!tipoSelect) return;
         const tipo = tipoSelect.value;
 
-        [formPermiso, formIncapacidad, formCertificado, nuevoHorarioGroup].forEach(el => {
+        [formSolicitud, formIncapacidad, formCertificado, nuevoHorarioGroup].forEach(el => {
             if (el) el.style.display = 'none';
         });
 
-        if (['permiso', 'cambio_turno', 'vacaciones'].includes(tipo)) {
-            if (formPermiso) formPermiso.style.display = 'block';
+        if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipo)) {
+            if (formSolicitud) formSolicitud.style.display = 'block';
             if (tipo === 'cambio_turno' && nuevoHorarioGroup) nuevoHorarioGroup.style.display = 'block';
         } else if (tipo === 'incapacidad' && formIncapacidad) {
             formIncapacidad.style.display = 'block';
@@ -32,7 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarFormularioSegunTipo();
     }
 
-    // --- 2. Cálculo de días de incapacidad ---
+    // ============================================================
+    // CÁLCULO DE DÍAS DE INCAPACIDAD
+    // ============================================================
     const incapInicio = document.getElementById('incapacidadFechaInicio');
     const incapFin = document.getElementById('incapacidadFechaFin');
     const incapDias = document.getElementById('incapacidadDias');
@@ -56,11 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     [incapInicio, incapFin].forEach(el => el?.addEventListener('change', actualizarDiasIncapacidad));
 
-    // --- 2bis. Restricciones de fecha mínima según tipo de solicitud ---
-    const permisoInicio = document.getElementById('permisoFechaInicio');
-    const permisoFin = document.getElementById('permisoFechaFin');
+    // ============================================================
+    // RESTRICCIONES DE FECHAS (Anticipación)
+    // ============================================================
+    const solicitudInicio = document.getElementById('solicitudFechaInicio');
+    const solicitudFin = document.getElementById('solicitudFechaFin');
 
-    // Formatea un objeto Date a 'YYYY-MM-DD' para usarlo en el atributo min de un <input type="date">
     const formatearFechaISO = (fecha) => {
         const y = fecha.getFullYear();
         const m = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -71,25 +78,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    // PERMISOS: mínimo 3 días de anticipación (hoy + 4 días es el primer día habilitado)
-    const DIAS_ANTICIPACION_PERMISO = 3;
-    const minPermiso = new Date(hoy);
-    minPermiso.setDate(minPermiso.getDate() + DIAS_ANTICIPACION_PERMISO + 1);
-    const minPermisoStr = formatearFechaISO(minPermiso);
+    const DIAS_ANTICIPACION_SOLICITUD = 3;
+    const minSolicitud = new Date(hoy);
+    minSolicitud.setDate(minSolicitud.getDate() + DIAS_ANTICIPACION_SOLICITUD + 1);
+    const minSolicitudStr = formatearFechaISO(minSolicitud);
 
-    if (permisoInicio) {
-        permisoInicio.min = minPermisoStr;
-        permisoInicio.addEventListener('change', () => {
-            if (permisoFin) {
-                permisoFin.min = permisoInicio.value || minPermisoStr;
+    if (solicitudInicio) {
+        solicitudInicio.min = minSolicitudStr;
+        solicitudInicio.addEventListener('change', () => {
+            if (solicitudFin) {
+                solicitudFin.min = solicitudInicio.value || minSolicitudStr;
             }
         });
     }
-    if (permisoFin) {
-        permisoFin.min = minPermisoStr;
+    if (solicitudFin) {
+        solicitudFin.min = minSolicitudStr;
     }
 
-    // INCAPACIDADES: mínimo hoy (sin anticipación, pero sin fechas pasadas)
     const minIncapStr = formatearFechaISO(hoy);
     if (incapInicio) {
         incapInicio.min = minIncapStr;
@@ -103,7 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         incapFin.min = minIncapStr;
     }
 
-    // --- 3. Certificados ---
+    // ============================================================
+    // CAMPOS DE CERTIFICADO
+    // ============================================================
     const certTipo = document.getElementById('certificadoTipo');
     const periodoGroup = document.getElementById('certificadoPeriodoGroup');
 
@@ -119,13 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarCamposCertificado();
     }
 
-    // --- 4. Filtros del Historial ---
-    let tipoActual = 'permiso';
+    // ============================================================
+    // FILTROS DEL HISTORIAL
+    // ============================================================
+    let tipoActual = 'solicitud';
     let estadoActual = 'todas';
 
     const filtrarHistorial = () => {
-        if (!solicitudesContainer) return;
-        const tarjetas = Array.from(solicitudesContainer.querySelectorAll('.request-card'));
+        if (!novedadesContainer) return;
+        const tarjetas = Array.from(novedadesContainer.querySelectorAll('.request-card'));
         let visibles = 0;
 
         tarjetas.forEach(card => {
@@ -142,9 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 msg = document.createElement('div');
                 msg.id = 'mensajeSinResultados';
                 msg.className = 'empty-history';
-                solicitudesContainer.appendChild(msg);
+                novedadesContainer.appendChild(msg);
             }
-            const t = { 'permiso': 'permisos', 'incapacidad': 'incapacidades', 'certificado': 'certificados' }[tipoActual] || 'solicitudes';
+            const t = { 'solicitud': 'solicitudes', 'incapacidad': 'incapacidades', 'certificado': 'certificados' }[tipoActual] || 'novedades';
             const e = estadoActual !== 'todas' ? ` ${estadoActual}s` : '';
             msg.innerHTML = `<div class="empty-history-icon"><i class="bi bi-search"></i></div><h5>Sin resultados</h5><p>No tienes ${t}${e} en el historial.</p>`;
         } else if (msg) {
@@ -172,7 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 5. Botones "Ver todas" ---
+    // ============================================================
+    // BOTONES "VER TODAS"
+    // ============================================================
     document.querySelectorAll('.btn-view-pending').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const targetTipo = e.currentTarget.dataset.tipo;
@@ -193,7 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- 6. Limpieza del formulario al hacer reset ---
+    // ============================================================
+    // LIMPIEZA DEL FORMULARIO (RESET)
+    // ============================================================
     const solicitudForm = document.getElementById('solicitudForm');
     if (solicitudForm) {
         solicitudForm.addEventListener('reset', () => {
@@ -209,13 +222,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 7. Modal de detalle ---
+    // ============================================================
+    // MODAL: VER DETALLE
+    // ============================================================
     const modalDetalleEl = document.getElementById('modalDetalleSolicitud');
     const modalDetalle = modalDetalleEl ? new bootstrap.Modal(modalDetalleEl) : null;
 
     function getTipoIcon(tipo) {
         const icons = {
-            'permiso': 'bi-calendar-event-fill',
+            'solicitud': 'bi-calendar-event-fill',
             'incapacidad': 'bi-heart-pulse-fill',
             'certificado': 'bi-award-fill',
             'cambio_turno': 'bi-arrow-repeat',
@@ -249,24 +264,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const tipo = d.tipo || 'solicitud';
             const estado = d.estadoSlug || 'pendiente';
             
-            // Icono
             document.getElementById('detalleIcono').className = `bi ${getTipoIcon(tipo)}`;
+            document.getElementById('detalleTitulo').textContent = d.titulo || 'Detalle de novedad';
+            document.getElementById('detalleSubtitulo').textContent = d.subtitulo || 'Información completa de la novedad';
             
-            // Título
-            document.getElementById('detalleTitulo').textContent = d.titulo || 'Detalle de solicitud';
-            
-            // Subtítulo
-            document.getElementById('detalleSubtitulo').textContent = d.subtitulo || 'Información completa de la solicitud';
-            
-            // Estado
             const badge = document.getElementById('detalleEstadoBadge');
             badge.textContent = getEstadoLabel(estado);
             badge.className = `novedad-detalle-estado ${getEstadoBadge(estado)}`;
             
-            // Tipo
             document.getElementById('detalleTipo').textContent = d.titulo || '—';
             
-            // Fechas
             const fechasContainer = document.getElementById('detalleFechasContainer');
             const fechasEl = document.getElementById('detalleFechas');
             if (d.subtitulo && d.subtitulo.includes('→')) {
@@ -277,10 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 fechasContainer.style.display = 'none';
             }
             
-            // Motivo
             document.getElementById('detalleMotivo').textContent = d.motivo || 'Sin información adicional.';
             
-            // Motivo de rechazo
             const rechazoContainer = document.getElementById('detalleRechazoContainer');
             const motivoRechazoEl = document.getElementById('detalleMotivoRechazo');
             if (estado === 'rechazado' && d.motivoRechazo && d.motivoRechazo !== '') {
@@ -290,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 rechazoContainer.style.display = 'none';
             }
             
-            // Archivo
             const archivoContainer = document.getElementById('detalleArchivoContainer');
             const archivoLink = document.getElementById('detalleArchivoLink');
             if (d.archivo && d.archivo !== '') {
@@ -300,7 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 archivoContainer.style.display = 'none';
             }
             
-            // Botones de acción
             const editarBtn = document.getElementById('detalleEditarBtn');
             const eliminarBtn = document.getElementById('detalleEliminarBtn');
             const descargarBtn = document.getElementById('detalleDescargarBtn');
@@ -309,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             eliminarBtn.style.display = 'none';
             descargarBtn.style.display = 'none';
             
-            // Si está pendiente, mostrar botones de editar/eliminar
             if (estado === 'pendiente') {
                 const pendingItem = btn.closest('.pending-item');
                 if (pendingItem) {
@@ -340,13 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            // ============================================================
-            // SOLO PARA CERTIFICADO APROBADO - mostrar botón descargar
-            // ============================================================
             if (estado === 'aprobado' && tipo === 'certificado') {
                 descargarBtn.style.display = 'inline-flex';
-                
-                // Buscar la URL de descarga
                 const card = btn.closest('.request-card') || btn.closest('.request-card-grid');
                 if (card) {
                     const link = card.querySelector('a[href*="certificado"]');
@@ -365,16 +362,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                 }
             }
-            // ============================================================
-            // PERMISO E INCAPACIDAD: NO se muestra el botón descargar
-            // ============================================================
             
-            // Mostrar el modal
             if (modalDetalle) modalDetalle.show();
         });
     });
 
-    // --- 8. Modal de confirmación y eliminación por AJAX ---
+    // ============================================================
+    // MODAL: CONFIRMAR ELIMINACIÓN
+    // ============================================================
     const modalEliminarEl = document.getElementById('modalConfirmarEliminar');
     const modalEliminar = modalEliminarEl ? new bootstrap.Modal(modalEliminarEl) : null;
     const btnConfirmarEliminacion = document.getElementById('btnConfirmarEliminacion');
@@ -427,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalEliminar) modalEliminar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al intentar eliminar la solicitud.');
+                    alert(data.error || 'Ocurrió un error al intentar eliminar la novedad.');
                     if (modalEliminar) modalEliminar.hide();
                     btnConfirmarEliminacion.disabled = false;
                     btnConfirmarEliminacion.innerHTML = '<i class="bi bi-trash3"></i> Sí, eliminar';
@@ -450,7 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 9. Modal de Edición por AJAX ---
+    // ============================================================
+    // MODAL: EDITAR NOVEDAD (AJAX)
+    // ============================================================
     const modalEditarEl = document.getElementById('modalEditarSolicitud');
     const modalEditar = modalEditarEl ? new bootstrap.Modal(modalEditarEl) : null;
     const formEditar = document.getElementById('formEditarSolicitud');
@@ -466,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
             urlParaEditar = btnEditar.dataset.url;
 
             const idVal = btnEditar.dataset.id || '';
-            const tipoVal = btnEditar.dataset.tipo || 'permiso';
+            const tipoVal = btnEditar.dataset.tipo || 'solicitud';
             const inicioVal = btnEditar.dataset.inicio || '';
             const finVal = btnEditar.dataset.fin || '';
             const motivoVal = btnEditar.dataset.motivo || '';
@@ -478,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const tipoDisplay = document.getElementById('editarTipoDisplay');
             if (tipoDisplay) {
                 const tipos = {
-                    'permiso': 'Permiso',
+                    'solicitud': 'Solicitud',
                     'cambio_turno': 'Cambio de Turno',
                     'vacaciones': 'Vacaciones',
                     'incapacidad': 'Incapacidad',
@@ -490,10 +487,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const inputInicio = document.getElementById('editarFechaInicio');
             const inputFin = document.getElementById('editarFechaFin');
 
-            // Aplicar la misma restricción de fecha mínima según el tipo de solicitud
-            if (['permiso', 'cambio_turno', 'vacaciones'].includes(tipoVal)) {
-                if (inputInicio) inputInicio.min = minPermisoStr;
-                if (inputFin) inputFin.min = minPermisoStr;
+            // Restricción de fecha mínima para el modal editar
+            if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipoVal)) {
+                if (inputInicio) inputInicio.min = minSolicitudStr;
+                if (inputFin) inputFin.min = minSolicitudStr;
             } else if (tipoVal === 'incapacidad') {
                 if (inputInicio) inputInicio.min = minIncapStr;
                 if (inputFin) inputFin.min = minIncapStr;
@@ -564,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         btnGuardarEdicion.disabled = false;
                         btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                     }
-                    alert('❌ La fecha de inicio no es válida para este tipo de solicitud.');
+                    alert('❌ La fecha de inicio no es válida para este tipo de novedad.');
                     return;
                 }
 
@@ -602,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalEditar) modalEditar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al actualizar la solicitud.');
+                    alert(data.error || 'Ocurrió un error al actualizar la novedad.');
                 }
 
             } catch (error) {
@@ -626,13 +623,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 10. Mostrar errores del formulario al cargar la página ---
+    // ============================================================
+    // MOSTRAR ERRORES DEL FORMULARIO AL CARGAR
+    // ============================================================
     const formErrors = document.querySelector('.alert-danger');
     if (formErrors) {
-        if (document.querySelector('#formPermiso .is-invalid, #formPermiso .errorlist')) {
+        if (document.querySelector('#formSolicitud .is-invalid, #formSolicitud .errorlist')) {
             const select = document.getElementById('tipoSolicitud');
             if (select) {
-                select.value = 'permiso';
+                select.value = 'solicitud';
                 mostrarFormularioSegunTipo();
             }
         } else if (document.querySelector('#formIncapacidad .is-invalid, #formIncapacidad .errorlist')) {
@@ -651,20 +650,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 11. Ejecutar filtro inicial ---
+    // ============================================================
+    // EJECUTAR FILTRO INICIAL
+    // ============================================================
     filtrarHistorial();
 
-    // --- 12. Validación del formulario de nueva solicitud ---
-    const formNuevaSolicitud = document.getElementById('solicitudForm');
-    
-    if (formNuevaSolicitud) {
-        formNuevaSolicitud.addEventListener('submit', function(e) {
+    // ============================================================
+    // VALIDACIÓN DEL FORMULARIO DE CREACIÓN (Frontend)
+    // ============================================================
+    if (solicitudForm) {
+        solicitudForm.addEventListener('submit', function(e) {
             const tipoSelect = document.getElementById('tipoSolicitud');
             const tipo = tipoSelect?.value;
             
             if (!tipo) {
                 e.preventDefault();
-                alert('❌ Por favor, selecciona un tipo de solicitud.');
+                alert('❌ Por favor, selecciona un tipo de novedad.');
                 return false;
             }
 
@@ -723,15 +724,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (['permiso', 'cambio_turno', 'vacaciones'].includes(tipo)) {
-                const tipoPermiso = document.getElementById('permisoTipo');
-                const fechaInicio = document.getElementById('permisoFechaInicio');
-                const fechaFin = document.getElementById('permisoFechaFin');
-                const justificacion = document.getElementById('permisoMotivo');
+            if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipo)) {
+                const tipoSolicitud = document.getElementById('solicitudTipo');
+                const fechaInicio = document.getElementById('solicitudFechaInicio');
+                const fechaFin = document.getElementById('solicitudFechaFin');
+                const justificacion = document.getElementById('solicitudMotivo');
                 
-                if (!tipoPermiso?.value) {
+                if (!tipoSolicitud?.value) {
                     e.preventDefault();
-                    alert('❌ El tipo de permiso es obligatorio.');
+                    alert('❌ El tipo de solicitud es obligatorio.');
                     return false;
                 }
                 
@@ -741,9 +742,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
 
-                if (permisoInicio && permisoInicio.min && fechaInicio.value < permisoInicio.min) {
+                if (solicitudInicio && solicitudInicio.min && fechaInicio.value < solicitudInicio.min) {
                     e.preventDefault();
-                    alert(`❌ Los permisos deben solicitarse con al menos ${DIAS_ANTICIPACION_PERMISO} días de anticipación.`);
+                    alert(`❌ Las solicitudes deben solicitarse con al menos ${DIAS_ANTICIPACION_SOLICITUD} días de anticipación.`);
                     return false;
                 }
                 
@@ -765,5 +766,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    console.log('✅ OperPan - Solicitudes.js cargado correctamente');
+    console.log('✅ OperPan - novedades.js cargado correctamente');
 });

@@ -1,62 +1,72 @@
 // ============================================================
-// PERMISOS.JS - MÓDULO DE PERMISOS
+// SOLICITUDES.JS - MÓDULO DE SOLICITUDES
 // Panel de administración de novedades - OperPan
 // ============================================================
 
 (function () {
-    let currentPermisoId = null;
+    let currentSolicitudId = null;
 
-    function updatePermisosKPIs() {
-        fetch('/novedades/permisos/historial/?estado=pendiente')
+    window.updateSolicitudesKPIs = function() {
+        fetch('/novedades/solicitudes/historial/?estado=pendiente')
             .then(r => r.json())
             .then(data => {
-                const pendingEl = document.getElementById('permisosKpiPendientes');
-                if (pendingEl) pendingEl.innerText = data.length;
+                const pendingEl = document.getElementById('solicitudesKpiPendientes');
+                if (pendingEl) pendingEl.innerText = Array.isArray(data) ? data.length : 0;
             })
-            .catch(() => console.error('Error al obtener KPIs de permisos'));
+            .catch(() => console.error('Error al obtener KPIs de solicitudes'));
 
-        fetch('/novedades/permisos/historial/')
+        fetch('/novedades/solicitudes/historial/')
             .then(r => r.json())
             .then(data => {
                 const now = new Date();
                 const mes = now.getMonth();
                 const año = now.getFullYear();
-                const aprobados = data.filter(p => (p.estado || '').toLowerCase() === 'aprobado' && new Date(p.fecha_solicitud).getMonth() === mes && new Date(p.fecha_solicitud).getFullYear() === año).length;
-                const rechazados = data.filter(p => (p.estado || '').toLowerCase() === 'rechazado' && new Date(p.fecha_solicitud).getMonth() === mes && new Date(p.fecha_solicitud).getFullYear() === año).length;
+                const aprobados = Array.isArray(data) ? data.filter(p => {
+                    const estado = (p.estado || '').toLowerCase();
+                    const fecha = p.fecha_solicitud ? new Date(p.fecha_solicitud) : new Date();
+                    return estado === 'aprobado' && fecha.getMonth() === mes && fecha.getFullYear() === año;
+                }).length : 0;
+                const rechazados = Array.isArray(data) ? data.filter(p => {
+                    const estado = (p.estado || '').toLowerCase();
+                    const fecha = p.fecha_solicitud ? new Date(p.fecha_solicitud) : new Date();
+                    return estado === 'rechazado' && fecha.getMonth() === mes && fecha.getFullYear() === año;
+                }).length : 0;
                 
-                const aprobadosEl = document.getElementById('permisosKpiAprobados');
-                const rechazadosEl = document.getElementById('permisosKpiRechazados');
+                const aprobadosEl = document.getElementById('solicitudesKpiAprobados');
+                const rechazadosEl = document.getElementById('solicitudesKpiRechazados');
                 if (aprobadosEl) aprobadosEl.innerText = aprobados;
                 if (rechazadosEl) rechazadosEl.innerText = rechazados;
             })
-            .catch(() => console.error('Error al obtener KPIs de permisos'));
-    }
+            .catch(() => console.error('Error al obtener KPIs de solicitudes'));
+    };
 
-    function renderPermisosPendientes() {
-        fetch('/novedades/permisos/pendientes/')
+    window.renderSolicitudesPendientes = function() {
+        const container = document.getElementById('solicitudesNovedadesContainer');
+        if (!container) return;
+
+        fetch('/novedades/solicitudes/pendientes/')
             .then(r => r.json())
             .then(data => {
-                const container = document.getElementById('permisosSolicitudesContainer');
-                if (!container) return;
+                const pendientes = Array.isArray(data) ? data : [];
 
-                if (!data.length) {
+                if (!pendientes.length) {
                     container.innerHTML = `
                         <div class="solicitudes-vacio text-center text-muted py-3">
                             <i class="bi bi-inbox fs-2 mb-2 d-block"></i>
-                            No hay permisos pendientes por revisar.
+                            No hay solicitudes pendientes por revisar.
                         </div>
                     `;
                     return;
                 }
                 
-                let html = `
+                container.innerHTML = `
                     <div class="solicitudes-grid">
-                        ${data.map(p => `
+                        ${pendientes.map(p => `
                             <div class="solicitud-card">
                                 <div class="solicitud-header">
                                     <div class="solicitud-titulo">
                                         <i class="bi bi-calendar2-check-fill"></i>
-                                        <span>${p.tipo || 'Permiso'}</span>
+                                        <span>${p.tipo || 'Solicitud'}</span>
                                     </div>
                                 </div>
                                 <div class="solicitud-empleado">
@@ -71,7 +81,7 @@
                                     ${p.justificacion ? p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
-                                    <button class="btn-action btn-action-view verPermisoBtn" data-id="${p.id}">
+                                    <button class="btn-action btn-action-view" onclick="window.verDetalleSolicitud(${p.id})">
                                         <i class="bi bi-eye me-1"></i> Ver detalles
                                     </button>
                                 </div>
@@ -79,20 +89,13 @@
                         `).join('')}
                     </div>
                 `;
-                container.innerHTML = html;
-                document.querySelectorAll('.verPermisoBtn').forEach(btn => {
-                    btn.addEventListener('click', () => verDetallePermiso(btn.dataset.id));
-                });
             })
-            .catch(() => console.error('Error al cargar permisos pendientes'));
-    }
+            .catch(() => console.error('Error al cargar solicitudes pendientes'));
+    };
 
-    // ============================================================
-    // VER DETALLE DESDE BANDEJA (CON BOTONES APROBAR/RECHAZAR)
-    // ============================================================
-    function verDetallePermiso(id) {
-        currentPermisoId = id;
-        fetch(`/novedades/permisos/${id}/`)
+    window.verDetalleSolicitud = function(id) {
+        currentSolicitudId = id;
+        fetch(`/novedades/solicitudes/${id}/`)
             .then(r => r.json())
             .then(p => {
                 const data = {
@@ -101,10 +104,11 @@
                     estado: p.estado || 'pendiente',
                     archivo: p.archivo || null
                 };
-                renderPermisoDetalle(data);
+                renderSolicitudDetalle(data); // Llamamos a la función del main.js
                 
-                const aprobarBtn = document.getElementById('permisosAprobarBtn');
-                const rechazarBtn = document.getElementById('permisosRechazarBtn');
+                const aprobarBtn = document.getElementById('solicitudesAprobarBtn');
+                const rechazarBtn = document.getElementById('solicitudesRechazarBtn');
+                const accionesFooter = document.getElementById('solicitudesAccionesFooter');
                 
                 const estadoNormalizado = (data.estado || '').toLowerCase().trim();
                 const esPendiente = estadoNormalizado === 'pendiente';
@@ -112,22 +116,21 @@
                 if (esPendiente) {
                     if (aprobarBtn) aprobarBtn.style.display = 'inline-flex';
                     if (rechazarBtn) rechazarBtn.style.display = 'inline-flex';
+                    if (accionesFooter) accionesFooter.style.display = 'flex';
                 } else {
                     if (aprobarBtn) aprobarBtn.style.display = 'none';
                     if (rechazarBtn) rechazarBtn.style.display = 'none';
+                    if (accionesFooter) accionesFooter.style.display = 'none';
                 }
                 
-                const modal = new bootstrap.Modal(document.getElementById('permisosDetalleModal'));
+                const modal = new bootstrap.Modal(document.getElementById('solicitudesDetalleModal'));
                 modal.show();
             })
-            .catch(() => showMessage('Error al cargar detalle del permiso'));
-    }
+            .catch(() => showMessage('❌ Error al cargar detalle de la solicitud'));
+    };
 
-    // ============================================================
-    // VER DETALLE DESDE HISTORIAL (SOLO LECTURA - SIN BOTONES)
-    // ============================================================
-    function verDetalleHistorialPermiso(id) {
-        fetch(`/novedades/permisos/${id}/`)
+    window.verDetalleHistorialSolicitud = function(id) {
+        fetch(`/novedades/solicitudes/${id}/`)
             .then(r => r.json())
             .then(p => {
                 const data = {
@@ -136,22 +139,24 @@
                     estado: p.estado || 'pendiente',
                     archivo: p.archivo || null
                 };
-                renderPermisoDetalle(data);
+                renderSolicitudDetalle(data);
                 
-                const aprobarBtn = document.getElementById('permisosAprobarBtn');
-                const rechazarBtn = document.getElementById('permisosRechazarBtn');
+                const aprobarBtn = document.getElementById('solicitudesAprobarBtn');
+                const rechazarBtn = document.getElementById('solicitudesRechazarBtn');
+                const accionesFooter = document.getElementById('solicitudesAccionesFooter');
                 
                 if (aprobarBtn) aprobarBtn.style.display = 'none';
                 if (rechazarBtn) rechazarBtn.style.display = 'none';
+                if (accionesFooter) accionesFooter.style.display = 'none';
                 
-                const modal = new bootstrap.Modal(document.getElementById('permisosDetalleModal'));
+                const modal = new bootstrap.Modal(document.getElementById('solicitudesDetalleModal'));
                 modal.show();
             })
-            .catch(() => showMessage('Error al cargar detalle del permiso'));
-    }
+            .catch(() => showMessage('❌ Error al cargar detalle de la solicitud'));
+    };
 
-    function aprobarPermiso(id) {
-        fetch(`/novedades/permisos/${id}/aprobar/`, {
+    function aprobarSolicitud(id) {
+        fetch(`/novedades/solicitudes/${id}/aprobar/`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCSRFToken(),
@@ -161,19 +166,19 @@
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('✅ Permiso aprobado correctamente.');
-                    updatePermisosKPIs();
-                    renderPermisosPendientes();
-                    renderPermisosHistorial();
+                    showMessage('✅ Solicitud aprobada correctamente.');
+                    window.updateSolicitudesKPIs();
+                    window.renderSolicitudesPendientes();
+                    window.renderSolicitudesHistorial();
                 } else {
                     showMessage('❌ Error: ' + (data.error || 'No se pudo aprobar'));
                 }
             })
-            .catch(() => showMessage('❌ Error de red al aprobar permiso'));
+            .catch(() => showMessage('❌ Error de red al aprobar solicitud'));
     }
 
-    function rechazarPermiso(id, motivo) {
-        fetch(`/novedades/permisos/${id}/rechazar/`, {
+    function rechazarSolicitud(id, motivo) {
+        fetch(`/novedades/solicitudes/${id}/rechazar/`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCSRFToken(),
@@ -184,30 +189,30 @@
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('✅ Permiso rechazado.');
-                    updatePermisosKPIs();
-                    renderPermisosPendientes();
-                    renderPermisosHistorial();
+                    showMessage('✅ Solicitud rechazada.');
+                    window.updateSolicitudesKPIs();
+                    window.renderSolicitudesPendientes();
+                    window.renderSolicitudesHistorial();
                 } else {
                     showMessage('❌ Error: ' + (data.error || 'No se pudo rechazar'));
                 }
             })
-            .catch(() => showMessage('❌ Error de red al rechazar permiso'));
+            .catch(() => showMessage('❌ Error de red al rechazar solicitud'));
     }
 
-    function renderPermisosHistorial() {
-        const estado = document.getElementById('permisosFiltroEstado')?.value || '';
-        const busqueda = (document.getElementById('buscarPermiso')?.value || '').trim();
+    window.renderSolicitudesHistorial = function() {
+        const estado = document.getElementById('solicitudesFiltroEstado')?.value || '';
+        const busqueda = (document.getElementById('buscarSolicitudes')?.value || '').trim();
 
         const params = new URLSearchParams();
         if (estado && estado !== 'todas') params.append('estado', estado);
         if (busqueda) params.append('buscar', busqueda);
 
-        fetch(`/novedades/permisos/historial/?${params.toString()}`)
+        fetch(`/novedades/solicitudes/historial/?${params.toString()}`)
             .then(r => r.json())
             .then(data => {
-                const tbody = document.getElementById('permisosHistorialBody');
-                const sinResultados = document.getElementById('permisosSinResultados');
+                const tbody = document.getElementById('solicitudesHistorialBody');
+                const sinResultados = document.getElementById('solicitudesSinResultados');
                 if (!tbody) return;
 
                 let historial = Array.isArray(data) ? data : [];
@@ -247,81 +252,69 @@
                         <td data-label="Estado">${badge}</td>
                         <td data-label="Aprobado por">${p.decision_por || p.aprobado_por || '—'}</td>
                         <td data-label="Acciones">
-                            <button class="btn-action btn-action-view verHistorialPermisoBtn" data-id="${p.id}" title="Ver detalles">
+                            <button class="btn-action btn-action-view" onclick="window.verDetalleHistorialSolicitud(${p.id})" title="Ver detalles">
                                 <i class="bi bi-eye"></i> 
                             </button>
                         </td>
                     </tr>`;
                 }).join('');
-
-                document.querySelectorAll('.verHistorialPermisoBtn').forEach(btn => {
-                    btn.addEventListener('click', () => verDetalleHistorialPermiso(btn.dataset.id));
-                });
             })
-            .catch(error => console.error('Error al cargar historial de permisos:', error));
-    }
+            .catch(error => console.error('Error al cargar historial de solicitudes:', error));
+    };
 
     // ============================================================
-    // EVENTOS DE MODALES - CORREGIDOS
+    // EVENTOS DE MODALES
     // ============================================================
-
-    // Aprobar - abre confirmación
-    document.getElementById('permisosAprobarBtn')?.addEventListener('click', function() {
-        const modal = bootstrap.Modal.getInstance(document.getElementById('permisosDetalleModal'));
-        modal?.hide();
-        new bootstrap.Modal(document.getElementById('permisosConfirmApproveModal')).show();
+    document.getElementById('solicitudesAprobarBtn')?.addEventListener('click', function() {
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesDetalleModal'))?.hide();
+        new bootstrap.Modal(document.getElementById('solicitudesConfirmApproveModal')).show();
     });
 
-    // Confirmar Aprobación
-    document.getElementById('permisosConfirmApprove')?.addEventListener('click', function() {
-        aprobarPermiso(currentPermisoId);
-        bootstrap.Modal.getInstance(document.getElementById('permisosConfirmApproveModal'))?.hide();
+    document.getElementById('solicitudesConfirmApprove')?.addEventListener('click', function() {
+        aprobarSolicitud(currentSolicitudId);
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesConfirmApproveModal'))?.hide();
     });
 
-    // ============================================================
-    // RECHAZAR - ABRE DIRECTAMENTE EL MODAL DE MOTIVO (SIN CONFIRMACIÓN PREVIA)
-    // ============================================================
-    document.getElementById('permisosRechazarBtn')?.addEventListener('click', function() {
-        bootstrap.Modal.getInstance(document.getElementById('permisosDetalleModal'))?.hide();
-        new bootstrap.Modal(document.getElementById('permisosRejectModal')).show();
+    document.getElementById('solicitudesRechazarBtn')?.addEventListener('click', function() {
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesDetalleModal'))?.hide();
+        new bootstrap.Modal(document.getElementById('solicitudesRejectModal')).show();
     });
 
-    // Confirmar Rechazo
-    document.getElementById('permisosConfirmReject')?.addEventListener('click', function() {
-        const reason = document.getElementById('permisosRejectReason').value.trim();
+    document.getElementById('solicitudesConfirmReject')?.addEventListener('click', function() {
+        const reason = document.getElementById('solicitudesRejectReason').value.trim();
         if (!reason) {
             showMessage('❌ Debe ingresar un motivo de rechazo.');
             return;
         }
-        rechazarPermiso(currentPermisoId, reason);
-        bootstrap.Modal.getInstance(document.getElementById('permisosRejectModal'))?.hide();
+        rechazarSolicitud(currentSolicitudId, reason);
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesRejectModal'))?.hide();
     });
 
     // Eventos de Filtro y Búsqueda
-    document.getElementById('permisosFiltroEstado')?.addEventListener('change', renderPermisosHistorial);
-    document.getElementById('buscarPermiso')?.addEventListener('input', debounce(renderPermisosHistorial, 300));
-    document.getElementById('permisosBtnLimpiar')?.addEventListener('click', () => {
-        const inputBuscar = document.getElementById('buscarPermiso');
-        const selectEstado = document.getElementById('permisosFiltroEstado');
+    document.getElementById('solicitudesFiltroEstado')?.addEventListener('change', window.renderSolicitudesHistorial);
+    document.getElementById('buscarSolicitudes')?.addEventListener('input', debounce(window.renderSolicitudesHistorial, 300));
+    document.getElementById('solicitudesBtnLimpiar')?.addEventListener('click', () => {
+        const inputBuscar = document.getElementById('buscarSolicitudes');
+        const selectEstado = document.getElementById('solicitudesFiltroEstado');
         if (inputBuscar) inputBuscar.value = '';
         if (selectEstado) selectEstado.value = '';
-        renderPermisosHistorial();
+        window.renderSolicitudesHistorial();
     });
 
     // ============================================================
     // FUNCIÓN PÚBLICA PARA CARGAR EL MÓDULO
     // ============================================================
-    window.cargarPermisos = function() {
-        console.log('📋 Cargando módulo de Permisos...');
-        updatePermisosKPIs();
-        renderPermisosPendientes();
-        renderPermisosHistorial();
+    window.cargarSolicitudes = function() {
+        console.log('📋 Cargando módulo de Solicitudes...');
+        window.updateSolicitudesKPIs();
+        window.renderSolicitudesPendientes();
+        window.renderSolicitudesHistorial();
     };
 
     // Cargar automáticamente si la pestaña está activa
-    if (document.getElementById('tabPermisos')?.classList.contains('active')) {
-        window.cargarPermisos();
+    if (document.getElementById('tabSolicitudes')?.classList.contains('active')) {
+        window.cargarSolicitudes();
     }
 
-    console.log('✅ permisos.js cargado correctamente');
+    console.log('✅ solicitudes.js cargado correctamente');
 })();

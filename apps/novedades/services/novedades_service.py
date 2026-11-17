@@ -2,54 +2,48 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from ..models import Permiso, Certificado
-
+from ..models import Solicitud, Certificado
 
 MOTIVO_RECHAZO_AUTOMATICO = (
     'La solicitud fue rechazada automáticamente porque no fue '
     'respondida dentro del tiempo establecido.'
 )
 
-
 def rechazar_solicitudes_vencidas():
     """
     Rechaza automáticamente:
-
-    - Permisos: cuando llega su fecha_inicio.
+    - Solicitudes: cuando llega su fecha_inicio.
     - Certificados: cuando han pasado 5 días calendario desde fecha_solicitud.
-
     Las incapacidades NO se procesan automáticamente.
     """
-
     ahora = timezone.now()
     hoy = timezone.localdate()
 
-    permisos_rechazados = 0
+    solicitudes_rechazadas = 0
     certificados_rechazados = 0
 
     # ============================================================
-    # PERMISOS
+    # SOLICITUDES
     # ============================================================
-    permisos = Permiso.objects.filter(
+    solicitudes = Solicitud.objects.filter(
         estado='pendiente',
         fecha_inicio__lte=hoy,
     ).select_related('empleado')
 
-    for permiso in permisos:
-        permiso.estado = 'rechazado'
-        permiso.motivo_rechazo = MOTIVO_RECHAZO_AUTOMATICO
-        permiso.decision_fecha = ahora
-        permiso.decision_por = None
+    for solicitud in solicitudes:
+        solicitud.estado = 'rechazado'
+        solicitud.motivo_rechazo = MOTIVO_RECHAZO_AUTOMATICO
+        solicitud.decision_fecha = ahora
+        solicitud.decision_por = None
 
-        permiso.save(update_fields=[
+        solicitud.save(update_fields=[
             'estado',
             'motivo_rechazo',
             'decision_fecha',
             'decision_por',
         ])
 
-        permisos_rechazados += 1
-
+        solicitudes_rechazadas += 1
 
     # ============================================================
     # CERTIFICADOS
@@ -76,9 +70,8 @@ def rechazar_solicitudes_vencidas():
 
         certificados_rechazados += 1
 
-
     return {
-        'permisos_rechazados': permisos_rechazados,
+        'solicitudes_rechazadas': solicitudes_rechazadas,
         'certificados_rechazados': certificados_rechazados,
-        'total': permisos_rechazados + certificados_rechazados,
+        'total': solicitudes_rechazadas + certificados_rechazados,
     }

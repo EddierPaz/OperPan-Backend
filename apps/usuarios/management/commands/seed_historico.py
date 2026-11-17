@@ -6,7 +6,7 @@ Genera una base de datos histórica realista para OperPan:
 - Horarios con ciclos automáticos desde 2026-01-05 (lunes) hasta hoy.
 - Descansos por ciclo (FIJO = mismo día semanal, MANANA/TARDE = rotativo).
 - Asistencias día a día.
-- Permisos, incapacidades, certificados.
+- Solicitudes, incapacidades, certificados.
 - Tareas distribuidas en el tiempo.
 - Memorandos generados automáticamente.
 
@@ -29,7 +29,7 @@ from apps.asistencia.services.horario_service import (
     dias_ciclo, ciclo_fin, generar_siguiente_ciclo,
 )
 from apps.tareas.models import Task, EstadoTarea, Prioridad, Area
-from apps.novedades.models import Permiso, Incapacidad, Certificado
+from apps.novedades.models import Solicitud, Incapacidad, Certificado
 from apps.memorandos.services import (
     verificar_y_generar_memorando, verificar_memorandos_asistencia,
 )
@@ -198,7 +198,7 @@ class Command(BaseCommand):
             self.stdout.write(f'  ✓ {total_ciclos} ciclos de horario')
 
             self._crear_novedades(perfiles, fake)
-            self.stdout.write('  ✓ Permisos, incapacidades y certificados')
+            self.stdout.write('  ✓ Solicitudes, incapacidades y certificados')
 
             total_asist = self._crear_asistencias(perfiles, horarios_por_empleado)
             self.stdout.write(f'  ✓ {total_asist} asistencias')
@@ -220,7 +220,7 @@ class Command(BaseCommand):
             f'  Horarios:      {Horario.objects.count()}\n'
             f'  Asistencias:   {Asistencia.objects.count()}\n'
             f'  Tareas:        {Task.objects.count()}\n'
-            f'  Permisos:      {Permiso.objects.count()}\n'
+            f'  Solicitudes:   {Solicitud.objects.count()}\n'
             f'  Incapacidades: {Incapacidad.objects.count()}\n'
             f'  Certificados:  {Certificado.objects.count()}\n'
         ))
@@ -240,7 +240,7 @@ class Command(BaseCommand):
             DescansoEmpleado.objects.all().delete()
             Horario.objects.all().delete()
             Task.objects.all().delete()
-            Permiso.objects.all().delete()
+            Solicitud.objects.all().delete()
             Incapacidad.objects.all().delete()
             Certificado.objects.all().delete()
             PerfilEmpleado.objects.all().delete()
@@ -441,21 +441,21 @@ class Command(BaseCommand):
         return ciclos
 
     # ============================================================
-    # NOVEDADES (permisos, incapacidades, certificados)
+    # NOVEDADES (solicitudes, incapacidades, certificados)
     # ============================================================
 
     def _crear_novedades(self, perfiles, fake):
         """
-        Crea permisos, incapacidades y certificados distribuidos
-        a lo largo del período. Las solicitudes aprobadas de permiso
+        Crea solicitudes, incapacidades y certificados distribuidos
+        a lo largo del período. Las solicitudes aprobadas de solicitud
         e incapacidad se usarán para excluir días en la generación
         de asistencias.
         """
         hoy = timezone.localdate()
         for perfil in perfiles:
-            # --- Permisos (2 a 5 por empleado en el período) ---
-            n_permisos = random.randint(2, 5)
-            for _ in range(n_permisos):
+            # --- Solicitudes (2 a 5 por empleado en el período) ---
+            n_solicitudes = random.randint(2, 5)
+            for _ in range(n_solicitudes):
                 fi = self._fecha_aleatoria(FECHA_INICIO_HISTORICO, hoy)
                 ff = fi + timedelta(days=random.randint(0, 3))
                 estado = random.choices(
@@ -463,7 +463,7 @@ class Command(BaseCommand):
                     weights=[0.2, 0.6, 0.2],
                 )[0]
 
-                Permiso.objects.create(
+                Solicitud.objects.create(
                     empleado=perfil,
                     tipo=random.choice([
                         'personal', 'medico', 'familiar', 'academico',
@@ -527,7 +527,7 @@ class Command(BaseCommand):
         Recorre todos los ciclos de cada empleado y crea asistencias
         día a día, evitando:
             - días de descanso
-            - días con permiso o incapacidad aprobada
+            - días con solicitud o incapacidad aprobada
             - fechas futuras
         """
         hoy = timezone.localdate()
@@ -543,8 +543,8 @@ class Command(BaseCommand):
                 .values_list('fecha', flat=True)
             )
 
-            # Permisos aprobados → días cubiertos
-            permisos_aprobados = Permiso.objects.filter(
+            # Solicitudes aprobadas → días cubiertos
+            solicitudes_aprobadas = Solicitud.objects.filter(
                 empleado=perfil, estado='aprobado',
             ).values_list('fecha_inicio', 'fecha_fin')
 
@@ -554,7 +554,7 @@ class Command(BaseCommand):
             ).values_list('fecha_inicio', 'fecha_fin')
 
             dias_cubiertos = set()
-            for fi, ff in list(permisos_aprobados) + list(incap_aprobadas):
+            for fi, ff in list(solicitudes_aprobadas) + list(incap_aprobadas):
                 cursor = fi
                 while cursor <= ff:
                     dias_cubiertos.add(cursor)

@@ -56,8 +56,8 @@
                         </a>
                     </li>
                     <!-- Novedades -->
-                    <li class="{% block active_solicitudes %}{% endblock %}">
-                        <a href="{% url 'novedades:solicitudes_empleado' %}" class="d-flex justify-content-between align-items-center w-100">
+                    <li class="{% block active_novedades %}{% endblock %}">
+                        <a href="{% url 'novedades:novedades_empleado' %}" class="d-flex justify-content-between align-items-center w-100">
                             <span><i class="bi bi-envelope-paper"></i> Novedades</span>
                             {% if notif_empleado_novedades > 0 %}
                                 <span class="badge bg-danger rounded-pill">{{ notif_empleado_novedades }}</span>

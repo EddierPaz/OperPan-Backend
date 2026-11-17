@@ -1,23 +1,26 @@
 {% extends 'empleado/base/base.html' %}
 {% load static %}
 
-{% block title %}OperPan | Mis Solicitudes{% endblock %}
-{% block section_title %}Mis solicitudes{% endblock %}
+{% block title %}OperPan | Mis Novedades{% endblock %}
+{% block section_title %}Mis Novedades{% endblock %}
 {% block section_subtitle %}Panel del Empleado{% endblock %}
-{% block active_solicitudes %}active{% endblock %}
+{% block active_novedades %}active{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/empleado/solicitudes.css' %}">
+<link rel="stylesheet" href="{% static 'css/empleado/novedades.css' %}">
 {% endblock %}
 
 {% block content %}
 <main class="dashboard-container">
+    <!-- ============================================================ -->
+    <!-- KPIs Y RESUMEN -->
+    <!-- ============================================================ -->
     <div class="row stats-row g-3">
         <div class="col-12">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h3>
                     <i class="bi bi-file-earmark-text me-2"></i>
-                    Resumen de solicitudes
+                    Resumen de novedades
                 </h3>
                 <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
             </div>
@@ -26,7 +29,7 @@
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-muted">Solicitudes enviadas</span>
+                    <span class="text-muted">Novedades enviadas</span>
                     <h3 class="mt-1">{{ total_solicitudes }}</h3>
                 </div>
                 <div class="icono-circular">
@@ -38,7 +41,7 @@
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-muted">Solicitudes pendientes</span>
+                    <span class="text-muted">Novedades pendientes</span>
                     <h3 class="mt-1">{{ total_pendientes }}</h3>
                 </div>
                 <div class="icono-circular">
@@ -50,7 +53,7 @@
         <div class="col-md-4">
             <div class="stat-card d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-muted">Solicitudes contestadas</span>
+                    <span class="text-muted">Novedades contestadas</span>
                     <h3 class="mt-1">{{ total_respondidas }}</h3>
                 </div>
                 <div class="icono-circular">
@@ -63,33 +66,32 @@
     <div class="d-flex align-items-center mb-4 flex-wrap gap-3">
         <h3 class="mb-0">
             <i class="bi bi-file-earmark-text me-2"></i>
-            Mis solicitudes
+            Mis novedades
         </h3>
-        <!-- ✅ btn-primary-corporate -->
-        <button class="btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalSolicitud">
+        <!-- BOTÓN PARA ABRIR EL MODAL CREAR -->
+        <button class="btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalsolicitudes">
             <i class="bi bi-plus-circle me-2"></i>
-            Nueva solicitud
+            Nueva novedad
         </button>
     </div>
 
-    <div class="solicitudes-pendientes-section">
+    <div class="novedades-pendientes-section">
         <div class="row g-3">
-            {% include 'empleado/solicitudes/permisos/pending.html' %}
-            {% include 'empleado/solicitudes/incapacidades/pending.html' %}
-            {% include 'empleado/solicitudes/certificados/pending.html' %}
+            {% include 'empleado/novedades/solicitudes/pending.html' %}
+            {% include 'empleado/novedades/incapacidades/pending.html' %}
+            {% include 'empleado/novedades/certificados/pending.html' %}
         </div>
     </div>
 
-    <div class="solicitudes-historial-section mt-4" id="historial">
-
+    <div class="novedades-historial-section mt-4" id="historial">
         <div class="filtros-container mb-3">
             <div class="filtros-row">
                 <span class="filtro-label">
                     <i class="bi bi-filter"></i> Tipo:
                 </span>
                 <div class="novedades-tabs" id="tipoFiltroTabs">
-                    <button type="button" class="btn btn-sm novedades-tab active" data-tipo="permiso">
-                        <i class="bi bi-calendar-event me-1"></i> Permisos
+                    <button type="button" class="btn btn-sm novedades-tab active" data-tipo="solicitud">
+                        <i class="bi bi-calendar-event me-1"></i> Solicitudes
                     </button>
                     <button type="button" class="btn btn-sm novedades-tab" data-tipo="incapacidad">
                         <i class="bi bi-heart-pulse me-1"></i> Incapacidades
@@ -118,92 +120,83 @@
             </div>
         </div>
 
-        <div id="solicitudesContainer">
-            {% if permisos_historial or incapacidades_historial or certificados_historial %}
-                <div class="solicitudes-grid">
-                    {% include 'empleado/solicitudes/permisos/content.html' %}
-                    {% include 'empleado/solicitudes/incapacidades/content.html' %}
-                    {% include 'empleado/solicitudes/certificados/content.html' %}
+        <div id="novedadesContainer">
+            {% if solicitudes_historial or incapacidades_historial or certificados_historial %}
+                <div class="novedades-grid">
+                    {% include 'empleado/novedades/solicitudes/content.html' %}
+                    {% include 'empleado/novedades/incapacidades/content.html' %}
+                    {% include 'empleado/novedades/certificados/content.html' %}
                 </div>
             {% else %}
                 <div class="empty-history">
                     <div class="empty-history-icon">
                         <i class="bi bi-folder2-open"></i>
                     </div>
-                    <h5>Aún no tienes solicitudes con respuesta</h5>
-                    <p class="text-muted mb-0">Cuando una solicitud sea aprobada o rechazada, aparecerá aquí.</p>
+                    <h5>Aún no tienes novedades con respuesta</h5>
+                    <p class="text-muted mb-0">Cuando una novedad sea aprobada o rechazada, aparecerá aquí.</p>
                 </div>
             {% endif %}
         </div>
     </div>
 
     <footer>
-        <i class="bi bi-shield-check"></i> Trazabilidad garantizada - Todas las solicitudes quedan registradas con fecha y estado.
+        <i class="bi bi-shield-check"></i> Trazabilidad garantizada - Todas las novedades quedan registradas con fecha y estado.
     </footer>
 </main>
 
 <!-- ============================================================ -->
-<!-- MODAL: NUEVA SOLICITUD                                        -->
+<!-- ================= MODAL: CREAR NOVEDAD ===================== -->
 <!-- ============================================================ -->
-<div class="modal fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalsolicitudes" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <!-- ✅ modal-detalle -->
         <div class="modal-content modal-detalle">
 
-            <!-- ✅ modal-detalle-header -->
             <div class="modal-detalle-header">
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-plus-circle-fill"></i>
-                        <span>Nueva Solicitud</span>
+                        <span>Nueva novedad</span>
                     </div>
                     <p class="modal-detalle-subtitulo mb-0">
-                        Crea una nueva solicitud de permiso, incapacidad o certificado
+                        Crea una nueva novedad de solicitud, incapacidad o certificado
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <form method="post" enctype="multipart/form-data" id="solicitudForm" action="{% url 'novedades:solicitudes_empleado' %}">
+            <!-- FORMULARIO DE CREACIÓN (ID: solicitudForm) -->
+            <form method="post" enctype="multipart/form-data" id="solicitudForm" action="{% url 'novedades:novedades_empleado' %}">
                 {% csrf_token %}
-                <!-- ✅ modal-detalle-body -->
                 <div class="modal-detalle-body">
 
                     <div class="modal-detalle-item mb-3">
-                        <span class="modal-detalle-label">Tipo de solicitud <span class="text-danger">*</span></span>
+                        <span class="modal-detalle-label">Tipo de novedad <span class="text-danger">*</span></span>
                         <span class="modal-detalle-value">
+                            <!-- SELECTOR MAESTRO QUE CONTROLA QUÉ FORMULARIO SE MUESTRA -->
                             <select class="form-select" id="tipoSolicitud" name="tipo_solicitud" required>
                                 <option value="">Seleccionar tipo</option>
-                                <option value="permiso" {% if request.POST.tipo_solicitud == 'permiso' %}selected{% endif %}>Permiso</option>
+                                <option value="solicitud" {% if request.POST.tipo_solicitud == 'solicitud' %}selected{% endif %}>Solicitud</option>
                                 <option value="incapacidad" {% if request.POST.tipo_solicitud == 'incapacidad' %}selected{% endif %}>Incapacidad médica</option>
                                 <option value="cambio_turno" {% if request.POST.tipo_solicitud == 'cambio_turno' %}selected{% endif %}>Cambio de turno</option>
-                                <option value="vacaciones" {% if request.POST.tipo_solicitud == 'vacaciones' %}selected{% endif %}>Solicitud de vacaciones</option>
+                                <option value="vacaciones" {% if request.POST.tipo_solicitud == 'vacaciones' %}selected{% endif %}>Vacaciones</option>
                                 <option value="certificado" {% if request.POST.tipo_solicitud == 'certificado' %}selected{% endif %}>Certificado</option>
                             </select>
                         </span>
                     </div>
 
-                    {% include 'empleado/solicitudes/permisos/modal.html' %}
-                    {% include 'empleado/solicitudes/incapacidades/modal.html' %}
-                    {% include 'empleado/solicitudes/certificados/modal.html' %}
-
-                    {% if permiso_form.non_field_errors or incapacidad_form.non_field_errors or certificado_form.non_field_errors %}
-                        <div class="alert alert-danger mt-3">
-                            {{ permiso_form.non_field_errors }}
-                            {{ incapacidad_form.non_field_errors }}
-                            {{ certificado_form.non_field_errors }}
-                        </div>
-                    {% endif %}
+                    <!-- AQUÍ SE INYECTAN LOS FORMULARIOS ESPECÍFICOS -->
+                    {% include 'empleado/novedades/solicitudes/modal.html' %}
+                    {% include 'empleado/novedades/incapacidades/modal.html' %}
+                    {% include 'empleado/novedades/certificados/modal.html' %}
 
                 </div>
 
-                <!-- ✅ modal-detalle-footer -->
                 <div class="modal-detalle-footer">
                     <button type="reset" class="btn-action btn-action-cancel">
                         <i class="bi bi-eraser"></i> Limpiar campos
                     </button>
                     <button type="submit" class="btn-action btn-action-save">
-                        <i class="bi bi-send"></i> Enviar solicitud
+                        <i class="bi bi-send"></i> Enviar novedad
                     </button>
                 </div>
             </form>
@@ -213,28 +206,25 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- MODAL: DETALLE DE SOLICITUD                                   -->
+<!-- ================= MODAL: DETALLE NOVEDAD =================== -->
 <!-- ============================================================ -->
 <div class="modal fade" id="modalDetalleSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <!-- ✅ modal-detalle -->
         <div class="modal-content modal-detalle">
 
-            <!-- ✅ modal-detalle-header -->
             <div class="modal-detalle-header">
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-file-earmark-text-fill" id="detalleIcono"></i>
-                        <span id="detalleTitulo">Detalle de solicitud</span>
+                        <span id="detalleTitulo">Detalle de novedad</span>
                     </div>
                     <p class="modal-detalle-subtitulo mb-0" id="detalleSubtitulo">
-                        Información completa de la solicitud
+                        Información completa de la novedad
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <!-- ✅ modal-detalle-body -->
             <div class="modal-detalle-body">
                 <div class="modal-detalle-grid">
                     <div class="modal-detalle-item">
@@ -247,7 +237,7 @@
                         <span class="modal-detalle-label">Tipo</span>
                         <span class="modal-detalle-value" id="detalleTipo">—</span>
                     </div>
-                    <div class="modal-detalle-item" style="grid-column: span 2;" id="detalleFechasContainer" style="display:none;">
+                    <div class="modal-detalle-item" style="grid-column: span 2; display:none;" id="detalleFechasContainer">
                         <span class="modal-detalle-label">Período</span>
                         <span class="modal-detalle-value" id="detalleFechas">—</span>
                     </div>
@@ -270,7 +260,6 @@
                 </div>
             </div>
 
-            <!-- ✅ modal-detalle-footer -->
             <div class="modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     Cerrar
@@ -293,17 +282,16 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- MODAL: CONFIRMAR ELIMINACIÓN                                  -->
+<!-- ================= MODAL: CONFIRMAR ELIMINACIÓN ============= -->
 <!-- ============================================================ -->
 <div class="modal fade confirm-modal" id="modalConfirmarEliminar" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
             <div class="modal-body confirm-modal-body">
                 <div class="confirm-modal-icon confirm-modal-icon--danger">
                     <i class="bi bi-x-lg"></i>
                 </div>
-                <h5 class="confirm-modal-title">¿Estás seguro de que deseas eliminar esta solicitud?</h5>
+                <h5 class="confirm-modal-title">¿Estás seguro de que deseas eliminar esta novedad?</h5>
                 <p class="confirm-modal-text">Esta acción no se puede deshacer.</p>
             </div>
 
@@ -313,44 +301,41 @@
                     <i class="bi bi-trash3"></i> Sí, eliminar
                 </button>
             </div>
-
         </div>
     </div>
 </div>
 
 <!-- ============================================================ -->
-<!-- MODAL: EDITAR SOLICITUD                                       -->
+<!-- ================= MODAL: EDITAR NOVEDAD ==================== -->
 <!-- ============================================================ -->
 <div class="modal fade" id="modalEditarSolicitud" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <!-- ✅ modal-detalle -->
         <div class="modal-content modal-detalle">
 
-            <!-- ✅ modal-detalle-header -->
             <div class="modal-detalle-header">
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-pencil-square"></i>
-                        <span>Editar Solicitud</span>
+                        <span>Editar novedad</span>
                     </div>
                     <p class="modal-detalle-subtitulo mb-0">
-                        Modifica los campos permitidos de tu solicitud
+                        Modifica los campos permitidos de tu novedad
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
+            <!-- FORMULARIO DE EDICIÓN (ID: formEditarSolicitud) -->
             <form id="formEditarSolicitud" enctype="multipart/form-data">
-                <!-- ✅ modal-detalle-body -->
                 <div class="modal-detalle-body">
                     <input type="hidden" id="editarId" name="id">
 
                     <div class="modal-detalle-item mb-3">
-                        <span class="modal-detalle-label">Tipo de Solicitud</span>
+                        <span class="modal-detalle-label">Tipo de novedad</span>
                         <span class="modal-detalle-value">
                             <input type="text" class="form-control bg-light" id="editarTipoDisplay" disabled>
                         </span>
-                        <small class="text-muted">El tipo de solicitud no se puede modificar.</small>
+                        <small class="text-muted">El tipo de novedad no se puede modificar.</small>
                     </div>
 
                     <div class="modal-detalle-grid">
@@ -389,7 +374,6 @@
 
                 </div>
 
-                <!-- ✅ modal-detalle-footer -->
                 <div class="modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-lg"></i> Cancelar
@@ -406,14 +390,14 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/empleado/solicitudes.js' %}"></script>
+<script src="{% static 'js/empleado/novedades.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        {% if permiso_form.errors or incapacidad_form.errors or certificado_form.errors %}
-            var modalSolicitudElement = document.getElementById('modalSolicitud');
-            if (modalSolicitudElement) {
-                var modalSolicitud = new bootstrap.Modal(modalSolicitudElement);
-                modalSolicitud.show();
+        {% if solicitud_form.errors or incapacidad_form.errors or certificado_form.errors %}
+            var modalsolicitudesElement = document.getElementById('modalsolicitudes');
+            if (modalsolicitudesElement) {
+                var modalsolicitudes = new bootstrap.Modal(modalsolicitudesElement);
+                modalsolicitudes.show();
             }
         {% endif %}
     });

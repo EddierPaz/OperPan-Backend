@@ -27,8 +27,8 @@
     <!-- Pestañas situadas justo debajo -->
     <div class="novedades-tabs-container mb-4">
         <div class="novedades-tabs d-flex align-items-center flex-wrap">
-            <button class="novedades-tab active" data-tab="permisos">
-                <i class="bi bi-file-earmark-text"></i> Permisos
+            <button class="novedades-tab active" data-tab="solicitudes">
+                <i class="bi bi-file-earmark-text"></i> Solicitudes
             </button>
 
             <button class="novedades-tab" data-tab="incapacidades">
@@ -45,9 +45,9 @@
         </div>
     </div>
 
-    <!-- ==================== PESTAÑA PERMISOS ==================== -->
-    <div id="tabPermisos" class="tab-pane active">
-        {% include "admin/novedades/permisos/content.html" %}
+    <!-- ==================== PESTAÑA SOLICITUDES ==================== -->
+    <div id="tabSolicitudes" class="tab-pane active">
+        {% include "admin/novedades/solicitudes/content.html" %}
     </div>
 
     <!-- ==================== PESTAÑA INCAPACIDADES ==================== -->
@@ -66,8 +66,8 @@
     </div>
 </main>
 
-<!-- MODALES PARA PERMISOS -->
-{% include "admin/novedades/permisos/modals.html" %}
+<!-- MODALES PARA SOLICITUDES -->
+{% include "admin/novedades/solicitudes/modals.html" %}
 
 <!-- MODALES PARA INCAPACIDADES -->
 {% include "admin/novedades/incapacidades/modals.html" %}
@@ -85,7 +85,7 @@
 {% block extra_js %}
 <script src="{% static 'js/admin/novedades/main.js' %}"></script>
 <script src="{% static 'js/admin/novedades/incapacidades.js' %}"></script>
-<script src="{% static 'js/admin/novedades/permisos.js' %}"></script>
+<script src="{% static 'js/admin/novedades/solicitudes.js' %}"></script>
 <script src="{% static 'js/admin/novedades/certificados.js' %}"></script>
 <script src="{% static 'js/admin/novedades/memorandos.js' %}"></script>
 {% endblock %}

@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Permiso, Incapacidad, Certificado
+from .models import Solicitud, Incapacidad, Certificado
 
 
-@admin.register(Permiso)
-class PermisoAdmin(admin.ModelAdmin):
+@admin.register(Solicitud)
+class SolicitudAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'empleado_nombre',
@@ -24,7 +24,7 @@ class PermisoAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('fecha_solicitud',)
     fieldsets = (
-        ('Información del permiso', {
+        ('Información de la solicitud', {
             'fields': (
                 'empleado',
                 'tipo',
@@ -49,7 +49,7 @@ class PermisoAdmin(admin.ModelAdmin):
     )
     autocomplete_fields = ('empleado', 'decision_por')
     date_hierarchy = 'fecha_solicitud'
-    actions = ['aprobar_permisos', 'rechazar_permisos']
+    actions = ['aprobar_solicitudes', 'rechazar_solicitudes']
 
     def empleado_nombre(self, obj):
         return obj.empleado.nombre_completo()
@@ -73,15 +73,15 @@ class PermisoAdmin(admin.ModelAdmin):
         )
     estado_display.short_description = 'Estado'
 
-    def aprobar_permisos(self, request, queryset):
+    def aprobar_solicitudes(self, request, queryset):
         count = queryset.filter(estado='pendiente').update(estado='aprobado')
-        self.message_user(request, f'{count} permiso(s) aprobado(s).')
-    aprobar_permisos.short_description = 'Aprobar permisos seleccionados'
+        self.message_user(request, f'{count} solicitud(es) aprobada(s).')
+    aprobar_solicitudes.short_description = 'Aprobar solicitudes seleccionadas'
 
-    def rechazar_permisos(self, request, queryset):
+    def rechazar_solicitudes(self, request, queryset):
         count = queryset.filter(estado='pendiente').update(estado='rechazado')
-        self.message_user(request, f'{count} permiso(s) rechazado(s).')
-    rechazar_permisos.short_description = 'Rechazar permisos seleccionados'
+        self.message_user(request, f'{count} solicitud(es) rechazada(s).')
+    rechazar_solicitudes.short_description = 'Rechazar solicitudes seleccionadas'
 
 
 @admin.register(Incapacidad)

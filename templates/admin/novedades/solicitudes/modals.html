@@ -1,9 +1,9 @@
 <!-- =========================================================
-     MODALES: PERMISOS (ADMIN)
+     MODALES: solicitudes (ADMIN)
 ========================================================= -->
 
-<!-- Modal Detalle Permiso -->
-<div class="modal fade" id="permisosDetalleModal" tabindex="-1" aria-hidden="true">
+<!-- Modal Detalle Solicitud -->
+<div class="modal fade" id="solicitudesDetalleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content modal-detalle">
 
@@ -11,16 +11,16 @@
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-file-earmark-text-fill"></i>
-                        <span id="permisoDetalleTitulo">Detalle de permiso</span>
+                        <span id="solicitudesDetalleTitulo">Detalle de solicitud</span>
                     </div>
-                    <p class="modal-detalle-subtitulo mb-0" id="permisoDetalleSubtitulo">
+                    <p class="modal-detalle-subtitulo mb-0" id="solicitudesDetalleSubtitulo">
                         Información completa de la solicitud
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <div class="modal-body modal-detalle-body" id="permisosModalBody">
+            <div class="modal-body modal-detalle-body" id="solicitudesModalBody">
                 <!-- Renderizado por JS -->
             </div>
 
@@ -28,11 +28,11 @@
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-lg"></i> Cerrar
                 </button>
-                <div class="d-flex gap-2" id="permisosAccionesFooter">
-                    <button type="button" class="btn-action btn-action-reject" id="permisosRechazarBtn">
+                <div class="d-flex gap-2" id="solicitudesAccionesFooter">
+                    <button type="button" class="btn-action btn-action-reject" id="solicitudesRechazarBtn">
                         <i class="bi bi-x-circle"></i> Rechazar
                     </button>
-                    <button type="button" class="btn-action btn-action-approve" id="permisosAprobarBtn">
+                    <button type="button" class="btn-action btn-action-approve" id="solicitudesAprobarBtn">
                         <i class="bi bi-check-circle"></i> Aprobar
                     </button>
                 </div>
@@ -42,22 +42,22 @@
     </div>
 </div>
 
-<!-- Modal Confirmar Aprobación Permiso -->
-<div class="modal fade" id="permisosConfirmApproveModal" tabindex="-1" aria-hidden="true">
+<!-- Modal Confirmar Aprobación Solicitud -->
+<div class="modal fade" id="solicitudesConfirmApproveModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content confirm-modal">
             <div class="modal-body confirm-modal-body">
                 <div class="confirm-modal-icon confirm-modal-icon--success">
                     <i class="bi bi-check-lg"></i>
                 </div>
-                <h5 class="confirm-modal-title">¿Aprobar permiso?</h5>
-                <p class="confirm-modal-text">Esta acción marcará el permiso como aprobado.</p>
+                <h5 class="confirm-modal-title">¿Aprobar solicitud?</h5>
+                <p class="confirm-modal-text">Esta acción marcará la solicitud como aprobada.</p>
             </div>
             <div class="confirm-modal-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="btn-action btn-action-approve" id="permisosConfirmApprove">
+                <button type="button" class="btn-action btn-action-approve" id="solicitudesConfirmApprove">
                     <i class="bi bi-check-circle me-1"></i> Sí, aprobar
                 </button>
             </div>
@@ -65,21 +65,21 @@
     </div>
 </div>
 
-<!-- Modal Motivo de Rechazo Permiso -->
-<div class="modal fade" id="permisosRejectModal" tabindex="-1" aria-hidden="true">
+<!-- Modal Motivo de Rechazo Solicitud -->
+<div class="modal fade" id="solicitudesRejectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content confirm-modal">
             <div class="modal-body confirm-modal-body text-start">
                 <div class="confirm-modal-icon confirm-modal-icon--danger mx-auto mb-3">
                     <i class="bi bi-x-lg"></i>
                 </div>
-                <h5 class="confirm-modal-title text-center">¿Rechazar permiso?</h5>
+                <h5 class="confirm-modal-title text-center">¿Rechazar solicitud?</h5>
                 <p class="confirm-modal-text text-center mb-3">Deberás indicar el motivo del rechazo.</p>
                 <div class="mb-2">
-                    <label for="permisosRejectReason" class="form-label">
+                    <label for="solicitudesRejectReason" class="form-label">
                         Motivo del rechazo <span class="text-danger">*</span>
                     </label>
-                    <textarea id="permisosRejectReason" class="form-control" rows="3" placeholder="Escribe el motivo del rechazo..."></textarea>
+                    <textarea id="solicitudesRejectReason" class="form-control" rows="3" placeholder="Escribe el motivo del rechazo..."></textarea>
                     <small class="text-muted d-block mt-1">Este motivo será visible para el empleado.</small>
                 </div>
             </div>
@@ -87,8 +87,8 @@
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-                <button type="button" class="btn-action btn-action-reject" id="permisosConfirmReject">
-                    <i class="bi bi-x-circle me-1"></i> Rechazar permiso
+                <button type="button" class="btn-action btn-action-reject" id="solicitudesConfirmReject">
+                    <i class="bi bi-x-circle me-1"></i> Rechazar solicitud
                 </button>
             </div>
         </div>

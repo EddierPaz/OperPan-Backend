@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from django import forms
-from .models import Permiso, Incapacidad, Certificado
+from .models import Solicitud, Incapacidad, Certificado
 
 
 class RechazoForm(forms.Form):
@@ -26,16 +26,16 @@ class CertificadoFiltroForm(forms.Form):
         return cleaned_data
 
 
-class PermisoCrearForm(forms.ModelForm):
+class SolicitudCrearForm(forms.ModelForm):
     archivo = forms.FileField(required=False)
 
-    # Días mínimos de anticipación exigidos para solicitar un permiso.
+    # Días mínimos de anticipación exigidos para solicitar una solicitud.
     # Con DIAS_ANTICIPACION = 3, si hoy es 28, los días 29/30/31 quedan
     # bloqueados y el primer día disponible es el 1 (28 + 4).
     DIAS_ANTICIPACION = 3
 
     class Meta:
-        model = Permiso
+        model = Solicitud
         fields = ['tipo', 'fecha_inicio', 'fecha_fin', 'justificacion', 'nuevo_horario', 'archivo']
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
@@ -48,7 +48,7 @@ class PermisoCrearForm(forms.ModelForm):
             minimo = date.today() + timedelta(days=self.DIAS_ANTICIPACION + 1)
             if fecha_inicio < minimo:
                 raise forms.ValidationError(
-                    f"Los permisos deben solicitarse con al menos {self.DIAS_ANTICIPACION} "
+                    f"Las solicitudes deben solicitarse con al menos {self.DIAS_ANTICIPACION} "
                     f"días de anticipación. La fecha más próxima disponible es "
                     f"{minimo.strftime('%d/%m/%Y')}."
                 )
