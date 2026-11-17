@@ -4,13 +4,15 @@ from apps.usuarios.models import PerfilEmpleado, User
 
 class Solicitud(models.Model):
     TIPO_CHOICES = (
-        ('personal', 'Personal'),
-        ('cambio_turno', 'Cambio de turno'),
-        ('medico', 'Médico'),
-        ('familiar', 'Familiar'),
         ('vacaciones', 'Vacaciones'),
-        ('academico', 'Académico'),
-        ('calamidad', 'Calamidad'),
+        ('cambio_turno', 'Cambio de Turno / Horario'),
+        ('luto', 'Licencia por Luto'),
+        ('maternidad_paternidad', 'Licencia de Maternidad / Paternidad'),
+        ('calamidad', 'Calamidad Doméstica / Emergencia Familiar'),
+        ('citas_medicas', 'Citas Médicas / Tratamientos'),
+        ('escolares', 'Obligaciones Escolares'),
+        ('legales', 'Citaciones Legales o Judiciales'),
+        ('no_remunerado', 'Permiso por Asuntos Personales (No Remunerado)'),
         ('otro', 'Otro'),
     )
     ESTADO_CHOICES = (
@@ -20,10 +22,10 @@ class Solicitud(models.Model):
     )
 
     empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='solicitudes')
-    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    tipo = models.CharField(max_length=30, choices=TIPO_CHOICES)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    justificacion = models.TextField()
+    justificacion = models.TextField(blank=True, null=True) # Ahora permite nulos y vacíos
     nuevo_horario = models.CharField(max_length=100, blank=True, null=True)
     archivo = models.FileField(upload_to='solicitudes/', blank=True, null=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')

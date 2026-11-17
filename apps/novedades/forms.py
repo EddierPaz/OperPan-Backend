@@ -29,11 +29,6 @@ class CertificadoFiltroForm(forms.Form):
 class SolicitudCrearForm(forms.ModelForm):
     archivo = forms.FileField(required=False)
 
-    # Días mínimos de anticipación exigidos para solicitar una solicitud.
-    # Con DIAS_ANTICIPACION = 3, si hoy es 28, los días 29/30/31 quedan
-    # bloqueados y el primer día disponible es el 1 (28 + 4).
-    DIAS_ANTICIPACION = 3
-
     class Meta:
         model = Solicitud
         fields = ['tipo', 'fecha_inicio', 'fecha_fin', 'justificacion', 'nuevo_horario', 'archivo']
@@ -42,29 +37,55 @@ class SolicitudCrearForm(forms.ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
         }
 
-    def clean_fecha_inicio(self):
-        fecha_inicio = self.cleaned_data.get('fecha_inicio')
-        if fecha_inicio:
-            minimo = date.today() + timedelta(days=self.DIAS_ANTICIPACION + 1)
-            if fecha_inicio < minimo:
-                raise forms.ValidationError(
-                    f"Las solicitudes deben solicitarse con al menos {self.DIAS_ANTICIPACION} "
-                    f"días de anticipación. La fecha más próxima disponible es "
-                    f"{minimo.strftime('%d/%m/%Y')}."
-                )
-        return fecha_inicio
-
     def clean(self):
         cleaned_data = super().clean()
+        tipo = cleaned_data.get('tipo')
         fecha_inicio = cleaned_data.get('fecha_inicio')
         fecha_fin = cleaned_data.get('fecha_fin')
-        if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
-            raise forms.ValidationError("La fecha de inicio no puede ser mayor que la fecha de fin.")
-
-        tipo = cleaned_data.get('tipo')
         nuevo_horario = cleaned_data.get('nuevo_horario')
-        if tipo == 'cambio_turno' and not nuevo_horario:
-            raise forms.ValidationError("El nuevo horario es obligatorio para solicitudes de cambio de turno.")
+        justificacion = cleaned_data.get('justificacion')
+        archivo = cleaned_data.get('archivo')
+        
+        hoy = date.today()
+
+        # 1. Reglas de Fechas y Anticipación
+        if fecha_inicio:
+            if tipo in ['luto', 'calamidad']:
+                # Permiten hoy mismo, no fechas pasadas
+                if fecha_inicio < hoy:
+                    self.add_error('fecha_inicio', "La fecha no puede ser en el pasado.")
+            else:
+                # Exigen 3 días de anticipación
+                minimo = hoy + timedelta(days=3)
+                if fecha_inicio < minimo:
+                    self.add_error('fecha_inicio', 
+                        f"Para este tipo de solicitud debes avisar con al menos 3 días de anticipación. "
+                        f"La fecha más próxima es {minimo.strftime('%d/%m/%Y')}."
+                    )
+
+        if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
+            self.add_error('fecha_fin', "La fecha de inicio no puede ser mayor que la fecha de fin.")
+
+        # 2. Reglas específicas por tipo
+        if tipo == 'cambio_turno':
+            if not nuevo_horario:
+                self.add_error('nuevo_horario', "El nuevo horario es obligatorio.")
+            if not justificacion:
+                self.add_error('justificacion', "Debes explicar el motivo del cambio de turno.")
+            cleaned_data['fecha_fin'] = fecha_inicio # Solo dura un día
+            
+        elif tipo in ['luto', 'citas_medicas', 'maternidad_paternidad']:
+            if not archivo:
+                self.add_error('archivo', "Este tipo de solicitud exige adjuntar un soporte obligatorio.")
+            cleaned_data['justificacion'] = '' # Forzamos a vacío
+            
+        elif tipo == 'vacaciones':
+            cleaned_data['justificacion'] = '' # No requiere justificación
+            
+        else:
+            # no_remunerado, calamidad, escolares, legales, otro
+            if not justificacion:
+                self.add_error('justificacion', "Debes ingresar una justificación para este tipo de solicitud.")
 
         return cleaned_data
 

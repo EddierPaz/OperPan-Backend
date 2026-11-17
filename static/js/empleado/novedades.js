@@ -2,39 +2,173 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // REFERENCIAS AL DOM
     // ============================================================
-    const tipoSelect = document.getElementById('tipoSolicitud');
+    const tipoSelect = document.getElementById('tipoSolicitud'); 
+    const innerTipoSelect = document.getElementById('solicitudTipo'); 
     const formSolicitud = document.getElementById('formSolicitud');
     const formIncapacidad = document.getElementById('formIncapacidad');
     const formCertificado = document.getElementById('formCertificado');
-    const nuevoHorarioGroup = document.getElementById('nuevoHorarioGroup');
     const novedadesContainer = document.getElementById('novedadesContainer');
 
     // ============================================================
-    // LÓGICA DEL MODAL CREAR: Mostrar formulario según el tipo
+    // CONFIGURACIÓN DE FECHAS BASE
+    // ============================================================
+    const formatearFechaISO = (fecha) => {
+        const y = fecha.getFullYear();
+        const m = String(fecha.getMonth() + 1).padStart(2, '0');
+        const d = String(fecha.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    };
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const hoyStr = formatearFechaISO(hoy);
+
+    const minSolicitud = new Date(hoy);
+    minSolicitud.setDate(minSolicitud.getDate() + 3); // 3 días de anticipación
+    const minSolicitudStr = formatearFechaISO(minSolicitud);
+
+    // ============================================================
+    // LÓGICA DEL MODAL CREAR: Mostrar/Ocultar bloques según el tipo
     // ============================================================
     const mostrarFormularioSegunTipo = () => {
         if (!tipoSelect) return;
-        const tipo = tipoSelect.value;
+        const mainTipo = tipoSelect.value;
 
-        [formSolicitud, formIncapacidad, formCertificado, nuevoHorarioGroup].forEach(el => {
-            if (el) el.style.display = 'none';
-        });
+        if (formSolicitud) formSolicitud.style.display = 'none';
+        if (formIncapacidad) formIncapacidad.style.display = 'none';
+        if (formCertificado) formCertificado.style.display = 'none';
 
-        if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipo)) {
-            if (formSolicitud) formSolicitud.style.display = 'block';
-            if (tipo === 'cambio_turno' && nuevoHorarioGroup) nuevoHorarioGroup.style.display = 'block';
-        } else if (tipo === 'incapacidad' && formIncapacidad) {
-            formIncapacidad.style.display = 'block';
-        } else if (tipo === 'certificado' && formCertificado) {
-            formCertificado.style.display = 'block';
+        if (!mainTipo) return;
+
+        if (mainTipo === 'incapacidad') {
+            if (formIncapacidad) formIncapacidad.style.display = 'block';
+            return;
+        }
+        if (mainTipo === 'certificado') {
+            if (formCertificado) formCertificado.style.display = 'block';
             actualizarCamposCertificado();
+            return;
+        }
+
+        if (formSolicitud) formSolicitud.style.display = 'block';
+
+        // --- NUEVA LÓGICA: Ocultar el selector interno si ya se eligió un tipo específico ---
+        const grupoTipoSolicitud = document.getElementById('grupoTipoSolicitud');
+        if (innerTipoSelect) {
+            if (mainTipo === 'cambio_turno') {
+                innerTipoSelect.value = 'cambio_turno';
+                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'none'; // Ocultamos
+            } else if (mainTipo === 'vacaciones') {
+                innerTipoSelect.value = 'vacaciones';
+                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'none'; // Ocultamos
+            } else {
+                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'block'; // Mostramos para "Solicitud" genérica
+            }
+        }
+
+        let tipoEfectivo = mainTipo;
+        if (mainTipo === 'solicitud' && innerTipoSelect) {
+            tipoEfectivo = innerTipoSelect.value;
+        }
+
+        const grupoFechaInicio = document.getElementById('grupoFechaInicio');
+        const grupoFechaFin = document.getElementById('grupoFechaFin');
+        const grupoNuevoHorario = document.getElementById('grupoNuevoHorario');
+        const grupoJustificacion = document.getElementById('grupoJustificacion');
+        const grupoAdjunto = document.getElementById('grupoAdjunto');
+        
+        const labelFechaInicio = document.getElementById('labelFechaInicio');
+        const labelJustificacion = document.getElementById('labelJustificacion');
+        const labelAdjunto = document.getElementById('labelAdjunto');
+        const hintAdjunto = document.getElementById('hintAdjunto');
+        const inputFechaInicio = document.getElementById('solicitudFechaInicio');
+        const inputFechaFin = document.getElementById('solicitudFechaFin');
+        const inputNuevoHorario = document.getElementById('cambioTurnoSolicitado');
+        const inputJustificacion = document.getElementById('solicitudMotivo');
+        const inputAdjunto = document.getElementById('solicitudAdjunto');
+
+        // RESET
+        if (grupoFechaInicio) grupoFechaInicio.style.display = 'block';
+        if (grupoFechaFin) grupoFechaFin.style.display = 'block';
+        if (grupoJustificacion) grupoJustificacion.style.display = 'none';
+        if (grupoAdjunto) grupoAdjunto.style.display = 'none';
+        if (grupoNuevoHorario) grupoNuevoHorario.style.display = 'none';
+        
+        if (inputJustificacion) {
+            inputJustificacion.required = false;
+            inputJustificacion.value = ''; 
+        }
+        if (inputAdjunto) {
+            inputAdjunto.required = false;
+            inputAdjunto.value = ''; 
+        }
+        if (inputNuevoHorario) inputNuevoHorario.required = false;
+        if (inputFechaFin) inputFechaFin.required = false;
+
+        // --- APLICAR REGLAS SEGÚN EL TIPO ---
+        
+        // REGLA GLOBAL: Fechas mínimas (Luto/Calamidad = hoy, Otros = 3 días)
+        if (tipoEfectivo === 'luto' || tipoEfectivo === 'calamidad') {
+            if (inputFechaInicio) inputFechaInicio.min = hoyStr;
+        } else {
+            if (inputFechaInicio) inputFechaInicio.min = minSolicitudStr;
+        }
+
+        if (tipoEfectivo === 'cambio_turno') {
+            if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha del cambio <span class="text-danger">*</span>';
+            if (grupoFechaFin) grupoFechaFin.style.display = 'none'; 
+            if (grupoNuevoHorario) grupoNuevoHorario.style.display = 'block'; 
+            
+            if (grupoJustificacion) grupoJustificacion.style.display = 'block';
+            if (labelJustificacion) labelJustificacion.innerHTML = 'Motivo del cambio <span class="text-danger">*</span>';
+            if (inputJustificacion) inputJustificacion.required = true;
+            
+            if (inputFechaInicio && inputFechaFin) {
+                inputFechaFin.value = inputFechaInicio.value;
+            }
+            if (inputNuevoHorario) inputNuevoHorario.required = true;
+
+        } else if (tipoEfectivo === 'vacaciones') {
+            if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha de inicio de vacaciones <span class="text-danger">*</span>';
+            if (grupoFechaFin) grupoFechaFin.style.display = 'block';
+            if (inputFechaFin) inputFechaFin.required = true;
+
+        } else if (['luto', 'citas_medicas', 'maternidad_paternidad'].includes(tipoEfectivo)) {
+            if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha inicio <span class="text-danger">*</span>';
+            if (grupoFechaFin) grupoFechaFin.style.display = 'block';
+            
+            if (grupoAdjunto) grupoAdjunto.style.display = 'block';
+            if (labelAdjunto) labelAdjunto.innerHTML = '<strong class="text-danger">(Obligatorio)</strong>';
+            if (inputAdjunto) inputAdjunto.required = true;
+            
+            if (hintAdjunto) {
+                if (tipoEfectivo === 'luto') hintAdjunto.innerHTML = '<strong>Sugerencia: Adjunta el registro civil de defunción.</strong>';
+                else if (tipoEfectivo === 'citas_medicas') hintAdjunto.innerHTML = '<strong>Sugerencia: Adjunta el certificado médico.</strong>';
+                else hintAdjunto.innerHTML = '<strong>Sugerencia: Adjunta el registro civil de nacimiento.</strong>';
+            }
+            
+            if (inputFechaFin) inputFechaFin.required = true;
+
+        } else {
+            // CASO: NO REMUNERADO, CALAMIDAD, ESCOLARES, LEGALES, OTRO
+            if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha inicio <span class="text-danger">*</span>';
+            if (grupoFechaFin) grupoFechaFin.style.display = 'block';
+            
+            if (grupoJustificacion) grupoJustificacion.style.display = 'block';
+            if (labelJustificacion) labelJustificacion.innerHTML = 'Justificación <span class="text-danger">*</span>';
+            if (inputJustificacion) inputJustificacion.required = true;
+            
+            if (grupoAdjunto) grupoAdjunto.style.display = 'block';
+            if (labelAdjunto) labelAdjunto.textContent = '(opcional)';
+            if (hintAdjunto) hintAdjunto.textContent = 'Formato PDF, JPG, PNG (máx 5MB).';
+            
+            if (inputFechaFin) inputFechaFin.required = true;
         }
     };
 
-    if (tipoSelect) {
-        tipoSelect.addEventListener('change', mostrarFormularioSegunTipo);
-        mostrarFormularioSegunTipo();
-    }
+    if (tipoSelect) tipoSelect.addEventListener('change', mostrarFormularioSegunTipo);
+    if (innerTipoSelect) innerTipoSelect.addEventListener('change', mostrarFormularioSegunTipo);
+    mostrarFormularioSegunTipo();
 
     // ============================================================
     // CÁLCULO DE DÍAS DE INCAPACIDAD
@@ -63,36 +197,17 @@ document.addEventListener('DOMContentLoaded', () => {
     [incapInicio, incapFin].forEach(el => el?.addEventListener('change', actualizarDiasIncapacidad));
 
     // ============================================================
-    // RESTRICCIONES DE FECHAS (Anticipación)
+    // RESTRICCIONES DINÁMICAS DE FECHA (Fecha Fin >= Fecha Inicio)
     // ============================================================
     const solicitudInicio = document.getElementById('solicitudFechaInicio');
     const solicitudFin = document.getElementById('solicitudFechaFin');
 
-    const formatearFechaISO = (fecha) => {
-        const y = fecha.getFullYear();
-        const m = String(fecha.getMonth() + 1).padStart(2, '0');
-        const d = String(fecha.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-    };
-
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    const DIAS_ANTICIPACION_SOLICITUD = 3;
-    const minSolicitud = new Date(hoy);
-    minSolicitud.setDate(minSolicitud.getDate() + DIAS_ANTICIPACION_SOLICITUD + 1);
-    const minSolicitudStr = formatearFechaISO(minSolicitud);
-
     if (solicitudInicio) {
-        solicitudInicio.min = minSolicitudStr;
         solicitudInicio.addEventListener('change', () => {
             if (solicitudFin) {
-                solicitudFin.min = solicitudInicio.value || minSolicitudStr;
+                solicitudFin.min = solicitudInicio.value || hoyStr;
             }
         });
-    }
-    if (solicitudFin) {
-        solicitudFin.min = minSolicitudStr;
     }
 
     const minIncapStr = formatearFechaISO(hoy);
@@ -629,21 +744,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const formErrors = document.querySelector('.alert-danger');
     if (formErrors) {
         if (document.querySelector('#formSolicitud .is-invalid, #formSolicitud .errorlist')) {
-            const select = document.getElementById('tipoSolicitud');
-            if (select) {
-                select.value = 'solicitud';
+            if (tipoSelect) {
+                tipoSelect.value = 'solicitud';
                 mostrarFormularioSegunTipo();
             }
         } else if (document.querySelector('#formIncapacidad .is-invalid, #formIncapacidad .errorlist')) {
-            const select = document.getElementById('tipoSolicitud');
-            if (select) {
-                select.value = 'incapacidad';
+            if (tipoSelect) {
+                tipoSelect.value = 'incapacidad';
                 mostrarFormularioSegunTipo();
             }
         } else if (document.querySelector('#formCertificado .is-invalid, #formCertificado .errorlist')) {
-            const select = document.getElementById('tipoSolicitud');
-            if (select) {
-                select.value = 'certificado';
+            if (tipoSelect) {
+                tipoSelect.value = 'certificado';
                 mostrarFormularioSegunTipo();
                 actualizarCamposCertificado();
             }
@@ -660,108 +772,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     if (solicitudForm) {
         solicitudForm.addEventListener('submit', function(e) {
-            const tipoSelect = document.getElementById('tipoSolicitud');
-            const tipo = tipoSelect?.value;
-            
-            if (!tipo) {
+            const mainTipo = tipoSelect?.value;
+            let tipoEfectivo = mainTipo;
+
+            if (mainTipo === 'solicitud' && innerTipoSelect) {
+                tipoEfectivo = innerTipoSelect.value;
+            }
+
+            if (!tipoEfectivo) {
                 e.preventDefault();
                 alert('❌ Por favor, selecciona un tipo de novedad.');
                 return false;
             }
-
-            if (tipo === 'incapacidad') {
-                const titulo = document.getElementById('incapacidadTitulo');
-                const descripcion = document.getElementById('incapacidadDescripcion');
-                const fechaInicio = document.getElementById('incapacidadFechaInicio');
-                const fechaFin = document.getElementById('incapacidadFechaFin');
-                const archivo = document.getElementById('incapacidadAdjunto');
-                
-                if (!titulo?.value.trim()) {
-                    e.preventDefault();
-                    alert('❌ El título es obligatorio.');
-                    return false;
-                }
-                if (!descripcion?.value.trim()) {
-                    e.preventDefault();
-                    alert('❌ La descripción es obligatoria.');
-                    return false;
-                }
-                if (!fechaInicio?.value) {
-                    e.preventDefault();
-                    alert('❌ La fecha de inicio es obligatoria.');
-                    return false;
-                }
-                if (incapInicio && incapInicio.min && fechaInicio.value < incapInicio.min) {
-                    e.preventDefault();
-                    alert('❌ La fecha de inicio no puede ser anterior a hoy.');
-                    return false;
-                }
-                if (!fechaFin?.value) {
-                    e.preventDefault();
-                    alert('❌ La fecha de fin es obligatoria.');
-                    return false;
-                }
-                if (!archivo?.files || archivo.files.length === 0) {
-                    e.preventDefault();
-                    alert('❌ Debes adjuntar un soporte médico para la incapacidad.');
-                    return false;
-                }
-            }
-
-            if (tipo === 'certificado') {
-                const tipoCert = document.getElementById('certificadoTipo');
-                const proposito = document.getElementById('certificadoProposito');
-                
-                if (!tipoCert?.value) {
-                    e.preventDefault();
-                    alert('❌ El tipo de certificado es obligatorio.');
-                    return false;
-                }
-                if (!proposito?.value.trim()) {
-                    e.preventDefault();
-                    alert('❌ El propósito es obligatorio.');
-                    return false;
-                }
-            }
-
-            if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipo)) {
-                const tipoSolicitud = document.getElementById('solicitudTipo');
-                const fechaInicio = document.getElementById('solicitudFechaInicio');
-                const fechaFin = document.getElementById('solicitudFechaFin');
-                const justificacion = document.getElementById('solicitudMotivo');
-                
-                if (!tipoSolicitud?.value) {
-                    e.preventDefault();
-                    alert('❌ El tipo de solicitud es obligatorio.');
-                    return false;
-                }
-                
-                if (!fechaInicio?.value) {
-                    e.preventDefault();
-                    alert('❌ La fecha de inicio es obligatoria.');
-                    return false;
-                }
-
-                if (solicitudInicio && solicitudInicio.min && fechaInicio.value < solicitudInicio.min) {
-                    e.preventDefault();
-                    alert(`❌ Las solicitudes deben solicitarse con al menos ${DIAS_ANTICIPACION_SOLICITUD} días de anticipación.`);
-                    return false;
-                }
-                
-                if (!fechaFin?.value) {
-                    e.preventDefault();
-                    alert('❌ La fecha de fin es obligatoria.');
-                    return false;
-                }
-                
-                if (!justificacion?.value.trim()) {
-                    e.preventDefault();
-                    alert('❌ La justificación es obligatoria.');
-                    return false;
-                }
-            }
             
-            console.log('✅ Formulario válido, enviando...');
+            console.log('✅ Formulario validado y enviando...');
             return true;
         });
     }
