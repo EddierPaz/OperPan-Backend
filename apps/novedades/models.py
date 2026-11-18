@@ -46,13 +46,9 @@ class Incapacidad(models.Model):
     )
 
     empleado = models.ForeignKey(PerfilEmpleado, on_delete=models.CASCADE, related_name='incapacidades')
-    titulo = models.CharField(max_length=100)
-    descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    archivo = models.FileField(upload_to='incapacidades/', blank=True, null=True)
-    entidad_emisora = models.CharField(max_length=100, blank=True, null=True)
-    numero_incapacidad = models.CharField(max_length=50, blank=True, null=True)
+    archivo = models.FileField(upload_to='incapacidades/', blank=True, null=True) # El archivo lo pediremos obligatorio en el form
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     decision_fecha = models.DateTimeField(null=True, blank=True)
@@ -60,7 +56,7 @@ class Incapacidad(models.Model):
     motivo_rechazo = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_inicio})"
+        return f"{self.empleado.nombre_completo()} - {self.fecha_inicio} al {self.fecha_fin}"
 
 
 class Certificado(models.Model):

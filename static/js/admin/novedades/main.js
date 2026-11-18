@@ -182,22 +182,12 @@ function renderIncapacidadDetalle(data) {
                 <span class="modal-detalle-label">Empleado</span>
                 <span class="modal-detalle-value">${data.empleado || '—'}</span>
             </div>
-            <div class="modal-detalle-item">
-                <span class="modal-detalle-label">Título</span>
-                <span class="modal-detalle-value">${data.titulo || '—'}</span>
-            </div>
             <div class="modal-detalle-item modal-detalle-item-full">
                 <span class="modal-detalle-label">Período</span>
                 <span class="modal-detalle-value">
                     <i class="bi bi-calendar3 me-1"></i>
                     ${fechaInicio} - ${fechaFin}
                 </span>
-            </div>
-            <div class="modal-detalle-bloque-largo">
-                <span class="modal-detalle-bloque-largo-label">Descripción</span>
-                <p class="modal-detalle-bloque-largo-texto">
-                    ${data.descripcion || 'Sin información adicional.'}
-                </p>
             </div>
             <div class="modal-detalle-item modal-detalle-item-full">
                 <span class="modal-detalle-label">Fecha de solicitud</span>

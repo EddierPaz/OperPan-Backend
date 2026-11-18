@@ -1405,4 +1405,4 @@ document.addEventListener('DOMContentLoaded', function () {
     else window.addEventListener('load', initMemorandos);
 })();
 
-console.log('✅ Novedades.js (completo - corregido final) cargado correctamente');
+console.log('Novedades.js (completo - corregido final) cargado correctamente');

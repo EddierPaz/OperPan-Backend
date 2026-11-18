@@ -260,11 +260,11 @@ def admin_tarea_create(request):
 
             messages.success(
                 request,
-                f"✅ Tarea '{tarea.titulo}' creada exitosamente para {tarea.empleado.nombre_completo()}."
+                f"Tarea '{tarea.titulo}' creada exitosamente para {tarea.empleado.nombre_completo()}."
             )
             return redirect('tareas:admin_tareas_list')
         else:
-            messages.error(request, "❌ Por favor corrige los errores del formulario.")
+            messages.error(request, "Por favor corrige los errores del formulario.")
             context = _build_tareas_context(request, form=form, editando=False)
             return render(request, 'admin/tareas/tareas.html', context)
     return redirect('tareas:admin_tareas_list')

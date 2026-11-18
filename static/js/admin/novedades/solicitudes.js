@@ -126,7 +126,7 @@
                 const modal = new bootstrap.Modal(document.getElementById('solicitudesDetalleModal'));
                 modal.show();
             })
-            .catch(() => showMessage('❌ Error al cargar detalle de la solicitud'));
+            .catch(() => showMessage('Error al cargar detalle de la solicitud'));
     };
 
     window.verDetalleHistorialSolicitud = function(id) {
@@ -152,7 +152,7 @@
                 const modal = new bootstrap.Modal(document.getElementById('solicitudesDetalleModal'));
                 modal.show();
             })
-            .catch(() => showMessage('❌ Error al cargar detalle de la solicitud'));
+            .catch(() => showMessage('Error al cargar detalle de la solicitud'));
     };
 
     function aprobarSolicitud(id) {
@@ -166,15 +166,15 @@
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('✅ Solicitud aprobada correctamente.');
+                    showMessage('Solicitud aprobada correctamente.');
                     window.updateSolicitudesKPIs();
                     window.renderSolicitudesPendientes();
                     window.renderSolicitudesHistorial();
                 } else {
-                    showMessage('❌ Error: ' + (data.error || 'No se pudo aprobar'));
+                    showMessage('Error: ' + (data.error || 'No se pudo aprobar'));
                 }
             })
-            .catch(() => showMessage('❌ Error de red al aprobar solicitud'));
+            .catch(() => showMessage('Error de red al aprobar solicitud'));
     }
 
     function rechazarSolicitud(id, motivo) {
@@ -189,15 +189,15 @@
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('✅ Solicitud rechazada.');
+                    showMessage('Solicitud rechazada.');
                     window.updateSolicitudesKPIs();
                     window.renderSolicitudesPendientes();
                     window.renderSolicitudesHistorial();
                 } else {
-                    showMessage('❌ Error: ' + (data.error || 'No se pudo rechazar'));
+                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
                 }
             })
-            .catch(() => showMessage('❌ Error de red al rechazar solicitud'));
+            .catch(() => showMessage('Error de red al rechazar solicitud'));
     }
 
     window.renderSolicitudesHistorial = function() {
@@ -283,7 +283,7 @@
     document.getElementById('solicitudesConfirmReject')?.addEventListener('click', function() {
         const reason = document.getElementById('solicitudesRejectReason').value.trim();
         if (!reason) {
-            showMessage('❌ Debe ingresar un motivo de rechazo.');
+            showMessage('Debe ingresar un motivo de rechazo.');
             return;
         }
         rechazarSolicitud(currentSolicitudId, reason);

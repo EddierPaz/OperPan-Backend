@@ -354,11 +354,6 @@
                     </div>
 
                     <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3">
-                        <span class="modal-detalle-bloque-largo-label">Motivo o Descripción <span class="text-danger">*</span></span>
-                        <textarea class="form-control" id="editarMotivo" name="motivo" rows="3" required></textarea>
-                    </div>
-
-                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3">
                         <span class="modal-detalle-bloque-largo-label">Archivo Adjunto</span>
 
                         <div id="contenedorArchivoActual" class="mb-2" style="display: none;">
@@ -391,15 +386,4 @@
 
 {% block extra_js %}
 <script src="{% static 'js/empleado/novedades.js' %}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        {% if solicitud_form.errors or incapacidad_form.errors or certificado_form.errors %}
-            var modalsolicitudesElement = document.getElementById('modalsolicitudes');
-            if (modalsolicitudesElement) {
-                var modalsolicitudes = new bootstrap.Modal(modalsolicitudesElement);
-                modalsolicitudes.show();
-            }
-        {% endif %}
-    });
-</script>
 {% endblock %}

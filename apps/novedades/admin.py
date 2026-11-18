@@ -89,7 +89,6 @@ class IncapacidadAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'empleado_nombre',
-        'titulo',
         'fecha_inicio',
         'fecha_fin',
         'estado_display',
@@ -101,10 +100,6 @@ class IncapacidadAdmin(admin.ModelAdmin):
         'empleado__primer_nombre',
         'empleado__primer_apellido',
         'empleado__numero_documento',
-        'titulo',
-        'descripcion',
-        'entidad_emisora',
-        'numero_incapacidad',
     )
     readonly_fields = ('fecha_solicitud',)
     fieldsets = (
@@ -112,12 +107,9 @@ class IncapacidadAdmin(admin.ModelAdmin):
             'fields': (
                 'empleado',
                 'titulo',
-                'descripcion',
                 'fecha_inicio',
                 'fecha_fin',
                 'archivo',
-                'entidad_emisora',
-                'numero_incapacidad',
             )
         }),
         ('Estado y decisión', {

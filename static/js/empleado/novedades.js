@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // REFERENCIAS AL DOM
     // ============================================================
-    const tipoSelect = document.getElementById('tipoSolicitud'); 
-    const innerTipoSelect = document.getElementById('solicitudTipo'); 
+    const tipoSelect = document.getElementById('tipoSolicitud'); // Selector maestro
+    const innerTipoSelect = document.getElementById('solicitudTipo'); // Selector interno
     const formSolicitud = document.getElementById('formSolicitud');
     const formIncapacidad = document.getElementById('formIncapacidad');
     const formCertificado = document.getElementById('formCertificado');
@@ -24,45 +24,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoyStr = formatearFechaISO(hoy);
 
     const minSolicitud = new Date(hoy);
-    minSolicitud.setDate(minSolicitud.getDate() + 3); // 3 días de anticipación
+    minSolicitud.setDate(minSolicitud.getDate() + 3); // 3 días de anticipación para solicitudes
     const minSolicitudStr = formatearFechaISO(minSolicitud);
 
     // ============================================================
-    // LÓGICA DEL MODAL CREAR: Mostrar/Ocultar bloques según el tipo
+    // LÓGICA DEL MODAL CREAR: Mostrar/Ocultar y Habilitar/Deshabilitar
     // ============================================================
     const mostrarFormularioSegunTipo = () => {
         if (!tipoSelect) return;
         const mainTipo = tipoSelect.value;
 
-        if (formSolicitud) formSolicitud.style.display = 'none';
-        if (formIncapacidad) formIncapacidad.style.display = 'none';
-        if (formCertificado) formCertificado.style.display = 'none';
+        // --- NUEVO: Limpiar mensajes de error viejos si el usuario cambia de opción ---
+        document.querySelectorAll('.text-danger.small').forEach(el => {
+            // Ocultamos los textos de error para que no queden pegados en la interfaz
+            el.textContent = '';
+            el.style.display = 'none';
+        });
+        // -----------------------------------------------------------------------------
+
+        // Función auxiliar para habilitar/deshabilitar un formulario completo
+        const toggleForm = (form, isVisible) => {
+            if (!form) return;
+            form.style.display = isVisible ? 'block' : 'none';
+            // Deshabilitamos los inputs si está oculto para que no bloqueen el envío
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.disabled = !isVisible;
+            });
+        };
+
+        // 1. Ocultar/Deshabilitar todos los formularios
+        toggleForm(formSolicitud, false);
+        toggleForm(formIncapacidad, false);
+        toggleForm(formCertificado, false);
 
         if (!mainTipo) return;
 
+        // 2. Mostrar el formulario correspondiente al selector maestro
         if (mainTipo === 'incapacidad') {
-            if (formIncapacidad) formIncapacidad.style.display = 'block';
+            toggleForm(formIncapacidad, true);
+            
+            const incapInicio = document.getElementById('incapacidadFechaInicio');
+            const incapFin = document.getElementById('incapacidadFechaFin');
+            if (incapInicio) incapInicio.min = hoyStr;
+            if (incapFin) incapFin.min = hoyStr;
             return;
         }
+        
         if (mainTipo === 'certificado') {
-            if (formCertificado) formCertificado.style.display = 'block';
+            toggleForm(formCertificado, true);
             actualizarCamposCertificado();
             return;
         }
 
-        if (formSolicitud) formSolicitud.style.display = 'block';
+        // 3. Si es Solicitud, mostramos formSolicitud
+        toggleForm(formSolicitud, true);
 
-        // --- NUEVA LÓGICA: Ocultar el selector interno si ya se eligió un tipo específico ---
+        // --- LÓGICA: Ocultar el selector interno si ya se eligió un tipo específico ---
         const grupoTipoSolicitud = document.getElementById('grupoTipoSolicitud');
         if (innerTipoSelect) {
             if (mainTipo === 'cambio_turno') {
                 innerTipoSelect.value = 'cambio_turno';
-                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'none'; // Ocultamos
+                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'none';
             } else if (mainTipo === 'vacaciones') {
                 innerTipoSelect.value = 'vacaciones';
-                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'none'; // Ocultamos
+                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'none';
             } else {
-                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'block'; // Mostramos para "Solicitud" genérica
+                if (grupoTipoSolicitud) grupoTipoSolicitud.style.display = 'block';
             }
         }
 
@@ -87,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const inputJustificacion = document.getElementById('solicitudMotivo');
         const inputAdjunto = document.getElementById('solicitudAdjunto');
 
-        // RESET
+        // RESET de campos dinámicos
         if (grupoFechaInicio) grupoFechaInicio.style.display = 'block';
         if (grupoFechaFin) grupoFechaFin.style.display = 'block';
         if (grupoJustificacion) grupoJustificacion.style.display = 'none';
@@ -105,8 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputNuevoHorario) inputNuevoHorario.required = false;
         if (inputFechaFin) inputFechaFin.required = false;
 
-        // --- APLICAR REGLAS SEGÚN EL TIPO ---
-        
         // REGLA GLOBAL: Fechas mínimas (Luto/Calamidad = hoy, Otros = 3 días)
         if (tipoEfectivo === 'luto' || tipoEfectivo === 'calamidad') {
             if (inputFechaInicio) inputFechaInicio.min = hoyStr;
@@ -194,10 +220,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    [incapInicio, incapFin].forEach(el => el?.addEventListener('change', actualizarDiasIncapacidad));
+    if (incapInicio) {
+        incapInicio.addEventListener('change', () => {
+            if (incapFin) {
+                incapFin.min = incapInicio.value || hoyStr;
+            }
+            actualizarDiasIncapacidad();
+        });
+    }
+    if (incapFin) {
+        incapFin.addEventListener('change', actualizarDiasIncapacidad);
+    }
 
     // ============================================================
-    // RESTRICCIONES DINÁMICAS DE FECHA (Fecha Fin >= Fecha Inicio)
+    // RESTRICCIONES DINÁMICAS DE FECHA (Solicitudes)
     // ============================================================
     const solicitudInicio = document.getElementById('solicitudFechaInicio');
     const solicitudFin = document.getElementById('solicitudFechaFin');
@@ -208,19 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 solicitudFin.min = solicitudInicio.value || hoyStr;
             }
         });
-    }
-
-    const minIncapStr = formatearFechaISO(hoy);
-    if (incapInicio) {
-        incapInicio.min = minIncapStr;
-        incapInicio.addEventListener('change', () => {
-            if (incapFin) {
-                incapFin.min = incapInicio.value || minIncapStr;
-            }
-        });
-    }
-    if (incapFin) {
-        incapFin.min = minIncapStr;
     }
 
     // ============================================================
@@ -326,14 +349,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (solicitudForm) {
         solicitudForm.addEventListener('reset', () => {
             setTimeout(() => {
+                // 1. Borrar los mensajes de error que Django pintó en el HTML
+                const errorElements = solicitudForm.querySelectorAll('.alert-danger, .text-danger, .errorlist');
+                errorElements.forEach(el => el.remove());
+
+                // 2. Borrar la notificación Toast de arriba a la derecha
+                const toastContainer = document.getElementById('toastContainer');
+                if (toastContainer) {
+                    toastContainer.innerHTML = '';
+                }
+
+                // 3. Volver a aplicar la lógica de mostrar/ocultar
                 mostrarFormularioSegunTipo();
                 actualizarCamposCertificado();
+                
                 if (incapDias) incapDias.value = '';
+                
                 const fileInputs = solicitudForm.querySelectorAll('input[type="file"]');
                 fileInputs.forEach(input => {
                     input.value = '';
                 });
-            }, 0);
+            }, 50);
         });
     }
 
@@ -607,8 +643,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (inputInicio) inputInicio.min = minSolicitudStr;
                 if (inputFin) inputFin.min = minSolicitudStr;
             } else if (tipoVal === 'incapacidad') {
-                if (inputInicio) inputInicio.min = minIncapStr;
-                if (inputFin) inputFin.min = minIncapStr;
+                if (inputInicio) inputInicio.min = hoyStr;
+                if (inputFin) inputFin.min = hoyStr;
             } else {
                 if (inputInicio) inputInicio.removeAttribute('min');
                 if (inputFin) inputFin.removeAttribute('min');
@@ -616,9 +652,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (inputInicio) inputInicio.value = inicioVal;
             if (inputFin) inputFin.value = finVal;
-
-            const inputMotivo = document.getElementById('editarMotivo');
-            if (inputMotivo) inputMotivo.value = motivoVal;
 
             const contenedorArchivo = document.getElementById('contenedorArchivoActual');
             const linkArchivo = document.getElementById('verArchivoActual');
@@ -669,20 +702,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const inputInicioEdit = document.getElementById('editarFechaInicio');
                 const fechaInicio = inputInicioEdit?.value || '';
                 const fechaFin = document.getElementById('editarFechaFin')?.value || '';
-                const motivo = document.getElementById('editarMotivo')?.value || '';
 
                 if (inputInicioEdit?.min && fechaInicio && fechaInicio < inputInicioEdit.min) {
                     if (btnGuardarEdicion) {
                         btnGuardarEdicion.disabled = false;
                         btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                     }
-                    alert('❌ La fecha de inicio no es válida para este tipo de novedad.');
+                    alert('La fecha de inicio no es válida para este tipo de novedad.');
                     return;
                 }
 
                 formData.append('fecha_inicio', fechaInicio);
                 formData.append('fecha_fin', fechaFin);
-                formData.append('motivo', motivo);
+                
                 
                 const archivoInput = document.getElementById('editarArchivo');
                 if (archivoInput && archivoInput.files && archivoInput.files.length > 0) {
@@ -781,11 +813,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!tipoEfectivo) {
                 e.preventDefault();
-                alert('❌ Por favor, selecciona un tipo de novedad.');
+                window.mostrarNotificacion('Por favor, selecciona un tipo de novedad.');
                 return false;
             }
+
+            if (tipoEfectivo === 'incapacidad') {
+                const fechaInicio = document.getElementById('incapacidadFechaInicio');
+                const fechaFin = document.getElementById('incapacidadFechaFin');
+                const archivo = document.getElementById('incapacidadAdjunto');
+
+                if (!fechaInicio?.value) {
+                    e.preventDefault();
+                    alert('La fecha de inicio es obligatoria.');
+                    return false;
+                }
+                if (!fechaFin?.value) {
+                    e.preventDefault();
+                    alert('La fecha de fin es obligatoria.');
+                    return false;
+                }
+                if (!archivo?.files || archivo.files.length === 0) {
+                    e.preventDefault();
+                    alert('Debes adjuntar el soporte médico de la incapacidad.');
+                    return false;
+                }
+            }
             
-            console.log('✅ Formulario validado y enviando...');
+            console.log('Formulario validado y enviando...');
             return true;
         });
     }

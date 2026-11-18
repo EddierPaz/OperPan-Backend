@@ -114,7 +114,7 @@
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('✅ Incapacidad aprobada.');
+                    showMessage('Incapacidad aprobada.');
                     window.updateIncapKPIs();
                     renderIncapacidadesLista();
                     renderHistorialIncapacidades();
@@ -174,7 +174,7 @@
                                 <div class="solicitud-header">
                                     <div class="solicitud-titulo">
                                         <i class="bi bi-clipboard2-pulse"></i>
-                                        <span>${i.titulo || 'Incapacidad'}</span>
+                                        <span>${'Incapacidad Médica'}</span>
                                     </div>
                                 </div>
                                 <div class="solicitud-empleado">
@@ -184,9 +184,6 @@
                                 <div class="solicitud-dato">
                                     <i class="bi bi-calendar-range me-1"></i>
                                     ${i.fecha_inicio || '—'} - ${i.fecha_fin || '—'}
-                                </div>
-                                <div class="solicitud-descripcion">
-                                    ${i.descripcion || 'Sin descripción.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
                                     <button type="button" class="btn-action btn-action-view" onclick="window.verDetalleIncapacidad(${i.id})">
@@ -221,9 +218,7 @@
                 if (busqueda) {
                     const term = busqueda.toLowerCase();
                     historial = historial.filter(i =>
-                        (i.empleado || '').toLowerCase().includes(term) ||
-                        (i.titulo || '').toLowerCase().includes(term) ||
-                        (i.descripcion || '').toLowerCase().includes(term)
+                        (i.empleado || '').toLowerCase().includes(term)
                     );
                 }
 
@@ -248,7 +243,6 @@
                     return `<tr>
                         <td data-label="Fecha solicitud">${i.fecha_solicitud ? new Date(i.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
                         <td data-label="Empleado"><strong>${i.empleado || '—'}</strong></td>
-                        <td data-label="Diagnóstico">${i.titulo || i.descripcion || '—'}</td>
                         <td data-label="Período">${i.fecha_inicio || '—'} - ${i.fecha_fin || '—'}</td>
                         <td data-label="Estado">${badge}</td>
                         <td data-label="Aprobado por">${i.decision_por || i.aprobado_por || '—'}</td>

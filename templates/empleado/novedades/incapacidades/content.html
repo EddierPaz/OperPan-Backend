@@ -4,7 +4,7 @@
         data-tipo="incapacidad"
         data-estado="{{ i.estado|slugify }}">
 
-        <h6 class="card-grid-title">{{ i.titulo|default:"Incapacidad médica"|truncatechars:25 }}</h6>
+        <h6 class="card-grid-title">Incapacidad Médica</h6>
 
         <div class="card-grid-meta">
             <span>
@@ -19,9 +19,9 @@
 
         <div class="card-grid-footer">
             <button type="button" class="btn-action btn-action-view btn-ver-detalle"
-                    data-titulo="{{ i.titulo|default:'Incapacidad médica' }}"
+                    data-titulo="Incapacidad Médica"
                     data-subtitulo="Incapacidad · {{ i.fecha_inicio|date:'d/m/Y' }} → {{ i.fecha_fin|date:'d/m/Y' }}"
-                    data-motivo="{{ i.descripcion|escapejs }}"
+                    data-motivo="Soporte médico adjunto en el archivo."
                     data-estado="{{ i.get_estado_display|default:i.estado }}"
                     data-estado-slug="{{ i.estado|slugify }}"
                     data-motivo-rechazo="{{ i.motivo_rechazo|default:''|escapejs }}"

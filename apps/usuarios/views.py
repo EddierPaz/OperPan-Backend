@@ -111,7 +111,6 @@ def admin_dashboard(request):
             'tipo': 'incapacidad',
             'empleado': i.empleado,
             'fecha': i.fecha_solicitud,
-            'detalle': i.titulo,
             'url': reverse('novedades:novedades_admin'),
             'id': i.id,
         })
@@ -184,7 +183,7 @@ def admin_dashboard(request):
             'fecha': i.fecha_solicitud,
             'empleado': i.empleado.nombre_completo(),
             'estado': i.get_estado_display(),
-            'detalle': f"Incapacidad: {i.titulo}",
+            'detalle': f"Incapacidad ",
             'id': i.id,
             'modelo': 'incapacidad'
         })
@@ -424,7 +423,7 @@ def employee_dashboard(request):
         actividad.append({
             'tipo': 'incapacidad',
             'fecha': i.fecha_solicitud,
-            'detalle': f"Incapacidad: {i.titulo}",
+            'detalle': f"Incapacidad",
             'estado': i.get_estado_display(),
             'url': reverse('novedades:novedades_empleado'),
             'icono': 'heart-pulse',

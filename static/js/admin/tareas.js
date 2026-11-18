@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
             horaInput.classList.add('is-invalid');
             if (errorElement) {
                 errorElement.style.display = 'block';
-                errorElement.textContent = `❌ La hora no puede ser antes de ${horaEntrada} (inicio de jornada).`;
+                errorElement.textContent = `La hora no puede ser antes de ${horaEntrada} (inicio de jornada).`;
             }
             horaInput.setCustomValidity(`La hora no puede ser antes de ${horaEntrada}.`);
             return;
@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
             horaInput.classList.add('is-invalid');
             if (errorElement) {
                 errorElement.style.display = 'block';
-                errorElement.textContent = `❌ La hora no puede superar ${horaSalida} (fin de jornada).`;
+                errorElement.textContent = `La hora no puede superar ${horaSalida} (fin de jornada).`;
             }
             horaInput.setCustomValidity(`La hora no puede superar ${horaSalida}.`);
             return;

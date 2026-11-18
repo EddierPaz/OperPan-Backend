@@ -104,24 +104,43 @@ class IncapacidadCrearForm(forms.ModelForm):
 
     class Meta:
         model = Incapacidad
-        fields = ['titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'archivo', 'entidad_emisora', 'numero_incapacidad']
+        # Solo pedimos lo esencial: fechas y archivo
+        fields = ['fecha_inicio', 'fecha_fin', 'archivo']
         widgets = {
             'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
         }
 
-    def clean_fecha_inicio(self):
-        fecha_inicio = self.cleaned_data.get('fecha_inicio')
-        if fecha_inicio and fecha_inicio < date.today():
-            raise forms.ValidationError("La fecha de inicio no puede ser anterior a hoy.")
-        return fecha_inicio
-
     def clean(self):
         cleaned_data = super().clean()
         fecha_inicio = cleaned_data.get('fecha_inicio')
         fecha_fin = cleaned_data.get('fecha_fin')
+        empleado = self.instance.empleado # Ojo: debes pasar el empleado al instanciar el form en la vista
+
+        # 1. Validar que no sea en el pasado
+        if fecha_inicio and fecha_inicio < date.today():
+            self.add_error('fecha_inicio', "La fecha de inicio no puede ser anterior a hoy.")
+
+        # 2. Validar orden de fechas
         if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
-            raise forms.ValidationError("La fecha de inicio no puede ser mayor que la fecha de fin.")
+            self.add_error('fecha_fin', "La fecha de fin no puede ser menor a la fecha de inicio.")
+
+        # 3. REGLA DE NEGOCIO: Evitar solapamiento de incapacidades
+        if empleado and fecha_inicio and fecha_fin:
+            # Buscamos si hay una incapacidad pendiente o aprobada que se cruce en fechas
+            solapamiento = Incapacidad.objects.filter(
+                empleado=empleado,
+                estado__in=['pendiente', 'aprobado'],
+                fecha_inicio__lte=fecha_fin,
+                fecha_fin__gte=fecha_inicio
+            ).exclude(pk=self.instance.pk).exists()
+
+            if solapamiento:
+                raise forms.ValidationError(
+                    "Ya tienes una incapacidad registrada en este rango de fechas. "
+                    "Debes esperar a que finalice o sea procesada por administración."
+                )
+
         return cleaned_data
 
     def clean_archivo(self):

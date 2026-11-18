@@ -143,7 +143,9 @@ def novedades_empleado(request):
                 messages.error(request, 'Ya tienes 2 incapacidades pendientes. Espera a que sean respondidas antes de crear otra.')
                 return redirect('novedades:novedades_empleado')
 
-            incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad')
+
+            instancia_incap = Incapacidad(empleado=perfil)
+            incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad', instance=instancia_incap)
             if incapacidad_form.is_valid():
                 incapacidad = incapacidad_form.save(commit=False)
                 incapacidad.empleado = perfil
@@ -154,11 +156,10 @@ def novedades_empleado(request):
                     'tipo_solicitud': 'Incapacidad',
                     'fecha_inicio': incapacidad.fecha_inicio.strftime('%d/%m/%Y'),
                     'fecha_fin': incapacidad.fecha_fin.strftime('%d/%m/%Y'),
-                    'motivo': incapacidad.descripcion,
                 }
                 
 
-                messages.success(request, '✅ Incapacidad creada correctamente.')
+                messages.success(request, 'Incapacidad creada correctamente.')
                 return redirect('novedades:novedades_empleado')
             else:
                 formulario_invalido = True
@@ -229,10 +230,15 @@ def novedades_empleado(request):
         # SOLO SI EL FORMULARIO ES INVÁLIDO
         # ========================================================
         if formulario_invalido:
-            messages.error(
-                request,
-                'Por favor, corrige los errores en el formulario.'
-            )
+            for form in [solicitud_form, incapacidad_form, certificado_form]:
+                if form.errors:
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            if field == '__all__':
+                                messages.error(request, error)
+                            else:
+                                label = form.fields[field].label or field.capitalize()
+                                messages.error(request, f"{label}: {error}")
 
             context = {
                 "fecha_hoy": timezone.localdate(),
@@ -354,38 +360,33 @@ def editar_incapacidad(request, pk):
     # Obtener los datos del POST
     fecha_inicio = request.POST.get('fecha_inicio')
     fecha_fin = request.POST.get('fecha_fin')
-    descripcion = request.POST.get('motivo')
-    
-    # Validar campos obligatorios
-    if not fecha_inicio or not fecha_fin or not descripcion:
-        return JsonResponse({
-            'error': 'Todos los campos son obligatorios.'
-        }, status=400)
+
+    if not fecha_inicio or not fecha_fin:
+        return JsonResponse({'error': 'Las fechas son obligatorias.'}, status=400)
 
     try:
         fecha_inicio_dt = date.fromisoformat(fecha_inicio)
+        fecha_fin_dt = date.fromisoformat(fecha_fin)
     except ValueError:
-        return JsonResponse({'error': 'Fecha de inicio inválida.'}, status=400)
+        return JsonResponse({'error': 'Fechas inválidas.'}, status=400)
 
-    if fecha_inicio_dt < date.today():
-        return JsonResponse({'error': 'La fecha de inicio no puede ser anterior a hoy.'}, status=400)
+    if fecha_fin_dt < fecha_inicio_dt:
+        return JsonResponse({'error': 'La fecha de fin no puede ser anterior a la de inicio.'}, status=400)
 
-    # Actualizar SOLO los campos permitidos
-    incapacidad.fecha_inicio = fecha_inicio
-    incapacidad.fecha_fin = fecha_fin
-    incapacidad.descripcion = descripcion
-    
+    incapacidad.fecha_inicio = fecha_inicio_dt
+    incapacidad.fecha_fin = fecha_fin_dt
+
     if request.FILES.get('archivo'):
         incapacidad.archivo = request.FILES['archivo']
-    
+
     incapacidad.save()
 
     # Guardar mensaje en sesión
-    messages.success(request, '✅ Incapacidad actualizada correctamente.')
+    messages.success(request, 'Incapacidad actualizada correctamente.')
 
     return JsonResponse({
         'status': 'ok',
-        'mensaje': '✅ Incapacidad actualizada correctamente.'
+        'mensaje': 'Incapacidad actualizada correctamente.'
     })
     
 @login_required
@@ -484,19 +485,16 @@ def eliminar_incapacidad(request, pk):
         return JsonResponse({
             'error': 'La incapacidad no existe, no te pertenece o ya fue procesada.'
         }, status=404)
-
-    # Guardar información para el mensaje
-    titulo = incapacidad.titulo
     
     # Eliminar
     incapacidad.delete()
 
     # Guardar mensaje en sesión
-    messages.error(request, f'Incapacidad "{titulo}" eliminada correctamente.')
+    messages.success(request, f'Incapacidad eliminada correctamente.')
 
     return JsonResponse({
         'status': 'ok',
-        'mensaje': f'Incapacidad "{titulo}" eliminada correctamente.'
+        'mensaje': f'Incapacidad eliminada correctamente.'
     })
 
 
@@ -559,8 +557,7 @@ def mis_solicitudes(request):
         'fecha_solicitud', 'motivo_rechazo', 'nuevo_horario'
     )
     incapacidades = Incapacidad.objects.filter(empleado=perfil).values(
-        'id', 'titulo', 'descripcion', 'fecha_inicio', 'fecha_fin', 'archivo',
-        'entidad_emisora', 'numero_incapacidad', 'estado', 'fecha_solicitud', 'motivo_rechazo'
+        'id', 'fecha_inicio', 'fecha_fin', 'archivo','estado', 'fecha_solicitud', 'motivo_rechazo'
     )
     certificados = Certificado.objects.filter(empleado=perfil).values(
         'id', 'tipo', 'proposito', 'dirigido_a', 'periodo',
@@ -593,14 +590,9 @@ def mis_solicitudes(request):
             'fecha_inicio': i['fecha_inicio'].isoformat() if i['fecha_inicio'] else None,
             'fecha_fin': i['fecha_fin'].isoformat() if i['fecha_fin'] else None,
             'estado': i['estado'],
-            'motivo': i['descripcion'],
             'adjunto': i['archivo'] if i['archivo'] else None,
             'fecha_creacion': i['fecha_solicitud'].isoformat(),
             'motivo_rechazo': i['motivo_rechazo'],
-            'datos_especificos': {
-                'entidad': i['entidad_emisora'],
-                'numero_incapacidad': i['numero_incapacidad'],
-            }
         })
 
     for c in certificados:
@@ -825,12 +817,11 @@ def incapacidades_pendientes(request):
         {
             'id': i.id,
             'empleado': i.empleado.nombre_completo(),
-            'titulo': i.titulo,
-            'descripcion': i.descripcion,
             'fecha_inicio': i.fecha_inicio.isoformat(),
             'fecha_fin': i.fecha_fin.isoformat(),
+            'archivo': i.archivo.url if i.archivo else None,
             'fecha_solicitud': i.fecha_solicitud.isoformat(),
-        }
+        }                                   
         for i in pendientes
     ]
     return JsonResponse(data, safe=False)
@@ -850,16 +841,17 @@ def incapacidades_historial(request):
 
     data = [
         {
-            'id': i.id,
-            'empleado': i.empleado.nombre_completo(),
-            'titulo': i.titulo,
-            'fecha_inicio': i.fecha_inicio.isoformat(),
-            'fecha_fin': i.fecha_fin.isoformat(),
-            'estado': i.get_estado_display(),
-            'fecha_solicitud': i.fecha_solicitud.isoformat(),
-            'decision_por': i.decision_por.username if i.decision_por else None,
-            'motivo_rechazo': i.motivo_rechazo,
-        }
+        'id': i.id,
+        'empleado': i.empleado.nombre_completo(),
+        'fecha_inicio': i.fecha_inicio.isoformat(),
+        'fecha_fin': i.fecha_fin.isoformat(),
+        'archivo': i.archivo.url if i.archivo else None,
+        'estado': i.estado,
+        'fecha_solicitud': i.fecha_solicitud.isoformat(),
+        'decision_por': i.decision_por.username if i.decision_por else None,
+        'decision_fecha': i.decision_fecha.isoformat() if i.decision_fecha else None,
+        'motivo_rechazo': i.motivo_rechazo,
+    }
         for i in qs
     ]
     return JsonResponse(data, safe=False)
@@ -876,12 +868,10 @@ def incapacidad_detalle(request, pk):
     data = {
         'id': i.id,
         'empleado': i.empleado.nombre_completo(),
-        'titulo': i.titulo,
-        'descripcion': i.descripcion,
         'fecha_inicio': i.fecha_inicio.isoformat(),
         'fecha_fin': i.fecha_fin.isoformat(),
         'archivo': i.archivo.url if i.archivo else None,
-        'estado': i.get_estado_display(),
+        'estado': i.estado,
         'fecha_solicitud': i.fecha_solicitud.isoformat(),
         'decision_por': i.decision_por.username if i.decision_por else None,
         'decision_fecha': i.decision_fecha.isoformat() if i.decision_fecha else None,

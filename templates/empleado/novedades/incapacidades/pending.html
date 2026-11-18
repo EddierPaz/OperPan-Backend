@@ -14,7 +14,8 @@
                     <div class="pending-item">
                         <div class="pending-item-icon pending-item-incapacidades"><i class="bi bi-file-medical"></i></div>
                         <div class="pending-item-info">
-                            <strong>{{ i.titulo }}</strong>
+                            <!-- Ya no usamos {{ i.titulo }} -->
+                            <strong>Incapacidad Médica</strong>
                             <small>{{ i.fecha_inicio|date:"d/m/Y" }} → {{ i.fecha_fin|date:"d/m/Y" }}</small>
                         </div>
                         <div class="pending-actions">
@@ -35,7 +36,7 @@
                                             data-tipo="incapacidad"
                                             data-inicio="{{ i.fecha_inicio|date:'Y-m-d' }}"
                                             data-fin="{{ i.fecha_fin|date:'Y-m-d' }}"
-                                            data-motivo="{{ i.descripcion }}"
+                                            data-motivo=""
                                             {% if i.archivo %}data-archivo="{{ i.archivo.url }}"{% endif %}>
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>
@@ -65,4 +66,4 @@
             </div>
         {% endif %}
     </div>
-</div>
+</div>      
