@@ -61,7 +61,8 @@ class PerfilEmpleado(models.Model):
         ('CC', 'Cédula de Ciudadanía'),
         ('CE', 'Cédula de Extranjería'),
         ('TI', 'Tarjeta de Identidad'),
-        ('PA', 'Pasaporte'),
+        # ('PA', 'Pasaporte'),  
+        ('PPT', 'Permiso por Protección Temporal'), 
     )
 
     GENEROS = (
@@ -130,7 +131,7 @@ class PerfilEmpleado(models.Model):
     )
 
     tipo_documento = models.CharField(
-        max_length=2,
+        max_length=5,
         choices=TIPOS_DOCUMENTO
     )
 

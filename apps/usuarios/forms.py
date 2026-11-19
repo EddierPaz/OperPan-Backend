@@ -30,12 +30,24 @@ class PerfilEmpleadoForm(forms.ModelForm):
         exclude = ["user", "estado"]  # estado laboral ya no se edita libremente aquí (sección M)
 
     def clean_numero_documento(self):
-        numero = self.cleaned_data["numero_documento"]
+        # 1. Traemos el número y el tipo de documento
+        numero = self.cleaned_data.get("numero_documento")
+        tipo_doc = self.cleaned_data.get("tipo_documento")
+
+        # 2. Validación para el PPT (7 caracteres, solo números)
+        if tipo_doc == 'PPT':
+            if numero:
+                if len(numero) != 7 or not numero.isdigit():
+                    raise forms.ValidationError("El PPT debe tener exactamente 7 números, sin letras ni símbolos.")
+
+        # 3. Validación de Unicidad (tu código original)
         qs = PerfilEmpleado.objects.filter(numero_documento=numero)
         if self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
+        
         if qs.exists():
             raise forms.ValidationError("Ya existe un empleado con ese documento.")
+            
         return numero
 
 

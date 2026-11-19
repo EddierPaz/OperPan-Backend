@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ===== VER USUARIO =====
         const btnVer = e.target.closest('.btn-ver-usuario');
         if (btnVer) {
-            const tr = btnVer.closest('tr');
+            const tr = btnVer.closest('tr'); 
             if (!tr) return;
             const d = tr.dataset;
 
@@ -365,4 +365,50 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+});
+
+// ============================================================
+// LÓGICA DE VALIDACIÓN PPT (NUEVA)
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Configurar el modal de CREAR (IDs con c_)
+    const selectCrear = document.getElementById('c_tipo_documento');
+    const inputCrear = document.getElementById('c_numero_documento');
+
+    if (selectCrear && inputCrear) {
+        selectCrear.addEventListener('change', function() {
+            if (this.value === 'PPT') {
+                inputCrear.maxLength = 7;
+                inputCrear.placeholder = "Solo 7 números (Ej: 1234567)";
+                inputCrear.oninput = function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                };
+            } else {
+                inputCrear.maxLength = 20;
+                inputCrear.placeholder = "";
+                inputCrear.oninput = null;
+            }
+        });
+    }
+
+    // 2. Configurar el modal de EDITAR (IDs con e_)
+    const selectEditar = document.getElementById('e_tipo_documento');
+    const inputEditar = document.getElementById('e_numero_documento');
+
+    if (selectEditar && inputEditar) {
+        selectEditar.addEventListener('change', function() {
+            if (this.value === 'PPT') {
+                inputEditar.maxLength = 7;
+                inputEditar.placeholder = "Solo 7 números";
+                inputEditar.oninput = function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                };
+            } else {
+                inputEditar.maxLength = 20;
+                inputEditar.placeholder = "";
+                inputEditar.oninput = null;
+            }
+        });
+    }
 });
