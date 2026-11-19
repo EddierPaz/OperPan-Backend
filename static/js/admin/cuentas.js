@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!tr) return;
             const d = tr.dataset;
 
-            const tiposDoc = { 'CC': 'Cédula de Ciudadanía', 'CE': 'Cédula de Extranjería', 'TI': 'Tarjeta de Identidad', 'PA': 'Pasaporte' };
+            const tiposDoc = { 'CC': 'Cédula de Ciudadanía', 'CE': 'Cédula de Extranjería', 'TI': 'Tarjeta de Identidad', 'PPT': 'Permiso por Protección Temporal' };
             const generos = { 'M': 'Masculino', 'F': 'Femenino', 'O': 'Otro' };
             const estadosCiviles = { 'soltero': 'Soltero', 'casado': 'Casado', 'union_libre': 'Unión Libre', 'divorciado': 'Divorciado', 'viudo': 'Viudo' };
             const cargos = { 'mesero': 'Mesero', 'cajero': 'Cajero', 'pastelero': 'Pastelero', 'panadero': 'Panadero', 'cocina': 'Cocina', 'buñuelero': 'Buñuelero', 'greca': 'Greca' };
@@ -238,7 +238,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 usuario.includes(texto) ||
                 nombreCompleto.includes(texto);
 
-            // Se usa trim() para evitar espacios fantasma en las comparaciones
             const coincideCargo = !cargo || cargoFila === cargo.trim();
             const coincideRol = !rol || rolFila === rol.trim();
             const coincideEstadoCuenta = !estadoCuenta || estadoCuentaFila === estadoCuenta;
@@ -252,7 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (inputBuscar || filtroCargo || filtroRol || filtroEstadoCuenta) {
-        // Escuchamos tanto 'input' como 'change' para asegurar la reactividad
         [inputBuscar, filtroCargo, filtroRol, filtroEstadoCuenta].forEach(el => {
             if (el) {
                 el.addEventListener('input', aplicarFiltros);
@@ -314,11 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ============================================================
     // 5. MEJORAS PARA EL NUEVO MENÚ DE ACCIONES
-    // (Añadido para soportar el rediseño de la tabla)
     // ============================================================
-
-    // ===== Cerrar dropdown automáticamente después de una acción =====
-    // Cuando el usuario hace clic en una acción del dropdown, el menú se cierra automáticamente
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.dropdown-item');
         if (target) {
@@ -335,8 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== Feedback visual al hacer clic en acciones =====
-    // Añade un pequeño efecto de "clic" para mejorar la experiencia de usuario
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.btn-accion-principal, .dropdown-item');
         if (target) {
@@ -348,8 +340,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ===== Soporte para teclado en el menú de acciones =====
-    // Mejora la accesibilidad permitiendo navegar con teclado
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             const openDropdowns = document.querySelectorAll('.dropdown.show');
@@ -365,14 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-});
-
-// ============================================================
-// LÓGICA DE VALIDACIÓN PPT (NUEVA)
-// ============================================================
-document.addEventListener('DOMContentLoaded', function() {
+    // ============================================================
+    // 6. LÓGICA DE VALIDACIÓN PPT (CORREGIDA Y DENTRO DEL MISMO BLOQUE)
+    // ============================================================
+    console.log("QA Debug: El script de validación PPT ha cargado."); 
     
-    // 1. Configurar el modal de CREAR (IDs con c_)
+    // Configurar el modal de CREAR
     const selectCrear = document.getElementById('c_tipo_documento');
     const inputCrear = document.getElementById('c_numero_documento');
 
@@ -380,19 +368,21 @@ document.addEventListener('DOMContentLoaded', function() {
         selectCrear.addEventListener('change', function() {
             if (this.value === 'PPT') {
                 inputCrear.maxLength = 7;
-                inputCrear.placeholder = "Solo 7 números (Ej: 1234567)";
-                inputCrear.oninput = function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                };
+                inputCrear.placeholder = "Solo 7 números";
             } else {
                 inputCrear.maxLength = 20;
                 inputCrear.placeholder = "";
-                inputCrear.oninput = null;
+            }
+        });
+
+        inputCrear.addEventListener('input', function() {
+            if (selectCrear.value === 'PPT') {
+                this.value = this.value.replace(/[^0-9]/g, '');
             }
         });
     }
 
-    // 2. Configurar el modal de EDITAR (IDs con e_)
+    // Configurar el modal de EDITAR
     const selectEditar = document.getElementById('e_tipo_documento');
     const inputEditar = document.getElementById('e_numero_documento');
 
@@ -401,14 +391,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value === 'PPT') {
                 inputEditar.maxLength = 7;
                 inputEditar.placeholder = "Solo 7 números";
-                inputEditar.oninput = function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                };
             } else {
                 inputEditar.maxLength = 20;
                 inputEditar.placeholder = "";
-                inputEditar.oninput = null;
+            }
+        });
+
+        inputEditar.addEventListener('input', function() {
+            if (selectEditar.value === 'PPT') {
+                this.value = this.value.replace(/[^0-9]/g, '');
             }
         });
     }
-});
+
+}); // <-- AQUÍ SE CIERRA CORRECTAMENTE EL ÚNICO DOMContentLoaded
