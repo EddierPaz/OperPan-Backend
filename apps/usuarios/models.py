@@ -167,7 +167,13 @@ class PerfilEmpleado(models.Model):
 
     telefono = models.CharField(max_length=20)
 
-    correo = models.EmailField()
+    # [19/11/2026]
+    # 
+    #  Se agrega unique=True para garantizar que el correo electrónico 
+    # sea único por empleado. Esto evita duplicados a nivel de base de datos y 
+    # asegura que el correo sirva como un canal de contacto inequívoco, cumpliendo 
+    # con las reglas estrictas de validación del módulo de cuentas.
+    correo = models.EmailField(unique=True)
 
     ciudad = models.CharField(max_length=100)
 
