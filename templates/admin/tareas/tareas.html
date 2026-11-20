@@ -23,7 +23,7 @@
     {% include "admin/tareas/content.html" %}
 
     {# ==================== FOOTER ==================== #}
-    <footer><i class="bi bi-shield-check"></i> Trazabilidad completa - Cada acción queda registrada en auditoría</footer>
+    {% include 'partials/footer.html' with texto_footer="Todas las tareas y cambios quedan registrados con fecha y hora." %}
 </div>
 
 {# ==================== DATOS JSON PARA JS ==================== #}
