@@ -99,6 +99,12 @@ class PerfilEmpleado(models.Model):
         ('greca', 'Greca'),
     )
 
+    TURNO_CHOICES = (
+    ('MANANA', 'Mañana'),
+    ('TARDE', 'Tarde'),
+    ('FIJO', 'Fijo'),
+    )
+
     # --- MODIFICADO: se quita 'suspendido'. Este campo ahora es SOLO estado laboral. ---
     ESTADOS = (
         ('activo', 'Activo'),
@@ -201,6 +207,11 @@ class PerfilEmpleado(models.Model):
         blank=True,
         null=True
     )
+    
+    turno_inicial = models.CharField(
+        max_length=10, 
+        choices=TURNO_CHOICES, 
+        default='MANANA')
 
     fecha_ingreso = models.DateField(
         blank=True,

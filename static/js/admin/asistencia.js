@@ -53,9 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 2. GRÁFICOS DE BARRAS HORIZONTALES (empleados)
     // ==========================================
-    // Se muestran 7 categorías: Presente, Tarde, Ausente, Descanso,
-    // Permiso, Incapacidad y Cambio turno. Las categorías con valor 0
-    // no pintan barra (gracias al datalabels formatter).
+    // Se muestran 6 categorías: Presente, Tarde, Ausente, Descanso,
+    // Solicitud e Incapacidad.
     function inicializarGraficos() {
         document.querySelectorAll('.empleado-grafico canvas').forEach(function (canvas) {
             const parent = canvas.closest('.asistencia-card-empleado');
@@ -66,9 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 tarde: 0,
                 ausente: 0,
                 descanso: 0,
-                permiso: 0,
+                solicitud: 0,
                 incapacidad: 0,
-                cambio_turno: 0,
             };
             if (parent.dataset.resumen) {
                 try {
@@ -85,31 +83,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Tarde',
                 'Ausente',
                 'Descanso',
-                'Permiso',
+                'Solicitud',
                 'Incapacidad',
-                'Cambio turno',
             ];
             const values = [
                 data.presente || 0,
                 data.tarde || 0,
                 data.ausente || 0,
                 data.descanso || 0,
-                data.permiso || 0,
+                data.solicitud || 0,
                 data.incapacidad || 0,
-                data.cambio_turno || 0,
             ];
             const colors = [
                 '#28A745',   // presente     verde
                 '#FFC107',   // tarde        ámbar
                 '#DC3545',   // ausente      rojo
                 '#7C3AED',   // descanso     morado
-                '#3B82F6',   // permiso      azul
+                '#3B82F6',   // solicitud    azul
                 '#EC4899',   // incapacidad  rosa
-                '#14B8A6',   // cambio turno teal
             ];
             const borders = [
-                '#1E7E34', '#D39E00', '#BD2130', '#6D28D9',
-                '#2563EB', '#DB2777', '#0D9488',
+                '#1E7E34', '#D39E00', '#BD2130', '#6D28D9', '#2563EB', '#DB2777'
             ];
 
             new Chart(ctx, {

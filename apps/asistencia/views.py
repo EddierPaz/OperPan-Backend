@@ -31,11 +31,17 @@ from .models import Asistencia, DescansoEmpleado, Horario
 # no en este archivo.
 from .services.horario_service import (
     dias_ciclo,
+    dias_del_mes,            
+    primer_dia_del_mes,      
+    ultimo_dia_del_mes,      
     ciclo_fin,
     estado_vigencia_horario,
     construir_calendario,
     obtener_o_generar_horario_vigente,
+    aplicar_override_cambio_turno, 
+    _generar_descansos_ciclo       
 )
+from django.db import transaction
 
 # Fin de importaciones:
 
@@ -109,12 +115,16 @@ def _verificar_memorandos_asistencia_empleado(user):
 def _contexto_base():
     hoy = timezone.localdate()
     proximos_dias = []
+    
+    import calendar
+    primer_dia = hoy.replace(day=1) 
+    dias_del_mes_actual = calendar.monthrange(hoy.year, hoy.month)[1]
 
-    for _ in range(hoy.weekday()):
+    for _ in range(primer_dia.weekday()):
         proximos_dias.append(None)
 
-    for i in range(15):
-        fecha = hoy + timedelta(days=i)
+    for i in range(dias_del_mes_actual):
+        fecha = primer_dia + timedelta(days=i)
         proximos_dias.append({
             "fecha": fecha,
             "numero": fecha.day,
@@ -137,8 +147,8 @@ def _contexto_base():
 
         horario_vigente.proximo_descanso = (
             DescansoEmpleado.objects
-            .filter(horario=horario_vigente, es_descanso=True)
-            .order_by('-fecha')
+            .filter(horario=horario_vigente, es_descanso=True, fecha__gte=hoy) 
+            .order_by('fecha') 
             .first()
         )
         horario_vigente.vigencia_fin = ciclo_fin(horario_vigente)
@@ -198,11 +208,12 @@ def _contexto_base():
                 
                 # SI NO HAY ASISTENCIA Y EL TIEMPO VENCIÓ, CREAMOS LA AUSENCIA EN LA BD
                 if not asistencia:
-                    # Buscamos si tiene alguna novedad aprobada para hoy (Permiso, Incapacidad)
                     novedades_hoy = obtener_novedades_por_fecha(horario.empleado, hoy, hoy)
                     
-                    # Si 'hoy' no está en las novedades, significa que no tiene permiso ni incapacidad
-                    if hoy not in novedades_hoy:
+                    # BLINDAJE: Si es su primer día, NO crear ausencia
+                    es_primer_dia = (horario.fecha_inicio == hoy)
+                    
+                    if hoy not in novedades_hoy and not es_primer_dia:
                         asistencia = Asistencia.objects.create(
                             horario=horario,
                             fecha=hoy,
@@ -222,15 +233,18 @@ def _contexto_base():
         if horario.turno in turnos_hoy:
             turnos_hoy[horario.turno].append(horario)
 
+        # CONTEO DE KPIs (Blindado para el primer día)
         if asistencia:
             if asistencia.estado == "PRESENTE":
                 presentes += 1
             elif asistencia.estado == "TARDE":
                 tardanzas += 1
             elif asistencia.estado == "AUSENTE":
-                ausentes += 1
+                if horario.fecha_inicio != hoy:
+                    ausentes += 1
         else:
-            ausentes += 1
+            if horario.fecha_inicio != hoy:
+                ausentes += 1
 
     resumen_asistencia = {
         "programados": programados,
@@ -256,12 +270,6 @@ def _contexto_base():
         "resumen_asistencia": resumen_asistencia,
         "resumen_horarios": resumen_horarios,
     }
-
-
-
-
-
-
 
 # =============================================================================
 
@@ -306,24 +314,22 @@ def asistencia_dashboard(request):
 
 def obtener_resumen_empleado(empleado):
     """
-    Calcula el resumen de asistencia para un empleado recorriendo día a día.
-    Cuenta correctamente:
-        - Presente / Tarde: días con registro real
+    Resumen de asistencia por empleado, recorriendo día a día.
+    Cuenta:
+        - Presente / Tarde: días con registro real (sin novedad)
         - Ausente: días pasados sin marcar y sin novedad
         - Descanso: días de descanso programado
-        - Solicitud / Incapacidad / Cambio turno: días cubiertos por
-          una solicitud aprobada
+        - Solicitud / Incapacidad: días cubiertos por novedad aprobada
     """
     from .services.novedades_calendario import obtener_novedades_por_fecha
 
     vacio = {
-        'presente': 0, 'tarde': 0, 'ausente': 0, 'descanso': 0,
-        'solicitud': 0, 'incapacidad': 0, 'cambio_turno': 0,
+        'presente': 0, 'tarde': 0, 'ausente': 0,
+        'descanso': 0, 'solicitud': 0, 'incapacidad': 0,
     }
 
     hoy = timezone.localdate()
 
-    # 1. Fecha de inicio
     fecha_inicio = empleado.fecha_ingreso
     if not fecha_inicio:
         primer_horario = Horario.objects.filter(
@@ -337,9 +343,11 @@ def obtener_resumen_empleado(empleado):
     if fecha_inicio > hoy:
         return vacio
 
-    # 2. Horarios del empleado (para saber si tenía horario ese día)
     horarios_empleado = [
-        (h.ciclo_inicio, ciclo_fin(h))
+        (
+            max(h.ciclo_inicio, h.fecha_inicio) if h.fecha_inicio else h.ciclo_inicio,
+            ciclo_fin(h)
+        )
         for h in Horario.objects.filter(
             empleado=empleado, ciclo_inicio__isnull=False
         )
@@ -351,7 +359,6 @@ def obtener_resumen_empleado(empleado):
                 return True
         return False
 
-    # 3. Consultas materializadas
     asistencias_dict = {
         a.fecha: a.estado
         for a in Asistencia.objects.filter(
@@ -372,7 +379,6 @@ def obtener_resumen_empleado(empleado):
 
     novedades = obtener_novedades_por_fecha(empleado, fecha_inicio, hoy)
 
-    # 4. Recorrer día a día
     resumen = dict(vacio)
     cursor = fecha_inicio
 
@@ -384,26 +390,14 @@ def obtener_resumen_empleado(empleado):
         novedad = novedades.get(cursor)
 
         if novedad:
-            tipo = novedad['tipo']
-            if tipo == 'SOLICITUD':
+            if novedad['tipo'] == 'SOLICITUD':
                 resumen['solicitud'] += 1
-            elif tipo == 'INCAPACIDAD':
+            elif novedad['tipo'] == 'INCAPACIDAD':
                 resumen['incapacidad'] += 1
-            elif tipo == 'CAMBIO_TURNO':
-                resumen['cambio_turno'] += 1
-                # Si además marcó asistencia ese día, se cuenta como Presente/Tarde
-                estado_real = asistencias_dict.get(cursor)
-                if estado_real == 'PRESENTE':
-                    resumen['presente'] += 1
-                elif estado_real == 'TARDE':
-                    resumen['tarde'] += 1
-
         elif cursor in descansos_set:
             resumen['descanso'] += 1
-
         else:
             estado_real = asistencias_dict.get(cursor)
-
             if estado_real == 'PRESENTE':
                 resumen['presente'] += 1
             elif estado_real == 'TARDE':
@@ -411,9 +405,7 @@ def obtener_resumen_empleado(empleado):
             elif estado_real == 'AUSENTE':
                 resumen['ausente'] += 1
             elif cursor < hoy:
-                # Día pasado, sin registro y sin novedad = ausencia real
                 resumen['ausente'] += 1
-            # Si es HOY y aún no marcó → no cuenta (aún puede marcar)
 
         cursor += timedelta(days=1)
 
@@ -469,14 +461,18 @@ def asistencia_empleado_historial(request, empleado_id):
     # Datos auxiliares
     # ============================================================
     horarios_empleado = [
-        (h, h.ciclo_inicio, ciclo_fin(h))
+        (
+            h, 
+            max(h.ciclo_inicio, h.fecha_inicio) if h.fecha_inicio else h.ciclo_inicio, 
+            ciclo_fin(h)
+        )
         for h in Horario.objects.filter(empleado=empleado, ciclo_inicio__isnull=False)
     ]
 
     def horario_del_dia(fecha):
         for h, ci, cf in horarios_empleado:
             if ci <= fecha and (cf is None or fecha <= cf):
-                return h
+                return aplicar_override_cambio_turno(h, fecha)
         return None
 
     asistencias_por_fecha = {
@@ -510,11 +506,7 @@ def asistencia_empleado_historial(request, empleado_id):
     while fecha_cursor >= fecha_inicio:
         horario_dia = horario_del_dia(fecha_cursor)
 
-        if horario_dia is None:
-            fecha_cursor -= timedelta(days=1)
-            continue
-
-        if fecha_cursor > hoy:
+        if horario_dia is None or fecha_cursor > hoy:
             fecha_cursor -= timedelta(days=1)
             continue
 
@@ -530,23 +522,6 @@ def asistencia_empleado_historial(request, empleado_id):
             hora_marcada = 'N/A'
             es_novedad = True
             novedad_tipo = novedad_dia['tipo']
-
-        elif novedad_dia and novedad_dia['tipo'] == 'CAMBIO_TURNO':
-            es_novedad = True
-            novedad_tipo = 'CAMBIO_TURNO'
-            if asistencia and asistencia.estado:
-                estado_final = asistencia.estado
-                hora_marcada = (
-                    asistencia.hora_marcada.strftime('%H:%M')
-                    if asistencia.hora_marcada else 'N/A'
-                )
-            else:
-                estado_final = 'CAMBIO_TURNO'
-                hora_marcada = 'N/A'
-            hora_programada = (
-                horario_dia.hora_entrada.strftime('%H:%M')
-                if horario_dia.hora_entrada else 'N/A'
-            )
 
         elif fecha_cursor in descansos_fechas:
             estado_final = 'DESCANSO'
@@ -565,14 +540,19 @@ def asistencia_empleado_historial(request, empleado_id):
             )
 
         else:
-            estado_final = 'AUSENTE'
+            if horario_dia and horario_dia.fecha_inicio and fecha_cursor < horario_dia.fecha_inicio:
+                estado_final = 'SIN_DATOS'
+            elif fecha_cursor == hoy and horario_dia.fecha_inicio == hoy:
+                estado_final = 'PENDIENTE' 
+            else:
+                estado_final = 'AUSENTE'
+            
             hora_programada = (
                 horario_dia.hora_entrada.strftime('%H:%M')
                 if horario_dia.hora_entrada else 'N/A'
             )
             hora_marcada = 'N/A'
 
-        # Filtros
         if turno and horario_dia.turno != turno:
             fecha_cursor -= timedelta(days=1)
             continue
@@ -610,67 +590,7 @@ def asistencia_empleado_historial(request, empleado_id):
 @login_required
 @admin_required
 def horarios(request):
-    if request.method == "POST":
-        empleado_id = request.POST.get("empleado")
-        turno = request.POST.get("turno")
-        fecha_descanso = request.POST.get("fecha_descanso")
-
-        empleado = get_object_or_404(PerfilEmpleado, id=empleado_id)
-
-        if Horario.objects.filter(empleado=empleado, estado=True).exists():
-            messages.error(request, f"El empleado {empleado.nombre_completo()} ya tiene un horario activo asignado.")
-            return redirect("asistencia:horarios")
-
-        # =====================================================
-        # ASIGNACIÓN AUTOMÁTICA DE HORAS (FIJAS POR JORNADA)
-        # =====================================================
-        if turno == "MANANA":
-            hora_entrada_obj = datetime.strptime("05:00", "%H:%M").time()
-            hora_salida_obj = datetime.strptime("13:00", "%H:%M").time()
-        elif turno == "TARDE":
-            hora_entrada_obj = datetime.strptime("13:00", "%H:%M").time()
-            hora_salida_obj = datetime.strptime("22:00", "%H:%M").time()
-        elif turno == "FIJO":
-            hora_entrada_obj = datetime.strptime("08:00", "%H:%M").time()
-            hora_salida_obj = datetime.strptime("17:00", "%H:%M").time()
-        else:
-            messages.error(request, "Turno inválido.")
-            return redirect("asistencia:horarios")
-
-        # PERÍODO DEL HORARIO
-        fecha_inicio = timezone.localdate()
-        fecha_fin = fecha_inicio + timedelta(days=dias_ciclo(turno) - 1)
-
-        # DÍA DE DESCANSO SEMANAL
-        dia_descanso_semana = None
-        fecha_descanso_obj = None
-        if fecha_descanso:
-            fecha_descanso_obj = datetime.strptime(fecha_descanso, '%Y-%m-%d').date()
-            if turno == "FIJO":
-                dia_descanso_semana = fecha_descanso_obj.weekday()
-
-        horario = Horario.objects.create(
-            empleado=empleado,
-            turno=turno,
-            hora_entrada=hora_entrada_obj,
-            hora_salida=hora_salida_obj,
-            estado=True,
-            fecha_inicio=fecha_inicio,
-            fecha_fin=fecha_fin,
-            ciclo_inicio=fecha_inicio,
-            dia_descanso_semana=dia_descanso_semana,
-        )
-
-        if fecha_descanso_obj:
-            DescansoEmpleado.objects.create(
-                horario=horario,
-                fecha=fecha_descanso_obj,
-                es_descanso=True,
-            )
-
-        messages.success(request, "Horario asignado correctamente.")
-        return redirect("asistencia:horarios")
-
+    # Solo puede listarlos y editarlos si es necesario.
     return render(
         request,
         "admin/horario/horario.html",
@@ -680,24 +600,23 @@ def horarios(request):
 @login_required
 @admin_required
 def horario_json(request, id):
-    """
-    Devuelve el estado actual (de solo lectura) de un horario puntual,
-    para los modales de Ver/Editar/Eliminar. No genera ni muta ciclos:
-    la generación automática ocurre en _contexto_base() y en
-    obtener_o_generar_horario_vigente(), no al abrir un modal.
-    """
-    horario = get_object_or_404(
-        Horario.objects.select_related("empleado"),
-        id=id
-    )
-
+    horario = get_object_or_404(Horario.objects.select_related("empleado"), id=id)
     hoy = timezone.localdate()
-    descanso = (
-        DescansoEmpleado.objects
-        .filter(horario=horario, es_descanso=True)
-        .order_by('-fecha')
-        .first()
-    )
+    
+    if horario.turno == "FIJO" and horario.dia_descanso_semana is not None:
+        # Si es FIJO, calculamos el próximo día de la semana matemáticamente (ej. próximo Lunes)
+        dias_adelante = (horario.dia_descanso_semana - hoy.weekday()) % 7
+        prox_fecha = hoy + timedelta(days=dias_adelante)
+        descanso_str = prox_fecha.strftime("%d/%m/%Y")
+        descanso_fecha = prox_fecha.strftime("%Y-%m-%d")
+        descansos_fechas = [descanso_fecha]
+    else:
+        # Si es MAÑANA/TARDE, buscamos los días exactos que se guardaron en la BD
+        prox = DescansoEmpleado.objects.filter(horario=horario, es_descanso=True, fecha__gte=hoy).order_by('fecha').first()
+        descanso_str = prox.fecha.strftime("%d/%m/%Y") if prox else None
+        descanso_fecha = prox.fecha.strftime("%Y-%m-%d") if prox else None
+        descansos_fechas = [d.fecha.strftime("%Y-%m-%d") for d in DescansoEmpleado.objects.filter(horario=horario, es_descanso=True, fecha__gte=hoy)]
+
     fin = ciclo_fin(horario)
     vigencia_estado = estado_vigencia_horario(horario, hoy, fin)
 
@@ -710,12 +629,14 @@ def horario_json(request, id):
         "hora_salida": horario.hora_salida.strftime("%H:%M"),
         "estado": horario.estado,
         "vigencia_estado": vigencia_estado,
-        "descanso": descanso.fecha.strftime("%d/%m/%Y") if descanso else None,
-        "descanso_fecha": descanso.fecha.strftime("%Y-%m-%d") if descanso else None,
-        "descanso_pasado": bool(descanso and descanso.fecha < hoy),
+        "descanso": descanso_str,
+        "descanso_fecha": descanso_fecha,
+        "descansos_fechas": descansos_fechas,
+        "descanso_pasado": False, 
         "ciclo_inicio": horario.ciclo_inicio.strftime("%d/%m/%Y") if horario.ciclo_inicio else None,
         "ciclo_fin": fin.strftime("%d/%m/%Y") if fin else None,
         "tiene_asistencia": horario.tiene_asistencia_registrada(),
+        "dia_descanso_semana": horario.dia_descanso_semana,
     })
 
 @login_required
@@ -729,8 +650,7 @@ def editar_horario(request, id):
         return redirect("asistencia:horarios")
 
     ciclo_inicio = horario.ciclo_inicio or horario.fecha_inicio or hoy
-    dias_ciclo_actual = dias_ciclo(horario.turno)
-    ciclo_fin_val = ciclo_inicio + timedelta(days=dias_ciclo_actual - 1)
+    ciclo_fin_val = ultimo_dia_del_mes(ciclo_inicio)
 
     if not (ciclo_inicio <= hoy <= ciclo_fin_val):
         messages.error(request, "No puedes editar un horario fuera del ciclo vigente.")
@@ -738,14 +658,15 @@ def editar_horario(request, id):
 
     if request.method == "POST":
         nuevo_turno = request.POST.get("turno")
+        dia_descanso_semana = request.POST.get("dia_descanso_semana")
         fecha_descanso_str = request.POST.get("fecha_descanso")
+        
+        turno_cambio = horario.turno != nuevo_turno
+        regen_descansos = False
 
-        # Variables para rastrear qué cambió
-        cambio_turno = (horario.turno != nuevo_turno)
-        cambio_descanso = False
-
-        # 1. Actualizar el turno y forzar sus horas fijas
-        horario.turno = nuevo_turno
+        # 1. Actualizar datos del horario
+        if turno_cambio:
+            horario.turno = nuevo_turno
 
         if nuevo_turno == "MANANA":
             horario.hora_entrada = datetime.strptime("05:00", "%H:%M").time()
@@ -756,118 +677,35 @@ def editar_horario(request, id):
         elif nuevo_turno == "FIJO":
             horario.hora_entrada = datetime.strptime("08:00", "%H:%M").time()
             horario.hora_salida = datetime.strptime("17:00", "%H:%M").time()
-
-        # 2. Gestión del descanso
-        descanso_actual = DescansoEmpleado.objects.filter(
-            horario=horario,
-            es_descanso=True
-        ).order_by("-fecha", "-id").first()
-
-        # Si el descanso ya pasó, no se puede cambiar
-        if descanso_actual and descanso_actual.fecha < hoy:
-            pass 
-        
-        elif fecha_descanso_str:
-            try:
-                nueva_fecha_descanso = datetime.strptime(fecha_descanso_str, '%Y-%m-%d').date()
-
-                if nueva_fecha_descanso < hoy:
-                    messages.error(request, "No puedes asignar un día de descanso en una fecha que ya pasó.")
-                    return redirect("asistencia:horarios")
-
-                dias_ciclo_nuevo = dias_ciclo(horario.turno)
-                ciclo_fin_nuevo = ciclo_inicio + timedelta(days=dias_ciclo_nuevo - 1)
-
-                if not (ciclo_inicio <= nueva_fecha_descanso <= ciclo_fin_nuevo):
-                    messages.error(request, f"La fecha de descanso debe estar dentro del ciclo actual ({ciclo_inicio.strftime('%d/%m/%Y')} - {ciclo_fin_nuevo.strftime('%d/%m/%Y')}).")
-                    return redirect("asistencia:horarios")
-
-                if descanso_actual:
-                    if descanso_actual.fecha != nueva_fecha_descanso:
-                        asistencia_existente = Asistencia.objects.filter(
-                            horario=horario,
-                            fecha=nueva_fecha_descanso
-                        ).exists()
-
-                        if asistencia_existente:
-                            messages.error(request, f"No puedes asignar descanso en el día {nueva_fecha_descanso.strftime('%d/%m/%Y')} porque ya tiene asistencia registrada.")
-                            return redirect("asistencia:horarios")
-
-                        descanso_actual.fecha = nueva_fecha_descanso
-                        descanso_actual.save(update_fields=["fecha"])
-                        cambio_descanso = True # <- Se detectó cambio
-                else:
-                    DescansoEmpleado.objects.create(
-                        horario=horario,
-                        fecha=nueva_fecha_descanso,
-                        es_descanso=True,
-                    )
-                    cambio_descanso = True # <- Se detectó cambio
-
-                if horario.turno == "FIJO":
-                    horario.dia_descanso_semana = nueva_fecha_descanso.weekday()
-
-            except ValueError:
-                messages.error(request, "Formato de fecha inválido.")
-                return redirect("asistencia:horarios")
-
-        # 3. Guardar los cambios en la jornada
-        horario.save() 
-        
-        # 4. Mostrar el mensaje correcto según lo que se modificó
-        if cambio_turno and cambio_descanso:
-            messages.success(request, "Jornada y día de descanso actualizados correctamente.")
-        elif cambio_turno:
-            messages.success(request, "Jornada actualizada correctamente.")
-        elif cambio_descanso:
-            messages.success(request, "Día de descanso actualizado correctamente.")
-        else:
-            messages.info(request, "No se detectaron cambios en el horario.")
             
+            # Si es FIJO, comprobamos si cambió el día de descanso semanal
+            if dia_descanso_semana is not None:
+                nuevo_dia = int(dia_descanso_semana)
+                if horario.dia_descanso_semana != nuevo_dia:
+                    horario.dia_descanso_semana = nuevo_dia
+                    regen_descansos = True
+
+        if turno_cambio:
+            regen_descansos = True
+
+        # Si es MANANA/TARDE y eligen una fecha específica en el calendario
+        if fecha_descanso_str and nuevo_turno != "FIJO":
+            regen_descansos = True
+
+        horario.save()
+
+        # 2. Regenerar descansos si hubo cambios
+        if regen_descansos:
+            horario.descansos.all().delete()
+            fecha_manual = datetime.strptime(fecha_descanso_str, '%Y-%m-%d').date() if fecha_descanso_str else None
+            _generar_descansos_ciclo(horario, es_primer_ciclo=True, fecha_manual=fecha_manual)
+            messages.success(request, "Horario y descansos actualizados correctamente.")
+        else:
+            messages.info(request, "Horario guardado. No se detectaron cambios.")
+
         return redirect("asistencia:horarios")
 
     return redirect("asistencia:horarios")
-
-@login_required
-@admin_required
-def eliminar_horario(request, id):
-    horario = get_object_or_404(Horario, id=id)
-
-    # =====================================================
-    # VALIDACIÓN: no se puede eliminar un horario que ya
-    # tiene asistencia registrada (se perdería trazabilidad).
-    # =====================================================
-    if horario.tiene_asistencia_registrada():
-        messages.error(
-            request,
-            f"No se puede eliminar el horario de {horario.empleado.nombre_completo()} "
-            "porque ya tiene asistencia registrada."
-        )
-        return redirect("asistencia:horarios")
-
-    # =====================================================
-    # NOTIFICACIÓN AL EMPLEADO (ANTES DE DESACTIVAR)
-    # =====================================================
-    contexto = {
-        'empleado_nombre': horario.empleado.nombre_completo(),
-        'turno': horario.get_turno_display(),
-    }
-
-    horario.estado = False
-    horario.save(update_fields=["estado"])
-
-    messages.success(request, "Horario eliminado correctamente.")
-    return redirect("asistencia:horarios")
-
-
-# Cambio del 8 de septiembre del 2026:
-
-    # Se cambio porque el dropdown de asistencia del admin, se recargaba por el metodo POST
-    # Ahora se implemento AJAX para siempre tener el dropdown abierto cuando se esta registrando asistencia.
-
-    # Ahora valida si registrar o no la asistencia dependiendo de si corresponde al turno o
-
-# Cambio del 10 de Noviembre - Validación de 60 minutos.
 
 @login_required
 def registrar_asistencia(request):
@@ -957,7 +795,7 @@ def asistencia_empleado(request):
 
     filtro = request.GET.get('filtro', 'semana')
     if filtro == 'mes':
-        fecha_inicio = hoy - timedelta(days=30)
+        fecha_inicio = primer_dia_del_mes(hoy)
     else:
         fecha_inicio = hoy - timedelta(days=7)
 
@@ -980,13 +818,8 @@ def asistencia_empleado(request):
     }
 
     if horario:
-        descanso = (
-            DescansoEmpleado.objects
-            .filter(horario=horario, es_descanso=True)
-            .order_by('-fecha')
-            .first()
-        )
-        es_descanso_hoy = descanso and descanso.fecha == hoy
+        # Buscamos si HOY es específicamente su día de descanso
+        es_descanso_hoy = DescansoEmpleado.objects.filter(horario=horario, fecha=hoy, es_descanso=True).exists()
 
         estado_hoy['tiene_jornada'] = True
         estado_hoy['turno'] = horario.get_turno_display()
@@ -996,42 +829,34 @@ def asistencia_empleado(request):
         novedad_hoy = novedades_por_fecha.get(hoy)
 
         if novedad_hoy and novedad_hoy['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
-            # Solicitud o incapacidad: no trabaja → estado y novedad
             estado_hoy['estado'] = novedad_hoy['tipo']
             estado_hoy['novedad'] = novedad_hoy
-        elif novedad_hoy and novedad_hoy['tipo'] == 'CAMBIO_TURNO':
-            # Cambio de turno: SÍ trabaja, pero guardamos la novedad para mostrarla
-            estado_hoy['novedad'] = novedad_hoy
-            asistencia_hoy = Asistencia.objects.filter(horario=horario, fecha=hoy).first()
-            if asistencia_hoy:
-                estado_hoy['hora_entrada_real'] = asistencia_hoy.hora_marcada
-                estado_hoy['estado'] = asistencia_hoy.estado
-                if asistencia_hoy.estado == 'TARDE' and horario.hora_entrada:
-                    entrada_prog = datetime.combine(hoy, horario.hora_entrada)
-                    entrada_real = datetime.combine(hoy, asistencia_hoy.hora_marcada)
-                    if entrada_real > entrada_prog:
-                        estado_hoy['tardanza_minutos'] = int(
-                            (entrada_real - entrada_prog).total_seconds() // 60
-                        )
-            else:
-                estado_hoy['estado'] = 'AUSENTE'
         elif es_descanso_hoy:
             estado_hoy['estado'] = 'DESCANSO'
             estado_hoy['es_descanso'] = True
         else:
             asistencia_hoy = Asistencia.objects.filter(horario=horario, fecha=hoy).first()
-            if asistencia_hoy:
-                estado_hoy['hora_entrada_real'] = asistencia_hoy.hora_marcada
-                estado_hoy['estado'] = asistencia_hoy.estado
-                if asistencia_hoy.estado == 'TARDE' and horario.hora_entrada:
-                    entrada_prog = datetime.combine(hoy, horario.hora_entrada)
-                    entrada_real = datetime.combine(hoy, asistencia_hoy.hora_marcada)
-                    if entrada_real > entrada_prog:
-                        estado_hoy['tardanza_minutos'] = int(
-                            (entrada_real - entrada_prog).total_seconds() // 60
-                        )
+            
+            # Si empezó hoy o no hay asistencia y es su primer día, es PENDIENTE
+            if horario.fecha_inicio == hoy:
+                if asistencia_hoy and asistencia_hoy.estado != 'AUSENTE':
+                    estado_hoy['hora_entrada_real'] = asistencia_hoy.hora_marcada
+                    estado_hoy['estado'] = asistencia_hoy.estado
+                else:
+                    estado_hoy['estado'] = 'PENDIENTE'
             else:
-                estado_hoy['estado'] = 'AUSENTE'
+                if asistencia_hoy:
+                    estado_hoy['hora_entrada_real'] = asistencia_hoy.hora_marcada
+                    estado_hoy['estado'] = asistencia_hoy.estado
+                    if asistencia_hoy.estado == 'TARDE' and horario.hora_entrada:
+                        entrada_prog = datetime.combine(hoy, horario.hora_entrada)
+                        entrada_real = datetime.combine(hoy, asistencia_hoy.hora_marcada)
+                        if entrada_real > entrada_prog:
+                            estado_hoy['tardanza_minutos'] = int(
+                                (entrada_real - entrada_prog).total_seconds() // 60
+                            )
+                else:
+                    estado_hoy['estado'] = 'AUSENTE'
     else:
         estado_hoy['estado'] = 'SIN_HORARIO'
 
@@ -1043,14 +868,18 @@ def asistencia_empleado(request):
     retardos = 0
 
     horarios_empleado = [
-        (h, h.ciclo_inicio, ciclo_fin(h))
+        (
+            h, 
+            max(h.ciclo_inicio, h.fecha_inicio) if h.fecha_inicio else h.ciclo_inicio, 
+            ciclo_fin(h)
+        )
         for h in Horario.objects.filter(empleado=perfil, ciclo_inicio__isnull=False)
     ]
 
     def horario_del_dia(fecha):
         for h, ci, cf in horarios_empleado:
             if ci <= fecha and (cf is None or fecha <= cf):
-                return h
+                return aplicar_override_cambio_turno(h, fecha)
         return None
 
     if horarios_empleado:
@@ -1079,84 +908,60 @@ def asistencia_empleado(request):
 
             novedad_dia = novedades_por_fecha.get(fecha_cursor)
 
-            # --------------------------------------------------
-            # 1. PRIORIDAD: SOLICITUD / INCAPACIDAD (no trabajó)
-            # --------------------------------------------------
+            # 1. SOLICITUD / INCAPACIDAD (no trabajó)
             if novedad_dia and novedad_dia['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
                 historial.append({
-                    'fecha': fecha_cursor,
-                    'es_descanso': False,
-                    'es_novedad': True,
-                    'novedad_tipo': novedad_dia['tipo'],
-                    'novedad_detalle': novedad_dia['detalle'],
-                    'estado': novedad_dia['tipo'],
-                    'hora_marcada': None,
-                    'tardanza_display': '--',
-                    'turno': horario_dia.get_turno_display(),
-                    'hora_entrada_prog': horario_dia.hora_entrada,
+                    'fecha': fecha_cursor, 'es_descanso': False, 'es_novedad': True,
+                    'novedad_tipo': novedad_dia['tipo'], 'novedad_detalle': novedad_dia['detalle'],
+                    'estado': novedad_dia['tipo'], 'hora_marcada': None, 'tardanza_display': '--',
+                    'turno': horario_dia.get_turno_display(), 'hora_entrada_prog': horario_dia.hora_entrada,
+                    'hora_salida_prog': horario_dia.hora_salida,
+                })
+            elif fecha_cursor in descansos_fechas:
+                historial.append({
+                    'fecha': fecha_cursor, 'es_descanso': True, 'es_novedad': False,
+                    'novedad_tipo': None, 'novedad_detalle': None,
+                    'estado': 'DESCANSO', 'hora_marcada': None, 'tardanza_display': '--',
+                    'turno': horario_dia.get_turno_display(), 'hora_entrada_prog': horario_dia.hora_entrada,
                     'hora_salida_prog': horario_dia.hora_salida,
                 })
             else:
-                # --------------------------------------------------
-                # 2. CAMBIO_TURNO / DESCANSO / asistencia real
-                # --------------------------------------------------
-                es_cambio_turno = novedad_dia and novedad_dia['tipo'] == 'CAMBIO_TURNO'
-
-                if fecha_cursor in descansos_fechas and not es_cambio_turno:
-                    historial.append({
-                        'fecha': fecha_cursor,
-                        'es_descanso': True,
-                        'es_novedad': False,
-                        'estado': 'DESCANSO',
-                        'hora_marcada': None,
-                        'tardanza_display': '--',
-                        'turno': horario_dia.get_turno_display(),
-                        'hora_entrada_prog': horario_dia.hora_entrada,
-                        'hora_salida_prog': horario_dia.hora_salida,
-                    })
-                else:
-                    asistencia = asistencias_por_fecha.get(fecha_cursor)
-                    if asistencia:
-                        estado_dia = asistencia.estado
-                        hora_marcada = asistencia.hora_marcada
-                    elif fecha_cursor < hoy:
-                        estado_dia = 'AUSENTE'
-                        hora_marcada = None
+                asistencia = asistencias_por_fecha.get(fecha_cursor)
+                
+                if fecha_cursor < hoy:
+                    # AQUÍ EL CAMBIO: usamos <= para que el día de creación salga como SIN_DATOS
+                    if horario_dia and horario_dia.fecha_inicio and fecha_cursor <= horario_dia.fecha_inicio:
+                        estado_dia = 'SIN_DATOS' 
                     else:
-                        estado_dia = estado_hoy['estado']
-                        hora_marcada = estado_hoy['hora_entrada_real']
+                        estado_dia = asistencia.estado if asistencia else 'AUSENTE'
+                    hora_marcada = asistencia.hora_marcada if asistencia else None
+                else: # Es HOY
+                    estado_dia = estado_hoy['estado']
+                    hora_marcada = estado_hoy['hora_entrada_real']
 
-                    tardanza_display = '--'
-                    if estado_dia == 'TARDE' and horario_dia.hora_entrada and hora_marcada:
-                        entrada_prog = datetime.combine(fecha_cursor, horario_dia.hora_entrada)
-                        entrada_real = datetime.combine(fecha_cursor, hora_marcada)
-                        if entrada_real > entrada_prog:
-                            minutos = int((entrada_real - entrada_prog).total_seconds() // 60)
-                            tardanza_display = f"{minutos} min"
+                tardanza_display = '--'
+                if estado_dia == 'TARDE' and horario_dia.hora_entrada and hora_marcada:
+                    entrada_prog = datetime.combine(fecha_cursor, horario_dia.hora_entrada)
+                    entrada_real = datetime.combine(fecha_cursor, hora_marcada)
+                    if entrada_real > entrada_prog:
+                        minutos = int((entrada_real - entrada_prog).total_seconds() // 60)
+                        tardanza_display = f"{minutos} min"
 
-                    historial.append({
-                        'fecha': fecha_cursor,
-                        'es_descanso': False,
-                        'es_novedad': es_cambio_turno,
-                        'novedad_tipo': 'CAMBIO_TURNO' if es_cambio_turno else None,
-                        'novedad_detalle': novedad_dia['detalle'] if es_cambio_turno else None,
-                        'estado': estado_dia,
-                        'hora_marcada': hora_marcada,
-                        'tardanza_display': tardanza_display,
-                        'turno': horario_dia.get_turno_display(),
-                        'hora_entrada_prog': horario_dia.hora_entrada,
-                        'hora_salida_prog': horario_dia.hora_salida,
-                    })
+                historial.append({
+                    'fecha': fecha_cursor, 'es_descanso': False, 'es_novedad': False,
+                    'novedad_tipo': None, 'novedad_detalle': None,
+                    'estado': estado_dia, 'hora_marcada': hora_marcada, 'tardanza_display': tardanza_display,
+                    'turno': horario_dia.get_turno_display(), 'hora_entrada_prog': horario_dia.hora_entrada,
+                    'hora_salida_prog': horario_dia.hora_salida,
+                })
 
-                    # Cambio de turno SÍ cuenta como asistencia si trabajó
-                    if estado_dia in ('PRESENTE', 'TARDE'):
-                        dias_asistencia += 1
-                    if estado_dia == 'TARDE':
-                        retardos += 1
+                if estado_dia in ('PRESENTE', 'TARDE'):
+                    dias_asistencia += 1
+                if estado_dia == 'TARDE':
+                    retardos += 1
 
             fecha_cursor -= timedelta(days=1)
 
-    # Días sin asistencia: SOLO ausencias reales
     dias_sin_asistencia = sum(
         1 for d in historial
         if d['estado'] == 'AUSENTE' and not d.get('es_novedad')
@@ -1214,73 +1019,42 @@ def empleado_horario(request):
         fecha_inicio = horario_actual.ciclo_inicio or horario_actual.fecha_inicio or hoy
         horario_actual.vigencia_fin = ciclo_fin(horario_actual)
 
-        calendario = construir_calendario(
-            horario_actual,
-            fecha_inicio=fecha_inicio,
-            dias=dias_ciclo(horario_actual.turno),
-            hoy=hoy
-        )
-        horario_actual.proximo_descanso = DescansoEmpleado.objects.filter(
-            horario=horario_actual, es_descanso=True
-        ).order_by('-fecha').first()
-
-        fechas_calendario = [dia['fecha'] for dia in calendario if dia]
+        # 1. Buscamos las asistencias reales
+        fechas_calendario = []
+        import calendar
+        for i in range(dias_del_mes(fecha_inicio)):
+            fechas_calendario.append(fecha_inicio + timedelta(days=i))
+            
         asistencias = Asistencia.objects.filter(
             horario=horario_actual,
             fecha__in=fechas_calendario
         )
-        asistencias_por_fecha = {a.fecha: a.estado for a in asistencias}
 
+        # 2. Construimos el calendario base
+        calendario = construir_calendario(
+            horario_actual,
+            fecha_inicio=fecha_inicio,
+            dias=dias_del_mes(fecha_inicio),
+            hoy=hoy,
+            asistencias=asistencias
+        )
+        
+        horario_actual.proximo_descanso = DescansoEmpleado.objects.filter(
+            horario=horario_actual, es_descanso=True, fecha__gte=hoy 
+        ).order_by('fecha').first() 
+
+        # 3. Inyectamos SOLO las novedades (solicitudes/incapacidades)
         fecha_min = min(fechas_calendario) if fechas_calendario else hoy
         fecha_max = max(fechas_calendario) if fechas_calendario else hoy
         novedades_por_fecha = obtener_novedades_por_fecha(perfil, fecha_min, fecha_max)
 
         for dia in calendario:
             if dia:
-                fecha = dia['fecha']
-                novedad = novedades_por_fecha.get(fecha)
-
-                # ----------------------------------------------
-                # 1. PRIORIDAD: SOLICITUD / INCAPACIDAD
-                # ----------------------------------------------
+                novedad = novedades_por_fecha.get(dia['fecha'])
                 if novedad and novedad['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
                     dia['estado'] = novedad['tipo']
-                    dia['estado_texto'] = (
-                        'Solicitud' if novedad['tipo'] == 'SOLICITUD' else 'Incapacidad'
-                    )
+                    dia['estado_texto'] = 'Solicitud' if novedad['tipo'] == 'SOLICITUD' else 'Incapacidad'
                     dia['novedad'] = novedad
-
-                # ----------------------------------------------
-                # 2. CAMBIO_TURNO (trabaja, pero en otro horario)
-                # ----------------------------------------------
-                elif novedad and novedad['tipo'] == 'CAMBIO_TURNO':
-                    dia['estado'] = 'CAMBIO_TURNO'
-                    dia['estado_texto'] = 'Cambio de turno'
-                    dia['novedad'] = novedad
-                    # Si hubo asistencia, respetamos que trabajó
-                    if fecha in asistencias_por_fecha:
-                        dia['estado'] = asistencias_por_fecha[fecha]
-                        dia['estado_texto'] = (
-                            'Presente' if asistencias_por_fecha[fecha] == 'PRESENTE'
-                            else 'Tardanza'
-                        )
-
-                # ----------------------------------------------
-                # 3. Resto de la lógica normal
-                # ----------------------------------------------
-                elif dia['es_descanso']:
-                    dia['estado'] = 'DESCANSO'
-                    dia['estado_texto'] = 'Descanso'
-                elif fecha in asistencias_por_fecha:
-                    estado = asistencias_por_fecha[fecha]
-                    dia['estado'] = estado
-                    dia['estado_texto'] = 'Presente' if estado == 'PRESENTE' else 'Tardanza'
-                elif fecha < hoy:
-                    dia['estado'] = 'AUSENTE'
-                    dia['estado_texto'] = 'Ausente'
-                else:
-                    dia['estado'] = None
-                    dia['estado_texto'] = 'Pendiente'
 
     historial_horarios = Horario.objects.filter(empleado=perfil).order_by('-fecha_creacion')
     for h in historial_horarios:
@@ -1304,7 +1078,7 @@ def empleado_horario_detalle(request, id):
     hoy = timezone.localdate()
 
     fecha_inicio = horario.ciclo_inicio or horario.fecha_creacion.date()
-    dias = dias_ciclo(horario.turno)
+    dias = dias_del_mes(fecha_inicio)
     fecha_fin = fecha_inicio + timedelta(days=dias - 1)
 
     asistencias = Asistencia.objects.filter(
@@ -1328,19 +1102,20 @@ def empleado_horario_detalle(request, id):
         if not dia:
             continue
 
+        horario_override = aplicar_override_cambio_turno(horario, dia['fecha'])
+        if horario_override is not horario:
+            dia['turno'] = horario_override.get_turno_display()
+            dia['turno_valor'] = horario_override.turno
+            dia['hora_entrada'] = horario_override.hora_entrada
+            dia['hora_salida'] = horario_override.hora_salida
+
         novedad = novedades_por_fecha.get(dia['fecha'])
 
         if novedad and novedad['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
-            # Máxima prioridad: no trabajó
             dia['estado'] = novedad['tipo']
             dia['estado_texto'] = (
                 'Solicitud' if novedad['tipo'] == 'SOLICITUD' else 'Incapacidad'
             )
-        elif novedad and novedad['tipo'] == 'CAMBIO_TURNO':
-            # Cambio de turno: si ya marcó asistencia, respetar eso
-            if dia.get('estado') not in ('PRESENTE', 'TARDE'):
-                dia['estado'] = 'CAMBIO_TURNO'
-                dia['estado_texto'] = 'Cambio de turno'
 
     # ============================================================
 

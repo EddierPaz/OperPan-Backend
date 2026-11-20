@@ -59,9 +59,10 @@
         <div class="modal-detalle-item" id="grupoNuevoHorario" style="display: none;">
             <span class="modal-detalle-label">Nuevo turno solicitado <span class="text-danger">*</span></span>
             <span class="modal-detalle-value">
-                <select class="form-select" id="cambioTurnoSolicitado" name="solicitud-nuevo_horario">
-                    <option value="Mañana" {% if solicitud_form.nuevo_horario.value == 'Mañana' %}selected{% endif %}>Mañana (04:00 - 14:00)</option>
-                    <option value="Tarde" {% if solicitud_form.nuevo_horario.value == 'Tarde' %}selected{% endif %}>Tarde (13:30 - 22:00)</option>
+                <select class="form-select" id="nuevoHorario" name="solicitud-nuevo_horario" required>
+                    <option value="" selected disabled>Seleccione el nuevo turno...</option>
+                    <option value="MANANA">Turno Mañana (05:00 - 13:00)</option>
+                    <option value="TARDE">Turno Tarde (13:00 - 22:00)</option>
                 </select>
                 {% if solicitud_form.nuevo_horario.errors %}
                     <div class="text-danger small">{{ solicitud_form.nuevo_horario.errors }}</div>

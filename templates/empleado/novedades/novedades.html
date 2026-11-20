@@ -174,12 +174,10 @@
                         <span class="modal-detalle-value">
                             <!-- SELECTOR MAESTRO QUE CONTROLA QUÉ FORMULARIO SE MUESTRA -->
                             <select class="form-select" id="tipoSolicitud" name="tipo_solicitud" required>
-                                <option value="">Seleccionar tipo</option>
-                                <option value="solicitud" {% if request.POST.tipo_solicitud == 'solicitud' %}selected{% endif %}>Solicitud</option>
-                                <option value="incapacidad" {% if request.POST.tipo_solicitud == 'incapacidad' %}selected{% endif %}>Incapacidad médica</option>
-                                <option value="cambio_turno" {% if request.POST.tipo_solicitud == 'cambio_turno' %}selected{% endif %}>Cambio de turno</option>
-                                <option value="vacaciones" {% if request.POST.tipo_solicitud == 'vacaciones' %}selected{% endif %}>Vacaciones</option>
-                                <option value="certificado" {% if request.POST.tipo_solicitud == 'certificado' %}selected{% endif %}>Certificado</option>
+                                <option value="" selected disabled>Seleccione una opción...</option>
+                                <option value="solicitud">Solicitud (Permisos, Cambios, Vacaciones, etc.)</option>
+                                <option value="incapacidad">Incapacidad</option>
+                                <option value="certificado">Certificado</option>
                             </select>
                         </span>
                     </div>

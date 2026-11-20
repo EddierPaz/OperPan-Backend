@@ -628,6 +628,7 @@ def user_update(request, user_id):
         perfil.parentesco_emergencia = request.POST.get("parentesco_emergencia", perfil.parentesco_emergencia)
         perfil.telefono_emergencia = request.POST.get("telefono_emergencia", perfil.telefono_emergencia)
         perfil.cargo = request.POST.get("cargo", perfil.cargo)
+        perfil.turno_inicial = request.POST.get("turno_inicial", perfil.turno_inicial)
         perfil.fecha_ingreso = parse_date(request.POST.get("fecha_ingreso")) or perfil.fecha_ingreso
         perfil.eps = request.POST.get("eps", perfil.eps)
         perfil.arl = request.POST.get("arl", perfil.arl)

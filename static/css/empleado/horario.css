@@ -90,6 +90,15 @@
     min-height: 70px;
 }
 
+.dia-card-sin-datos {
+    background-color: var(--color-surface-subtle) !important; 
+    border-color: var(--color-border-soft) !important;
+    color: var(--color-text-muted) !important;
+    opacity: 0.6; /* Lo hace ver apagado/deshabilitado */
+    cursor: default;
+    font-weight: 500;
+}
+
 /* ── Leyenda ── */
 .leyenda-item {
     display: inline-flex;
