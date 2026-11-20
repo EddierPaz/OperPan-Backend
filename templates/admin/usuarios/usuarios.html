@@ -14,13 +14,9 @@
 <main class="dashboard-container">
 
     {% include "admin/usuarios/content.html" %}
-
+    {% include 'partials/footer.html' with texto_footer="Todas las cuentas y cambios quedan registrados con fecha y hora." %}
 </main>
 
 <!-- Modales (Crear, Editar, Ver, Eliminar) -->
 {% include "admin/usuarios/modal.html" %}
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/admin/cuentas.js' %}"></script>
 {% endblock %}

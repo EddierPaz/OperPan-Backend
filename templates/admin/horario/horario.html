@@ -12,9 +12,9 @@
 
 {% block content %}
 <main class="dashboard-container">
-
+<!--footer-->
   {% include "admin/horario/content.html" %}
-
+    {% include 'partials/footer.html' with texto_footer="Todos los horarios asignados quedan registrados con fecha y hora." %}
 </main>
 
 {% include "admin/horario/modal.html" %}
