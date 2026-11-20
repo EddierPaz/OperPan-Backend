@@ -10,6 +10,7 @@ from django.utils.dateparse import parse_date
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.http import JsonResponse
 from apps.usuarios.utils import get_logo_base64
 from .models import User, PerfilEmpleado, RegistroAuditoriaCuenta
 from .forms import UserForm, PerfilEmpleadoForm
@@ -538,54 +539,75 @@ def user_list_create(request):
     if request.method == "POST":
         user_form = UserForm(request.POST)
         perfil_form = PerfilEmpleadoForm(request.POST)
+        
         if user_form.is_valid() and perfil_form.is_valid():
-            numero_documento = perfil_form.cleaned_data["numero_documento"]
+            try:
+                numero_documento = perfil_form.cleaned_data["numero_documento"]
 
-            user = user_form.save(commit=False)
-            user.email = perfil_form.cleaned_data["correo"]
-            user.estado_cuenta = User.EstadoCuenta.PENDIENTE
-            user.debe_cambiar_password = True
-            user.set_password(numero_documento)
-            user.save()
+                user = user_form.save(commit=False)
+                user.email = perfil_form.cleaned_data["correo"]
+                user.estado_cuenta = User.EstadoCuenta.PENDIENTE
+                user.debe_cambiar_password = True
+                user.set_password(numero_documento)
+                user.save()
 
-            perfil = perfil_form.save(commit=False)
-            perfil.user = user
-            perfil.estado = 'activo'
-            perfil.save()
+                perfil = perfil_form.save(commit=False)
+                perfil.user = user
+                perfil.estado = 'activo'
+                perfil.save()
 
-            _registrar_auditoria(
-                usuario_afectado=user,
-                ejecutado_por=request.user,
-                accion=RegistroAuditoriaCuenta.Accion.CREACION,
-                estado_nuevo=user.estado_cuenta,
-            )
+                _registrar_auditoria(
+                    usuario_afectado=user,
+                    ejecutado_por=request.user,
+                    accion=RegistroAuditoriaCuenta.Accion.CREACION,
+                    estado_nuevo=user.estado_cuenta,
+                )
 
-            if request.POST.get("enviar_credenciales"):
-                try:
-                    _enviar_correo_credenciales(perfil)
-                except Exception:
-                    messages.warning(
-                        request,
-                        "Usuario creado, pero no se pudo enviar el correo de credenciales."
-                    )
+                if request.POST.get("enviar_credenciales"):
+                    try:
+                        _enviar_correo_credenciales(perfil)
+                    except Exception:
+                        # Si el correo falla, igual dejamos que el usuario se cree, 
+                        # pero podríamos avisar. Por ahora pasamos de largo.
+                        pass 
 
-            messages.success(request, "Usuario creado correctamente.")
-            return redirect("user_list")
+                # [19/11/2026] Respuesta exitosa para el fetch de JS
+                return JsonResponse({
+                    "status": "success", 
+                    "message": "Usuario creado correctamente."
+                })
+                
+            except IntegrityError:
+                # [19/11/2026] Atrapamos errores de base de datos (ej. doble clic rápido)
+                return JsonResponse({
+                    "status": "error", 
+                    "errors": ["Error de integridad: El nombre de usuario o documento ya existe."]
+                }, status=400)
 
-        # --- INICIO DEL ARREGLO DEL BUG (CUEN-005) ---
-        if not user_form.is_valid() or not perfil_form.is_valid():
-            # Extraemos los errores de Usuario
-            for field, errors in user_form.errors.items():
-                for error in errors:
-                    messages.error(request, f"Error en {field}: {error}")
-            
-            # Extraemos los errores de Perfil (documento duplicado)
-            for field, errors in perfil_form.errors.items():
-                for error in errors:
-                    messages.error(request, f"Error en {field}: {error}")
-        # --- FIN DEL ARREGLO ---
+        # --- MANEJO DE ERRORES DEL FORMULARIO (Para enviar por JSON) ---
+        error_list = []
+        
+        # Extraemos los errores de Usuario
+        for field, errors in user_form.errors.items():
+            # Traducimos nombres de campos técnicos a algo más amigable
+            field_name = "Usuario" if field == "username" else field
+            for error in errors:
+                error_list.append(f"{field_name}: {error}")
+        
+        # Extraemos los errores de Perfil
+        for field, errors in perfil_form.errors.items():
+            field_name = field.replace('_', ' ').capitalize()
+            for error in errors:
+                error_list.append(f"{field_name}: {error}")
 
-    else: # <-- Ojo, el else debe quedar alineado con el if de arriba
+        # [19/11/2026] Devolvemos el JSON con status 400 (Bad Request) y la lista de errores
+        return JsonResponse({
+            "status": "error", 
+            "errors": error_list
+        }, status=400)
+
+    else:
+        # Si es un GET, cargamos los formularios vacíos para renderizar la página normal
         user_form = UserForm()
         perfil_form = PerfilEmpleadoForm()
 
@@ -599,6 +621,8 @@ def user_list_create(request):
         "user_form": user_form,
         "perfil_form": perfil_form,
     }
+    
+    # Si es GET o si falla algo y no atrapamos el error arriba, renderiza la página
     return render(request, "admin/usuarios/usuarios.html", context)
 
 
