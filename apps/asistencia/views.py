@@ -707,6 +707,8 @@ def editar_horario(request, id):
 
     return redirect("asistencia:horarios")
 
+# Ultimo cambio el 21/11/2026: En donde hay una validación para que no se peuda registrar asistencia en más de 10 minutos atras de la hora de entrada
+
 @login_required
 def registrar_asistencia(request):
     if request.method != "POST":
@@ -724,12 +726,22 @@ def registrar_asistencia(request):
     hoy = timezone.localdate()
     hora_actual = timezone.localtime().time()
 
-    # --- VALIDACIÓN DE TIEMPO: LÍMITE DE 60 MINUTOS ---
     if horario.hora_entrada:
         dummy_date = date(2000, 1, 1)
         entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
-        limite_hora = (entrada_dt + timedelta(minutes=60)).time()
+        
+        # --- VALIDACIÓN DE TIEMPO: MUY TEMPRANO ---
+        # Permite marcar solo desde 15 minutos antes de la hora de entrada.
+        tiempo_limite_temprano = (entrada_dt - timedelta(minutes=15)).time()
+        if hora_actual < tiempo_limite_temprano:
+            mensaje = "Aún es muy temprano para registrar asistencia para este turno."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'error': mensaje}, status=400)
+            messages.error(request, mensaje)
+            return redirect("asistencia:asistencia_dashboard")
 
+        # --- VALIDACIÓN DE TIEMPO: LÍMITE DE 60 MINUTOS ---
+        limite_hora = (entrada_dt + timedelta(minutes=60)).time()
         if hora_actual > limite_hora:
             mensaje = "El plazo de 60 minutos ha vencido. El empleado se considera Ausente automático."
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -737,9 +749,9 @@ def registrar_asistencia(request):
             messages.error(request, mensaje)
             return redirect("asistencia:asistencia_dashboard")
 
-    # Verificar si ya existe asistencia para hoy
     asistencia_existente = Asistencia.objects.filter(horario=horario, fecha=hoy).first()
-    if asistencia_existente:
+    
+    if asistencia_existente and asistencia_existente.estado != 'AUSENTE':
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': True,
@@ -750,26 +762,33 @@ def registrar_asistencia(request):
             })
         return redirect("asistencia:asistencia_dashboard")
 
-    # --- LÓGICA DE TOLERANCIA DE 15 MINUTOS ---
+    # --- LÓGICA DE TOLERANCIA ---
     if horario.hora_entrada:
         dummy_date = date(2000, 1, 1)
         entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
         limite_tolerancia_hora = (entrada_dt + timedelta(minutes=15)).time()
         
+        # Si marca antes o a los 15 minutos de tolerancia, es PRESENTE.
+        # Si marca después, es TARDE.
         if hora_actual <= limite_tolerancia_hora:
             estado = "PRESENTE"
         else:
             estado = "TARDE"
     else:
-        estado = "PRESENTE" # Fallback por si no hay hora de entrada
+        estado = "PRESENTE" 
 
-    # Registrar nueva asistencia
-    asistencia = Asistencia.objects.create(
-        horario=horario,
-        fecha=hoy,
-        estado=estado,
-        hora_marcada=hora_actual,
-    )
+    if asistencia_existente and asistencia_existente.estado == 'AUSENTE':
+        asistencia_existente.estado = estado
+        asistencia_existente.hora_marcada = hora_actual
+        asistencia_existente.save()
+        asistencia = asistencia_existente
+    else:
+        asistencia = Asistencia.objects.create(
+            horario=horario,
+            fecha=hoy,
+            estado=estado,
+            hora_marcada=hora_actual,
+        )
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
