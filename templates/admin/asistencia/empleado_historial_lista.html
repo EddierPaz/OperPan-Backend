@@ -38,6 +38,15 @@
             <span class="badge badge-estado badge-tarde">Tarde</span>
           {% elif reg.estado == 'AUSENTE' %}
             <span class="badge badge-estado badge-ausente">Ausente</span>
+          {% elif reg.estado == 'SIN_DATOS' %}
+            <span class="badge badge-estado badge-secondary">
+              <i class="bi bi-dash-circle me-1"></i>Sin datos
+            </span>
+          {% elif reg.estado == 'PENDIENTE' %}
+            <span class="badge badge-estado badge-pendiente">
+              <i class="bi bi-clock me-1"></i>Pendiente
+            </span>
+          {% elif reg.estado == 'PRESENTE' %}
           {% else %}
             <span class="badge badge-estado badge-sin-registro">
               {{ reg.estado|default:"Sin registro" }}

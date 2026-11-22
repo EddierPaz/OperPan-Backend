@@ -95,7 +95,7 @@ def novedades_empleado(request):
     # FORMULARIOS
     # ============================================================
 
-    solicitud_form = SolicitudCrearForm(prefix='solicitud')
+    solicitud_form = SolicitudCrearForm(prefix='solicitud', empleado=perfil)
     incapacidad_form = IncapacidadCrearForm(prefix='incapacidad')
     certificado_form = CertificadoCrearForm(prefix='certificado')
 
@@ -115,7 +115,7 @@ def novedades_empleado(request):
                 messages.error(request, 'Ya tienes 2 solicitudes pendientes. Espera a que sean respondidas antes de crear otra.')
                 return redirect('novedades:novedades_empleado')
 
-            solicitud_form = SolicitudCrearForm(request.POST, request.FILES, prefix='solicitud')
+            solicitud_form = SolicitudCrearForm(request.POST, request.FILES, prefix='solicitud', empleado=perfil)
             if solicitud_form.is_valid():
                 solicitud = solicitud_form.save(commit=False)
                 solicitud.empleado = perfil
@@ -187,34 +187,6 @@ def novedades_empleado(request):
                 }
 
                 messages.success(request, 'Certificado creado correctamente.')
-                return redirect('novedades:novedades_empleado')
-            else:
-                formulario_invalido = True
-
-        # --------------------------------------------------------
-        # CAMBIO DE TURNO / VACACIONES (también son solicitudes)
-        # --------------------------------------------------------
-        elif tipo_solicitud in ('cambio_turno', 'vacaciones'):
-            if solicitudes_pendientes.count() >= 2:
-                messages.error(request, 'Ya tienes 2 solicitudes pendientes. Espera a que sean respondidas antes de crear otra.')
-                return redirect('novedades:novedades_empleado')
-
-            solicitud_form = SolicitudCrearForm(request.POST, request.FILES, prefix='solicitud')
-            if solicitud_form.is_valid():
-                solicitud = solicitud_form.save(commit=False)
-                solicitud.empleado = perfil
-                solicitud.tipo = tipo_solicitud
-                solicitud.save()
-
-                contexto_admin = {
-                    'empleado_nombre': perfil.nombre_completo(),
-                    'tipo_solicitud': solicitud.get_tipo_display(),
-                    'fecha_inicio': solicitud.fecha_inicio.strftime('%d/%m/%Y'),
-                    'fecha_fin': solicitud.fecha_fin.strftime('%d/%m/%Y'),
-                    'motivo': solicitud.justificacion,
-                }
-
-                messages.success(request, f'Solicitud de {tipo_solicitud.replace("_", " ")} creada correctamente.')
                 return redirect('novedades:novedades_empleado')
             else:
                 formulario_invalido = True
@@ -328,7 +300,39 @@ def editar_solicitud(request, pk):
             'error': f'Las solicitudes deben solicitarse con al menos {SolicitudCrearForm.DIAS_ANTICIPACION} '
                      f'días de anticipación. La fecha más próxima disponible es {minimo.strftime("%d/%m/%Y")}.'
         }, status=400)
+    # ============================================================
+    # Revalidación para cambio de turno (P2 + P4)
+    # ============================================================
+    if solicitud.tipo == 'cambio_turno':
+        from apps.asistencia.services.horario_service import (
+            obtener_o_generar_horario_vigente,
+            ultimo_dia_del_mes,
+        )
 
+        horario = obtener_o_generar_horario_vigente(request.user.perfil)
+        if not horario:
+            return JsonResponse(
+                {'error': 'No tienes un horario vigente; no puedes editar un cambio de turno.'},
+                status=400,
+            )
+        if horario.turno not in ('MANANA', 'TARDE'):
+            return JsonResponse(
+                {'error': 'Tu turno es Fijo y no admite cambio de turno.'},
+                status=400,
+            )
+
+        inicio_mes = horario.ciclo_inicio
+        fin_mes = ultimo_dia_del_mes(inicio_mes)
+        if not (inicio_mes <= fecha_inicio_dt <= fin_mes):
+            return JsonResponse(
+                {'error': f'La fecha debe estar dentro del mes actual '
+                          f'({inicio_mes.strftime("%d/%m/%Y")} - '
+                          f'{fin_mes.strftime("%d/%m/%Y")}).'},
+                status=400,
+            )
+
+        solicitud.fecha_fin = fecha_inicio_dt
+    # ============================================================
     solicitud.fecha_inicio = fecha_inicio
     solicitud.fecha_fin = fecha_fin
     solicitud.justificacion = justificacion
@@ -623,7 +627,7 @@ def mis_solicitudes(request):
 def crear_solicitud(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
-    form = SolicitudCrearForm(request.POST)
+    form = SolicitudCrearForm(request.POST, request.FILES, empleado=request.user.perfil)
     if not form.is_valid():
         return JsonResponse({'error': 'Datos inválidos', 'detalles': form.errors}, status=400)
     solicitud = form.save(commit=False)
@@ -637,12 +641,11 @@ def crear_solicitud(request):
 def crear_incapacidad(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
-    form = IncapacidadCrearForm(request.POST, request.FILES)
+    instancia = Incapacidad(empleado=request.user.perfil)
+    form = IncapacidadCrearForm(request.POST, request.FILES, instance=instancia)
     if not form.is_valid():
         return JsonResponse({'error': 'Datos inválidos', 'detalles': form.errors}, status=400)
-    incapacidad = form.save(commit=False)
-    incapacidad.empleado = request.user.perfil
-    incapacidad.save()
+    incapacidad = form.save()
     return JsonResponse({'status': 'ok', 'mensaje': 'Incapacidad creada correctamente', 'id': incapacidad.id})
 
 
@@ -740,6 +743,29 @@ def solicitud_detalle(request, pk):
     return JsonResponse(data)
 
 
+def _aplicar_cambio_turno(solicitud):
+    """
+    Ya NO modifica el Horario en BD. El override se aplica en memoria
+    desde apps.asistencia.services.horario_service.aplicar_override_cambio_turno
+    cada vez que se consulta el horario vigente.
+    """
+    from apps.asistencia.services.horario_service import obtener_o_generar_horario_vigente
+
+    horario = obtener_o_generar_horario_vigente(solicitud.empleado)
+    if not horario:
+        print(f"[novedades] Cambio de turno aprobado (solicitud {solicitud.pk}) "
+              f"pero el empleado no tiene horario vigente.")
+        return False
+
+    if horario.turno not in ('MANANA', 'TARDE'):
+        print(f"[novedades] Cambio de turno aprobado (solicitud {solicitud.pk}) "
+              f"pero el turno base es {horario.turno} (no permitido). "
+              f"El override no se aplicará.")
+        return False
+
+    return True
+
+
 @csrf_exempt
 @login_required
 @admin_required
@@ -756,9 +782,13 @@ def solicitud_aprobar(request, pk):
     s.decision_fecha = timezone.now()
     s.save()
 
-    # =====================================================
-    # NOTIFICACIÓN AL EMPLEADO
-    # =====================================================
+    # Si es cambio de turno, aplicar al Horario del empleado (Opción B)
+    if s.tipo == 'cambio_turno':
+        try:
+            _aplicar_cambio_turno(s)
+        except Exception as e:
+            print(f"[novedades.solicitud_aprobar] Error aplicando cambio de turno (solicitud {s.pk}): {e}")
+
     contexto = {
         'empleado_nombre': s.empleado.nombre_completo(),
         'tipo_solicitud': s.get_tipo_display(),

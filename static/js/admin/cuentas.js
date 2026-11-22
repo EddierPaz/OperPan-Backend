@@ -1,14 +1,301 @@
 // ============================================================
-// USUARIOS - MODALES Y FILTROS
+// USUARIOS - MODALES Y FILTROS (CON TOASTS Y VALIDACIONES)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
 
     // ==========================================
-    // 1. DELEGACIÓN DE EVENTOS (Ver, Editar, acciones de estado)
+    // 0. SISTEMA DE TOASTS Y LECTURA DE MENSAJES
+    // ==========================================
+    function showToast(message, type = 'danger') {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `app-toast app-toast-${type}`;
+        
+        const iconClass = type === 'danger' ? 'bi-exclamation-triangle' : 
+                          type === 'success' ? 'bi-check-circle' : 'bi-info-circle';
+
+        toast.innerHTML = `
+            <div class="app-toast-icon"><i class="bi ${iconClass}"></i></div>
+            <div class="app-toast-msg">${message}</div>
+            <button class="app-toast-close"><i class="bi bi-x"></i></button>
+        `;
+
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        // Cierre manual
+        toast.querySelector('.app-toast-close').addEventListener('click', () => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 300);
+        });
+
+        // Cierre automático
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 5000);
+    }
+
+    // Leer mensajes de Django inyectados en el HTML
+    const msgScript = document.getElementById('django-messages');
+    if (msgScript) {
+        try {
+            const messages = JSON.parse(msgScript.textContent);
+            messages.forEach(msg => {
+                let type = 'info';
+                if (msg.tags.includes('error')) type = 'danger';
+                else if (msg.tags.includes('success')) type = 'success';
+                else if (msg.tags.includes('warning')) type = 'warning';
+                showToast(msg.text, type);
+            });
+        } catch (e) {
+            console.error("Error parsing messages", e);
+        }
+    }
+
+    // ==========================================
+    // 1. LÓGICA DEL DROPDOWN DE CIUDAD
+    // ==========================================
+    const selectCiudad = document.getElementById('c_ciudad');
+    const inputCiudadOtra = document.getElementById('c_ciudad_otra');
+
+    if (selectCiudad && inputCiudadOtra) {
+        selectCiudad.addEventListener('change', function() {
+            if (this.value === 'Otra') {
+                inputCiudadOtra.classList.remove('d-none');
+                inputCiudadOtra.required = true;
+                inputCiudadOtra.setAttribute('name', 'ciudad'); // Toma el control
+                selectCiudad.removeAttribute('name'); // El select pierde el nombre para no enviarse
+            } else {
+                inputCiudadOtra.classList.add('d-none');
+                inputCiudadOtra.required = false;
+                inputCiudadOtra.removeAttribute('name');
+                selectCiudad.setAttribute('name', 'ciudad');
+            }
+        });
+    }
+
+        // [19/11/2026] Calcular dinámicamente los límites del calendario (16 a 80 años)
+    function calcularFechasLimiteNacimiento() {
+        const today = new Date();
+        // Límite superior (edad mínima de 16 años)
+        const maxDate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDate());
+        // Límite inferior (edad máxima de 80 años)
+        const minDate = new Date(today.getFullYear() - 80, today.getMonth(), today.getDate());
+
+        const formatDate = (date) => {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        };
+
+        const cFnac = document.getElementById('c_fecha_nacimiento');
+        if (cFnac) {
+            cFnac.setAttribute('min', formatDate(minDate));
+            cFnac.setAttribute('max', formatDate(maxDate));
+        }
+        
+        const eFnac = document.getElementById('e_fecha_nacimiento');
+        if (eFnac) {
+            eFnac.setAttribute('min', formatDate(minDate));
+            eFnac.setAttribute('max', formatDate(maxDate));
+        }
+    }
+    calcularFechasLimiteNacimiento();
+
+        // ==========================================
+    // 2. VALIDACIONES EN TIEMPO REAL Y ENVÍO POR AJAX
+    // ==========================================
+    const formCrear = document.getElementById('formCrearUsuario');
+    
+    if (formCrear) {
+        formCrear.addEventListener('submit', function(e) {
+            // [19/11/2026] Prevenimos SIEMPRE el envío tradicional.
+            // Esto evita que la página se recargue, el modal se cierre y se pierdan los datos.
+            e.preventDefault(); 
+            
+            let errors = [];
+            
+            // Función auxiliar para obtener el valor de un input y limpiar espacios en blanco
+            const getVal = id => document.getElementById(id)?.value.trim() || '';
+
+            // ------------------------------------------
+            // VALIDACIÓN DE NOMBRES Y APELLIDOS
+            // ------------------------------------------
+            // Expresión regular que permite letras (con tildes y ñ), espacios y guiones.
+            const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$/;
+            
+            const primerNombre = getVal('c_primer_nombre');
+            if (primerNombre.length < 2 || !nameRegex.test(primerNombre)) {
+                errors.push("El primer nombre es inválido (mínimo 2 letras, sin números).");
+            }
+            
+            const primerApellido = getVal('c_primer_apellido');
+            if (primerApellido.length < 2 || !nameRegex.test(primerApellido)) {
+                errors.push("El primer apellido es inválido (mínimo 2 letras, sin números).");
+            }
+
+            // ------------------------------------------
+            // VALIDACIÓN DE DOCUMENTO
+            // ------------------------------------------
+            const doc = getVal('c_numero_documento');
+            if (!/^\d+$/.test(doc)) {
+                errors.push("El número de documento debe contener solo números.");
+            }
+
+            // ------------------------------------------
+            // VALIDACIÓN DE CORREO ELECTRÓNICO
+            // ------------------------------------------
+            // Verifica que tenga estructura de texto@texto.dominio
+            const correo = getVal('c_correo');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(correo)) {
+                errors.push("El correo electrónico no tiene un formato válido.");
+            }
+
+            // ------------------------------------------
+            // VALIDACIÓN DE TELÉFONOS
+            // ------------------------------------------
+            // Recorremos ambos campos telefónicos para verificar que sean números de 7 a 10 dígitos
+            ['c_telefono', 'c_telefono_emergencia'].forEach(id => {
+                const val = getVal(id);
+                if (val && (!/^\d+$/.test(val) || val.length < 7 || val.length > 10)) {
+                    errors.push("Los teléfonos deben tener entre 7 y 10 números.");
+                }
+            });
+
+            // ------------------------------------------
+            // VALIDACIÓN DE DIRECCIÓN
+            // ------------------------------------------
+            const dir = getVal('c_direccion');
+            if (dir.length < 10 || dir.length > 100) {
+                errors.push("La dirección debe tener entre 10 y 100 caracteres.");
+            }
+
+            // ------------------------------------------
+            // VALIDACIÓN DE FECHAS Y EDAD (16 a 80 años)
+            // ------------------------------------------
+            const fnacVal = getVal('c_fecha_nacimiento');
+            const fingVal = getVal('c_fecha_ingreso');
+            
+            if (!fnacVal || !fingVal) {
+                errors.push("Debe ingresar las fechas de nacimiento e ingreso.");
+            } else {
+                const fnac = new Date(fnacVal);
+                const fing = new Date(fingVal);
+                const today = new Date();
+
+                // Comprobar que ninguna fecha esté en el futuro
+                if (fnac > today) errors.push("La fecha de nacimiento no puede ser futura.");
+                if (fing > today) errors.push("La fecha de ingreso no puede ser futura.");
+
+                // Cálculo exacto de la edad actual
+                let age = today.getFullYear() - fnac.getFullYear();
+                const m = today.getMonth() - fnac.getMonth();
+                // Si aún no ha pasado el mes de cumpleaños, o es el mismo mes pero no el día, le restamos 1 año
+                if (m < 0 || (m === 0 && today.getDate() < fnac.getDate())) age--;
+
+                if (age < 16) {
+                    errors.push("El empleado debe tener mínimo 16 años de edad.");
+                } else if (age > 80) {
+                    errors.push("La fecha de nacimiento no es válida (excede los 80 años).");
+                }
+
+                // Cálculo de la edad que tenía el empleado en la fecha de ingreso
+                let ageIngreso = fing.getFullYear() - fnac.getFullYear();
+                const mIngreso = fing.getMonth() - fnac.getMonth();
+                if (mIngreso < 0 || (mIngreso === 0 && fing.getDate() < fnac.getDate())) ageIngreso--;
+
+                if (ageIngreso < 16) {
+                    errors.push("La fecha de ingreso indica que el empleado tenía menos de 16 años.");
+                }
+            }
+
+            // ------------------------------------------
+            // EVALUACIÓN DE ERRORES FRONTEND
+            // ------------------------------------------
+            if (errors.length > 0) {
+                // Si hay errores, mostramos máximo 3 Toasts para no saturar la pantalla
+                errors.slice(0, 3).forEach(err => showToast(err, 'danger'));
+                if (errors.length > 3) {
+                    showToast("Y hay más errores en el formulario...", "danger");
+                }
+                // Detenemos la ejecución aquí. No se envía nada al servidor.
+                return; 
+            }
+
+            // ------------------------------------------
+            // ENVÍO POR AJAX (FETCH)
+            // ------------------------------------------
+            // Si el código llega hasta aquí, significa que el frontend está limpio.
+            // Procedemos a enviar los datos al backend.
+
+            const submitBtn = document.querySelector('button[form="formCrearUsuario"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // Feedback visual: bloqueamos el botón para evitar doble clic y avisamos que está cargando
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+
+            // Empaquetamos todos los datos del formulario, incluyendo el token CSRF
+            const formData = new FormData(formCrear);
+
+            // Realizamos la petición asíncrona a la URL definida en el action del form
+            fetch(formCrear.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Le indica a Django que es una petición AJAX
+                }
+            })
+            .then(response => response.json()) // Convertimos la respuesta del backend a JSON
+            .then(data => {
+                if (data.status === 'success') {
+                    // Caso exitoso: Mostramos Toast verde y recargamos la página tras 1.5s
+                    // para que el usuario vea el mensaje y la tabla se actualice.
+                    showToast(data.message, 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    // Caso de error desde el Backend (ej. Usuario duplicado en la BD):
+                    // Reactivamos el botón y mostramos los errores que envió Django.
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    
+                    // El backend envía un array de errores. Los mostramos en Toasts.
+                    data.errors.forEach(err => showToast(err, 'danger'));
+                }
+            })
+            .catch(error => {
+                // Caso de error de red o de servidor caído
+                console.error("Error en la petición Fetch:", error);
+                showToast("Ocurrió un error inesperado al comunicarse con el servidor.", "danger");
+                
+                // Restauramos el botón en caso de fallo
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            });
+        });
+    }
+
+    // ==========================================
+    // 3. DELEGACIÓN DE EVENTOS (Ver, Editar, etc.)
     // ==========================================
     document.addEventListener('click', function(e) {
-
         // ===== VER USUARIO =====
         const btnVer = e.target.closest('.btn-ver-usuario');
         if (btnVer) {
@@ -24,36 +311,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const estadosLaborales = { 'activo': 'Activo', 'retirado': 'Retirado' };
             const estadosCuenta = { 'PENDIENTE': 'Pendiente', 'ACTIVA': 'Activa', 'SUSPENDIDA': 'Suspendida', 'INACTIVA': 'Inactiva' };
 
-            const nombreCompleto = [
-                d.primerNombre || '',
-                d.segundoNombre || '',
-                d.primerApellido || '',
-                d.segundoApellido || ''
-            ].filter(Boolean).join(' ');
+            const nombreCompleto = [d.primerNombre || '', d.segundoNombre || '', d.primerApellido || '', d.segundoApellido || ''].filter(Boolean).join(' ');
 
             const campos = {
-                'v_nombre_completo': nombreCompleto || '-',
-                'v_tipo_documento': tiposDoc[d.tipoDocumento] || d.tipoDocumento || '-',
-                'v_numero_documento': d.numeroDocumento || '-',
-                'v_fecha_nacimiento': d.fechaNacimiento || '-',
-                'v_genero': generos[d.genero] || d.genero || '-',
-                'v_estado_civil': estadosCiviles[d.estadoCivil] || d.estadoCivil || '-',
-                'v_tipo_sangre': d.tipoSangre || '-',
-                'v_telefono': d.telefono || '-',
-                'v_correo': d.correo || '-',
-                'v_ciudad': d.ciudad || '-',
-                'v_direccion': d.direccion || '-',
-                'v_contacto_emergencia': d.contactoEmergencia || '-',
-                'v_parentesco_emergencia': d.parentescoEmergencia || '-',
-                'v_telefono_emergencia': d.telefonoEmergencia || '-',
-                'v_cargo': cargos[d.cargo] || d.cargo || '-',
-                'v_fecha_ingreso': d.fechaIngreso || '-',
-                'v_eps': d.eps || '-',
-                'v_arl': d.arl || '-',
-                'v_fondo_pension': d.fondoPension || '-',
-                'v_username': d.username || '-',
-                'v_rol': roles[d.rol] || d.rol || '-',
-                'v_estado': estadosLaborales[d.estado] || d.estado || '-',
+                'v_nombre_completo': nombreCompleto || '-', 'v_tipo_documento': tiposDoc[d.tipoDocumento] || d.tipoDocumento || '-',
+                'v_numero_documento': d.numeroDocumento || '-', 'v_fecha_nacimiento': d.fechaNacimiento || '-',
+                'v_genero': generos[d.genero] || d.genero || '-', 'v_estado_civil': estadosCiviles[d.estadoCivil] || d.estadoCivil || '-',
+                'v_tipo_sangre': d.tipoSangre || '-', 'v_telefono': d.telefono || '-', 'v_correo': d.correo || '-',
+                'v_ciudad': d.ciudad || '-', 'v_direccion': d.direccion || '-', 'v_contacto_emergencia': d.contactoEmergencia || '-',
+                'v_parentesco_emergencia': d.parentescoEmergencia || '-', 'v_telefono_emergencia': d.telefonoEmergencia || '-',
+                'v_cargo': cargos[d.cargo] || d.cargo || '-', 'v_fecha_ingreso': d.fechaIngreso || '-',
+                'v_eps': d.eps || '-', 'v_arl': d.arl || '-', 'v_fondo_pension': d.fondoPension || '-',
+                'v_username': d.username || '-', 'v_rol': roles[d.rol] || d.rol || '-', 'v_estado': estadosLaborales[d.estado] || d.estado || '-',
                 'v_estado_cuenta': estadosCuenta[d.estadoCuenta] || d.estadoCuenta || '-'
             };
 
@@ -78,24 +347,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (form) form.action = '/admi/users/' + id + '/update/';
 
             const camposEditables = {
-                'e_primer_nombre': d.primerNombre || '',
-                'e_segundo_nombre': d.segundoNombre || '',
-                'e_primer_apellido': d.primerApellido || '',
-                'e_segundo_apellido': d.segundoApellido || '',
-                'e_estado_civil': d.estadoCivil || '',
-                'e_telefono': d.telefono || '',
-                'e_correo': d.correo || '',
-                'e_ciudad': d.ciudad || '',
-                'e_direccion': d.direccion || '',
-                'e_contacto_emergencia': d.contactoEmergencia || '',
-                'e_parentesco_emergencia': d.parentescoEmergencia || '',
-                'e_telefono_emergencia': d.telefonoEmergencia || '',
-                'e_cargo': d.cargo || '',
-                'e_eps': d.eps || '',
-                'e_arl': d.arl || '',
-                'e_fondo_pension': d.fondoPension || '',
-                'e_username': d.username || '',
-                'e_rol': d.rol || ''
+                'e_primer_nombre': d.primerNombre || '', 'e_segundo_nombre': d.segundoNombre || '',
+                'e_primer_apellido': d.primerApellido || '', 'e_segundo_apellido': d.segundoApellido || '',
+                'e_estado_civil': d.estadoCivil || '', 'e_telefono': d.telefono || '', 'e_correo': d.correo || '',
+                'e_ciudad': d.ciudad || '', 'e_direccion': d.direccion || '', 'e_contacto_emergencia': d.contactoEmergencia || '',
+                'e_parentesco_emergencia': d.parentescoEmergencia || '', 'e_telefono_emergencia': d.telefonoEmergencia || '',
+                'e_cargo': d.cargo || '', 'e_eps': d.eps || '', 'e_arl': d.arl || '', 'e_fondo_pension': d.fondoPension || '',
+                'e_username': d.username || '', 'e_rol': d.rol || ''
             };
 
             for (const [id, valor] of Object.entries(camposEditables)) {
@@ -103,105 +361,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (el) el.value = valor;
             }
 
-            // Campos solo lectura (disabled + hidden)
-            const tipoDocSelect = document.getElementById('e_tipo_documento');
-            const tipoDocHidden = document.getElementById('e_tipo_documento_hidden');
-            if (tipoDocSelect) tipoDocSelect.value = d.tipoDocumento || '';
-            if (tipoDocHidden) tipoDocHidden.value = d.tipoDocumento || '';
+            // Campos ocultos y readonly de edición
+            document.getElementById('e_tipo_documento').value = d.tipoDocumento || '';
+            document.getElementById('e_tipo_documento_hidden').value = d.tipoDocumento || '';
+            document.getElementById('e_numero_documento').value = d.numeroDocumento || '';
+            document.getElementById('e_fecha_nacimiento').value = d.fechaNacimiento || '';
+            document.getElementById('e_genero').value = d.genero || '';
+            document.getElementById('e_genero_hidden').value = d.genero || '';
+            document.getElementById('e_tipo_sangre').value = d.tipoSangre || '';
+            document.getElementById('e_tipo_sangre_hidden').value = d.tipoSangre || '';
+            document.getElementById('e_fecha_ingreso').value = d.fechaIngreso || '';
 
-            const numDocInput = document.getElementById('e_numero_documento');
-            if (numDocInput) numDocInput.value = d.numeroDocumento || '';
-
-            const fechaNacInput = document.getElementById('e_fecha_nacimiento');
-            if (fechaNacInput) fechaNacInput.value = d.fechaNacimiento || '';
-
-            const generoSelect = document.getElementById('e_genero');
-            const generoHidden = document.getElementById('e_genero_hidden');
-            if (generoSelect) generoSelect.value = d.genero || '';
-            if (generoHidden) generoHidden.value = d.genero || '';
-
-            const sangreSelect = document.getElementById('e_tipo_sangre');
-            const sangreHidden = document.getElementById('e_tipo_sangre_hidden');
-            if (sangreSelect) sangreSelect.value = d.tipoSangre || '';
-            if (sangreHidden) sangreHidden.value = d.tipoSangre || '';
-
-            const fechaIngresoInput = document.getElementById('e_fecha_ingreso');
-            if (fechaIngresoInput) fechaIngresoInput.value = d.fechaIngreso || '';
-
-            const modalEl = document.getElementById('modalEditarUsuario');
-            if (modalEl) new bootstrap.Modal(modalEl).show();
+            new bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
         }
 
         // ===== SUSPENDER =====
         const btnSuspender = e.target.closest('.btn-suspender-usuario');
         if (btnSuspender) {
-            const id = btnSuspender.dataset.id;
-            const nombre = btnSuspender.dataset.nombre || 'usuario';
-            document.getElementById('formSuspenderUsuario').action = '/admi/users/' + id + '/suspender/';
-            document.getElementById('suspender_usuario_nombre').textContent = nombre;
+            document.getElementById('formSuspenderUsuario').action = '/admi/users/' + btnSuspender.dataset.id + '/suspender/';
+            document.getElementById('suspender_usuario_nombre').textContent = btnSuspender.dataset.nombre || 'usuario';
             document.getElementById('suspender_motivo').value = '';
             new bootstrap.Modal(document.getElementById('modalSuspenderUsuario')).show();
         }
 
-        // ===== REACTIVAR (SUSPENDIDA → ACTIVA) =====
+        // ===== REACTIVAR =====
         const btnReactivar = e.target.closest('.btn-reactivar-usuario');
         if (btnReactivar) {
-            const id = btnReactivar.dataset.id;
-            const nombre = btnReactivar.dataset.nombre || 'usuario';
-            document.getElementById('formReactivarUsuario').action = '/admi/users/' + id + '/reactivar/';
-            document.getElementById('reactivar_usuario_nombre').textContent = nombre;
+            document.getElementById('formReactivarUsuario').action = '/admi/users/' + btnReactivar.dataset.id + '/reactivar/';
+            document.getElementById('reactivar_usuario_nombre').textContent = btnReactivar.dataset.nombre || 'usuario';
             new bootstrap.Modal(document.getElementById('modalReactivarUsuario')).show();
         }
 
         // ===== RETIRAR =====
         const btnRetirar = e.target.closest('.btn-retirar-usuario');
         if (btnRetirar) {
-            const id = btnRetirar.dataset.id;
-            const nombre = btnRetirar.dataset.nombre || 'usuario';
-            document.getElementById('formRetirarUsuario').action = '/admi/users/' + id + '/retirar/';
-            document.getElementById('retirar_usuario_nombre').textContent = nombre;
+            document.getElementById('formRetirarUsuario').action = '/admi/users/' + btnRetirar.dataset.id + '/retirar/';
+            document.getElementById('retirar_usuario_nombre').textContent = btnRetirar.dataset.nombre || 'usuario';
             document.getElementById('retirar_motivo').value = '';
             new bootstrap.Modal(document.getElementById('modalRetirarUsuario')).show();
         }
 
-        // ===== REINCORPORAR (RETIRADO → ACTIVO) =====
+        // ===== REINCORPORAR =====
         const btnReactivarRetiro = e.target.closest('.btn-reactivar-retiro-usuario');
         if (btnReactivarRetiro) {
-            const id = btnReactivarRetiro.dataset.id;
-            const nombre = btnReactivarRetiro.dataset.nombre || 'usuario';
-            document.getElementById('formReactivarRetiroUsuario').action = '/admi/users/' + id + '/reactivar-retiro/';
-            document.getElementById('reactivar_retiro_usuario_nombre').textContent = nombre;
+            document.getElementById('formReactivarRetiroUsuario').action = '/admi/users/' + btnReactivarRetiro.dataset.id + '/reactivar-retiro/';
+            document.getElementById('reactivar_retiro_usuario_nombre').textContent = btnReactivarRetiro.dataset.nombre || 'usuario';
             new bootstrap.Modal(document.getElementById('modalReactivarRetiroUsuario')).show();
         }
 
         // ===== REENVIAR CREDENCIALES =====
         const btnCredenciales = e.target.closest('.btn-credenciales-usuario');
         if (btnCredenciales) {
-            const id = btnCredenciales.dataset.id;
-            const nombre = btnCredenciales.dataset.nombre || 'usuario';
-            document.getElementById('formEnviarCredenciales').action = '/admi/users/' + id + '/enviar-credenciales/';
-            document.getElementById('credenciales_usuario_nombre').textContent = nombre;
+            document.getElementById('formEnviarCredenciales').action = '/admi/users/' + btnCredenciales.dataset.id + '/enviar-credenciales/';
+            document.getElementById('credenciales_usuario_nombre').textContent = btnCredenciales.dataset.nombre || 'usuario';
             new bootstrap.Modal(document.getElementById('modalEnviarCredenciales')).show();
         }
 
-        // ===== ELIMINAR USUARIO (físico, excepcional) =====
+        // ===== ELIMINAR =====
         const btnEliminar = e.target.closest('.btn-eliminar-usuario');
         if (btnEliminar) {
-            const id = btnEliminar.dataset.id;
-            const nombre = btnEliminar.dataset.nombre || 'usuario';
-
-            const form = document.getElementById('formEliminarUsuario');
-            if (form) form.action = '/admi/users/' + id + '/delete/';
-
-            const nombreSpan = document.getElementById('eliminar_usuario_nombre');
-            if (nombreSpan) nombreSpan.textContent = nombre;
-
+            document.getElementById('formEliminarUsuario').action = '/admi/users/' + btnEliminar.dataset.id + '/delete/';
+            document.getElementById('eliminar_usuario_nombre').textContent = btnEliminar.dataset.nombre || 'usuario';
             new bootstrap.Modal(document.getElementById('modalEliminarUsuario')).show();
         }
     });
 
     // ==========================================
-    // 2. FILTROS DE BÚSQUEDA 
+    // 4. FILTROS DE BÚSQUEDA 
     // ==========================================
     const inputBuscar = document.getElementById('buscarCuenta');
     const filtroCargo = document.getElementById('filtroCargo');
@@ -216,48 +442,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value.trim() : '';
 
         const filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-id]');
-        
         filas.forEach(fila => {
             const d = fila.dataset;
-
-            const nombreCompleto = [
-                d.primerNombre || '',
-                d.segundoNombre || '',
-                d.primerApellido || '',
-                d.segundoApellido || ''
-            ].filter(Boolean).join(' ').toLowerCase();
-
+            const nombreCompleto = [d.primerNombre || '', d.segundoNombre || '', d.primerApellido || '', d.segundoApellido || ''].filter(Boolean).join(' ').toLowerCase();
             const documento = (d.numeroDocumento || '').toLowerCase();
             const usuario = (d.username || '').toLowerCase();
             const cargoFila = (d.cargo || '').toLowerCase();
             const rolFila = (d.rol || '').toLowerCase();
             const estadoCuentaFila = (d.estadoCuenta || '').trim();
 
-            const coincideTexto = !texto ||
-                documento.includes(texto) ||
-                usuario.includes(texto) ||
-                nombreCompleto.includes(texto);
-
+            const coincideTexto = !texto || documento.includes(texto) || usuario.includes(texto) || nombreCompleto.includes(texto);
             const coincideCargo = !cargo || cargoFila === cargo.trim();
             const coincideRol = !rol || rolFila === rol.trim();
             const coincideEstadoCuenta = !estadoCuenta || estadoCuentaFila === estadoCuenta;
 
-            if (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
+            fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) ? '' : 'none';
         });
     }
 
     if (inputBuscar || filtroCargo || filtroRol || filtroEstadoCuenta) {
         [inputBuscar, filtroCargo, filtroRol, filtroEstadoCuenta].forEach(el => {
-            if (el) {
-                el.addEventListener('input', aplicarFiltros);
-                el.addEventListener('change', aplicarFiltros);
-            }
+            if (el) { el.addEventListener('input', aplicarFiltros); el.addEventListener('change', aplicarFiltros); }
         });
-
         if (btnLimpiar) {
             btnLimpiar.addEventListener('click', function() {
                 if (inputBuscar) inputBuscar.value = '';
@@ -270,97 +476,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==========================================
-    // 3. LIMPIAR FORMULARIO DE CREACIÓN
+    // 5. LIMPIAR FORMULARIO DE CREACIÓN
     // ==========================================
     const btnLimpiarCrear = document.getElementById('btnLimpiarCrear');
     if (btnLimpiarCrear) {
         btnLimpiarCrear.addEventListener('click', function(e) {
             e.preventDefault();
-            const form = document.getElementById('formCrearUsuario');
-            if (form) {
-                form.reset();
-                const selects = form.querySelectorAll('select');
-                selects.forEach(select => { select.selectedIndex = 0; });
+            if (formCrear) {
+                formCrear.reset();
+                formCrear.querySelectorAll('select').forEach(select => { select.selectedIndex = 0; });
+                if (inputCiudadOtra) {
+                    inputCiudadOtra.classList.add('d-none');
+                    inputCiudadOtra.required = false;
+                    inputCiudadOtra.removeAttribute('name');
+                }
+                if (selectCiudad) selectCiudad.setAttribute('name', 'ciudad');
             }
         });
     }
 
     // ==========================================
-    // 4. PREVENIR ENVÍO DE CAMPOS DISABLED
+    // 6. PREVENIR ENVÍO DE CAMPOS DISABLED (EDITAR)
     // ==========================================
     document.addEventListener('submit', function(e) {
-        const form = e.target;
-        if (form.id === 'formEditarUsuario') {
-            const tipoDocHidden = document.getElementById('e_tipo_documento_hidden');
-            const generoHidden = document.getElementById('e_genero_hidden');
-            const sangreHidden = document.getElementById('e_tipo_sangre_hidden');
-
-            if (tipoDocHidden && !tipoDocHidden.value) {
-                const select = document.getElementById('e_tipo_documento');
-                if (select) tipoDocHidden.value = select.value;
-            }
-            if (generoHidden && !generoHidden.value) {
-                const select = document.getElementById('e_genero');
-                if (select) generoHidden.value = select.value;
-            }
-            if (sangreHidden && !sangreHidden.value) {
-                const select = document.getElementById('e_tipo_sangre');
-                if (select) sangreHidden.value = select.value;
-            }
-        }
-    });
-
-    // ============================================================
-    // 5. MEJORAS PARA EL NUEVO MENÚ DE ACCIONES
-    // ============================================================
-    document.addEventListener('click', function(e) {
-        const target = e.target.closest('.dropdown-item');
-        if (target) {
-            const dropdown = target.closest('.dropdown');
-            if (dropdown) {
-                const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
-                if (toggle) {
-                    const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                    if (bsDropdown) {
-                        bsDropdown.hide();
-                    }
-                }
-            }
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        const target = e.target.closest('.btn-accion-principal, .dropdown-item');
-        if (target) {
-            target.style.transition = 'transform 0.1s ease';
-            target.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                target.style.transform = 'scale(1)';
-            }, 100);
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const openDropdowns = document.querySelectorAll('.dropdown.show');
-            openDropdowns.forEach(dropdown => {
-                const toggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
-                if (toggle) {
-                    const bsDropdown = bootstrap.Dropdown.getInstance(toggle);
-                    if (bsDropdown) {
-                        bsDropdown.hide();
-                    }
+        if (e.target.id === 'formEditarUsuario') {
+            const hiddenFields = ['e_tipo_documento_hidden', 'e_genero_hidden', 'e_tipo_sangre_hidden'];
+            hiddenFields.forEach(id => {
+                const hidden = document.getElementById(id);
+                if (hidden && !hidden.value) {
+                    const select = document.getElementById(id.replace('_hidden', ''));
+                    if (select) hidden.value = select.value;
                 }
             });
         }
     });
 
-    // ============================================================
-    // 6. LÓGICA DE VALIDACIÓN PPT (CORREGIDA Y DENTRO DEL MISMO BLOQUE)
-    // ============================================================
-    console.log("QA Debug: El script de validación PPT ha cargado."); 
-    
-    // Configurar el modal de CREAR
+    // ==========================================
+    // 7. LÓGICA DE VALIDACIÓN PPT
+    // ==========================================
     const selectCrear = document.getElementById('c_tipo_documento');
     const inputCrear = document.getElementById('c_numero_documento');
 
@@ -382,7 +535,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Configurar el modal de EDITAR
     const selectEditar = document.getElementById('e_tipo_documento');
     const inputEditar = document.getElementById('e_numero_documento');
 
@@ -404,4 +556,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-}); // <-- AQUÍ SE CIERRA CORRECTAMENTE EL ÚNICO DOMContentLoaded
+});

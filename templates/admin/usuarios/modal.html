@@ -16,7 +16,8 @@
             </div>
 
             <div class="modal-body modal-detalle-body">
-                <form method="POST" id="formCrearUsuario" action="{% url 'user_list' %}">
+                <!-- [19/11/2026] Se agrega novalidate para desactivar tooltips nativos del navegador -->
+                <form method="POST" id="formCrearUsuario" action="{% url 'user_list' %}" novalidate>
                     {% csrf_token %}
 
                     <!-- DATOS PERSONALES -->
@@ -63,7 +64,6 @@
                                     <option value="CC">Cédula de Ciudadanía</option>
                                     <option value="CE">Cédula de Extranjería</option>
                                     <option value="TI">Tarjeta de Identidad</option>
-                                    <!--<option value="PA">Pasaporte</option>-->
                                     <option value="PPT">Permiso por Protección Temporal (PPT)</option>
                                 </select>
                             </span>
@@ -79,6 +79,7 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Fecha Nacimiento <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
+                                <!-- [19/11/2026] -->
                                 <input type="date" class="form-control" name="fecha_nacimiento" id="c_fecha_nacimiento" required>
                             </span>
                         </div>
@@ -154,14 +155,20 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Ciudad <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="ciudad" id="c_ciudad" required>
+                                <select class="form-select" name="ciudad" id="c_ciudad" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Soacha">Soacha</option>
+                                    <option value="Bogotá">Bogotá</option>
+                                    <option value="Otra">Otra</option>
+                                </select>
+                                <input type="text" class="form-control mt-2 d-none" name="ciudad_otra" id="c_ciudad_otra" placeholder="Escriba la ciudad">
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Dirección <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="direccion" id="c_direccion" required>
+                                <input type="text" class="form-control" name="direccion" id="c_direccion" required minlength="10" maxlength="100" placeholder="Ej: KR 30 #25-90, Barrio San Mateo">
                             </span>
                         </div>
 
@@ -214,30 +221,67 @@
                         </div>
 
                         <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Turno Inicial <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <select class="form-select" name="turno_inicial" id="c_turno_inicial" required>
+                                    <option value="MANANA">Mañana (04:00 - 14:00)</option>
+                                    <option value="TARDE">Tarde (13:30 - 22:00)</option>
+                                    <option value="FIJO">Fijo (08:00 - 17:00)</option>
+                                </select>
+                            </span>
+                        </div>
+
+                        <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="date" class="form-control" name="fecha_ingreso" id="c_fecha_ingreso" required>
+                                <input type="date" class="form-control" name="fecha_ingreso" id="c_fecha_ingreso" max="{% now 'Y-m-d' %}" required>
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">EPS <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="eps" id="c_eps" required>
+                                <select class="form-select" name="eps" id="c_eps" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Sura">Sura</option>
+                                    <option value="Sanitas">Sanitas</option>
+                                    <option value="Nueva EPS">Nueva EPS</option>
+                                    <option value="Compensar">Compensar</option>
+                                    <option value="Famisanar">Famisanar</option>
+                                    <option value="Coosalud">Coosalud</option>
+                                    <option value="Salud Total">Salud Total</option>
+                                    <option value="Mutual SER">Mutual SER</option>
+                                    <option value="S.O.S">S.O.S</option>
+                                </select>
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">ARL <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="arl" id="c_arl" required>
+                                <select class="form-select" name="arl" id="c_arl" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Sura">Sura</option>
+                                    <option value="Positiva">Positiva</option>
+                                    <option value="Colmena">Colmena</option>
+                                    <option value="AXA Colpatria">AXA Colpatria</option>
+                                    <option value="Seguros Bolívar">Seguros Bolívar</option>
+                                    <option value="Liberty">Liberty</option>
+                                </select>
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="fondo_pension" id="c_fondo_pension" required>
+                                <select class="form-select" name="fondo_pension" id="c_fondo_pension" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Colpensiones">Colpensiones</option>
+                                    <option value="Porvenir">Porvenir</option>
+                                    <option value="Protección">Protección</option>
+                                    <option value="Old Mutual">Old Mutual</option>
+                                    <option value="Skandia">Skandia</option>
+                                </select>
                             </span>
                         </div>
                     </div>
@@ -259,7 +303,6 @@
                             </span>
                         </div>
 
-                        <!-- RN-CT-01: ya no se digita contraseña; se calcula desde el documento -->
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Credenciales iniciales</span>
                             <span class="modal-detalle-value">
@@ -290,9 +333,6 @@
                 </form>
             </div>
 
-            <!-- Footer: Cancelar/Limpiar = gris neutro, Guardar = verde.
-                 (Antes: btn-outline-corporate para ambos grises, y
-                 btn-primary-corporate rojo institucional para Guardar). -->
             <div class="modal-footer modal-detalle-footer">
                 <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                     <i class="bi bi-x-circle"></i> Cancelar
@@ -327,7 +367,8 @@
             </div>
 
             <div class="modal-body modal-detalle-body">
-                <form method="POST" id="formEditarUsuario" action="">
+                <!-- [19/11/2026] Se agrega novalidate para desactivar tooltips nativos -->
+                <form method="POST" id="formEditarUsuario" action="" novalidate>
                     {% csrf_token %}
 
                     <!-- DATOS PERSONALES -->
@@ -374,8 +415,7 @@
                                     <option value="CC">Cédula de Ciudadanía</option>
                                     <option value="CE">Cédula de Extranjería</option>
                                     <option value="TI">Tarjeta de Identidad</option>
-                                    <!--<option value="PA">Pasaporte</option>-->
-                                    <option value="PPT">Permiso por Protección Temporal (PPT)</option> <!-- Lo agregamos -->
+                                    <option value="PPT">Permiso por Protección Temporal (PPT)</option>
                                 </select>
                                 <input type="hidden" name="tipo_documento" id="e_tipo_documento_hidden">
                             </span>
@@ -468,14 +508,20 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Ciudad <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="ciudad" id="e_ciudad" required>
+                                <select class="form-select" name="ciudad" id="e_ciudad" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Soacha">Soacha</option>
+                                    <option value="Bogotá">Bogotá</option>
+                                    <option value="Otra">Otra</option>
+                                </select>
+                                <input type="text" class="form-control mt-2 d-none" name="ciudad_otra" id="e_ciudad_otra" placeholder="Escriba la ciudad">
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Dirección <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="direccion" id="e_direccion" required>
+                                <input type="text" class="form-control" name="direccion" id="e_direccion" required minlength="10" maxlength="100" placeholder="Ej: KR 30 #25-90, Barrio San Mateo">
                             </span>
                         </div>
 
@@ -530,33 +576,56 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Fecha Ingreso <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="date" class="form-control" name="fecha_ingreso" id="e_fecha_ingreso" readonly required>
+                                <input type="date" class="form-control" name="fecha_ingreso" id="e_fecha_ingreso" max="{% now 'Y-m-d' %}" readonly required>
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">EPS <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="eps" id="e_eps" required>
+                                <select class="form-select" name="eps" id="e_eps" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Sura">Sura</option>
+                                    <option value="Sanitas">Sanitas</option>
+                                    <option value="Nueva EPS">Nueva EPS</option>
+                                    <option value="Compensar">Compensar</option>
+                                    <option value="Famisanar">Famisanar</option>
+                                    <option value="Coosalud">Coosalud</option>
+                                    <option value="Salud Total">Salud Total</option>
+                                    <option value="Mutual SER">Mutual SER</option>
+                                    <option value="S.O.S">S.O.S</option>
+                                </select>
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">ARL <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="arl" id="e_arl" required>
+                                <select class="form-select" name="arl" id="e_arl" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Sura">Sura</option>
+                                    <option value="Positiva">Positiva</option>
+                                    <option value="Colmena">Colmena</option>
+                                    <option value="AXA Colpatria">AXA Colpatria</option>
+                                    <option value="Seguros Bolívar">Seguros Bolívar</option>
+                                    <option value="Liberty">Liberty</option>
+                                </select>
                             </span>
                         </div>
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Fondo Pensión <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="fondo_pension" id="e_fondo_pension" required>
+                                <select class="form-select" name="fondo_pension" id="e_fondo_pension" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="Colpensiones">Colpensiones</option>
+                                    <option value="Porvenir">Porvenir</option>
+                                    <option value="Protección">Protección</option>
+                                    <option value="Old Mutual">Old Mutual</option>
+                                    <option value="Skandia">Skandia</option>
+                                </select>
                             </span>
                         </div>
-
-                        <!-- El "Estado" (laboral/de cuenta) ya NO se edita aquí (RN-CT-08).
-                             Usa los botones de Suspender/Reactivar/Retirar en la tabla. -->
                     </div>
 
                     <hr class="my-4">
@@ -575,9 +644,6 @@
                                 <input type="text" class="form-control" name="username" id="e_username" required>
                             </span>
                         </div>
-
-                        <!-- La contraseña ya NO se cambia desde aquí: usa "Reenviar credenciales"
-                             (mientras esté PENDIENTE) o el flujo normal de recuperación. -->
 
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Rol <span class="text-danger">*</span></span>
@@ -872,9 +938,6 @@
                     <label class="modal-detalle-label mb-2" for="retirar_motivo">Motivo (opcional)</label>
                     <textarea class="form-control" name="motivo" id="retirar_motivo" rows="3"></textarea>
                 </div>
-                <!-- Retirar es una acción seria (aunque reversible vía "Reincorporar"),
-                     por eso usa el mismo rojo que Eliminar en el menú "Más" de la tabla
-                     (consistencia: la misma acción siempre el mismo color, punto 22). -->
                 <div class="modal-footer modal-detalle-footer">
                     <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Cancelar

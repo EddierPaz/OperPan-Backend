@@ -75,15 +75,12 @@
                         {% elif estado == 'PRESENTE' %}dia-card-presente
                         {% elif estado == 'TARDE' %}dia-card-tarde
                         {% elif estado == 'AUSENTE' %}dia-card-ausente
-                        {% elif estado == 'PERMISO' %}dia-card-permiso
+                        {% elif estado == 'SOLICITUD' %}dia-card-permiso
                         {% elif estado == 'INCAPACIDAD' %}dia-card-incapacidad
-                        {% elif estado == 'CAMBIO_TURNO' %}dia-card-cambio-turno
-                        {% else %}dia-card-futuro{% endif %}"
+                        {% elif estado == 'SIN_DATOS' %}dia-card-sin-datos
+                        {% else %}dia-card-futuro{% endif %}" 
                         title="{{ dia.fecha|date:'d/m/Y' }} — {{ dia.estado_texto }}">
-
-                        <div>
-                            <div class="fw-bold">{{ dia.numero }}</div>
-                        </div>
+                        <div class="fw-bold">{{ dia.numero }}</div>
                     </div>
                 {% endwith %}
             {% else %}
@@ -93,46 +90,12 @@
     </div>
 </div>
 
-<!-- Leyenda -->
 <div class="row g-2 mt-3">
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-presente"></span> Presente
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-tarde"></span> Tarde
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-ausente"></span> Ausente
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-descanso"></span> Descanso
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-permiso"></span> Permiso
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-incapacidad"></span> Incapacidad
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-cambio-turno"></span> Cambio de turno
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="leyenda-item">
-            <span class="leyenda-color leyenda-futuro"></span> Pendiente
-        </span>
-    </div>
-</div> 
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-presente"></span> Presente</span></div>
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-tarde"></span> Tarde</span></div>
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-ausente"></span> Ausente</span></div>
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-descanso"></span> Descanso</span></div>
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-permiso"></span> Solicitud</span></div>
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-incapacidad"></span> Incapacidad</span></div>
+    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-futuro"></span> Pendiente</span></div>
+</div>

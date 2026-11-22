@@ -20,3 +20,21 @@
 <!-- Modales (Crear, Editar, Ver, Eliminar) -->
 {% include "admin/usuarios/modal.html" %}
 {% endblock %}
+
+
+<!-- 19/11/2027 -Para los TOAST es muy importante: -->
+
+{% block extra_js %}
+<!-- Inyección de mensajes de Django para los Toasts -->
+{% if messages %}
+<script id="django-messages" type="application/json">
+    [
+    {% for message in messages %}
+        {"tags": "{{ message.tags }}", "text": "{{ message|escapejs }}"} {% if not forloop.last %},{% endif %}
+    {% endfor %}
+    ]
+</script>
+{% endif %}
+
+<script src="{% static 'js/admin/cuentas.js' %}"></script>
+{% endblock %}

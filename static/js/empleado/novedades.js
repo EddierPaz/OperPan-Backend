@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================================
     // REFERENCIAS AL DOM
     // ============================================================
-    const tipoSelect = document.getElementById('tipoSolicitud'); // Selector maestro
-    const innerTipoSelect = document.getElementById('solicitudTipo'); // Selector interno
+    const tipoSelect = document.getElementById('tipoSolicitud'); 
+    const innerTipoSelect = document.getElementById('solicitudTipo'); 
     const formSolicitud = document.getElementById('formSolicitud');
     const formIncapacidad = document.getElementById('formIncapacidad');
     const formCertificado = document.getElementById('formCertificado');
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoyStr = formatearFechaISO(hoy);
 
     const minSolicitud = new Date(hoy);
-    minSolicitud.setDate(minSolicitud.getDate() + 3); // 3 días de anticipación para solicitudes
+    minSolicitud.setDate(minSolicitud.getDate() + 3); // 3 días de anticipación
     const minSolicitudStr = formatearFechaISO(minSolicitud);
 
     // ============================================================
@@ -34,40 +34,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tipoSelect) return;
         const mainTipo = tipoSelect.value;
 
-        // --- NUEVO: Limpiar mensajes de error viejos si el usuario cambia de opción ---
         document.querySelectorAll('.text-danger.small').forEach(el => {
-            // Ocultamos los textos de error para que no queden pegados en la interfaz
             el.textContent = '';
             el.style.display = 'none';
         });
-        // -----------------------------------------------------------------------------
 
-        // Función auxiliar para habilitar/deshabilitar un formulario completo
+        // Esta función es clave: oculta el div, deshabilita los inputs y quita el required
         const toggleForm = (form, isVisible) => {
             if (!form) return;
             form.style.display = isVisible ? 'block' : 'none';
-            // Deshabilitamos los inputs si está oculto para que no bloqueen el envío
             const inputs = form.querySelectorAll('input, select, textarea');
             inputs.forEach(input => {
                 input.disabled = !isVisible;
+                if (!isVisible) input.required = false; // Evita el error "not focusable"
             });
         };
 
-        // 1. Ocultar/Deshabilitar todos los formularios
         toggleForm(formSolicitud, false);
         toggleForm(formIncapacidad, false);
         toggleForm(formCertificado, false);
 
         if (!mainTipo) return;
 
-        // 2. Mostrar el formulario correspondiente al selector maestro
         if (mainTipo === 'incapacidad') {
             toggleForm(formIncapacidad, true);
-            
             const incapInicio = document.getElementById('incapacidadFechaInicio');
             const incapFin = document.getElementById('incapacidadFechaFin');
-            if (incapInicio) incapInicio.min = hoyStr;
-            if (incapFin) incapFin.min = hoyStr;
+            if (incapInicio) { incapInicio.min = hoyStr; incapInicio.required = true; }
+            if (incapFin) { incapFin.min = hoyStr; incapFin.required = true; }
             return;
         }
         
@@ -77,10 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 3. Si es Solicitud, mostramos formSolicitud
         toggleForm(formSolicitud, true);
 
-        // --- LÓGICA: Ocultar el selector interno si ya se eligió un tipo específico ---
         const grupoTipoSolicitud = document.getElementById('grupoTipoSolicitud');
         if (innerTipoSelect) {
             if (mainTipo === 'cambio_turno') {
@@ -111,29 +103,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const hintAdjunto = document.getElementById('hintAdjunto');
         const inputFechaInicio = document.getElementById('solicitudFechaInicio');
         const inputFechaFin = document.getElementById('solicitudFechaFin');
-        const inputNuevoHorario = document.getElementById('cambioTurnoSolicitado');
+        const inputNuevoHorario = document.getElementById('nuevoHorario'); 
         const inputJustificacion = document.getElementById('solicitudMotivo');
         const inputAdjunto = document.getElementById('solicitudAdjunto');
 
-        // RESET de campos dinámicos
+        // RESET
         if (grupoFechaInicio) grupoFechaInicio.style.display = 'block';
         if (grupoFechaFin) grupoFechaFin.style.display = 'block';
         if (grupoJustificacion) grupoJustificacion.style.display = 'none';
         if (grupoAdjunto) grupoAdjunto.style.display = 'none';
         if (grupoNuevoHorario) grupoNuevoHorario.style.display = 'none';
         
-        if (inputJustificacion) {
-            inputJustificacion.required = false;
-            inputJustificacion.value = ''; 
-        }
-        if (inputAdjunto) {
-            inputAdjunto.required = false;
-            inputAdjunto.value = ''; 
-        }
-        if (inputNuevoHorario) inputNuevoHorario.required = false;
+        if (inputJustificacion) { inputJustificacion.required = false; inputJustificacion.value = ''; }
+        if (inputAdjunto) { inputAdjunto.required = false; inputAdjunto.value = ''; }
+        if (inputNuevoHorario) { inputNuevoHorario.required = false; inputNuevoHorario.value = ''; inputNuevoHorario.disabled = true; }
         if (inputFechaFin) inputFechaFin.required = false;
 
-        // REGLA GLOBAL: Fechas mínimas (Luto/Calamidad = hoy, Otros = 3 días)
         if (tipoEfectivo === 'luto' || tipoEfectivo === 'calamidad') {
             if (inputFechaInicio) inputFechaInicio.min = hoyStr;
         } else {
@@ -144,15 +129,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha del cambio <span class="text-danger">*</span>';
             if (grupoFechaFin) grupoFechaFin.style.display = 'none'; 
             if (grupoNuevoHorario) grupoNuevoHorario.style.display = 'block'; 
-            
             if (grupoJustificacion) grupoJustificacion.style.display = 'block';
             if (labelJustificacion) labelJustificacion.innerHTML = 'Motivo del cambio <span class="text-danger">*</span>';
-            if (inputJustificacion) inputJustificacion.required = true;
             
-            if (inputFechaInicio && inputFechaFin) {
-                inputFechaFin.value = inputFechaInicio.value;
-            }
-            if (inputNuevoHorario) inputNuevoHorario.required = true;
+            if (inputJustificacion) inputJustificacion.required = true;
+            if (inputNuevoHorario) { inputNuevoHorario.required = true; inputNuevoHorario.disabled = false; }
+            
+            if (inputFechaInicio && inputFechaFin) inputFechaFin.value = inputFechaInicio.value;
 
         } else if (tipoEfectivo === 'vacaciones') {
             if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha de inicio de vacaciones <span class="text-danger">*</span>';
@@ -162,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (['luto', 'citas_medicas', 'maternidad_paternidad'].includes(tipoEfectivo)) {
             if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha inicio <span class="text-danger">*</span>';
             if (grupoFechaFin) grupoFechaFin.style.display = 'block';
-            
             if (grupoAdjunto) grupoAdjunto.style.display = 'block';
             if (labelAdjunto) labelAdjunto.innerHTML = '<strong class="text-danger">(Obligatorio)</strong>';
             if (inputAdjunto) inputAdjunto.required = true;
@@ -172,22 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 else if (tipoEfectivo === 'citas_medicas') hintAdjunto.innerHTML = '<strong>Sugerencia: Adjunta el certificado médico.</strong>';
                 else hintAdjunto.innerHTML = '<strong>Sugerencia: Adjunta el registro civil de nacimiento.</strong>';
             }
-            
             if (inputFechaFin) inputFechaFin.required = true;
 
         } else {
-            // CASO: NO REMUNERADO, CALAMIDAD, ESCOLARES, LEGALES, OTRO
             if (labelFechaInicio) labelFechaInicio.innerHTML = 'Fecha inicio <span class="text-danger">*</span>';
             if (grupoFechaFin) grupoFechaFin.style.display = 'block';
-            
             if (grupoJustificacion) grupoJustificacion.style.display = 'block';
             if (labelJustificacion) labelJustificacion.innerHTML = 'Justificación <span class="text-danger">*</span>';
             if (inputJustificacion) inputJustificacion.required = true;
-            
             if (grupoAdjunto) grupoAdjunto.style.display = 'block';
             if (labelAdjunto) labelAdjunto.textContent = '(opcional)';
             if (hintAdjunto) hintAdjunto.textContent = 'Formato PDF, JPG, PNG (máx 5MB).';
-            
             if (inputFechaFin) inputFechaFin.required = true;
         }
     };
@@ -208,10 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (incapDias) incapDias.value = '';
             return;
         }
-        
         const inicio = new Date(`${incapInicio.value}T00:00:00`);
         const fin = new Date(`${incapFin.value}T00:00:00`);
-
         if (fin < inicio) {
             incapDias.value = 'Fecha inválida';
         } else {
@@ -220,17 +195,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    if (incapInicio) {
-        incapInicio.addEventListener('change', () => {
-            if (incapFin) {
-                incapFin.min = incapInicio.value || hoyStr;
-            }
-            actualizarDiasIncapacidad();
-        });
-    }
-    if (incapFin) {
-        incapFin.addEventListener('change', actualizarDiasIncapacidad);
-    }
+    if (incapInicio) incapInicio.addEventListener('change', () => {
+        if (incapFin) incapFin.min = incapInicio.value || hoyStr;
+        actualizarDiasIncapacidad();
+    });
+    if (incapFin) incapFin.addEventListener('change', actualizarDiasIncapacidad);
 
     // ============================================================
     // RESTRICCIONES DINÁMICAS DE FECHA (Solicitudes)
@@ -240,9 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (solicitudInicio) {
         solicitudInicio.addEventListener('change', () => {
-            if (solicitudFin) {
-                solicitudFin.min = solicitudInicio.value || hoyStr;
-            }
+            if (solicitudFin) solicitudFin.min = solicitudInicio.value || hoyStr;
+
+            // Cambio de turno = un solo día: fecha_fin siempre igual a fecha_inicio
+            const tipoAct = tipoSelect?.value === 'solicitud' ? innerTipoSelect?.value : tipoSelect?.value;
+            if (tipoAct === 'cambio_turno' && solicitudFin) solicitudFin.value = solicitudInicio.value;
         });
     }
 
@@ -278,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tarjetas.forEach(card => {
             const matchTipo = card.dataset.tipo === tipoActual;
             const matchEstado = estadoActual === 'todas' || card.dataset.estado === estadoActual;
-
             card.style.display = (matchTipo && matchEstado) ? '' : 'none';
             if (matchTipo && matchEstado) visibles++;
         });
@@ -319,25 +289,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ============================================================
-    // BOTONES "VER TODAS"
-    // ============================================================
     document.querySelectorAll('.btn-view-pending').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const targetTipo = e.currentTarget.dataset.tipo;
             const scrollTo = e.currentTarget.dataset.scrollTo;
-
             tipoFiltroTabs.forEach(tab => {
-                if (tab.dataset.tipo === targetTipo) {
-                    tab.click();
-                }
+                if (tab.dataset.tipo === targetTipo) tab.click();
             });
-
             if (scrollTo) {
                 const element = document.getElementById(scrollTo);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }
+                if (element) element.scrollIntoView({ behavior: 'smooth' });
             }
         });
     });
@@ -349,26 +310,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (solicitudForm) {
         solicitudForm.addEventListener('reset', () => {
             setTimeout(() => {
-                // 1. Borrar los mensajes de error que Django pintó en el HTML
                 const errorElements = solicitudForm.querySelectorAll('.alert-danger, .text-danger, .errorlist');
                 errorElements.forEach(el => el.remove());
-
-                // 2. Borrar la notificación Toast de arriba a la derecha
                 const toastContainer = document.getElementById('toastContainer');
-                if (toastContainer) {
-                    toastContainer.innerHTML = '';
-                }
-
-                // 3. Volver a aplicar la lógica de mostrar/ocultar
+                if (toastContainer) toastContainer.innerHTML = '';
                 mostrarFormularioSegunTipo();
                 actualizarCamposCertificado();
-                
                 if (incapDias) incapDias.value = '';
-                
                 const fileInputs = solicitudForm.querySelectorAll('input[type="file"]');
-                fileInputs.forEach(input => {
-                    input.value = '';
-                });
+                fileInputs.forEach(input => input.value = '');
             }, 50);
         });
     }
@@ -400,24 +350,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getEstadoLabel(estado) {
-        const labels = {
-            'pendiente': 'Pendiente',
-            'aprobado': 'Aprobado',
-            'rechazado': 'Rechazado'
-        };
+        const labels = { 'pendiente': 'Pendiente', 'aprobado': 'Aprobado', 'rechazado': 'Rechazado' };
         return labels[estado] || estado;
     }
 
     document.querySelectorAll('.btn-ver-detalle').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const d = e.currentTarget.dataset;
-            
             const tipo = d.tipo || 'solicitud';
             const estado = d.estadoSlug || 'pendiente';
             
             document.getElementById('detalleIcono').className = `bi ${getTipoIcon(tipo)}`;
             document.getElementById('detalleTitulo').textContent = d.titulo || 'Detalle de novedad';
-            document.getElementById('detalleSubtitulo').textContent = d.subtitulo || 'Información completa de la novedad';
+            document.getElementById('detalleSubtitulo').textContent = d.subtitulo || 'Información completa';
             
             const badge = document.getElementById('detalleEstadoBadge');
             badge.textContent = getEstadoLabel(estado);
@@ -474,20 +419,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         editarBtn.onclick = function(e) {
                             e.stopPropagation();
                             modalDetalle?.hide();
-                            setTimeout(() => {
-                                editarOriginal.click();
-                            }, 300);
+                            setTimeout(() => editarOriginal.click(), 300);
                         };
                     }
-                    
                     if (eliminarOriginal) {
                         eliminarBtn.style.display = 'inline-flex';
                         eliminarBtn.onclick = function(e) {
                             e.stopPropagation();
                             modalDetalle?.hide();
-                            setTimeout(() => {
-                                eliminarOriginal.click();
-                            }, 300);
+                            setTimeout(() => eliminarOriginal.click(), 300);
                         };
                     }
                 }
@@ -498,19 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = btn.closest('.request-card') || btn.closest('.request-card-grid');
                 if (card) {
                     const link = card.querySelector('a[href*="certificado"]');
-                    if (link) {
-                        descargarBtn.onclick = function() {
-                            window.open(link.href, '_blank');
-                        };
-                    } else if (d.archivo && d.archivo !== '') {
-                        descargarBtn.onclick = function() {
-                            window.open(d.archivo, '_blank');
-                        };
-                    }
-                } else if (d.archivo && d.archivo !== '') {
-                    descargarBtn.onclick = function() {
-                        window.open(d.archivo, '_blank');
-                    };
+                    if (link) descargarBtn.onclick = function() { window.open(link.href, '_blank'); };
+                    else if (d.archivo) descargarBtn.onclick = function() { window.open(d.archivo, '_blank'); };
+                } else if (d.archivo) {
+                    descargarBtn.onclick = function() { window.open(d.archivo, '_blank'); };
                 }
             }
             
@@ -524,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalEliminarEl = document.getElementById('modalConfirmarEliminar');
     const modalEliminar = modalEliminarEl ? new bootstrap.Modal(modalEliminarEl) : null;
     const btnConfirmarEliminacion = document.getElementById('btnConfirmarEliminacion');
-
     let urlParaEliminar = '';
 
     document.addEventListener('click', (e) => {
@@ -532,18 +462,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnEliminar) {
             e.preventDefault();
             urlParaEliminar = btnEliminar.dataset.url;
-            if (urlParaEliminar && modalEliminar) {
-                modalEliminar.show();
-            } else {
-                console.error("No se encontró el atributo data-url en el botón de eliminación.");
-            }
+            if (urlParaEliminar && modalEliminar) modalEliminar.show();
         }
     });
 
     if (btnConfirmarEliminacion) {
         btnConfirmarEliminacion.addEventListener('click', async () => {
             if (!urlParaEliminar) return;
-
             try {
                 btnConfirmarEliminacion.disabled = true;
                 btnConfirmarEliminacion.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Eliminando...';
@@ -552,34 +477,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cookies = document.cookie.split(';');
                 for (let i = 0; i < cookies.length; i++) {
                     const cookie = cookies[i].trim();
-                    if (cookie.startsWith('csrftoken=')) {
-                        csrftoken = cookie.substring('csrftoken='.length);
-                        break;
-                    }
+                    if (cookie.startsWith('csrftoken=')) { csrftoken = cookie.substring('csrftoken='.length); break; }
                 }
 
                 const response = await fetch(urlParaEliminar, {
                     method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrftoken,
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
                 });
-
                 const data = await response.json();
 
                 if (response.ok && data.status === 'ok') {
                     if (modalEliminar) modalEliminar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al intentar eliminar la novedad.');
+                    alert(data.error || 'Ocurrió un error al intentar eliminar.');
                     if (modalEliminar) modalEliminar.hide();
                     btnConfirmarEliminacion.disabled = false;
                     btnConfirmarEliminacion.innerHTML = '<i class="bi bi-trash3"></i> Sí, eliminar';
                 }
             } catch (error) {
-                console.error('Error en la petición:', error);
                 alert('Error de red al intentar conectar con el servidor.');
                 if (modalEliminar) modalEliminar.hide();
                 btnConfirmarEliminacion.disabled = false;
@@ -603,21 +519,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalEditar = modalEditarEl ? new bootstrap.Modal(modalEditarEl) : null;
     const formEditar = document.getElementById('formEditarSolicitud');
     const btnGuardarEdicion = document.getElementById('btnGuardarEdicion');
-
     let urlParaEditar = '';
 
     document.addEventListener('click', (e) => {
         const btnEditar = e.target.closest('.btn-editar-solicitud');
         if (btnEditar) {
             e.preventDefault();
-
             urlParaEditar = btnEditar.dataset.url;
-
             const idVal = btnEditar.dataset.id || '';
             const tipoVal = btnEditar.dataset.tipo || 'solicitud';
             const inicioVal = btnEditar.dataset.inicio || '';
             const finVal = btnEditar.dataset.fin || '';
-            const motivoVal = btnEditar.dataset.motivo || '';
             const archivoUrl = btnEditar.dataset.archivo || '';
 
             const idInput = document.getElementById('editarId');
@@ -625,20 +537,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tipoDisplay = document.getElementById('editarTipoDisplay');
             if (tipoDisplay) {
-                const tipos = {
-                    'solicitud': 'Solicitud',
-                    'cambio_turno': 'Cambio de Turno',
-                    'vacaciones': 'Vacaciones',
-                    'incapacidad': 'Incapacidad',
-                    'certificado': 'Certificado'
-                };
+                const tipos = { 'solicitud': 'Solicitud', 'cambio_turno': 'Cambio de Turno', 'vacaciones': 'Vacaciones', 'incapacidad': 'Incapacidad', 'certificado': 'Certificado' };
                 tipoDisplay.value = tipos[tipoVal] || tipoVal;
             }
 
             const inputInicio = document.getElementById('editarFechaInicio');
             const inputFin = document.getElementById('editarFechaFin');
 
-            // Restricción de fecha mínima para el modal editar
             if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipoVal)) {
                 if (inputInicio) inputInicio.min = minSolicitudStr;
                 if (inputFin) inputFin.min = minSolicitudStr;
@@ -655,7 +560,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const contenedorArchivo = document.getElementById('contenedorArchivoActual');
             const linkArchivo = document.getElementById('verArchivoActual');
-
             if (contenedorArchivo && linkArchivo) {
                 if (archivoUrl && archivoUrl !== '') {
                     linkArchivo.href = archivoUrl;
@@ -668,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const inputArchivo = document.getElementById('editarArchivo');
             if (inputArchivo) inputArchivo.value = '';
-
             if (modalEditar) modalEditar.show();
         }
     });
@@ -676,10 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formEditar) {
         formEditar.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!urlParaEditar) {
-                alert('No se encontró la URL para editar.');
-                return;
-            }
+            if (!urlParaEditar) return;
 
             try {
                 if (btnGuardarEdicion) {
@@ -691,14 +591,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cookies = document.cookie.split(';');
                 for (let i = 0; i < cookies.length; i++) {
                     const cookie = cookies[i].trim();
-                    if (cookie.startsWith('csrftoken=')) {
-                        csrftoken = cookie.substring('csrftoken='.length);
-                        break;
-                    }
+                    if (cookie.startsWith('csrftoken=')) { csrftoken = cookie.substring('csrftoken='.length); break; }
                 }
 
                 const formData = new FormData();
-                
                 const inputInicioEdit = document.getElementById('editarFechaInicio');
                 const fechaInicio = inputInicioEdit?.value || '';
                 const fechaFin = document.getElementById('editarFechaFin')?.value || '';
@@ -708,13 +604,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         btnGuardarEdicion.disabled = false;
                         btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                     }
-                    alert('La fecha de inicio no es válida para este tipo de novedad.');
+                    alert('La fecha de inicio no es válida.');
                     return;
                 }
 
                 formData.append('fecha_inicio', fechaInicio);
                 formData.append('fecha_fin', fechaFin);
-                
                 
                 const archivoInput = document.getElementById('editarArchivo');
                 if (archivoInput && archivoInput.files && archivoInput.files.length > 0) {
@@ -723,20 +618,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const response = await fetch(urlParaEditar, {
                     method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrftoken,
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
+                    headers: { 'X-CSRFToken': csrftoken, 'X-Requested-With': 'XMLHttpRequest' },
                     body: formData
                 });
 
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('El servidor no devolvió JSON. Posible error de redirección.');
+                    throw new Error('El servidor no devolvió JSON.');
                 }
 
                 const data = await response.json();
-
                 if (btnGuardarEdicion) {
                     btnGuardarEdicion.disabled = false;
                     btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
@@ -746,16 +637,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalEditar) modalEditar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al actualizar la novedad.');
+                    alert(data.error || 'Ocurrió un error al actualizar.');
                 }
-
             } catch (error) {
-                console.error('Error en la petición:', error);
+                console.error(error);
                 if (btnGuardarEdicion) {
                     btnGuardarEdicion.disabled = false;
                     btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                 }
-                alert('Error de red al intentar conectar con el servidor.');
+                alert('Error de red al conectar con el servidor.');
             }
         });
 
@@ -771,36 +661,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ============================================================
-    // MOSTRAR ERRORES DEL FORMULARIO AL CARGAR
+    // MOSTRAR ERRORES AL CARGAR
     // ============================================================
     const formErrors = document.querySelector('.alert-danger');
     if (formErrors) {
         if (document.querySelector('#formSolicitud .is-invalid, #formSolicitud .errorlist')) {
-            if (tipoSelect) {
-                tipoSelect.value = 'solicitud';
-                mostrarFormularioSegunTipo();
-            }
+            if (tipoSelect) { tipoSelect.value = 'solicitud'; mostrarFormularioSegunTipo(); }
         } else if (document.querySelector('#formIncapacidad .is-invalid, #formIncapacidad .errorlist')) {
-            if (tipoSelect) {
-                tipoSelect.value = 'incapacidad';
-                mostrarFormularioSegunTipo();
-            }
+            if (tipoSelect) { tipoSelect.value = 'incapacidad'; mostrarFormularioSegunTipo(); }
         } else if (document.querySelector('#formCertificado .is-invalid, #formCertificado .errorlist')) {
-            if (tipoSelect) {
-                tipoSelect.value = 'certificado';
-                mostrarFormularioSegunTipo();
-                actualizarCamposCertificado();
-            }
+            if (tipoSelect) { tipoSelect.value = 'certificado'; mostrarFormularioSegunTipo(); actualizarCamposCertificado(); }
         }
     }
 
-    // ============================================================
-    // EJECUTAR FILTRO INICIAL
-    // ============================================================
     filtrarHistorial();
 
     // ============================================================
-    // VALIDACIÓN DEL FORMULARIO DE CREACIÓN (Frontend)
+    // VALIDACIÓN FINAL DEL SUBMIT
     // ============================================================
     if (solicitudForm) {
         solicitudForm.addEventListener('submit', function(e) {
@@ -813,8 +690,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!tipoEfectivo) {
                 e.preventDefault();
-                window.mostrarNotificacion('Por favor, selecciona un tipo de novedad.');
+                alert('Por favor, selecciona un tipo de novedad.');
                 return false;
+            }
+
+            if (tipoEfectivo === 'cambio_turno') {
+                // Asegura fecha_fin = fecha_inicio justo antes de enviar
+                const ini = document.getElementById('solicitudFechaInicio');
+                const fin = document.getElementById('solicitudFechaFin');
+                if (ini && fin) fin.value = ini.value;
+
+                const nuevoHorario = document.getElementById('nuevoHorario');
+                if (!nuevoHorario || !nuevoHorario.value) {
+                    e.preventDefault();
+                    alert('Por favor, selecciona el nuevo turno.');
+                    return false;
+                }
             }
 
             if (tipoEfectivo === 'incapacidad') {
@@ -822,26 +713,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fechaFin = document.getElementById('incapacidadFechaFin');
                 const archivo = document.getElementById('incapacidadAdjunto');
 
-                if (!fechaInicio?.value) {
-                    e.preventDefault();
-                    alert('La fecha de inicio es obligatoria.');
-                    return false;
-                }
-                if (!fechaFin?.value) {
-                    e.preventDefault();
-                    alert('La fecha de fin es obligatoria.');
-                    return false;
-                }
-                if (!archivo?.files || archivo.files.length === 0) {
-                    e.preventDefault();
-                    alert('Debes adjuntar el soporte médico de la incapacidad.');
-                    return false;
-                }
+                if (!fechaInicio?.value) { e.preventDefault(); alert('La fecha de inicio es obligatoria.'); return false; }
+                if (!fechaFin?.value) { e.preventDefault(); alert('La fecha de fin es obligatoria.'); return false; }
+                if (!archivo?.files || archivo.files.length === 0) { e.preventDefault(); alert('Debes adjuntar el soporte médico.'); return false; }
             }
             
-            console.log('Formulario validado y enviando...');
             return true;
         });
+    }
+
+    const modalCrearEl = document.getElementById('modalsolicitudes');
+    if (modalCrearEl) {
+        modalCrearEl.addEventListener('hide.bs.modal', () => {
+            if (document.activeElement) document.activeElement.blur();
+        });
+    }
+
+    // ============================================================
+    // REABRIR MODAL SI HAY ERRORES DE DJANGO
+    // ============================================================
+    const errorMessages = document.querySelectorAll('#toastContainer .app-toast-danger');
+    if (errorMessages.length > 0) {
+        const modalCrear = new bootstrap.Modal(document.getElementById('modalsolicitudes'));
+        modalCrear.show();
+        const mainTipo = document.querySelector('#tipoSolicitud')?.value;
+        if (mainTipo) mostrarFormularioSegunTipo();
     }
 
     console.log('✅ OperPan - novedades.js cargado correctamente');

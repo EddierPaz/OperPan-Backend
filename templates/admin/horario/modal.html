@@ -1,131 +1,4 @@
 {% load static %}
-
-<!-- MODAL: Crear horario -->
-<div class="modal fade" id="modalHorario" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content modal-detalle">
-
-      <div class="modal-header modal-detalle-header">
-        <div>
-          <div class="modal-detalle-titulo">
-            <i class="bi bi-plus-circle"></i> <span>Asignar nuevo horario</span>
-          </div>
-          <p class="modal-detalle-subtitulo mb-0">Selecciona los datos y jornada para el empleado</p>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-
-      <div class="modal-body modal-detalle-body">
-        <form method="POST" action="{% url 'asistencia:horarios' %}" id="formCrearHorario">
-          {% csrf_token %}
-
-          <div class="modal-detalle-grid">
-
-            <!-- Empleado -->
-            <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Empleado <span class="text-danger">*</span></span>
-              <span class="modal-detalle-value">
-                <select name="empleado" id="empleadoSelect" class="form-select" required>
-                  <option value="">Seleccione empleado</option>
-                  {% for empleado in empleados %}
-                  <option value="{{ empleado.id }}" data-cargo="{{ empleado.get_cargo_display }}">
-                    {{ empleado.nombre_completo }}
-                  </option>
-                {% endfor %}
-                </select>
-              </span>
-            </div>
-
-            <!-- Cargo -->
-            <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Cargo</span>
-              <span class="modal-detalle-value">
-                <input type="text" id="cargoInput" class="form-control" readonly placeholder="Se autocompleta"
-                  style="background-color: #f8fafc;">
-              </span>
-            </div>
-
-            <!-- Jornada -->
-            <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Jornada <span class="text-danger">*</span></span>
-              <span class="modal-detalle-value">
-                <select name="turno" id="turnoSelect" class="form-select" required>
-                  <option value="">Seleccione jornada</option>
-                  <option value="MANANA">Mañana</option>
-                  <option value="TARDE">Tarde</option>
-                  <option value="FIJO">Fijo</option>
-                </select>
-              </span>
-            </div>
-
-            <!-- Hora Entrada (Bloqueada) -->
-            <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Hora entrada (Fija por jornada)</span>
-              <span class="modal-detalle-value">
-                <input type="time" name="hora_entrada" id="crear-entrada" class="form-control" readonly style="background-color: #e9ecef; cursor: not-allowed;" required>
-              </span>
-            </div>
-
-            <!-- Hora Salida (Bloqueada) -->
-            <div class="modal-detalle-item">
-              <span class="modal-detalle-label">Hora salida (Fija por jornada)</span>
-              <span class="modal-detalle-value">
-                <input type="time" name="hora_salida" id="crear-salida" class="form-control" readonly style="background-color: #e9ecef; cursor: not-allowed;" required>
-              </span>
-            </div>
-
-            <!-- Día de Descanso (Bloque largo) -->
-            <div class="modal-detalle-bloque-largo">
-              <span class="modal-detalle-bloque-largo-label">Seleccione el día de descanso <span
-                  class="text-danger">*</span></span>
-
-              <div class="calendario-wrapper mt-2" id="ciclo14x1">
-                <div class="dias-semana">
-                  {% for nombre in dias_semana %}
-                  <div class="dia-semana">{{ nombre }}</div>
-                  {% endfor %}
-                </div>
-                <div class="calendario-grid">
-                  {% for dia in proximos_dias %}
-                  {% if dia %}
-                  <button type="button" class="dia-btn" data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
-                    data-label="{{ dia.fecha|date:'d/m' }}" data-indice="{{ dia.indice }}"
-                    title="{{ dia.fecha|date:'d/m/Y' }}">
-                    {{ dia.numero }}
-                  </button>
-                  {% else %}
-                  <div class="dia-vacio"></div>
-                  {% endif %}
-                  {% endfor %}
-                </div>
-                <input type="hidden" name="fecha_descanso" id="fechaDescansoInput" required>
-                <p class="text-muted small mt-2" id="descansoLabel" style="display:none;">
-                  <i class="bi bi-check-circle-fill text-success me-1"></i>
-                  Descanso asignado para el día <strong id="descansoFechaTexto"></strong>
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </form>
-      </div>
-
-      <div class="modal-footer modal-detalle-footer">
-        <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
-          <i class="bi bi-x-circle"></i> Cancelar
-        </button>
-        <button type="reset" form="formCrearHorario" id="btnLimpiarHorario" class="btn-action btn-action-cancel">
-          <i class="bi bi-eraser"></i> Limpiar campos
-        </button>
-        <button type="submit" form="formCrearHorario" class="btn-action btn-action-save">
-          <i class="bi bi-check"></i> Guardar horario
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: Editar horario -->
 <div class="modal fade" id="modalEditarHorario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
@@ -172,6 +45,22 @@
                   <option value="MANANA">Mañana</option>
                   <option value="TARDE">Tarde</option>
                   <option value="FIJO">Fijo</option>
+                </select>
+              </span>
+            </div>
+
+            <!-- NUEVO: Selector de Día Fijo (Oculto por defecto) -->
+            <div class="modal-detalle-item" id="contenedorDiaFijo" style="display: none;">
+              <span class="modal-detalle-label">Día de descanso semanal <span class="text-danger">*</span></span>
+              <span class="modal-detalle-value">
+                <select id="editar-dia-descanso" name="dia_descanso_semana" class="form-select">
+                  <option value="0">Lunes</option>
+                  <option value="1">Martes</option>
+                  <option value="2">Miércoles</option>
+                  <option value="3">Jueves</option>
+                  <option value="4">Viernes</option>
+                  <option value="5">Sábado</option>
+                  <option value="6">Domingo</option>
                 </select>
               </span>
             </div>
@@ -328,47 +217,4 @@
 
     </div>
   </div>
-</div>
-
-<!-- MODAL: Eliminar horario -->
-<div class="modal fade" id="modalEliminarHorario" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-detalle">
-            
-            <!-- HEADER -->
-            <div class="modal-header modal-detalle-header">
-                <div>
-                    <div class="modal-detalle-titulo">
-                        <i class="bi bi-trash text-danger"></i> <span>Eliminar horario</span>
-                    </div>
-                    <p class="modal-detalle-subtitulo mb-0">¿Estás seguro de eliminar este horario?</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <!-- BODY -->
-            <div class="modal-body modal-detalle-body text-center py-4">
-                <div class="confirm-modal-icon confirm-modal-icon--danger mb-3">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                </div>
-                <h5 class="mb-2" style="font-size: 1rem; font-weight: 600;">
-                    ¿Eliminar permanentemente el horario de <span id="eliminar-empleado-nombre" style="font-size: 1rem; font-weight: 600;">...</span>?
-                </h5>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="modal-footer modal-detalle-footer">
-                <button type="button" class="btn-action btn-action-cancel" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i> Cancelar
-                </button>
-                <form id="formEliminarHorario" method="POST" action="">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-action btn-action-delete">
-                        <i class="bi bi-trash"></i> Eliminar permanentemente
-                    </button>
-                </form>
-            </div>
-
-        </div>
-    </div>
 </div>

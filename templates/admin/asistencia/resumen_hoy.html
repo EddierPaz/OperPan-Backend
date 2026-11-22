@@ -142,11 +142,11 @@
                     {% elif horario.asistencia.estado == "TARDE" %}
                       <span class="badge badge-pendiente">Tarde</span>
                     {% elif horario.asistencia.estado == "AUSENTE" %}
-                      <!-- Usamos la clase que ya tienes definida en tu CSS para ausente -->
                       <span class="badge badge-ausente">Ausente</span>
                     {% endif %}
+                  {% elif horario.fecha_inicio == fecha_hoy %}
+                    <span class="badge badge-pendiente">Pendiente</span>
                   {% elif not horario.puede_registrar %}
-                    <!-- Respaldo visual por si la BD tarda milisegundos en actualizar -->
                     <span class="badge badge-ausente">Ausente</span>
                   {% else %}
                     <span class="badge bg-secondary">Sin registrar</span>
