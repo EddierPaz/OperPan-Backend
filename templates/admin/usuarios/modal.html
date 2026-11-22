@@ -31,7 +31,7 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Primer Nombre <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="primer_nombre" id="c_primer_nombre" required>
+                                <input type="text" class="form-control" name="primer_nombre" id="c_primer_nombre" minlength="3" required>
                             </span>
                         </div>
 
@@ -72,7 +72,7 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Número Documento <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="numero_documento" id="c_numero_documento" required>
+                                <input type="text" class="form-control" name="numero_documento" id="c_numero_documento" minlength="6" maxlength="10" required>
                             </span>
                         </div>
 
@@ -141,7 +141,7 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Teléfono <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="tel" class="form-control" name="telefono" id="c_telefono" required>
+                                <input type="tel" class="form-control" name="telefono" id="c_telefono" minlength="10" maxlength="10" required>
                             </span>
                         </div>
 
@@ -168,7 +168,7 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Dirección <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="text" class="form-control" name="direccion" id="c_direccion" required minlength="10" maxlength="100" placeholder="Ej: KR 30 #25-90, Barrio San Mateo">
+                                <input type="text" class="form-control" name="direccion" id="c_direccion" required minlength="10" maxlength="100" placeholder="Ej: CL 12S # 74-71, Barrio San Mateo">
                             </span>
                         </div>
 
@@ -189,7 +189,7 @@
                         <div class="modal-detalle-item">
                             <span class="modal-detalle-label">Teléfono emergencia <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
-                                <input type="tel" class="form-control" name="telefono_emergencia" id="c_telefono_emergencia" required>
+                                <input type="tel" class="form-control" name="telefono_emergencia" id="c_telefono_emergencia" minlength="10" maxlength="10" required>
                             </span>
                         </div>
                     </div>

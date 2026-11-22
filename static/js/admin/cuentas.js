@@ -138,30 +138,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // VALIDACIÓN DE NOMBRES Y APELLIDOS
             // ------------------------------------------
             // Expresión regular que permite letras (con tildes y ñ), espacios y guiones.
+            
             const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$/;
             
             const primerNombre = getVal('c_primer_nombre');
-            if (primerNombre.length < 2 || !nameRegex.test(primerNombre)) {
-                errors.push("El primer nombre es inválido (mínimo 2 letras, sin números).");
+            if (primerNombre.length < 3 || !nameRegex.test(primerNombre)) {
+                errors.push("El primer nombre es inválido (mínimo 3 letras, sin números).");
             }
             
             const primerApellido = getVal('c_primer_apellido');
-            if (primerApellido.length < 2 || !nameRegex.test(primerApellido)) {
-                errors.push("El primer apellido es inválido (mínimo 2 letras, sin números).");
+            if (primerApellido.length < 3 || !nameRegex.test(primerApellido)) {
+                errors.push("El primer apellido es inválido (mínimo 3 letras, sin números).");
             }
 
             // ------------------------------------------
             // VALIDACIÓN DE DOCUMENTO
             // ------------------------------------------
             const doc = getVal('c_numero_documento');
-            if (!/^\d+$/.test(doc)) {
-                errors.push("El número de documento debe contener solo números.");
+            // [22/11/2026] Exactamente entre 6 y 10 dígitos
+            if (!/^\d{6,10}$/.test(doc)) {
+                errors.push("El número de documento debe tener entre 6 y 10 números.");
             }
 
             // ------------------------------------------
             // VALIDACIÓN DE CORREO ELECTRÓNICO
             // ------------------------------------------
-            // Verifica que tenga estructura de texto@texto.dominio
             const correo = getVal('c_correo');
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(correo)) {
@@ -171,20 +172,26 @@ document.addEventListener('DOMContentLoaded', function() {
             // ------------------------------------------
             // VALIDACIÓN DE TELÉFONOS
             // ------------------------------------------
-            // Recorremos ambos campos telefónicos para verificar que sean números de 7 a 10 dígitos
             ['c_telefono', 'c_telefono_emergencia'].forEach(id => {
                 const val = getVal(id);
-                if (val && (!/^\d+$/.test(val) || val.length < 7 || val.length > 10)) {
-                    errors.push("Los teléfonos deben tener entre 7 y 10 números.");
+                // [22/11/2026] Exactamente 10 dígitos
+                if (val && (!/^\d+$/.test(val) || val.length !== 10)) {
+                    errors.push("Los teléfonos deben tener exactamente 10 números.");
                 }
             });
 
             // ------------------------------------------
-            // VALIDACIÓN DE DIRECCIÓN
+            // VALIDACIÓN DE DIRECCIÓN (Bogotá)
             // ------------------------------------------
             const dir = getVal('c_direccion');
             if (dir.length < 10 || dir.length > 100) {
                 errors.push("La dirección debe tener entre 10 y 100 caracteres.");
+            } else {
+                // [22/11/2026] Patrón para nomenclatura urbana
+                const patronDireccion = /^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]?\s*#\s*\d+[A-Za-z]?\s*-\s*\d+/i;
+                if (!patronDireccion.test(dir)) {
+                    errors.push("Dirección inválida. Usa el formato: 'CL 12S # 74-71' o 'KR 30 # 25-90'.");
+                }
             }
 
             // ------------------------------------------

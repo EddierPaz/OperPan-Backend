@@ -11,6 +11,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.http import JsonResponse
+from django.db import IntegrityError
 from apps.usuarios.utils import get_logo_base64
 from .models import User, PerfilEmpleado, RegistroAuditoriaCuenta
 from .forms import UserForm, PerfilEmpleadoForm

@@ -33,8 +33,9 @@ class PerfilEmpleadoForm(forms.ModelForm):
     def _validar_nombre(self, valor, nombre_campo):
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\-]+$', valor):
             raise forms.ValidationError(f"El {nombre_campo} solo puede contener letras, espacios y guiones.")
-        if len(valor) < 2:
-            raise forms.ValidationError(f"El {nombre_campo} debe tener al menos 2 caracteres.")
+        # [22/11/2026] Cambio a estándar de registro: mínimo 3 caracteres
+        if len(valor) < 3:
+            raise forms.ValidationError(f"El {nombre_campo} debe tener al menos 3 caracteres.")
         return valor
 
     def clean_primer_nombre(self):
@@ -58,6 +59,10 @@ class PerfilEmpleadoForm(forms.ModelForm):
         if not numero or not numero.isdigit():
             raise forms.ValidationError("El número de documento debe contener solo números.")
 
+        # [22/11/2026] Validación de longitud general para Colombia
+        if len(numero) < 6 or len(numero) > 10:
+            raise forms.ValidationError("El número de documento debe tener entre 6 y 10 dígitos.")
+
         if tipo_doc == 'PPT' and len(numero) != 7:
             raise forms.ValidationError("El PPT debe tener exactamente 7 números.")
 
@@ -79,20 +84,29 @@ class PerfilEmpleadoForm(forms.ModelForm):
 
     def clean_telefono(self):
         telefono = self.cleaned_data.get('telefono')
-        if telefono and (not telefono.isdigit() or len(telefono) < 7 or len(telefono) > 10):
-            raise forms.ValidationError("El teléfono debe tener entre 7 y 10 números.")
+        # [22/11/2026] Estándar de marcación fija y móvil en Colombia: 10 dígitos exactos
+        if telefono and (not telefono.isdigit() or len(telefono) != 10):
+            raise forms.ValidationError("El teléfono debe tener exactamente 10 números.")
         return telefono
 
     def clean_telefono_emergencia(self):
         telefono = self.cleaned_data.get('telefono_emergencia')
-        if telefono and (not telefono.isdigit() or len(telefono) < 7 or len(telefono) > 10):
-            raise forms.ValidationError("El teléfono de emergencia debe tener entre 7 y 10 números.")
+        if telefono and (not telefono.isdigit() or len(telefono) != 10):
+            raise forms.ValidationError("El teléfono de emergencia debe tener exactamente 10 números.")
         return telefono
 
     def clean_direccion(self):
         direccion = self.cleaned_data.get('direccion')
-        if direccion and (len(direccion) < 10 or len(direccion) > 100):
-            raise forms.ValidationError("La dirección debe tener entre 10 y 100 caracteres.")
+        if direccion:
+            if len(direccion) < 10 or len(direccion) > 100:
+                raise forms.ValidationError("La dirección debe tener entre 10 y 100 caracteres.")
+            
+            # [22/11/2026] Validación de nomenclatura urbana en Bogotá (CL, KR, AV, etc.)
+            patron = r'^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]?\s*#\s*\d+[A-Za-z]?\s*-\s*\d+'
+            if not re.match(patron, direccion, re.IGNORECASE):
+                raise forms.ValidationError(
+                    "La dirección no tiene un formato válido. Ejemplo: 'CL 12S # 74-71' o 'KR 30 # 25-90'."
+                )
         return direccion
 
     # Reemplaza tu clean_fecha_nacimiento actual por este:
