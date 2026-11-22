@@ -18,10 +18,8 @@
     
     <!-- Modal para detalle histórico -->
     {% include "empleado/horario/modal.html" %}
-
-    <footer>
-        <i class="bi bi-shield-check"></i> Sistema de gestión de asistencia - Trazabilidad garantizada
-    </footer>
+<!--FOOTER-->
+{% include 'partials/footer.html' with texto_footer="Tu horario asignado queda registrado en el sistema con fecha y hora." %}
 </main>
 
 <div class="toast-message" id="liveToast" style="display: none;">

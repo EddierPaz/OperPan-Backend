@@ -16,9 +16,8 @@
     {% include "empleado/asistencia/content.html" %}
     {% include "empleado/asistencia/modal.html" %}
 
-    <footer>
-        <i class="bi bi-shield-check"></i> Sistema de gestión de asistencia - Trazabilidad garantizada
-    </footer>
+    <!--footer--> 
+    {% include 'partials/footer.html' with texto_footer="Tus registros de asistencia quedan registrados con fecha y hora." %}
 </main>
 
 <div class="toast-message" id="liveToast" style="display: none;">
