@@ -136,12 +136,12 @@
                 {% if actividad_reciente %}
                     <div class="actividad-feed">
                         {% for item in actividad_reciente %}
-                            <div class="actividad-item card-hover-lift">
+                            <div class="actividad-item card-hover-lift position-relative">
                                 <div class="actividad-icon">
                                     <i class="bi bi-{{ item.icono }} {{ item.color }}"></i>
                                 </div>
                                 <div class="actividad-contenido">
-                                    <a href="{{ item.url }}" class="text-decoration-none text-reset fw-medium">
+                                    <a href="{{ item.url }}" class="stretched-link text-decoration-none text-reset fw-medium">
                                         {{ item.detalle }}
                                     </a>
                                     <div class="d-flex gap-2 mt-1">
