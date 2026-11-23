@@ -48,10 +48,10 @@
 
 {# ==================== TÍTULO DE SECCIÓN ==================== #}
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-    <h3 class="m-0"><i class="bi bi-list-task me-2"></i> Mis tareas</h3>
+    <h3 class="m-0"><i class="bi bi-list-check me-2"></i> Mis funciones</h3>
 </div>
 
-{# ==================== FILTROS Y BÚSQUEDA ==================== #}
+{# ==================== FILTROS Y BÃšSQUEDA ==================== #}
 <form method="GET" action="" class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 w-100">
     
     <!-- Buscador Integrado -->
@@ -60,8 +60,8 @@
             <input type="text" 
                 class="search-input" 
                 name="busqueda" 
-                id="searchTaskEmpleado"
-                placeholder="Buscar en mis tareas..."
+                id="searchFuncionEmpleado"
+                placeholder="Buscar en mis funciones..."
                 value="{{ busqueda|default:'' }}">
             
             <button class="btn-search-addon" type="submit" id="searchBtnEmpleado" title="Buscar">
@@ -72,27 +72,27 @@
 
     <!-- Pestañas de Filtros -->
     <div class="novedades-tabs ms-auto">
-        <a href="?{% if request.GET %}{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+        <a href="{% if request.GET %}{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
         class="novedades-tab {% if not request.GET.estado and not request.GET.vencidas %}active{% endif %}">
             <i class="bi bi-grid"></i>Todas
         </a>
         
-        <a href="?estado=PENDIENTE{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+        <a href="estado=PENDIENTE{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
         class="novedades-tab {% if request.GET.estado == 'PENDIENTE' %}active{% endif %}">
             <i class="bi bi-hourglass-split"></i>Pendientes
         </a>
         
-        <a href="?estado=EN_PROGRESO{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+        <a href="estado=EN_PROGRESO{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
         class="novedades-tab {% if request.GET.estado == 'EN_PROGRESO' %}active{% endif %}">
             <i class="bi bi-clock-history"></i>En progreso
         </a>
         
-        <a href="?estado=FINALIZADA{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+        <a href="estado=FINALIZADA{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
         class="novedades-tab {% if request.GET.estado == 'FINALIZADA' %}active{% endif %}">
             <i class="bi bi-check-circle"></i>Finalizadas
         </a>
         
-        <a href="?vencidas=true{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
+        <a href="vencidas=true{% if request.GET %}&{{ request.GET.urlencode|cut:'estado'|cut:'vencidas' }}{% endif %}"
         class="novedades-tab {% if request.GET.vencidas == 'true' %}active{% endif %}">
             <i class="bi bi-exclamation-triangle"></i>Vencidas
         </a>
@@ -100,103 +100,103 @@
 
 </form>
 
-{# ==================== LISTADO DE TAREAS ==================== #}
-<div id="tasksContainer" class="row g-4">
-    {% if tareas %}
-        {% for tarea in tareas %}
-        <div class="col-12 col-md-6 col-lg-4 d-flex" id="task-{{ tarea.pk }}">
-            <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative">
+{# ==================== LISTADO DE FUNCIONES ==================== #}
+<div id="funcionesContainer" class="row g-4">
+    {% if funciones %}
+        {% for funcion in funciones %}
+        <div class="col-12 col-md-6 col-lg-4 d-flex" id="funcion-{{ funcion.pk }}">
+            <div class="funcion-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative">
                 
                 <div>
                     <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                         <div class="d-flex align-items-center gap-2 text-truncate">
-                            {% if tarea.prioridad == 'ALTA' %}
+                            {% if funcion.prioridad == 'ALTA' %}
                                 <i class="bi bi-flag-fill text-danger fs-6" title="Alta prioridad"></i>
-                            {% elif tarea.prioridad == 'MEDIA' %}
+                            {% elif funcion.prioridad == 'MEDIA' %}
                                 <i class="bi bi-flag-fill text-warning fs-6" title="Media prioridad"></i>
                             {% else %}
                                 <i class="bi bi-flag-fill text-secondary fs-6" title="Baja prioridad"></i>
                             {% endif %}
                             
-                            <h5 class="text-title fw-bold m-0 text-truncate" title="{{ tarea.titulo }}">
-                                {{ tarea.titulo }}
+                            <h5 class="text-title fw-bold m-0 text-truncate" title="{{ funcion.titulo }}">
+                                {{ funcion.titulo }}
                             </h5>
                         </div>
                         
-                        {% if tarea.esta_vencida %}
+                        {% if funcion.esta_vencida %}
                             <span class="badge badge-rechazado">Vencida</span>
-                        {% elif tarea.estado == 'PENDIENTE' %}
+                        {% elif funcion.estado == 'PENDIENTE' %}
                             <span class="badge badge-pendiente">Pendiente</span>
-                        {% elif tarea.estado == 'EN_PROGRESO' %}
+                        {% elif funcion.estado == 'EN_PROGRESO' %}
                             <span class="badge badge-pendiente">En progreso</span>
-                        {% elif tarea.estado == 'FINALIZADA' %}
+                        {% elif funcion.estado == 'FINALIZADA' %}
                             <span class="badge badge-aprobado">Finalizada</span>
                         {% endif %}
                     </div>
 
-                    {% if tarea.descripcion %}
+                    {% if funcion.descripcion %}
                     <p class="text-muted small mb-3 text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                        {{ tarea.descripcion }}
+                        {{ funcion.descripcion }}
                     </p>
                     {% endif %}
 
                     <div class="d-flex flex-column gap-1 text-muted small mb-3">
                         <span>
-                            <i class="bi bi-calendar-event me-1"></i> Límite: <strong>{{ tarea.fecha_limite|date:"Y-m-d" }}</strong>
-                            {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}
+                            <i class="bi bi-calendar-event me-1"></i> Límite: <strong>{{ funcion.fecha_limite|date:"Y-m-d" }}</strong>
+                            {% if funcion.hora_limite %}{{ funcion.hora_limite|time:"H:i" }}{% endif %}
                         </span>
                         <span>
-                            <i class="bi bi-clock-history me-1"></i> Asignada: <strong>{{ tarea.fecha_asignacion|date:"d/m/Y" }}</strong>
+                            <i class="bi bi-clock-history me-1"></i> Asignada: <strong>{{ funcion.fecha_asignacion|date:"d/m/Y" }}</strong>
                         </span>
                     </div>
                 </div>
 
                 {# ============================================================ #}
-                {# ============ BOTONES DE ACCIÓN (EMPLEADO) ============ #}
+                {# ============ BOTONES DE ACCIÃ“N (EMPLEADO) ============ #}
                 {# ============================================================ #}
                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto gap-2">
                     
-                    {% if tarea.esta_vencida %}
-                        {# 🔴 TAREA VENCIDA: solo ver detalles #}
-                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn-action btn-action-view w-100 text-center">
+                    {% if funcion.esta_vencida %}
+                        {# FUNCIÓN VENCIDA: solo ver detalles #}
+                        <a href="{% url 'funciones:empleado_funciones_list' %}?detalle={{ funcion.pk }}" class="btn-action btn-action-view w-100 text-center">
                             <i class="bi bi-eye me-1"></i> Ver detalle
                         </a>
                         
-                    {% elif tarea.estado == 'PENDIENTE' %}
-                        {# 🟡 EMPLEADO: PUEDE INICIAR #}
-                        <form method="POST" action="{% url 'tareas:empleado_tarea_progreso' tarea.pk %}" class="m-0 flex-grow-1">
+                    {% elif funcion.estado == 'PENDIENTE' %}
+                        {# EMPLEADO: PUEDE INICIAR #}
+                        <form method="POST" action="{% url 'funciones:empleado_funcion_progreso' funcion.pk %}" class="m-0 flex-grow-1">
                             {% csrf_token %}
                             <button type="submit" class="btn-action btn-action-info w-100">
                                 <i class="bi bi-play-fill me-1"></i> Iniciar
                             </button>
                         </form>
 
-                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn-action btn-action-view">
+                        <a href="{% url 'funciones:empleado_funciones_list' %}?detalle={{ funcion.pk }}" class="btn-action btn-action-view">
                             <i class="bi bi-eye me-1"></i> Detalle
                         </a>
 
-                    {% elif tarea.estado == 'EN_PROGRESO' %}
-                        {# 🟢 EMPLEADO: PUEDE FINALIZAR #}
-                        <form method="POST" action="{% url 'tareas:empleado_tarea_finalizar' tarea.pk %}" class="m-0 flex-grow-1">
+                    {% elif funcion.estado == 'EN_PROGRESO' %}
+                        {# EMPLEADO: PUEDE FINALIZAR #}
+                        <form method="POST" action="{% url 'funciones:empleado_funcion_finalizar' funcion.pk %}" class="m-0 flex-grow-1">
                             {% csrf_token %}
                             <button type="submit" class="btn-action btn-action-approve w-100">
                                 <i class="bi bi-check-lg me-1"></i> Finalizar
                             </button>
                         </form>
 
-                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn-action btn-action-view">
+                        <a href="{% url 'funciones:empleado_funciones_list' %}?detalle={{ funcion.pk }}" class="btn-action btn-action-view">
                             <i class="bi bi-eye me-1"></i> Detalle
                         </a>
 
                     {% else %}
                         {# FINALIZADA: solo ver detalles #}
-                        <a href="{% url 'tareas:empleado_tareas_list' %}?detalle={{ tarea.pk }}" class="btn-action btn-action-view w-100 text-center">
+                        <a href="{% url 'funciones:empleado_funciones_list' %}?detalle={{ funcion.pk }}" class="btn-action btn-action-view w-100 text-center">
                             <i class="bi bi-eye me-1"></i> Ver detalle
                         </a>
                     {% endif %}
 
                 </div>
-                {# ============ FIN BOTONES DE ACCIÓN ============ #}
+                {# ============ FIN BOTONES DE ACCIÃ“N ============ #}
 
             </div>
         </div>
@@ -207,11 +207,11 @@
                 <div class="empty-state-icon">
                     <i class="bi bi-inbox"></i>
                 </div>
-                <p class="empty-state-title">Sin tareas</p>
-                <p class="empty-state-text">No hay tareas con el filtro seleccionado.</p>
+                <p class="empty-state-title">Sin funciones</p>
+                <p class="empty-state-text">No hay funciones con el filtro seleccionado.</p>
             </div>
         </div>
     {% endif %}
 </div>
-<!--FOOTER DE TAREAS-->
-{% include 'partials/footer.html' with texto_footer="Todos tus cambios de tareas quedan registrados con fecha y hora." %}
+<!--FOOTER DE FUNCIONES-->
+{% include 'partials/footer.html' with texto_footer="Todos tus cambios de funciones quedan registrados con fecha y hora." %}

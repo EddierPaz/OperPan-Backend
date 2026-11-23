@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (avatarEl && nombreCompleto) {
         const partes = nombreCompleto.split(' ').filter(Boolean);
         const iniciales = partes.length > 1
-            ? (partes[0][0] + partes[1][0]).toUpperCase()
+             (partes[0][0] + partes[1][0]).toUpperCase()
             : partes[0].slice(0, 2).toUpperCase();
         avatarEl.textContent = iniciales;
     }

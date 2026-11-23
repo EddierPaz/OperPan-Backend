@@ -1,64 +1,64 @@
 {% extends "admin/base/base.html" %}
 {% load static %}
 
-{% block title %}OperPan | Tareas{% endblock %}
-{% block section_title %}Gestión de tareas del personal{% endblock %}
+{% block title %}OperPan | Funciones{% endblock %}
+{% block section_title %}Gestión de funciones del personal{% endblock %}
 {% block section_subtitle %}Panel Administrador{% endblock %}
 
-{% block active_tareas %}active{% endblock %}
+{% block active_funciones %}active{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/admin/tareas.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin/funciones.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
     {# ==================== HEADER ==================== #}
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas mensual</h3>
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen funciones mensual</h3>
         <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
     </div>
 
     {# ==================== CONTEXTO COMPLETO ==================== #}
-    {% include "admin/tareas/content.html" %}
+    {% include "admin/funciones/content.html" %}
 
     {# ==================== FOOTER ==================== #}
-    {% include 'partials/footer.html' with texto_footer="Todas las tareas y cambios quedan registrados con fecha y hora." %}
+    {% include 'partials/footer.html' with texto_footer="Todas las funciones y cambios quedan registrados con fecha y hora." %}
 </div>
 
 {# ==================== DATOS JSON PARA JS ==================== #}
 {{ empleados_data|json_script:"empleados-data" }}
-{{ tareas_por_cargo|json_script:"tareas-por-cargo" }}
+{{ funciones_por_cargo|json_script:"funciones-por-cargo" }}
 {{ cargo_area_map|json_script:"cargo-area-map" }}
 
 {# ==================== MODALES ==================== #}
-{% include "admin/tareas/modal.html" %}
+{% include "admin/funciones/modal.html" %}
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/admin/tareas.js' %}"></script>
+<script src="{% static 'js/admin/funciones.js' %}?v=20261123"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // ==================== ABRIR MODAL DE CREAR/EDITAR ====================
         {% if editando or form.errors %}
-            var modalTareaElement = document.getElementById('modalTarea');
-            if (modalTareaElement) {
-                var modalTarea = new bootstrap.Modal(modalTareaElement);
-                modalTarea.show();
+            var modalFuncionElement = document.getElementById('modalFuncion');
+            if (modalFuncionElement) {
+                var modalFuncion = new bootstrap.Modal(modalFuncionElement);
+                modalFuncion.show();
             }
         {% endif %}
 
         // ==================== ABRIR MODAL DE DETALLE ====================
-        {% if tarea_detalle %}
-            var adminDetailModalElement = document.getElementById('adminTaskDetailModal');
+        {% if funcion_detalle %}
+            var adminDetailModalElement = document.getElementById('adminFuncionDetailModal');
             if (adminDetailModalElement) {
                 var adminDetailModal = new bootstrap.Modal(adminDetailModalElement);
                 adminDetailModal.show();
             }
         {% endif %}
 
-        // ==================== ABRIR MODAL DE ELIMINACIÓN ====================
+        // ==================== ABRIR MODAL DE ELIMINACIÃ“N ====================
         const confirmModal = document.getElementById('confirmModal');
         const deleteForm = document.getElementById('deleteForm');
         const modalTitle = document.getElementById('confirmModalTitle');
@@ -68,13 +68,13 @@
                 const button = event.relatedTarget;
                 if (!button) return;
                 const id = button.getAttribute('data-id');
-                const url = "{% url 'tareas:admin_tarea_delete' 0 %}".replace('0', id);
+                const url = "{% url 'funciones:admin_funcion_delete' 0 %}".replace('0', id);
                 if (deleteForm) deleteForm.action = url;
 
-                const card = button.closest('.task-card');
+                const card = button.closest('.funcion-card');
                 if (card && modalTitle) {
-                    const titulo = card.querySelector('h5') ? card.querySelector('h5').innerText : 'esta tarea';
-                    modalTitle.innerText = `¿Eliminar permanentemente la tarea "${titulo}"?`;
+                    const titulo = card.querySelector('h5') ? card.querySelector('h5').innerText : 'esta función';
+                    modalTitle.innerText = `¿Eliminar permanentemente la función "${titulo}"?`;
                 }
             });
         }

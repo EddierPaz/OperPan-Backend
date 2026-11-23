@@ -81,7 +81,7 @@
             const icon = document.getElementById(iconId);
             icon.addEventListener("click", () => {
                 const esOculto = input.type === "password";
-                input.type = esOculto ? "text" : "password";
+                input.type = esOculto  "text" : "password";
                 icon.classList.toggle("bi-eye-slash", !esOculto);
                 icon.classList.toggle("bi-eye", esOculto);
             });

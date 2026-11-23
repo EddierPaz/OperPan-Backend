@@ -214,10 +214,10 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (50, 'Can change asistencia', 13, 'change_asistencia'),
 (51, 'Can delete asistencia', 13, 'delete_asistencia'),
 (52, 'Can view asistencia', 13, 'view_asistencia'),
-(53, 'Can add task', 14, 'add_task'),
-(54, 'Can change task', 14, 'change_task'),
-(55, 'Can delete task', 14, 'delete_task'),
-(56, 'Can view task', 14, 'view_task');
+(53, 'Can add funcion', 14, 'add_funcion'),
+(54, 'Can change funcion', 14, 'change_funcion'),
+(55, 'Can delete funcion', 14, 'delete_funcion'),
+(56, 'Can view funcion', 14, 'view_funcion');
 
 -- --------------------------------------------------------
 
@@ -286,7 +286,7 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (9, 'novedades', 'incapacidad'),
 (10, 'novedades', 'permiso'),
 (5, 'sessions', 'session'),
-(14, 'tareas', 'task'),
+(14, 'funciones', 'funcion'),
 (7, 'usuarios', 'perfilempleado'),
 (6, 'usuarios', 'user');
 
@@ -335,8 +335,8 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (25, 'novedades', '0001_initial', '2026-07-14 03:21:49.147566'),
 (26, 'novedades', '0002_certificado_decision_fecha_certificado_decision_por_and_more', '2026-07-14 03:21:49.667741'),
 (27, 'sessions', '0001_initial', '2026-07-14 03:21:49.742655'),
-(28, 'tareas', '0001_initial', '2026-07-14 03:21:50.156605'),
-(29, 'tareas', '0002_alter_task_options_and_more', '2026-07-14 03:21:52.033887');
+(28, 'funciones', '0001_initial', '2026-07-14 03:21:50.156605'),
+(29, 'funciones', '0002_alter_funcion_options_and_more', '2026-07-14 03:21:52.033887');
 
 -- --------------------------------------------------------
 
@@ -681,22 +681,22 @@ INSERT INTO `permiso` (`per_id`, `emp_id`, `per_fecha`, `per_descrip`, `per_esta
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tarea`
+-- Estructura de tabla para la tabla `funcion`
 --
 
-CREATE TABLE `tarea` (
-  `tarea_id` int(11) NOT NULL,
+CREATE TABLE `funcion` (
+  `funcion_id` int(11) NOT NULL,
   `emp_id` int(11) NOT NULL,
-  `tarea_fecha` date NOT NULL,
-  `tarea_descrip` varchar(255) NOT NULL,
-  `tarea_estado` varchar(100) NOT NULL
+  `funcion_fecha` date NOT NULL,
+  `funcion_descrip` varchar(255) NOT NULL,
+  `funcion_estado` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `tarea`
+-- Volcado de datos para la tabla `funcion`
 --
 
-INSERT INTO `tarea` (`tarea_id`, `emp_id`, `tarea_fecha`, `tarea_descrip`, `tarea_estado`) VALUES
+INSERT INTO `funcion` (`funcion_id`, `emp_id`, `funcion_fecha`, `funcion_descrip`, `funcion_estado`) VALUES
 (1, 1, '2026-03-15', 'Lavar baños', 'Pendiente'),
 (2, 1, '2026-03-16', 'Limpiar vitrinas', 'Completado'),
 (3, 2, '2026-03-16', 'Trapear piso', 'Pendiente');
@@ -704,10 +704,10 @@ INSERT INTO `tarea` (`tarea_id`, `emp_id`, `tarea_fecha`, `tarea_descrip`, `tare
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tareas_task`
+-- Estructura de tabla para la tabla `funciones_funcion`
 --
 
-CREATE TABLE `tareas_task` (
+CREATE TABLE `funciones_funcion` (
   `id` bigint(20) NOT NULL,
   `titulo` varchar(200) NOT NULL,
   `descripcion` longtext NOT NULL,
@@ -837,15 +837,15 @@ CREATE TABLE `vista_emp_horario` (
 -- --------------------------------------------------------
 
 --
--- Estructura Stand-in para la vista `vista_emp_tarea`
+-- Estructura Stand-in para la vista `vista_emp_funcion`
 -- (Véase abajo para la vista actual)
 --
-CREATE TABLE `vista_emp_tarea` (
+CREATE TABLE `vista_emp_funcion` (
 `emp_id` int(11)
 ,`NombreCompleto` varchar(201)
-,`tarea_fecha` date
-,`tarea_descrip` varchar(255)
-,`tarea_estado` varchar(100)
+,`funcion_fecha` date
+,`funcion_descrip` varchar(255)
+,`funcion_estado` varchar(100)
 );
 
 -- --------------------------------------------------------
@@ -860,11 +860,11 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
--- Estructura para la vista `vista_emp_tarea`
+-- Estructura para la vista `vista_emp_funcion`
 --
-DROP TABLE IF EXISTS `vista_emp_tarea`;
+DROP TABLE IF EXISTS `vista_emp_funcion`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_emp_tarea`  AS SELECT `e`.`emp_id` AS `emp_id`, concat(`e`.`emp_nom`,' ',`e`.`emp_ape`) AS `NombreCompleto`, `t`.`tarea_fecha` AS `tarea_fecha`, `t`.`tarea_descrip` AS `tarea_descrip`, `t`.`tarea_estado` AS `tarea_estado` FROM (`empleado` `e` join `tarea` `t` on(`t`.`emp_id` = `e`.`emp_id`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_emp_funcion`  AS SELECT `e`.`emp_id` AS `emp_id`, concat(`e`.`emp_nom`,' ',`e`.`emp_ape`) AS `NombreCompleto`, `t`.`funcion_fecha` AS `funcion_fecha`, `t`.`funcion_descrip` AS `funcion_descrip`, `t`.`funcion_estado` AS `funcion_estado` FROM (`empleado` `e` join `funcion` `t` on(`t`.`emp_id` = `e`.`emp_id`)) ;
 
 --
 -- Índices para tablas volcadas
@@ -1029,20 +1029,20 @@ ALTER TABLE `permiso`
   ADD KEY `emp_id` (`emp_id`);
 
 --
--- Indices de la tabla `tarea`
+-- Indices de la tabla `funcion`
 --
-ALTER TABLE `tarea`
-  ADD PRIMARY KEY (`tarea_id`),
+ALTER TABLE `funcion`
+  ADD PRIMARY KEY (`funcion_id`),
   ADD KEY `emp_id` (`emp_id`);
 
 --
--- Indices de la tabla `tareas_task`
+-- Indices de la tabla `funciones_funcion`
 --
-ALTER TABLE `tareas_task`
+ALTER TABLE `funciones_funcion`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `tareas_task_creador_id_6bc413f8_fk_usuarios_user_id` (`creador_id`),
-  ADD KEY `tareas_task_ultimo_cambio_por_id_b82c5869_fk_usuarios_user_id` (`ultimo_cambio_por_id`),
-  ADD KEY `tareas_task_empleado_id_ad254609` (`empleado_id`);
+  ADD KEY `funciones_funcion_creador_id_6bc413f8_fk_usuarios_user_id` (`creador_id`),
+  ADD KEY `funciones_funcion_ultimo_cambio_por_id_b82c5869_fk_usuarios_user_id` (`ultimo_cambio_por_id`),
+  ADD KEY `funciones_funcion_empleado_id_ad254609` (`empleado_id`);
 
 --
 -- Indices de la tabla `usuarios_perfilempleado`
@@ -1158,9 +1158,9 @@ ALTER TABLE `novedades_permiso`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `tareas_task`
+-- AUTO_INCREMENT de la tabla `funciones_funcion`
 --
-ALTER TABLE `tareas_task`
+ALTER TABLE `funciones_funcion`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
@@ -1290,18 +1290,18 @@ ALTER TABLE `permiso`
   ADD CONSTRAINT `permiso_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `empleado` (`emp_id`);
 
 --
--- Filtros para la tabla `tarea`
+-- Filtros para la tabla `funcion`
 --
-ALTER TABLE `tarea`
-  ADD CONSTRAINT `tarea_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `empleado` (`emp_id`);
+ALTER TABLE `funcion`
+  ADD CONSTRAINT `funcion_ibfk_1` FOREIGN KEY (`emp_id`) REFERENCES `empleado` (`emp_id`);
 
 --
--- Filtros para la tabla `tareas_task`
+-- Filtros para la tabla `funciones_funcion`
 --
-ALTER TABLE `tareas_task`
-  ADD CONSTRAINT `tareas_task_creador_id_6bc413f8_fk_usuarios_user_id` FOREIGN KEY (`creador_id`) REFERENCES `usuarios_user` (`id`),
-  ADD CONSTRAINT `tareas_task_empleado_id_ad254609_fk_usuarios_perfilempleado_id` FOREIGN KEY (`empleado_id`) REFERENCES `usuarios_perfilempleado` (`id`),
-  ADD CONSTRAINT `tareas_task_ultimo_cambio_por_id_b82c5869_fk_usuarios_user_id` FOREIGN KEY (`ultimo_cambio_por_id`) REFERENCES `usuarios_user` (`id`);
+ALTER TABLE `funciones_funcion`
+  ADD CONSTRAINT `funciones_funcion_creador_id_6bc413f8_fk_usuarios_user_id` FOREIGN KEY (`creador_id`) REFERENCES `usuarios_user` (`id`),
+  ADD CONSTRAINT `funciones_funcion_empleado_id_ad254609_fk_usuarios_perfilempleado_id` FOREIGN KEY (`empleado_id`) REFERENCES `usuarios_perfilempleado` (`id`),
+  ADD CONSTRAINT `funciones_funcion_ultimo_cambio_por_id_b82c5869_fk_usuarios_user_id` FOREIGN KEY (`ultimo_cambio_por_id`) REFERENCES `usuarios_user` (`id`);
 
 --
 -- Filtros para la tabla `usuarios_perfilempleado`
@@ -1327,3 +1327,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

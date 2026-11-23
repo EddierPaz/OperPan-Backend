@@ -7,7 +7,7 @@ Genera una base de datos histórica realista para OperPan:
 - Descansos por ciclo (FIJO = mismo día semanal, MANANA/TARDE = rotativo).
 - Asistencias día a día.
 - Solicitudes, incapacidades, certificados.
-- Tareas distribuidas en el tiempo.
+- Funciones distribuidas en el tiempo.
 - Memorandos generados automáticamente.
 
 Uso:
@@ -28,7 +28,7 @@ from apps.asistencia.models import Horario, DescansoEmpleado, Asistencia
 from apps.asistencia.services.horario_service import (
     dias_ciclo, ciclo_fin, generar_siguiente_ciclo,
 )
-from apps.tareas.models import Task, EstadoTarea, Prioridad, Area
+from apps.funciones.models import Funcion, EstadoFuncion, Prioridad, Area
 from apps.novedades.models import Solicitud, Incapacidad, Certificado
 from apps.memorandos.services import (
     verificar_y_generar_memorando, verificar_memorandos_asistencia,
@@ -36,7 +36,7 @@ from apps.memorandos.services import (
 
 
 # ============================================================
-# CONFIGURACIÓN
+# CONFIGURACIÃ“N
 # ============================================================
 
 FECHA_INICIO_HISTORICO = date(2026, 1, 5)   # lunes
@@ -91,7 +91,7 @@ ASUNTOS_MEMO = [
      'Se exige el cumplimiento estricto de los protocolos de limpieza y desinfección.'),
 ]
 
-TAREAS_PANADERIA = [
+FUNCIONES_PANADERIA = [
     ('Preparar masa madre', 'Elaborar la masa madre diaria.'),
     ('Preparar buñuelos', 'Amasar y freír buñuelos para el mostrador.'),
     ('Hornear pan francés', 'Hornear la tanda de pan francés de la mañana.'),
@@ -168,7 +168,7 @@ class Command(BaseCommand):
 
         if User.objects.exists():
             self.stdout.write(self.style.WARNING(
-                '⚠️  Ya hay usuarios en la BD. Usa --clean para regenerar.'
+                'âš ï¸  Ya hay usuarios en la BD. Usa --clean para regenerar.'
             ))
             return
 
@@ -187,7 +187,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             admins = self._crear_admins(fake)
             perfiles = self._crear_empleados(fake)
-            self.stdout.write(f'  ✓ {len(admins)} admins + {len(perfiles)} empleados')
+            self.stdout.write(f'  âœ“ {len(admins)} admins + {len(perfiles)} empleados')
 
             horarios_por_empleado = {}
             for perfil in perfiles:
@@ -195,18 +195,18 @@ class Command(BaseCommand):
                     perfil, fecha_inicio
                 )
             total_ciclos = sum(len(v) for v in horarios_por_empleado.values())
-            self.stdout.write(f'  ✓ {total_ciclos} ciclos de horario')
+            self.stdout.write(f'  âœ“ {total_ciclos} ciclos de horario')
 
             self._crear_novedades(perfiles, fake)
-            self.stdout.write('  ✓ Solicitudes, incapacidades y certificados')
+            self.stdout.write('  âœ“ Solicitudes, incapacidades y certificados')
 
             total_asist = self._crear_asistencias(perfiles, horarios_por_empleado)
-            self.stdout.write(f'  ✓ {total_asist} asistencias')
+            self.stdout.write(f'  âœ“ {total_asist} asistencias')
 
-            total_tareas = self._crear_tareas(perfiles, admins[0])
-            self.stdout.write(f'  ✓ {total_tareas} tareas')
+            total_funciones = self._crear_funciones(perfiles, admins[0])
+            self.stdout.write(f'  âœ“ {total_funciones} funciones')
 
-        # Memorandos — fuera de la transacción por si tardan
+        # Memorandos â€” fuera de la transacciÃ³n por si tardan
         self.stdout.write(self.style.MIGRATE_HEADING(
             'Generando memorandos automáticos...'
         ))
@@ -214,12 +214,12 @@ class Command(BaseCommand):
 
         # Resumen final
         self.stdout.write(self.style.SUCCESS(
-            f'\n✓ Listo. Totales:\n'
+            f'\nâœ“ Listo. Totales:\n'
             f'  Usuarios:      {User.objects.count()}\n'
             f'  Perfiles:      {PerfilEmpleado.objects.count()}\n'
             f'  Horarios:      {Horario.objects.count()}\n'
             f'  Asistencias:   {Asistencia.objects.count()}\n'
-            f'  Tareas:        {Task.objects.count()}\n'
+            f'  Funciones:        {Funcion.objects.count()}\n'
             f'  Solicitudes:   {Solicitud.objects.count()}\n'
             f'  Incapacidades: {Incapacidad.objects.count()}\n'
             f'  Certificados:  {Certificado.objects.count()}\n'
@@ -239,13 +239,13 @@ class Command(BaseCommand):
             Asistencia.objects.all().delete()
             DescansoEmpleado.objects.all().delete()
             Horario.objects.all().delete()
-            Task.objects.all().delete()
+            Funcion.objects.all().delete()
             Solicitud.objects.all().delete()
             Incapacidad.objects.all().delete()
             Certificado.objects.all().delete()
             PerfilEmpleado.objects.all().delete()
             User.objects.all().delete()
-        self.stdout.write(self.style.SUCCESS('  ✓ Datos borrados'))
+        self.stdout.write(self.style.SUCCESS('  âœ“ Datos borrados'))
 
     # ============================================================
     # ADMINS Y EMPLEADOS
@@ -406,7 +406,7 @@ class Command(BaseCommand):
             while fecha_desc.weekday() != dia_sem:
                 fecha_desc += timedelta(days=1)
             if fecha_desc > fecha_fin:
-                # No cayó dentro del ciclo → ajustar al primer día
+                # No cayÃ³ dentro del ciclo â†’ ajustar al primer dÃ­a
                 fecha_desc = fecha_inicio
             dia_desc_sem = fecha_desc.weekday()
         else:
@@ -543,12 +543,12 @@ class Command(BaseCommand):
                 .values_list('fecha', flat=True)
             )
 
-            # Solicitudes aprobadas → días cubiertos
+            # Solicitudes aprobadas â†’ dÃ­as cubiertos
             solicitudes_aprobadas = Solicitud.objects.filter(
                 empleado=perfil, estado='aprobado',
             ).values_list('fecha_inicio', 'fecha_fin')
 
-            # Incapacidades aprobadas → días cubiertos
+            # Incapacidades aprobadas â†’ dÃ­as cubiertos
             incap_aprobadas = Incapacidad.objects.filter(
                 empleado=perfil, estado='aprobado',
             ).values_list('fecha_inicio', 'fecha_fin')
@@ -612,36 +612,36 @@ class Command(BaseCommand):
         return len(asistencias_nuevas)
 
     # ============================================================
-    # TAREAS
+    # FUNCIONES
     # ============================================================
 
-    def _crear_tareas(self, perfiles, admin_creador):
+    def _crear_funciones(self, perfiles, admin_creador):
         """
-        Crea tareas distribuidas en los últimos 4 meses. La mayoría
+        Crea funciones distribuidas en los últimos 4 meses. La mayoría
         finalizadas, algunas pendientes, y suficientes vencidas para
         que el verificador genere memorandos a quien corresponda.
         """
         hoy = timezone.localdate()
         fecha_min = hoy - timedelta(days=120)
-        tareas = []
+        funciones = []
 
         for perfil in perfiles:
-            n_tareas = random.randint(8, 15)
-            for _ in range(n_tareas):
-                titulo, descripcion = random.choice(TAREAS_PANADERIA)
+            n_funciones = random.randint(8, 15)
+            for _ in range(n_funciones):
+                titulo, descripcion = random.choice(FUNCIONES_PANADERIA)
                 fecha_limite = self._fecha_aleatoria(fecha_min, hoy + timedelta(days=15))
 
                 # Estado según la relación con hoy
                 if fecha_limite >= hoy:
                     # Futuro o presente: pendiente o en progreso
                     estado = random.choices(
-                        [EstadoTarea.PENDIENTE, EstadoTarea.EN_PROGRESO],
+                        [EstadoFuncion.PENDIENTE, EstadoFuncion.EN_PROGRESO],
                         weights=[0.6, 0.4],
                     )[0]
                 else:
                     # Pasado: mayormente finalizada, algunas vencidas
                     estado = random.choices(
-                        [EstadoTarea.FINALIZADA, EstadoTarea.PENDIENTE],
+                        [EstadoFuncion.FINALIZADA, EstadoFuncion.PENDIENTE],
                         weights=[0.75, 0.25],
                     )[0]
 
@@ -649,7 +649,7 @@ class Command(BaseCommand):
                 # (aproximado: 9 AM para MANANA, 15 PM para TARDE, 12 PM para FIJO)
                 hora_limite = time(random.randint(7, 16), 0)
 
-                tarea = Task(
+                funcion = Funcion(
                     empleado=perfil,
                     creador=admin_creador,
                     ultimo_cambio_por=admin_creador,
@@ -661,14 +661,14 @@ class Command(BaseCommand):
                     fecha_limite=fecha_limite,
                     hora_limite=hora_limite,
                     fecha_finalizacion=(
-                        timezone.now() if estado == EstadoTarea.FINALIZADA else None
+                        timezone.now() if estado == EstadoFuncion.FINALIZADA else None
                     ),
                 )
-                tareas.append(tarea)
+                funciones.append(funcion)
 
         # bulk_create para saltar full_clean() (que valida hora dentro del horario)
-        Task.objects.bulk_create(tareas, batch_size=200)
-        return len(tareas)
+        Funcion.objects.bulk_create(funciones, batch_size=200)
+        return len(funciones)
 
     # ============================================================
     # MEMORANDOS
@@ -687,7 +687,7 @@ class Command(BaseCommand):
                     total += 1
             except Exception as e:
                 self.stdout.write(self.style.WARNING(
-                    f'  ⚠ Error en memo tareas para {perfil.pk}: {e}'
+                    f'  âš  Error en memo funciones para {perfil.pk}: {e}'
                 ))
 
             try:
@@ -698,10 +698,10 @@ class Command(BaseCommand):
                     total += 1
             except Exception as e:
                 self.stdout.write(self.style.WARNING(
-                    f'  ⚠ Error en memo asistencia para {perfil.pk}: {e}'
+                    f'  âš  Error en memo asistencia para {perfil.pk}: {e}'
                 ))
 
-        self.stdout.write(self.style.SUCCESS(f'  ✓ {total} memorandos generados'))
+        self.stdout.write(self.style.SUCCESS(f'  âœ“ {total} memorandos generados'))
 
     # ============================================================
     # UTILIDADES

@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- 4. Tu CSS ÚLTIMO (así gana sobre Bootstrap) -->
+    <!-- 4. Tu CSS ÃšLTIMO (asÃ­ gana sobre Bootstrap) -->
     <link rel="stylesheet" href="{% static 'css/base/variables.css' %}">
     <link rel="stylesheet" href="{% static 'css/base/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/base/components.css' %}">
@@ -75,12 +75,12 @@
                             {% endif %}
                         </a>
                     </li>
-                    <!-- Tareas -->
-                    <li class="{% block active_tareas %}{% endblock %}">
-                        <a href="{% url 'tareas:admin_tareas_list' %}" class="d-flex justify-content-between align-items-center w-100">
-                            <span><i class="bi bi-list-task"></i> Tareas Operativas</span>
-                            {% if notif_admin_tareas > 0 %}
-                                <span class="badge bg-danger rounded-pill">{{ notif_admin_tareas }}</span>
+                    <!-- Funciones -->
+                    <li class="{% block active_funciones %}{% endblock %}">
+                        <a href="{% url 'funciones:admin_funciones_list' %}" class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-list-check"></i> Funciones Operativas</span>
+                            {% if notif_admin_funciones > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ notif_admin_funciones }}</span>
                             {% endif %}
                         </a>
                     </li>
@@ -98,7 +98,7 @@
 
             <div class="p-3 border-top border-secondary">
                 <a class="soporte"
-                    href="https://mail.google.com/mail/?view=cm&fs=1&to=eddierpaz9@gmail.com&su=Soporte%20OperPan">
+                    href="https://mail.google.com/mail/view=cm&fs=1&to=eddierpaz9@gmail.com&su=Soporte%20OperPan">
                     <small><i class="bi bi-question-circle me-2"></i>Ayuda / Soporte</small>
                 </a>
             </div>
@@ -145,7 +145,7 @@
 
             </header>
 
-            <!-- ==================== MENSAJES DJANGO → TOAST ==================== -->
+            <!-- ==================== MENSAJES DJANGO â†’ TOAST ==================== -->
             {% if messages %}
             <div id="djangoMessages" style="display:none;">
                 {% for message in messages %}

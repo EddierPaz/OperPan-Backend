@@ -40,16 +40,16 @@
 
     <!-- FILA 1: GRÁFICAS (Ahora clickeables) -->
     <div class="row g-4 mb-4">
-        <!-- Gráfica Estado de Tareas -->
+        <!-- Gráfica Estado de Funciones -->
         <div class="col-md-6">
-            <a href="{% url 'tareas:empleado_tareas_list' %}" class="text-decoration-none text-reset">
+            <a href="{% url 'funciones:empleado_funciones_list' %}" class="text-decoration-none text-reset">
                 <div class="card-block card-hover-lift h-100">
                     <div class="card-title">
-                        <span><i class="bi bi-pie-chart me-2 text-primary"></i> Estado de Tareas</span>
+                        <span><i class="bi bi-pie-chart me-2 text-primary"></i> Estado de Funciones</span>
                         <i class="bi bi-arrow-right-circle card-arrow"></i>
                     </div>
                     <div class="chart-container">
-                        <canvas id="chartTareas"></canvas>
+                        <canvas id="chartFunciones"></canvas>
                     </div>
                 </div>
             </a>
@@ -167,7 +167,7 @@
 
 <!-- Variables para Chart.js -->
 <script>
-    window.tareasChartData = {{ tareas_chart_data|safe }};
+    window.funcionesChartData = {{ funciones_chart_data|safe }};
     window.asistenciaChartData = {{ asistencia_chart_data|safe }};
 </script>
 

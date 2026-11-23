@@ -54,9 +54,9 @@
     <div class="col-md-3 col-sm-6">
       <div class="stat-card d-flex justify-content-between align-items-center">
         <div>
-          <span class="text-muted">Tareas pendientes</span>
-          <h3 class="mt-1">{{ kpis_tareas.pendientes }}</h3>
-          <small class="text-muted">{{ kpis_tareas.vencidas }} vencidas</small>
+          <span class="text-muted">Funciones pendientes</span>
+          <h3 class="mt-1">{{ kpis_funciones.pendientes }}</h3>
+          <small class="text-muted">{{ kpis_funciones.vencidas }} vencidas</small>
         </div>
         <div class="icono-circular">
           <i class="bi bi-list-check"></i>
@@ -79,7 +79,7 @@
     </div>
   </div>
 
-  <!-- PRIMERA FILA: Asistencia + Tareas + Novedades (3 columnas) -->
+  <!-- PRIMERA FILA: Asistencia + Funciones + Novedades (3 columnas) -->
   <div class="row g-3 mb-4 fila-principal">
     <!-- Asistencia -->
     <div class="col-lg-4 col-md-6">
@@ -102,7 +102,7 @@
               {% for item in lista_asistencia %}
                 <tr class="asistencia-item">
                   <td colspan="2" class="p-0">
-                    <a href="{% url 'asistencia:horarios' %}?empleado={{ item.empleado.id }}" class="asistencia-link text-decoration-none d-block px-2 py-1">
+                    <a href="{% url 'asistencia:horarios' %}empleado={{ item.empleado.id }}" class="asistencia-link text-decoration-none d-block px-2 py-1">
                       <div class="d-flex justify-content-between align-items-center w-100">
                         <span>{{ item.empleado.nombre_completo }}</span>
                         <span class="badge {{ badge_asistencia_color }}">{{ estado_asistencia_label }}</span>
@@ -126,36 +126,36 @@
       </div>
     </div>
 
-    <!-- Tareas -->
+    <!-- Funciones -->
     <div class="col-lg-4 col-md-6">
-      <div class="card-block tareas-card">
+      <div class="card-block funciones-card">
         <div class="card-title">
-          <span><i class="bi bi-list-task me-2 icon-primary"></i> Tareas pendientes</span>
-          <a href="{% url 'tareas:admin_tareas_list' %}" class="card-link-icon">
+          <span><i class="bi bi-list-check me-2 icon-primary"></i> Funciones pendientes</span>
+          <a href="{% url 'funciones:admin_funciones_list' %}" class="card-link-icon">
             <i class="bi bi-arrow-right-circle text-muted"></i>
           </a>
         </div>
         <div class="lista-scroll">
-          <ul class="list-group list-group-flush" id="listaTareas">
-            {% for tarea in tareas_pendientes_mostrar %}
-              <li class="list-group-item tarea-item p-0">
-                <a href="{% url 'tareas:admin_tarea_edit' tarea.id %}" class="tarea-link text-decoration-none d-block px-2 py-2">
+          <ul class="list-group list-group-flush" id="listaFunciones">
+            {% for funcion in funciones_pendientes_mostrar %}
+              <li class="list-group-item funcion-item p-0">
+                <a href="{% url 'funciones:admin_funcion_edit' funcion.id %}" class="funcion-link text-decoration-none d-block px-2 py-2">
                   <div class="d-flex justify-content-between align-items-center w-100">
                     <div>
                       <span class="badge 
-                        {% if tarea.prioridad == 'ALTA' %}bg-danger
-                        {% elif tarea.prioridad == 'MEDIA' %}bg-warning text-dark
+                        {% if funcion.prioridad == 'ALTA' %}bg-danger
+                        {% elif funcion.prioridad == 'MEDIA' %}bg-warning text-dark
                         {% else %}bg-secondary{% endif %} me-1">
-                        {{ tarea.get_prioridad_display }}
+                        {{ funcion.get_prioridad_display }}
                       </span>
-                      <span class="fw-medium">{{ tarea.titulo }}</span>
+                      <span class="fw-medium">{{ funcion.titulo }}</span>
                       <br>
                       <small class="text-muted">
-                        {{ tarea.empleado.nombre_completo }} · 
-                        {% if tarea.fecha_limite < today %}
-                          <span class="text-danger">Vencida: {{ tarea.fecha_limite|date:"d/m/Y" }}</span>
+                        {{ funcion.empleado.nombre_completo }} · 
+                        {% if funcion.fecha_limite < today %}
+                          <span class="text-danger">Vencida: {{ funcion.fecha_limite|date:"d/m/Y" }}</span>
                         {% else %}
-                          Límite: {{ tarea.fecha_limite|date:"d/m/Y" }}
+                          Límite: {{ funcion.fecha_limite|date:"d/m/Y" }}
                         {% endif %}
                       </small>
                     </div>
@@ -167,7 +167,7 @@
               <li class="list-group-item">
                 <div class="empty-state">
                   <i class="bi bi-check-circle-fill text-success"></i>
-                  <span class="text-muted">No hay tareas pendientes.</span>
+                  <span class="text-muted">No hay funciones pendientes.</span>
                 </div>
               </li>
             {% endfor %}
@@ -226,10 +226,10 @@
     <div class="col-lg-4 col-md-6">
       <div class="card-block chart-card">
         <div class="card-title">
-          <span><i class="bi bi-pie-chart me-2 icon-primary"></i> Estado de tareas</span>
+          <span><i class="bi bi-pie-chart me-2 icon-primary"></i> Estado de funciones</span>
         </div>
         <div class="chart-container">
-          <canvas id="chartTareas" width="200" height="180"></canvas>
+          <canvas id="chartFunciones" width="200" height="180"></canvas>
         </div>
       </div>
     </div>
@@ -280,7 +280,7 @@
                 <div class="actividad-contenido">
                   <div>
                     <strong>{{ item.empleado }}</strong>
-                    <span class="text-muted">–</span>
+                    <span class="text-muted">â€“</span>
                     <a href="{{ item.url }}" class="text-decoration-none">{{ item.detalle }}</a>
                   </div>
                   <div class="actividad-meta">
@@ -310,7 +310,7 @@
 <!-- Variables para Chart.js -->
 <script>
   window.asistenciaChartData = {{ asistencia_chart_data|safe }};
-  window.tareasChartData = {{ tareas_chart_data|safe }};
+  window.funcionesChartData = {{ funciones_chart_data|safe }};
   window.novedadesChartData = {{ novedades_chart_data|safe }};
 </script>
 

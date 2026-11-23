@@ -12,7 +12,7 @@ function getCookie(name) {
         .split(';')
         .map(c => c.trim())
         .find(c => c.startsWith(name + '='));
-    return par ? decodeURIComponent(par.substring(name.length + 1)) : null;
+    return par  decodeURIComponent(par.substring(name.length + 1)) : null;
 }
 
 function getCSRFToken() {
@@ -45,7 +45,7 @@ function debounce(fn, delay = 300) {
 
 /** Escapa texto del usuario antes de meterlo en innerHTML (evita XSS). */
 function esc(valor) {
-    return String(valor ?? '').replace(/[&<>"']/g, c => ({
+    return String(valor  '').replace(/[&<>"']/g, c => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
 }
@@ -63,7 +63,7 @@ function formatDate(valor) {
 function formatDateTime(valor) {
     if (!valor) return '—';
     const d = new Date(valor);
-    return isNaN(d) ? '—' : d.toLocaleString('es-CO');
+    return isNaN(d)  '—' : d.toLocaleString('es-CO');
 }
 
 // ------------------------------------------------------------
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tab.classList.add('active');
 
         const panel = document.getElementById('tab' + nombre.charAt(0).toUpperCase() + nombre.slice(1));
-        panel?.classList.add('active');
+        panel.classList.add('active');
 
         // Cada módulo se registra como novedadesModulos.<nombre>;
         // memorandos.js todavía expone window.cargarMemorandos.

@@ -1,8 +1,8 @@
 /* ============================================================
-   TAREAS.CSS - OPERPAN
+   FUNCIONS.CSS - OPERPAN
    ============================================================ */
 
-/* ── BOTONES DE ACCIÓN ESPECÍFICOS DE TAREA ── */
+/* ── BOTONES DE ACCIÓN ESPECÍFICOS DE FUNCION ── */
 .btn-corporate-sec {
   background: #3690A6;
   color: #ffffff;
@@ -23,8 +23,8 @@
   color: #ffffff;
 }
 
-/* ── TARJETAS DE TAREAS (TASK CARDS) ── */
-.task-card {
+/* ── TARJETAS DE FUNCIONES ── */
+.funcion-card {
   background: var(--color-surface);
   border-radius: 20px;
   padding: 1.2rem;
@@ -35,12 +35,12 @@
   position: relative;
 }
 
-.task-card:hover {
+.funcion-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
-.task-card:has(.dropdown-menu.show) {
+.funcion-card:has(.dropdown-menu.show) {
   z-index: 100;
 }
 
@@ -103,7 +103,7 @@
   color: var(--color-success-text);
 }
 
-/* ── ACORDEÓN DE TAREAS DE HOY ── */
+/* ── ACORDEÓN DE FUNCIONS DE HOY ── */
 .accordion-item {
   background: var(--color-surface);
   border: none;

@@ -52,10 +52,10 @@
                 </div>`;
         }
 
-        // { label, valor, icono?, full?, opcional? }
+        // { label, valor, icono, full, opcional }
         if (c.opcional && !c.valor) return '';
-        const clase = c.full ? 'modal-detalle-item modal-detalle-item-full' : 'modal-detalle-item';
-        const icono = c.icono ? `<i class="bi ${c.icono} me-1"></i>` : '';
+        const clase = c.full  'modal-detalle-item modal-detalle-item-full' : 'modal-detalle-item';
+        const icono = c.icono  `<i class="bi ${c.icono} me-1"></i>` : '';
         return `
             <div class="${clase}">
                 <span class="modal-detalle-label">${esc(c.label)}</span>
@@ -66,10 +66,10 @@
     // ------------------------------------------------------------
     // Helpers de modales Bootstrap
     // ------------------------------------------------------------
-    const instancia = (elemento) => (elemento ? bootstrap.Modal.getOrCreateInstance(elemento) : null);
+    const instancia = (elemento) => (elemento  bootstrap.Modal.getOrCreateInstance(elemento) : null);
 
     function mostrarModal(elemento) {
-        instancia(elemento)?.show();
+        instancia(elemento).show();
     }
 
     /** Cierra un modal y abre otro cuando el primero terminó de cerrarse. */
@@ -83,7 +83,7 @@
     }
 
     function mostrar(nodo, visible, display = 'inline-flex') {
-        if (nodo) nodo.style.display = visible ? display : 'none';
+        if (nodo) nodo.style.display = visible  display : 'none';
     }
 
     // ------------------------------------------------------------
@@ -109,7 +109,7 @@
         function actualizarKPIs() {
             const ahora = new Date();
             const esDelMes = (item) => {
-                const f = new Date(cfg.fechaKpi ? cfg.fechaKpi(item) : item.fecha_solicitud);
+                const f = new Date(cfg.fechaKpi  cfg.fechaKpi(item) : item.fecha_solicitud);
                 return !isNaN(f) && f.getMonth() === ahora.getMonth() && f.getFullYear() === ahora.getFullYear();
             };
             const contar = (estado, soloMes) => datos.filter(
@@ -125,7 +125,7 @@
         function tarjetaHTML(i) {
             const t = cfg.tarjeta;
             const descripcion = t.descripcion
-                ? `<div class="solicitud-descripcion">${esc(t.descripcion(i))}</div>`
+                 `<div class="solicitud-descripcion">${esc(t.descripcion(i))}</div>`
                 : '';
             return `
                 <div class="solicitud-card">
@@ -164,9 +164,9 @@
             if (!contenedor) return;
             try {
                 const data = await api(cfg.urls.pendientes);
-                const lista = Array.isArray(data) ? data : [];
+                const lista = Array.isArray(data)  data : [];
                 contenedor.innerHTML = lista.length
-                    ? `<div class="solicitudes-grid">${lista.map(tarjetaHTML).join('')}</div>`
+                     `<div class="solicitudes-grid">${lista.map(tarjetaHTML).join('')}</div>`
                     : mensajeBandeja(cfg.textos.iconoVacio, cfg.textos.vacio);
             } catch (err) {
                 console.error(`[${cfg.nombre}] pendientes:`, err);
@@ -195,10 +195,10 @@
         const campoBusqueda = () => cfg.ids.buscar.map($).find(Boolean);
 
         function filtrar() {
-            const estado = $(cfg.ids.filtroEstado)?.value || '';
-            const texto = (campoBusqueda()?.value || '').trim().toLowerCase();
+            const estado = $(cfg.ids.filtroEstado).value || '';
+            const texto = (campoBusqueda().value || '').trim().toLowerCase();
             const extra = cfg.ids.filtroExtra;
-            const valorExtra = extra ? ($(extra.id)?.value || '').trim().toLowerCase() : '';
+            const valorExtra = extra  ($(extra.id).value || '').trim().toLowerCase() : '';
 
             return datos.filter((i) => {
                 if (estado && estado !== 'todas' && normalizarEstado(i.estado) !== normalizarEstado(estado)) return false;
@@ -216,17 +216,17 @@
 
             if (!lista.length) {
                 tbody.innerHTML = '';
-                sinResultados?.classList.remove('d-none');
+                sinResultados.classList.remove('d-none');
                 return;
             }
-            sinResultados?.classList.add('d-none');
+            sinResultados.classList.add('d-none');
             tbody.innerHTML = lista.map(filaHTML).join('');
         }
 
         async function cargarLista() {
             try {
                 const data = await api(cfg.urls.lista);
-                datos = Array.isArray(data) ? data : [];
+                datos = Array.isArray(data)  data : [];
             } catch (err) {
                 console.error(`[${cfg.nombre}] historial:`, err);
                 datos = [];
@@ -261,7 +261,7 @@
             if (cfg.urlDescarga) {
                 puedeDescargar = d.estado === 'aprobado';
                 const btn = el('DescargarBtn');
-                if (btn) btn.dataset.url = puedeDescargar ? cfg.urlDescarga(d) : '';
+                if (btn) btn.dataset.url = puedeDescargar  cfg.urlDescarga(d) : '';
                 mostrar(btn, puedeDescargar);
             }
 
@@ -306,45 +306,45 @@
         function init() {
             // Botones "Ver detalles" (delegado: sirve para filas nuevas sin volver a enlazar)
             [$(cfg.ids.pendientes), $(cfg.ids.tbody)].forEach((zona) => {
-                zona?.addEventListener('click', (e) => {
+                zona.addEventListener('click', (e) => {
                     const boton = e.target.closest('[data-accion="ver"]');
                     if (boton) abrirDetalle(boton.dataset.id, boton.dataset.origen === 'historial');
                 });
             });
 
             // Aprobar: detalle -> confirmación -> POST
-            el('AprobarBtn')?.addEventListener('click', () => pasarA(el('DetalleModal'), el('ConfirmApproveModal')));
-            el('ConfirmApprove')?.addEventListener('click', () => {
-                instancia(el('ConfirmApproveModal'))?.hide();
+            el('AprobarBtn').addEventListener('click', () => pasarA(el('DetalleModal'), el('ConfirmApproveModal')));
+            el('ConfirmApprove').addEventListener('click', () => {
+                instancia(el('ConfirmApproveModal')).hide();
                 decidir('aprobar');
             });
 
             // Rechazar: detalle -> motivo -> POST
-            el('RechazarBtn')?.addEventListener('click', () => pasarA(el('DetalleModal'), el('RejectModal')));
-            el('ConfirmReject')?.addEventListener('click', () => {
+            el('RechazarBtn').addEventListener('click', () => pasarA(el('DetalleModal'), el('RejectModal')));
+            el('ConfirmReject').addEventListener('click', () => {
                 const campo = el('RejectReason');
-                const motivo = (campo?.value || '').trim();
+                const motivo = (campo.value || '').trim();
                 if (!motivo) {
                     showMessage('Debes ingresar un motivo de rechazo.', 'warning');
                     return;
                 }
-                instancia(el('RejectModal'))?.hide();
+                instancia(el('RejectModal')).hide();
                 if (campo) campo.value = '';
                 decidir('rechazar', { motivo });
             });
 
             // Descarga (solo certificados)
-            el('DescargarBtn')?.addEventListener('click', (e) => {
+            el('DescargarBtn').addEventListener('click', (e) => {
                 const url = e.currentTarget.dataset.url;
                 if (url) window.open(url, '_blank');
                 else showMessage('No se encontró la URL de descarga.', 'error');
             });
 
             // Filtros (se aplican sobre la lista ya cargada, sin nuevos fetch)
-            $(cfg.ids.filtroEstado)?.addEventListener('change', renderHistorial);
-            if (cfg.ids.filtroExtra) $(cfg.ids.filtroExtra.id)?.addEventListener('change', renderHistorial);
-            cfg.ids.buscar.forEach((id) => $(id)?.addEventListener('input', debounce(renderHistorial, 300)));
-            $(cfg.ids.btnLimpiar)?.addEventListener('click', () => {
+            $(cfg.ids.filtroEstado).addEventListener('change', renderHistorial);
+            if (cfg.ids.filtroExtra) $(cfg.ids.filtroExtra.id).addEventListener('change', renderHistorial);
+            cfg.ids.buscar.forEach((id) => $(id).addEventListener('input', debounce(renderHistorial, 300)));
+            $(cfg.ids.btnLimpiar).addEventListener('click', () => {
                 cfg.ids.buscar.forEach((id) => { const n = $(id); if (n) n.value = ''; });
                 const sel = $(cfg.ids.filtroEstado);
                 if (sel) sel.value = '';

@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='task',
             name='memorando_generado',
-            field=models.ForeignKey(blank=True, help_text='Memorando generado automáticamente por acumulación de vencidas', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tareas_origen', to='memorandos.memorando'),
+            field=models.ForeignKey(blank=True, help_text='Memorando generado automáticamente por acumulación de vencidas', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='funciones_origen', to='memorandos.memorando'),
         ),
     ]
+

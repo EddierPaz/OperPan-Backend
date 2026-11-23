@@ -20,19 +20,19 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveIndex(
             model_name='task',
-            name='tareas_task_estado_860b88_idx',
+            name='funciones_funcion_estado_860b88_idx',
         ),
         migrations.RemoveIndex(
             model_name='task',
-            name='tareas_task_fecha_l_8dbc1c_idx',
+            name='funciones_funcion_fecha_l_8dbc1c_idx',
         ),
         migrations.RemoveIndex(
             model_name='task',
-            name='tareas_task_emplead_f3ad17_idx',
+            name='funciones_funcion_emplead_f3ad17_idx',
         ),
         migrations.RemoveIndex(
             model_name='task',
-            name='tareas_task_priorid_35a0c7_idx',
+            name='funciones_funcion_priorid_35a0c7_idx',
         ),
         migrations.AddField(
             model_name='task',
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='creador',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tareas_creadas', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='funciones_creadas', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='task',
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='empleado',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tareas_asignadas', to='usuarios.perfilempleado'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='funciones_asignadas', to='usuarios.perfilempleado'),
         ),
         migrations.AlterField(
             model_name='task',
@@ -97,11 +97,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='turno_asociado',
-            field=models.CharField(blank=True, choices=[('MAÑANA', 'Mañana (4am-2pm)'), ('TARDE', 'Tarde (1pm-11pm)')], max_length=20, null=True),
+            field=models.CharField(blank=True, choices=[('MAÃ‘ANA', 'MaÃ±ana (4am-2pm)'), ('TARDE', 'Tarde (1pm-11pm)')], max_length=20, null=True),
         ),
         migrations.AlterField(
             model_name='task',
             name='ultimo_cambio_por',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tareas_modificadas', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='funciones_modificadas', to=settings.AUTH_USER_MODEL),
         ),
     ]
+

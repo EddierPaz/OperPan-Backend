@@ -1,17 +1,17 @@
 """
-Comando de gestión: verifica tareas vencidas y asistencia, y genera
+Comando de gestión: verifica funciones vencidas y asistencia, y genera
 memorandos automáticos cuando corresponde.
 
 Uso:
     python manage.py verificar_memorandos
     python manage.py verificar_memorandos --empleado-id 5
-    python manage.py verificar_memorandos --solo tareas
+    python manage.py verificar_memorandos --solo funciones
     python manage.py verificar_memorandos --solo asistencia
     python manage.py verificar_memorandos --mes 9 --anio 2026
 
 Pensado para ejecutarse:
     - Manualmente desde la terminal cuando se quiera forzar la revisión.
-    - Periódicamente vía cron (Linux) o Programador de tareas (Windows).
+    - Periódicamente vía cron (Linux) o Programador de funciones (Windows).
 """
 
 from django.core.management.base import BaseCommand
@@ -25,7 +25,7 @@ from apps.memorandos.services import (
 
 class Command(BaseCommand):
     help = (
-        'Revisa tareas vencidas y asistencia de todos los empleados '
+        'Revisa funciones vencidas y asistencia de todos los empleados '
         'activos y genera memorandos automáticos cuando corresponde.'
     )
 
@@ -37,7 +37,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '--solo',
-            choices=['tareas', 'asistencia'],
+            choices=['funciones', 'asistencia'],
             help='Ejecutar solo un módulo (por defecto: ambos).'
         )
         parser.add_argument(
@@ -79,7 +79,7 @@ class Command(BaseCommand):
 
         # Contadores
         cont = {
-            'tareas': 0,
+            'funciones': 0,
             'tardanzas': 0,
             'ausencias': 0,
         }
@@ -88,19 +88,19 @@ class Command(BaseCommand):
         # Recorrer
         # ----------------------------------------------------------
         for emp in qs:
-            # ========== TAREAS ==========
-            if solo in (None, 'tareas'):
+            # ========== FUNCIONES ==========
+            if solo in (None, 'funciones'):
                 try:
                     memo = verificar_y_generar_memorando(emp)
                     if memo:
-                        cont['tareas'] += 1
+                        cont['funciones'] += 1
                         self.stdout.write(self.style.SUCCESS(
-                            f'  ✔ [TAREAS] {memo.consecutivo} → '
+                            f'  âœ” [FUNCIONES] {memo.consecutivo} â†’ '
                             f'{emp.nombre_completo()}'
                         ))
                 except Exception as e:
                     self.stdout.write(self.style.WARNING(
-                        f'  ⚠ Error en tareas para {emp.nombre_completo()}: {e}'
+                        f'  âš  Error en funciones para {emp.nombre_completo()}: {e}'
                     ))
 
             # ========== ASISTENCIA (tardanzas + ausencias) ==========
@@ -112,20 +112,20 @@ class Command(BaseCommand):
                     if resultado['tardanzas']:
                         cont['tardanzas'] += 1
                         self.stdout.write(self.style.SUCCESS(
-                            f'  ✔ [TARDANZAS] '
-                            f'{resultado["tardanzas"].consecutivo} → '
+                            f'  âœ” [TARDANZAS] '
+                            f'{resultado["tardanzas"].consecutivo} â†’ '
                             f'{emp.nombre_completo()}'
                         ))
                     if resultado['ausencias']:
                         cont['ausencias'] += 1
                         self.stdout.write(self.style.SUCCESS(
-                            f'  ✔ [AUSENCIAS] '
-                            f'{resultado["ausencias"].consecutivo} → '
+                            f'  âœ” [AUSENCIAS] '
+                            f'{resultado["ausencias"].consecutivo} â†’ '
                             f'{emp.nombre_completo()}'
                         ))
                 except Exception as e:
                     self.stdout.write(self.style.WARNING(
-                        f'  ⚠ Error en asistencia para {emp.nombre_completo()}: {e}'
+                        f'  âš  Error en asistencia para {emp.nombre_completo()}: {e}'
                     ))
 
         # ----------------------------------------------------------
@@ -133,7 +133,7 @@ class Command(BaseCommand):
         # ----------------------------------------------------------
         self.stdout.write(self.style.SUCCESS(
             f'\nVerificación completa:\n'
-            f'  Tareas vencidas:  {cont["tareas"]} memorando(s)\n'
+            f'  Funciones vencidas:  {cont["funciones"]} memorando(s)\n'
             f'  Tardanzas:        {cont["tardanzas"]} memorando(s)\n'
             f'  Ausencias:        {cont["ausencias"]} memorando(s)\n'
         ))

@@ -1,13 +1,13 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Task, EstadoTarea, Prioridad, Area, Turno
+from .models import Funcion, EstadoFuncion, Prioridad, Area, Turno
 from apps.usuarios.models import PerfilEmpleado
 from apps.asistencia.models import Horario
 
 
-class TaskForm(forms.ModelForm):
+class FuncionForm(forms.ModelForm):
     class Meta:
-        model = Task
+        model = Funcion
         fields = [
             'empleado', 'titulo', 'descripcion', 'area', 'turno_asociado',
             'prioridad', 'fecha_limite', 'hora_limite'
@@ -53,10 +53,10 @@ class TaskForm(forms.ModelForm):
 
         return hora_limite
 
-class TaskFilterForm(forms.Form):
+class FuncionFilterForm(forms.Form):
     # Agregamos 'VENCIDA' a las opciones válidas
     estado = forms.ChoiceField(
-        choices=[('', 'Todos los estados'), ('VENCIDA', 'Vencidas')] + list(EstadoTarea.choices),
+        choices=[('', 'Todos los estados'), ('VENCIDA', 'Vencidas')] + list(EstadoFuncion.choices),
         required=False
     )
     empleado = forms.ModelChoiceField(
@@ -76,3 +76,4 @@ class TaskFilterForm(forms.Form):
         choices=[('', 'Todos los turnos')] + list(Turno.choices),
         required=False
     )
+

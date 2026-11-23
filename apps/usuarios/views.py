@@ -18,13 +18,13 @@ from .forms import UserForm, PerfilEmpleadoForm
 from .decorators import admin_required, empleado_required
 from apps.asistencia.models import Horario, Asistencia, DescansoEmpleado
 from apps.asistencia.views import _contexto_base
-from apps.tareas.models import Task, EstadoTarea
+from apps.funciones.models import Funcion, EstadoFuncion
 from apps.novedades.models import Solicitud, Incapacidad, Certificado
 from apps.memorandos.models import Memorando
 
 
 # ========================
-# AUDITORÍA — helper interno
+# AUDITORÃA â€” helper interno
 # ========================
 
 def _registrar_auditoria(usuario_afectado, ejecutado_por, accion,
@@ -81,13 +81,13 @@ def admin_dashboard(request):
 
     total_empleados_activos = PerfilEmpleado.objects.filter(estado='activo').count()
 
-    kpis_tareas = Task.get_kpis_administrador()
+    kpis_funciones = Funcion.get_kpis_administrador()
 
-    tareas_pendientes_qs = Task.objects.filter(
+    funciones_pendientes_qs = Funcion.objects.filter(
         estado__in=['PENDIENTE', 'EN_PROGRESO']
     ).select_related('empleado').order_by('fecha_limite', 'prioridad')
 
-    tareas_pendientes_mostrar = list(tareas_pendientes_qs[:20])
+    funciones_pendientes_mostrar = list(funciones_pendientes_qs[:20])
 
     solicitudes_pendientes_qs = Solicitud.objects.filter(estado='pendiente').select_related('empleado')
     incapacidades_pendientes_qs = Incapacidad.objects.filter(estado='pendiente').select_related('empleado')
@@ -165,7 +165,7 @@ def admin_dashboard(request):
     ultimas_solicitudes = Solicitud.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimas_incapacidades = Incapacidad.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
     ultimos_certificados = Certificado.objects.select_related('empleado').order_by('-fecha_solicitud')[:8]
-    ultimas_tareas = Task.objects.select_related('empleado').order_by('-fecha_asignacion')[:8]
+    ultimas_funciones = Funcion.objects.select_related('empleado').order_by('-fecha_asignacion')[:8]
 
     actividad = []
 
@@ -199,15 +199,15 @@ def admin_dashboard(request):
             'id': c.id,
             'modelo': 'certificado'
         })
-    for t in ultimas_tareas:
+    for t in ultimas_funciones:
         actividad.append({
-            'tipo': 'tarea',
+            'tipo': 'funcion',
             'fecha': t.fecha_asignacion,
             'empleado': t.empleado.nombre_completo(),
             'estado': t.get_estado_display(),
-            'detalle': f"Tarea: {t.titulo}",
+            'detalle': f"Funcion: {t.titulo}",
             'id': t.id,
-            'modelo': 'tarea'
+            'modelo': 'funcion'
         })
 
     actividad.sort(key=lambda x: x['fecha'], reverse=True)
@@ -220,8 +220,8 @@ def admin_dashboard(request):
             item['url'] = reverse('novedades:incapacidad_detalle', args=[item['id']])
         elif item['modelo'] == 'certificado':
             item['url'] = reverse('novedades:novedades_admin')
-        elif item['modelo'] == 'tarea':
-            item['url'] = reverse('tareas:admin_tarea_edit', args=[item['id']])
+        elif item['modelo'] == 'funcion':
+            item['url'] = reverse('funciones:admin_funcion_edit', args=[item['id']])
 
     asistencia_data = {
         'labels': ['Presentes', 'Tardanzas', 'Ausentes'],
@@ -233,12 +233,12 @@ def admin_dashboard(request):
         'colors': ['#28a745', '#ffc107', '#dc3545']
     }
 
-    tareas_estado = {
+    funciones_estado = {
         'labels': ['Pendientes', 'En progreso', 'Finalizadas'],
         'values': [
-            kpis_tareas['pendientes'],
-            kpis_tareas['en_progreso'],
-            kpis_tareas['finalizadas']
+            kpis_funciones['pendientes'],
+            kpis_funciones['en_progreso'],
+            kpis_funciones['finalizadas']
         ],
         'colors': ['#ffc107', '#17a2b8', '#28a745']
     }
@@ -255,8 +255,8 @@ def admin_dashboard(request):
 
     contexto.update({
         'total_empleados_activos': total_empleados_activos,
-        'kpis_tareas': kpis_tareas,
-        'tareas_pendientes_mostrar': tareas_pendientes_mostrar,
+        'kpis_funciones': kpis_funciones,
+        'funciones_pendientes_mostrar': funciones_pendientes_mostrar,
         'solicitudes_pendientes': solicitudes_pendientes,
         'incapacidades_pendientes': incapacidades_pendientes,
         'certificados_pendientes': certificados_pendientes,
@@ -265,7 +265,7 @@ def admin_dashboard(request):
         'ausentes_hoy': ausentes_hoy,
         'actividad_reciente': actividad,
         'asistencia_chart_data': json.dumps(asistencia_data),
-        'tareas_chart_data': json.dumps(tareas_estado),
+        'funciones_chart_data': json.dumps(funciones_estado),
         'novedades_chart_data': json.dumps(novedades_data),
         'perfil': request.user.perfil,
         'today': date.today(),
@@ -343,10 +343,10 @@ def employee_dashboard(request):
     # ELIMINADO: historial_asistencia (lista ya no se muestra)
     # ELIMINADO: estadisticas_asistencia (la tarjeta de Resumen del mes ya no existe)
 
-    # ELIMINADO: tareas_pendientes (lista ya no se muestra)
-    # ELIMINADO: tareas_completadas (ya no se muestra en el resumen)
+    # ELIMINADO: funciones_pendientes (lista ya no se muestra)
+    # ELIMINADO: funciones_completadas (ya no se muestra en el resumen)
 
-    kpis_tareas = Task.get_kpis_empleado(request.user)
+    kpis_funciones = Funcion.get_kpis_empleado(request.user)
 
     solicitudes_pendientes = Solicitud.objects.filter(empleado=perfil, estado='pendiente').count()
     incapacidades_pendientes = Incapacidad.objects.filter(empleado=perfil, estado='pendiente').count()
@@ -357,12 +357,12 @@ def employee_dashboard(request):
 
     # Mantenemos la actividad reciente intacta
     actividad = []
-    tareas_recientes = Task.objects.filter(empleado=perfil).order_by('-fecha_actualizacion')[:5]
-    for t in tareas_recientes:
+    funciones_recientes = Funcion.objects.filter(empleado=perfil).order_by('-fecha_actualizacion')[:5]
+    for t in funciones_recientes:
         actividad.append({
-            'tipo': 'tarea', 'fecha': t.fecha_actualizacion, 'detalle': f"Tarea: {t.titulo}",
-            'estado': t.get_estado_display(), 'url': reverse('tareas:empleado_tarea_detail', args=[t.id]),
-            'icono': 'list-task', 'color': 'text-info'
+            'tipo': 'funcion', 'fecha': t.fecha_actualizacion, 'detalle': f"Funcion: {t.titulo}",
+            'estado': t.get_estado_display(), 'url': reverse('funciones:empleado_funcion_detail', args=[t.id]),
+            'icono': 'list-check', 'color': 'text-info'
         })
 
     solicitudes_recientes = Solicitud.objects.filter(empleado=perfil).order_by('-fecha_solicitud')[:5]
@@ -401,9 +401,9 @@ def employee_dashboard(request):
     actividad = actividad[:8]
 
     # Datos para Chart.js
-    tareas_chart_data = {
+    funciones_chart_data = {
         'labels': ['Pendientes', 'En progreso', 'Finalizadas'],
-        'values': [kpis_tareas['pendientes'], kpis_tareas['en_progreso'], kpis_tareas['finalizadas']],
+        'values': [kpis_funciones['pendientes'], kpis_funciones['en_progreso'], kpis_funciones['finalizadas']],
         'colors': ['#ffc107', '#17a2b8', '#28a745']
     }
 
@@ -431,14 +431,14 @@ def employee_dashboard(request):
         'hora_entrada': hora_entrada,
         'hora_salida': hora_salida,
         'turno_display': turno_display,
-        'kpis_tareas': kpis_tareas,
+        'kpis_funciones': kpis_funciones,
         'solicitudes_pendientes': solicitudes_pendientes,
         'incapacidades_pendientes': incapacidades_pendientes,
         'certificados_pendientes': certificados_pendientes,
         'total_solicitudes_pendientes': total_solicitudes_pendientes,
         'total_memorandos': total_memorandos,
         'actividad_reciente': actividad,
-        'tareas_chart_data': json.dumps(tareas_chart_data),
+        'funciones_chart_data': json.dumps(funciones_chart_data),
         'asistencia_chart_data': json.dumps(asistencia_chart_data),
         # ELIMINADO: solicitudes_chart_data
         'today': hoy,
@@ -468,7 +468,7 @@ def employee_dashboard(request):
 
 
 # ========================
-# GESTIÓN DE USUARIOS
+# GESTIÃ“N DE USUARIOS
 # ========================
 
 # @login_required
@@ -476,6 +476,7 @@ def employee_dashboard(request):
 def user_list_create(request):
     usuarios = PerfilEmpleado.objects.select_related("user").all()
     cargos = PerfilEmpleado._meta.get_field('cargo').choices
+    es_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
 
     if request.method == "POST":
         user_form = UserForm(request.POST)
@@ -508,22 +509,26 @@ def user_list_create(request):
                     try:
                         _enviar_correo_credenciales(perfil)
                     except Exception:
-                        # Si el correo falla, igual dejamos que el usuario se cree, 
-                        # pero podríamos avisar. Por ahora pasamos de largo.
                         pass 
 
-                # [19/11/2026] Respuesta exitosa para el fetch de JS
-                return JsonResponse({
-                    "status": "success", 
-                    "message": "Usuario creado correctamente."
-                })
+                if es_ajax:
+                    return JsonResponse({
+                        "status": "success",
+                        "message": "Usuario creado correctamente."
+                    })
+
+                messages.success(request, "Usuario creado correctamente.")
+                return redirect("user_list")
                 
             except IntegrityError:
-                # [19/11/2026] Atrapamos errores de base de datos (ej. doble clic rápido)
-                return JsonResponse({
-                    "status": "error", 
-                    "errors": ["Error de integridad: El nombre de usuario o documento ya existe."]
-                }, status=400)
+                error = "Error de integridad: El nombre de usuario o documento ya existe."
+                if es_ajax:
+                    return JsonResponse({
+                        "status": "error",
+                        "errors": [error]
+                    }, status=400)
+                messages.error(request, error)
+                return redirect("user_list")
 
         # --- MANEJO DE ERRORES DEL FORMULARIO (Para enviar por JSON) ---
         error_list = []
@@ -542,10 +547,15 @@ def user_list_create(request):
                 error_list.append(f"{field_name}: {error}")
 
         # [19/11/2026] Devolvemos el JSON con status 400 (Bad Request) y la lista de errores
-        return JsonResponse({
-            "status": "error", 
-            "errors": error_list
-        }, status=400)
+        if es_ajax:
+            return JsonResponse({
+                "status": "error",
+                "errors": error_list
+            }, status=400)
+
+        for error in error_list:
+            messages.error(request, error)
+        return redirect("user_list")
 
     else:
         # Si es un GET, cargamos los formularios vacíos para renderizar la página normal
@@ -644,7 +654,7 @@ def user_delete(request, user_id):
                 accion=RegistroAuditoriaCuenta.Accion.RETIRO,
                 estado_anterior=user.estado_cuenta,
                 estado_nuevo='ELIMINADO',
-                motivo='Eliminación física — cuenta sin actividad.',
+                motivo='EliminaciÃ³n fÃ­sica â€” cuenta sin actividad.',
             )
             user.delete()
 
@@ -769,11 +779,11 @@ def employee_profile_update(request):
     if request.method == "POST":
         perfil = request.user.perfil
 
-        # --- VALIDACIÓN BÁSICA  ---
+        # --- VALIDACIÃ“N BÃSICA  ---
         # 1. Traemos el dato y le quitamos los espacios en blanco
         telefono = request.POST.get("telefono", "").strip()
 
-        # 2. La regla básica: ¿Está vacío?, ¿No es un número?, ¿Es muy corto?
+        # 2. La regla básica: ¿Está vacío, ¿No es un número, ¿Es muy corto
         # (isdigit() es una función nativa de Python que dice si el texto es solo números)
         if not telefono or not telefono.isdigit() or len(telefono) < 7:
             messages.error(request, "El teléfono es obligatorio y debe tener al menos 7 números válidos.")

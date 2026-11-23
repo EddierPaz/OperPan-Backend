@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='task',
-            options={'ordering': ['-prioridad', 'fecha_limite'], 'verbose_name': 'Tarea', 'verbose_name_plural': 'Tareas'},
+            options={'ordering': ['-prioridad', 'fecha_limite'], 'verbose_name': 'Funcion', 'verbose_name_plural': 'Funciones'},
         ),
         migrations.AlterField(
             model_name='task',
@@ -25,3 +25,4 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, choices=[('MANANA', 'Mañana (4am-2pm)'), ('TARDE', 'Tarde (1pm-11pm)')], max_length=20, null=True),
         ),
     ]
+

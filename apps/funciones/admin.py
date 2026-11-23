@@ -1,16 +1,16 @@
 from django.contrib import admin
-from .models import Task
+from .models import Funcion
 
 
-@admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
+@admin.register(Funcion)
+class FuncionAdmin(admin.ModelAdmin):
     """
-    Configuración del panel de administración para el modelo Task.
+    Configuración del panel de administración para el modelo Funcion.
     """
     # ---- Listado ----
     list_display = [
         'titulo',
-        'empleado_nombre',      # ← NUEVO: método personalizado
+        'empleado_nombre',      # â† NUEVO: mÃ©todo personalizado
         'prioridad',
         'estado',
         'fecha_limite',
@@ -30,16 +30,16 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = [
         'titulo',
         'descripcion',
-        'empleado__primer_nombre',      # ← CAMBIO: ahora es PerfilEmpleado
-        'empleado__primer_apellido',    # ← CAMBIO: ahora es PerfilEmpleado
-        'empleado__numero_documento',   # ← NUEVO: búsqueda por documento
+        'empleado__primer_nombre',      # â† CAMBIO: ahora es PerfilEmpleado
+        'empleado__primer_apellido',    # â† CAMBIO: ahora es PerfilEmpleado
+        'empleado__numero_documento',   # â† NUEVO: bÃºsqueda por documento
     ]
     
     # ---- Campos de solo lectura ----
     readonly_fields = [
         'fecha_asignacion',
         'fecha_actualizacion',
-        'fecha_finalizacion',   # ← NUEVO: agregado
+        'fecha_finalizacion',   # â† NUEVO: agregado
         'ultimo_cambio_por',
         'creador',
     ]
@@ -67,7 +67,7 @@ class TaskAdmin(admin.ModelAdmin):
     ordering = ['-fecha_asignacion']
     
     # ============================================================
-    # MÉTODOS PERSONALIZADOS
+    # MÃ‰TODOS PERSONALIZADOS
     # ============================================================
     
     def empleado_nombre(self, obj):

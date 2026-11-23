@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='task',
             name='evidencia',
-            field=models.FileField(blank=True, help_text='Foto o documento opcional como evidencia de finalización', null=True, upload_to='tareas/evidencias/%Y/%m/'),
+            field=models.FileField(blank=True, help_text='Foto o documento opcional como evidencia de finalización', null=True, upload_to='funciones/evidencias/%Y/%m/'),
         ),
     ]
+

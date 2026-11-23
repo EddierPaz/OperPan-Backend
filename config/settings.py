@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'apps.novedades',
     'apps.memorandos',
     'apps.asistencia',
-    'apps.tareas',
+    'apps.funciones',
 ]
 
 # ── Middleware ────────────────────────────────
@@ -58,6 +58,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.usuarios.context_processors.notificaciones_context',
             ],
         },
     },

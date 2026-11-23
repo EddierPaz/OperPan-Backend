@@ -122,8 +122,8 @@
         <i class="bi bi-clock-history me-2"></i>Historial reciente
     </h3>
     <div class="historial-filter-bar">
-        <a href="?filtro=semana" class="btn-filter {% if filtro == 'semana' or not filtro %}active{% endif %}">Esta semana</a>
-        <a href="?filtro=mes" class="btn-filter {% if filtro == 'mes' %}active{% endif %}">Este mes</a>
+        <a href="filtro=semana" class="btn-filter {% if filtro == 'semana' or not filtro %}active{% endif %}">Esta semana</a>
+        <a href="filtro=mes" class="btn-filter {% if filtro == 'mes' %}active{% endif %}">Este mes</a>
     </div>
 </div>
 
@@ -224,7 +224,7 @@
         </table>
     </div>
     <div class="p-3 border-top text-center" style="background: var(--color-surface-subtle);">
-        <a href="?filtro=mes" class="btn-action btn-action-create btn-sm px-4">
+        <a href="filtro=mes" class="btn-action btn-action-create btn-sm px-4">
             <i class="bi bi-calendar-week me-1"></i> Ver mes completo
         </a>
     </div>

@@ -1,5 +1,5 @@
 from datetime import date
-from apps.tareas.models import Task, EstadoTarea
+from apps.funciones.models import Funcion, EstadoFuncion
 from apps.novedades.models import Solicitud, Incapacidad, Certificado
 from apps.memorandos.models import Memorando
 from apps.asistencia.models import Asistencia, Horario
@@ -10,12 +10,12 @@ def notificaciones_context(request):
         'notif_admin_asistencia': 0,
         'notif_admin_horarios': 0,
         'notif_admin_cuentas': 0,
-        'notif_admin_tareas': 0,
+        'notif_admin_funciones': 0,
         'notif_admin_novedades': 0,
         
         'notif_empleado_asistencia': 0, # Por ahora 0, pero el diseño ya está listo
         'notif_empleado_novedades': 0,
-        'notif_empleado_tareas': 0,
+        'notif_empleado_funciones': 0,
         'notif_empleado_memorandos': 0,
     }
     
@@ -40,9 +40,9 @@ def notificaciones_context(request):
         # 3. Cuentas: Usuarios pendientes por primer acceso
         context['notif_admin_cuentas'] = User.objects.filter(estado_cuenta='PENDIENTE').count()
         
-        # 4. Tareas: Pendientes o en progreso
-        context['notif_admin_tareas'] = Task.objects.filter(
-            estado__in=[EstadoTarea.PENDIENTE, EstadoTarea.EN_PROGRESO]
+        # 4. Funciones: Pendientes o en progreso
+        context['notif_admin_funciones'] = Funcion.objects.filter(
+            estado__in=[EstadoFuncion.PENDIENTE, EstadoFuncion.EN_PROGRESO]
         ).count()
         
         # 5. Novedades: Todas las solicitudes pendientes
@@ -55,10 +55,10 @@ def notificaciones_context(request):
     elif request.user.rol == 'empleado' and hasattr(request.user, 'perfil'):
         perfil = request.user.perfil
         
-        # 1. Tareas asignadas no finalizadas
-        context['notif_empleado_tareas'] = Task.objects.filter(
+        # 1. Funciones asignadas no finalizadas
+        context['notif_empleado_funciones'] = Funcion.objects.filter(
             empleado=perfil
-        ).exclude(estado=EstadoTarea.FINALIZADA).count()
+        ).exclude(estado=EstadoFuncion.FINALIZADA).count()
         
         # 2. Novedades propias pendientes
         context['notif_empleado_novedades'] = (

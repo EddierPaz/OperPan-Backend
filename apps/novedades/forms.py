@@ -161,3 +161,4 @@ class CertificadoCrearForm(forms.ModelForm):
             if not archivo.name.lower().endswith(('.pdf', '.jpg', '.jpeg', '.png')):
                 raise forms.ValidationError("Solo se permiten archivos PDF, JPG o PNG.")
         return archivo
+

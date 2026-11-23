@@ -21,14 +21,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     // 2. FILTRADO INSTANTÁNEO CLIENT-SIDE
     // ==========================================
-    const inputBuscar = document.getElementById('buscarTarea');
-    const selectEstado = document.getElementById('filtroEstadoTarea');
-    const selectPrioridad = document.getElementById('filtroPrioridadTarea');
-    const btnLimpiar = document.getElementById('limpiarFiltrosTareas');
+    const inputBuscar = document.getElementById('buscarFuncion');
+    const selectEstado = document.getElementById('filtroEstadoFuncion');
+    const selectPrioridad = document.getElementById('filtroPrioridadFuncion');
+    const btnLimpiar = document.getElementById('limpiarFiltrosFunciones');
 
-    function aplicarFiltrosTareas() {
+    function aplicarFiltrosFunciones() {
 
-        const cards = document.querySelectorAll('#tasksContainer .task-card');
+        const cards = document.querySelectorAll('#funcionesContainer .funcion-card');
         const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
         const estadoSel = selectEstado ? selectEstado.value.toUpperCase() : '';
         const prioridadSel = selectPrioridad ? selectPrioridad.value.toUpperCase() : '';
@@ -69,9 +69,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     [inputBuscar, selectEstado, selectPrioridad].forEach(el => {
         if (el) {
-            el.addEventListener('keyup', aplicarFiltrosTareas);
-            el.addEventListener('input', aplicarFiltrosTareas);
-            el.addEventListener('change', aplicarFiltrosTareas);
+            el.addEventListener('keyup', aplicarFiltrosFunciones);
+            el.addEventListener('input', aplicarFiltrosFunciones);
+            el.addEventListener('change', aplicarFiltrosFunciones);
         }
     });
 
@@ -80,24 +80,24 @@ document.addEventListener('DOMContentLoaded', function () {
             if (inputBuscar) inputBuscar.value = '';
             if (selectEstado) selectEstado.value = '';
             if (selectPrioridad) selectPrioridad.value = '';
-            aplicarFiltrosTareas();
+            aplicarFiltrosFunciones();
         });
     }
 
         // ==========================================
-    // 2.5 MODAL REABRIR TAREA (delegación de eventos)
+    // 2.5 MODAL REABRIR FUNCION (delegación de eventos)
     // ==========================================
-    const modalReabrirEl = document.getElementById('modalReabrirTarea');
+    const modalReabrirEl = document.getElementById('modalReabrirFuncion');
     let modalReabrirInstance = null;
 
     if (modalReabrirEl && typeof bootstrap !== 'undefined') {
         modalReabrirInstance = new bootstrap.Modal(modalReabrirEl);
     }
 
-    // Delegación: captura clicks en cualquier botón con .btn-reabrir-tarea
+    // Delegación: captura clicks en cualquier botón con .btn-reabrir-funcion
     // (funciona en tarjetas, dropdowns y modal de detalle)
     document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-reabrir-tarea');
+        const btn = e.target.closest('.btn-reabrir-funcion');
         if (!btn) return;
 
         e.preventDefault();
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const dropdownMenu = btn.closest('.dropdown-menu');
         if (dropdownMenu) {
             const dropdownToggle = dropdownMenu.closest('.dropdown')
-                ?.querySelector('[data-bs-toggle="dropdown"]');
+                .querySelector('[data-bs-toggle="dropdown"]');
             if (dropdownToggle) {
                 const dd = bootstrap.Dropdown.getInstance(dropdownToggle);
                 if (dd) dd.hide();
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Leer data-* del botón
         const urlEnProgreso = btn.dataset.urlEnProgreso || '';
         const urlPendiente  = btn.dataset.urlPendiente  || '';
-        const titulo        = btn.dataset.titulo        || 'Tarea';
+        const titulo        = btn.dataset.titulo        || 'Funcion';
         const empleado      = btn.dataset.empleado      || '';
         const estadoDefault = btn.dataset.estadoDefault || 'EN_PROGRESO';
 
@@ -166,15 +166,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 3. AUTOCOMPLETADO Y LÓGICA DEL FORMULARIO
+    // 3. AUTOCOMPLETADO Y LÃ“GICA DEL FORMULARIO
     // ==========================================
-    const taskForm = document.getElementById('taskForm');
-    if (!taskForm) return;
+    const funcionForm = document.getElementById('funcionForm');
+    if (!funcionForm) return;
 
     const OTRA_VALUE = 'OTRA';
 
     const empleadosData = leerJSON('empleados-data', {});
-    const tareasPorCargo = leerJSON('tareas-por-cargo', {});
+    const funcionesPorCargo = leerJSON('funciones-por-cargo', {});
     const cargoAreaMap = leerJSON('cargo-area-map', {});
 
     const empleadoSelect = document.getElementById('id_empleado');
@@ -208,9 +208,9 @@ document.addEventListener('DOMContentLoaded', function () {
         fechaInput.setAttribute('min', `${year}-${month}-${day}`);
     }
 
-    // El campo "area" de la tarea no se elige manualmente: se deriva del
+    // El campo "area" de la funcion no se elige manualmente: se deriva del
     // cargo del empleado seleccionado, usando el mapa cargo -> área que
-    // ya se serializa en tareas.html (json_script "cargo-area-map").
+    // ya se serializa en funciones.html (json_script "cargo-area-map").
     function actualizarArea(cargo) {
         if (!areaInput) return;
         areaInput.value = cargoAreaMap[cargo] || '';
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 3.1 VALIDACIÓN DE HORA LÍMITE
+    // 3.1 VALIDACIÃ“N DE HORA LÃMITE
     // ==========================================
     function validarHoraLimite(horaEntrada, horaSalida) {
         if (!horaInput) return;
@@ -377,11 +377,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function poblarTitulos(cargo, tituloPrevio) {
         if (!tituloPreset) return;
         tituloPreset.innerHTML = '';
-        const opciones = tareasPorCargo[cargo] || [];
+        const opciones = funcionesPorCargo[cargo] || [];
 
         const optDefault = document.createElement('option');
         optDefault.value = '';
-        optDefault.textContent = 'Selecciona una tarea sugerida';
+        optDefault.textContent = 'Selecciona una funcion sugerida';
         tituloPreset.appendChild(optDefault);
 
         opciones.forEach(function (op) {
@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
             bloquear(prioridadSelect);
         }
         if (descripcionInput) {
-            descripcionInput.value = `Tarea estándar: ${op.label}.`;
+            descripcionInput.value = `Funcion estándar: ${op.label}.`;
             bloquear(descripcionInput);
         }
     }
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Cambio de tarea preseleccionada
+    // Cambio de funcion preseleccionada
     if (tituloPreset) {
         tituloPreset.addEventListener('change', function () {
             if (this.value === OTRA_VALUE) {
@@ -477,18 +477,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
-            const opciones = (emp && tareasPorCargo[emp.cargo]) || [];
+            const opciones = (emp && funcionesPorCargo[emp.cargo]) || [];
             const op = opciones.find(function (o) { return o.value === tituloPreset.value; });
             if (op) aplicarPreset(op);
         });
     }
 
     // ==========================================
-    // 4. CARGA DE DATOS EXISTENTES (EDICIÓN Y RE-APERTURA TRAS ERROR)
+    // 4. CARGA DE DATOS EXISTENTES (EDICIÃ“N Y RE-APERTURA TRAS ERROR)
     // ==========================================
-    const empleadoActual = taskForm.dataset.empleadoActual;
-    const tituloActual = taskForm.dataset.tituloActual;
-    const turnoActual = taskForm.dataset.turnoActual;
+    const empleadoActual = funcionForm.dataset.empleadoActual;
+    const tituloActual = funcionForm.dataset.tituloActual;
+    const turnoActual = funcionForm.dataset.turnoActual;
 
     if (empleadoActual && empleadoSelect) {
         empleadoSelect.value = empleadoActual;
@@ -507,10 +507,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ==========================================
-    // 5. VALIDACIÓN ANTES DE ENVIAR
+    // 5. VALIDACIÃ“N ANTES DE ENVIAR
     // ==========================================
-    if (taskForm) {
-        taskForm.addEventListener('submit', function(e) {
+    if (funcionForm) {
+        funcionForm.addEventListener('submit', function(e) {
             const horaValor = horaInput ? horaInput.value : '';
             if (!horaValor) {
                 e.preventDefault();

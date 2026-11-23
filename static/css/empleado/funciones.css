@@ -1,5 +1,5 @@
 /* ==============================================
-   MÓDULO DE TAREAS (EMPLEADO)
+   MÓDULO DE FUNCIONES (EMPLEADO)
 ============================================== */
 
 /* Formulario moderno */
@@ -12,8 +12,8 @@
   border: 1px solid var(--color-border-soft);
 }
 
-/* Tarjetas de tareas */
-.task-card {
+/* Tarjetas de funciones */
+.funcion-card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   padding: 1.2rem;
@@ -25,12 +25,12 @@
   position: relative;
 }
 
-.task-card:hover {
+.funcion-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
-.task-card:has(.dropdown-menu.show) {
+.funcion-card:has(.dropdown-menu.show) {
   z-index: 100;
 }
 

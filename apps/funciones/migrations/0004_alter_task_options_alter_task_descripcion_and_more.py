@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='turno_asociado',
-            field=models.CharField(blank=True, choices=[('MAÑANA', 'Mañana (4am-2pm)'), ('TARDE', 'Tarde (1pm-11pm)')], max_length=20, null=True),
+            field=models.CharField(blank=True, choices=[('MAÃ‘ANA', 'MaÃ±ana (4am-2pm)'), ('TARDE', 'Tarde (1pm-11pm)')], max_length=20, null=True),
         ),
     ]
+

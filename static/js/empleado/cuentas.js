@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tabs.forEach(t => t.classList.remove("active"));
             panes.forEach(p => p.classList.remove("active"));
             tab.classList.add("active");
-            document.getElementById(target)?.classList.add("active");
+            document.getElementById(target).classList.add("active");
         });
     });
 
@@ -32,16 +32,16 @@ document.addEventListener("DOMContentLoaded", () => {
             modalTabs.forEach(t => t.classList.remove("active"));
             modalPanes.forEach(p => p.classList.remove("active"));
             tab.classList.add("active");
-            document.getElementById(target)?.classList.add("active");
+            document.getElementById(target).classList.add("active");
         });
     });
 
     // Volver siempre a la primera pestaña interna al cerrar el modal de perfil
-    document.getElementById("editarPerfilModal")?.addEventListener("hidden.bs.modal", () => {
+    document.getElementById("editarPerfilModal").addEventListener("hidden.bs.modal", () => {
         modalTabs.forEach(t => t.classList.remove("active"));
         modalPanes.forEach(p => p.classList.remove("active"));
-        modalTabs[0]?.classList.add("active");
-        modalPanes[0]?.classList.add("active");
+        modalTabs[0].classList.add("active");
+        modalPanes[0].classList.add("active");
     });
 
     // ==========================================
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const input = btn.closest(".usuarios-modal-input-password").querySelector("input");
             const icon = btn.querySelector("i");
             const isHidden = input.type === "password";
-            input.type = isHidden ? "text" : "password";
+            input.type = isHidden  "text" : "password";
             icon.classList.toggle("bi-eye");
             icon.classList.toggle("bi-eye-slash");
         });
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // RESETEAR MODAL DE CONTRASEÑA AL CERRARLO
     // ==========================================
-    document.getElementById("cambiarPasswordModal")?.addEventListener("hidden.bs.modal", () => {
+    document.getElementById("cambiarPasswordModal").addEventListener("hidden.bs.modal", () => {
         const form = document.getElementById("formCambiarPassword");
         if (!form) return;
 

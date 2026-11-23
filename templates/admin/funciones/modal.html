@@ -1,5 +1,5 @@
-{# ==================== MODAL CREAR/EDITAR TAREA ==================== #}
-<div class="modal fade" id="modalTarea" tabindex="-1" aria-hidden="true">
+{# ==================== MODAL CREAR/EDITAR FUNCION ==================== #}
+<div class="modal fade" id="modalFuncion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content modal-detalle">
 
@@ -7,10 +7,10 @@
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-plus-circle-fill"></i>
-                        <span>{% if editando %}Editar Tarea{% else %}Asignar Nueva Tarea{% endif %}</span>
+                        <span>{% if editando %}Editar Funcion{% else %}Asignar Nueva Funcion{% endif %}</span>
                     </div>
                     <p class="modal-detalle-subtitulo mb-0">
-                        {% if editando %}Modifica los datos de la tarea{% else %}Registra una nueva tarea para un empleado{% endif %}
+                        {% if editando %}Modifica los datos de la funcion{% else %}Registra una nueva funcion para un empleado{% endif %}
                     </p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -18,8 +18,8 @@
 
             <div class="modal-body modal-detalle-body">
                 <form method="POST"
-                    action="{% if editando %}{% url 'tareas:admin_tarea_edit' form.instance.pk %}{% else %}{% url 'tareas:admin_tarea_create' %}{% endif %}"
-                    id="taskForm"
+                    action="{% if editando %}{% url 'funciones:admin_funcion_edit' form.instance.pk %}{% else %}{% url 'funciones:admin_funcion_create' %}{% endif %}"
+                    id="funcionForm"
                     data-editando="{{ editando|yesno:'1,0' }}"
                     data-empleado-actual="{{ form.empleado.value|default:'' }}"
                     data-titulo-actual="{{ form.titulo.value|default:'' }}"
@@ -85,11 +85,11 @@
 
                     <hr class="my-4">
 
-                    <!-- DETALLES DE LA TAREA -->
+                    <!-- DETALLES DE LA FUNCION -->
                     <div class="modal-detalle-grid">
                         <div class="modal-detalle-bloque-largo">
                             <span class="modal-detalle-bloque-largo-label">
-                                <i class="bi bi-clipboard-check me-1"></i> Detalles de la Tarea
+                                <i class="bi bi-clipboard-check me-1"></i> Detalles de la Funcion
                             </span>
                         </div>
 
@@ -101,7 +101,7 @@
                                     <option value="">Selecciona un empleado primero</option>
                                 </select>
                                 <input type="text" class="form-control mt-2" name="titulo" id="id_titulo"
-                                    required placeholder="Escribe el título de la tarea"
+                                    required placeholder="Escribe el título de la funcion"
                                     value="{{ form.titulo.value|default:'' }}"
                                     style="display:none;">
                             </span>
@@ -162,7 +162,7 @@
                             <i class="bi bi-eraser"></i> Limpiar campos
                         </button>
                         <button type="submit" class="btn-action btn-action-save">
-                            <i class="bi bi-save"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} tarea
+                            <i class="bi bi-save"></i>{% if editando %}Actualizar{% else %}Guardar{% endif %} funcion
                         </button>
                     </div>
                 </form>
@@ -171,9 +171,9 @@
     </div>
 </div>
 
-{# ==================== MODAL VER DETALLE DE TAREA ==================== #}
-{% if tarea_detalle %}
-<div class="modal fade show" id="adminTaskDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
+{# ==================== MODAL VER DETALLE DE FUNCION ==================== #}
+{% if funcion_detalle %}
+<div class="modal fade show" id="adminFuncionDetailModal" tabindex="-1" aria-hidden="true" style="display: block; background: rgba(0,0,0,0.5);" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content modal-detalle">
 
@@ -181,11 +181,11 @@
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-info-circle-fill"></i>
-                        <span>Detalle de Tarea</span>
+                        <span>Detalle de Funcion</span>
                     </div>
-                    <p class="modal-detalle-subtitulo mb-0">{{ tarea_detalle.titulo }}</p>
+                    <p class="modal-detalle-subtitulo mb-0">{{ funcion_detalle.titulo }}</p>
                 </div>
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-close" aria-label="Cerrar"></a>
+                <a href="{% url 'funciones:admin_funciones_list' %}" class="btn-close" aria-label="Cerrar"></a>
             </div>
 
             <div class="modal-body modal-detalle-body">
@@ -201,14 +201,14 @@
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Estado</span>
                         <span class="modal-detalle-value">
-                            {% if tarea_detalle.esta_vencida %}
+                            {% if funcion_detalle.esta_vencida %}
                                 <span class="badge priority-high">Vencida</span>
-                            {% elif tarea_detalle.estado == 'PENDIENTE' %}
-                                <span class="badge badge-status badge-pendiente">{{ tarea_detalle.get_estado_display }}</span>
-                            {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                                <span class="badge badge-status badge-progreso">{{ tarea_detalle.get_estado_display }}</span>
-                            {% elif tarea_detalle.estado == 'FINALIZADA' %}
-                                <span class="badge badge-status badge-finalizada">{{ tarea_detalle.get_estado_display }}</span>
+                            {% elif funcion_detalle.estado == 'PENDIENTE' %}
+                                <span class="badge badge-status badge-pendiente">{{ funcion_detalle.get_estado_display }}</span>
+                            {% elif funcion_detalle.estado == 'EN_PROGRESO' %}
+                                <span class="badge badge-status badge-progreso">{{ funcion_detalle.get_estado_display }}</span>
+                            {% elif funcion_detalle.estado == 'FINALIZADA' %}
+                                <span class="badge badge-status badge-finalizada">{{ funcion_detalle.get_estado_display }}</span>
                             {% endif %}
                         </span>
                     </div>
@@ -216,9 +216,9 @@
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Prioridad</span>
                         <span class="modal-detalle-value">
-                            {% if tarea_detalle.prioridad == 'ALTA' %}
+                            {% if funcion_detalle.prioridad == 'ALTA' %}
                                 <span class="badge priority-high">Alta</span>
-                            {% elif tarea_detalle.prioridad == 'MEDIA' %}
+                            {% elif funcion_detalle.prioridad == 'MEDIA' %}
                                 <span class="badge priority-medium">Media</span>
                             {% else %}
                                 <span class="badge priority-low">Baja</span>
@@ -234,7 +234,7 @@
                     </div>
 
                     <div class="modal-detalle-item" style="grid-column: 1 / -1;">
-                        <span class="modal-detalle-value fw-normal">{{ tarea_detalle.descripcion }}</span>
+                        <span class="modal-detalle-value fw-normal">{{ funcion_detalle.descripcion }}</span>
                     </div>
 
                     <!-- ASIGNACIÓN -->
@@ -246,27 +246,27 @@
 
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Asignado a</span>
-                        <span class="modal-detalle-value">{{ tarea_detalle.empleado.nombre_completo }}</span>
+                        <span class="modal-detalle-value">{{ funcion_detalle.empleado.nombre_completo }}</span>
                     </div>
 
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Cargo</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.empleado.get_cargo_display|default:"—" }}
+                            {{ funcion_detalle.empleado.get_cargo_display|default:"—" }}
                         </span>
                     </div>
 
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Turno</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.get_turno_asociado_display|default:"—" }}
+                            {{ funcion_detalle.get_turno_asociado_display|default:"—" }}
                         </span>
                     </div>
 
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Área</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.get_area_display|default:"—" }}
+                            {{ funcion_detalle.get_area_display|default:"—" }}
                         </span>
                     </div>
 
@@ -280,9 +280,9 @@
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Fecha límite</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.fecha_limite|date:"Y-m-d" }}
-                            {% if tarea_detalle.hora_limite %}
-                                <span class="text-muted">— {{ tarea_detalle.hora_limite|time:"H:i" }}</span>
+                            {{ funcion_detalle.fecha_limite|date:"Y-m-d" }}
+                            {% if funcion_detalle.hora_limite %}
+                                <span class="text-muted">— {{ funcion_detalle.hora_limite|time:"H:i" }}</span>
                             {% endif %}
                         </span>
                     </div>
@@ -290,51 +290,51 @@
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Asignada el</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.fecha_asignacion|date:"Y-m-d H:i" }}
+                            {{ funcion_detalle.fecha_asignacion|date:"Y-m-d H:i" }}
                         </span>
                     </div>
 
-                    {% if tarea_detalle.fecha_finalizacion %}
+                    {% if funcion_detalle.fecha_finalizacion %}
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Finalizada el</span>
                         <span class="modal-detalle-value text-success">
                             <i class="bi bi-check-circle-fill me-1"></i>
-                            {{ tarea_detalle.fecha_finalizacion|date:"Y-m-d H:i" }}
+                            {{ funcion_detalle.fecha_finalizacion|date:"Y-m-d H:i" }}
                         </span>
                     </div>
                     {% endif %}
 
-                    {% if tarea_detalle.ultimo_cambio_por %}
+                    {% if funcion_detalle.ultimo_cambio_por %}
                     <div class="modal-detalle-item">
                         <span class="modal-detalle-label">Último cambio por</span>
                         <span class="modal-detalle-value">
-                            {{ tarea_detalle.ultimo_cambio_por.username }}
+                            {{ funcion_detalle.ultimo_cambio_por.username }}
                         </span>
                     </div>
                     {% endif %}
 
                     <!-- EVIDENCIA -->
-                    {% if tarea_detalle.estado == 'FINALIZADA' %}
+                    {% if funcion_detalle.estado == 'FINALIZADA' %}
                     <div class="modal-detalle-bloque-largo">
                         <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-paperclip me-1"></i> Evidencia de finalización
                         </span>
                     </div>
                     <div class="modal-detalle-item" style="grid-column: 1 / -1;">
-                        {% if tarea_detalle.evidencia %}
+                        {% if funcion_detalle.evidencia %}
                             <div class="d-flex flex-wrap gap-2 align-items-center">
-                                <a href="{{ tarea_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer"
+                                <a href="{{ funcion_detalle.evidencia.url }}" target="_blank" rel="noopener noreferrer"
                                    class="btn-action btn-action-download">
                                     <i class="bi bi-paperclip"></i> Ver evidencia
                                 </a>
-                                <a href="{{ tarea_detalle.evidencia.url }}" download
+                                <a href="{{ funcion_detalle.evidencia.url }}" download
                                    class="btn-action btn-action-view">
                                     <i class="bi bi-download"></i> Descargar
                                 </a>
                             </div>
                             <div class="text-muted small mt-2">
                                 <i class="bi bi-file-earmark me-1"></i>
-                                {{ tarea_detalle.evidencia.name }}
+                                {{ funcion_detalle.evidencia.name }}
                             </div>
                         {% else %}
                             <span class="modal-detalle-value fw-normal text-muted">
@@ -346,7 +346,7 @@
                     {% endif %}
 
                     <!-- MEMORANDO -->
-                    {% if tarea_detalle.memorando_generado %}
+                    {% if funcion_detalle.memorando_generado %}
                     <div class="modal-detalle-bloque-largo">
                         <span class="modal-detalle-bloque-largo-label">
                             <i class="bi bi-file-earmark-pdf me-1"></i> Memorando asociado
@@ -355,8 +355,8 @@
                     <div class="modal-detalle-item" style="grid-column: 1 / -1;">
                         <span class="modal-detalle-value">
                             <i class="bi bi-robot text-info me-1"></i>
-                            {{ tarea_detalle.memorando_generado.consecutivo }}
-                            — {{ tarea_detalle.memorando_generado.asunto }}
+                            {{ funcion_detalle.memorando_generado.consecutivo }}
+                            — {{ funcion_detalle.memorando_generado.asunto }}
                         </span>
                     </div>
                     {% endif %}
@@ -367,43 +367,43 @@
             {# ==================== FOOTER CON ACCIONES DINÁMICAS ==================== #}
             <div class="modal-footer modal-detalle-footer">
 
-                {% if tarea_detalle.esta_vencida %}
+                {% if funcion_detalle.esta_vencida %}
                     <span class="text-muted small me-auto">
                         <i class="bi bi-lock me-1"></i>
-                        Tarea vencida — no se puede modificar
+                        Función vencida — no se puede modificar
                     </span>
 
-                {% elif tarea_detalle.estado == 'EN_PROGRESO' %}
-                    <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea_detalle.pk %}?estado=FINALIZADA&next={% url 'tareas:admin_tareas_list' %}"
+                {% elif funcion_detalle.estado == 'EN_PROGRESO' %}
+                    <a href="{% url 'funciones:admin_funcion_cambiar_estado' funcion_detalle.pk %}?estado=FINALIZADA&next={% url 'funciones:admin_funciones_list' %}"
                        class="btn-action btn-corporate-thi">
-                        <i class="bi bi-check-circle"></i> Finalizar tarea
+                        <i class="bi bi-check-circle"></i> Finalizar funcion
                     </a>
 
-                {% elif tarea_detalle.estado == 'FINALIZADA' and tarea_detalle.puede_reabrirse %}
+                {% elif funcion_detalle.estado == 'FINALIZADA' and funcion_detalle.puede_reabrirse %}
                     <button type="button"
-                            class="btn-action btn-corporate-sec btn-reabrir-tarea"
-                            data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea_detalle.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                            data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea_detalle.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                            data-titulo="{{ tarea_detalle.titulo }}"
-                            data-empleado="{{ tarea_detalle.empleado.nombre_completo }}"
+                            class="btn-action btn-corporate-sec btn-reabrir-funcion"
+                            data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion_detalle.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                            data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion_detalle.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                            data-titulo="{{ funcion_detalle.titulo }}"
+                            data-empleado="{{ funcion_detalle.empleado.nombre_completo }}"
                             data-estado-default="EN_PROGRESO">
                         <i class="bi bi-arrow-counterclockwise"></i> Reabrir
                     </button>
 
-                {% elif tarea_detalle.estado == 'FINALIZADA' %}
+                {% elif funcion_detalle.estado == 'FINALIZADA' %}
                     <span class="text-muted small me-auto">
                         <i class="bi bi-lock me-1"></i>
-                        Tarea finalizada — su fecha límite ya pasó
+                        Función finalizada — su fecha límite ya pasó
                     </span>
 
-                {% elif tarea_detalle.estado == 'PENDIENTE' %}
+                {% elif funcion_detalle.estado == 'PENDIENTE' %}
                     <span class="text-muted small me-auto">
                         <i class="bi bi-clock me-1"></i>
                         Esperando inicio del empleado
                     </span>
                 {% endif %}
 
-                <a href="{% url 'tareas:admin_tareas_list' %}" class="btn-action btn-action-cancel">
+                <a href="{% url 'funciones:admin_funciones_list' %}" class="btn-action btn-action-cancel">
                     <i class="bi bi-x-circle"></i> Cerrar
                 </a>
             </div>
@@ -413,8 +413,8 @@
 </div>
 {% endif %}
 
-{# ==================== MODAL REABRIR TAREA ==================== #}
-<div class="modal fade" id="modalReabrirTarea" tabindex="-1" aria-hidden="true">
+{# ==================== MODAL REABRIR FUNCION ==================== #}
+<div class="modal fade" id="modalReabrirFuncion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-detalle">
 
@@ -422,7 +422,7 @@
                 <div>
                     <div class="modal-detalle-titulo">
                         <i class="bi bi-arrow-counterclockwise"></i>
-                        <span>Reabrir tarea</span>
+                        <span>Reabrir funcion</span>
                     </div>
                     <p class="modal-detalle-subtitulo mb-0" id="reabrirSubtitulo">—</p>
                 </div>
@@ -432,7 +432,7 @@
             <div class="modal-body modal-detalle-body">
                 <p class="text-muted small mb-3">
                     <i class="bi bi-info-circle me-1"></i>
-                    Selecciona el estado al que se va a revertir la tarea. La evidencia adjunta por el empleado se conserva.
+                    Selecciona el estado al que se va a revertir la funcion. La evidencia adjunta por el empleado se conserva.
                 </p>
 
                 <div class="d-flex flex-column gap-2">
@@ -445,7 +445,7 @@
                                 En progreso
                             </div>
                             <small class="text-muted">
-                                El empleado puede continuar trabajando en la tarea.
+                                El empleado puede continuar trabajando en la funcion.
                             </small>
                         </div>
                     </label>
@@ -479,7 +479,7 @@
     </div>
 </div>
 
-{# ==================== MODAL ELIMINAR TAREA ==================== #}
+{# ==================== MODAL ELIMINAR FUNCION ==================== #}
 <div class="modal fade confirm-modal" id="confirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -488,7 +488,7 @@
                 <div class="confirm-modal-icon confirm-modal-icon--danger">
                     <i class="bi bi-x-lg"></i>
                 </div>
-                <h5 class="confirm-modal-title" id="confirmModalTitle">¿Eliminar permanentemente esta tarea?</h5>
+                <h5 class="confirm-modal-title" id="confirmModalTitle">¿Eliminar permanentemente esta función?</h5>
                 <p class="confirm-modal-text">
                     Esta acción se registrará en auditoría y no se puede deshacer.
                 </p>
@@ -506,3 +506,4 @@
         </div>
     </div>
 </div>
+

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const novedadesContainer = document.getElementById('novedadesContainer');
 
     // ============================================================
-    // CONFIGURACIÓN DE FECHAS BASE
+    // CONFIGURACIÃ“N DE FECHAS BASE
     // ============================================================
     const formatearFechaISO = (fecha) => {
         const y = fecha.getFullYear();
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const minSolicitudStr = formatearFechaISO(minSolicitud);
 
     // ============================================================
-    // LÓGICA DEL MODAL CREAR: Mostrar/Ocultar y Habilitar/Deshabilitar
+    // LÃ“GICA DEL MODAL CREAR: Mostrar/Ocultar y Habilitar/Deshabilitar
     // ============================================================
     const mostrarFormularioSegunTipo = () => {
         if (!tipoSelect) return;
@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Esta función es clave: oculta el div, deshabilita los inputs y quita el required
         const toggleForm = (form, isVisible) => {
             if (!form) return;
-            form.style.display = isVisible ? 'block' : 'none';
-            const inputs = form.querySelectorAll('input, select, textarea');
+            form.style.display = isVisible  'block' : 'none';
+            const inputs = form.querySelectorAll('input, select, texfuncion');
             inputs.forEach(input => {
                 input.disabled = !isVisible;
                 if (!isVisible) input.required = false; // Evita el error "not focusable"
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const incapDias = document.getElementById('incapacidadDias');
 
     const actualizarDiasIncapacidad = () => {
-        if (!incapInicio?.value || !incapFin?.value) {
+        if (!incapInicio.value || !incapFin.value) {
             if (incapDias) incapDias.value = '';
             return;
         }
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (solicitudFin) solicitudFin.min = solicitudInicio.value || hoyStr;
 
             // Cambio de turno = un solo día: fecha_fin siempre igual a fecha_inicio
-            const tipoAct = tipoSelect?.value === 'solicitud' ? innerTipoSelect?.value : tipoSelect?.value;
+            const tipoAct = tipoSelect.value === 'solicitud'  innerTipoSelect.value : tipoSelect.value;
             if (tipoAct === 'cambio_turno' && solicitudFin) solicitudFin.value = solicitudInicio.value;
         });
     }
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const actualizarCamposCertificado = () => {
         if (!certTipo) return;
         if (periodoGroup) {
-            periodoGroup.style.display = certTipo.value === 'ingresos' ? 'block' : 'none';
+            periodoGroup.style.display = certTipo.value === 'ingresos'  'block' : 'none';
         }
     };
 
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tarjetas.forEach(card => {
             const matchTipo = card.dataset.tipo === tipoActual;
             const matchEstado = estadoActual === 'todas' || card.dataset.estado === estadoActual;
-            card.style.display = (matchTipo && matchEstado) ? '' : 'none';
+            card.style.display = (matchTipo && matchEstado)  '' : 'none';
             if (matchTipo && matchEstado) visibles++;
         });
 
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 novedadesContainer.appendChild(msg);
             }
             const t = { 'solicitud': 'solicitudes', 'incapacidad': 'incapacidades', 'certificado': 'certificados' }[tipoActual] || 'novedades';
-            const e = estadoActual !== 'todas' ? ` ${estadoActual}s` : '';
+            const e = estadoActual !== 'todas'  ` ${estadoActual}s` : '';
             msg.innerHTML = `<div class="empty-history-icon"><i class="bi bi-search"></i></div><h5>Sin resultados</h5><p>No tienes ${t}${e} en el historial.</p>`;
         } else if (msg) {
             msg.remove();
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MODAL: VER DETALLE
     // ============================================================
     const modalDetalleEl = document.getElementById('modalDetalleSolicitud');
-    const modalDetalle = modalDetalleEl ? new bootstrap.Modal(modalDetalleEl) : null;
+    const modalDetalle = modalDetalleEl  new bootstrap.Modal(modalDetalleEl) : null;
 
     function getTipoIcon(tipo) {
         const icons = {
@@ -368,11 +368,11 @@ document.addEventListener('DOMContentLoaded', () => {
             badge.textContent = getEstadoLabel(estado);
             badge.className = `novedad-detalle-estado ${getEstadoBadge(estado)}`;
             
-            document.getElementById('detalleTipo').textContent = d.titulo || '—';
+            document.getElementById('detalleTipo').textContent = d.titulo || 'â€”';
             
             const fechasContainer = document.getElementById('detalleFechasContainer');
             const fechasEl = document.getElementById('detalleFechas');
-            if (d.subtitulo && d.subtitulo.includes('→')) {
+            if (d.subtitulo && d.subtitulo.includes('â†’')) {
                 const fechas = d.subtitulo.split('·')[1] || d.subtitulo;
                 fechasEl.textContent = fechas.trim();
                 fechasContainer.style.display = 'block';
@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         editarBtn.style.display = 'inline-flex';
                         editarBtn.onclick = function(e) {
                             e.stopPropagation();
-                            modalDetalle?.hide();
+                            modalDetalle.hide();
                             setTimeout(() => editarOriginal.click(), 300);
                         };
                     }
@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         eliminarBtn.style.display = 'inline-flex';
                         eliminarBtn.onclick = function(e) {
                             e.stopPropagation();
-                            modalDetalle?.hide();
+                            modalDetalle.hide();
                             setTimeout(() => eliminarOriginal.click(), 300);
                         };
                     }
@@ -450,10 +450,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================================================
-    // MODAL: CONFIRMAR ELIMINACIÓN
+    // MODAL: CONFIRMAR ELIMINACIÃ“N
     // ============================================================
     const modalEliminarEl = document.getElementById('modalConfirmarEliminar');
-    const modalEliminar = modalEliminarEl ? new bootstrap.Modal(modalEliminarEl) : null;
+    const modalEliminar = modalEliminarEl  new bootstrap.Modal(modalEliminarEl) : null;
     const btnConfirmarEliminacion = document.getElementById('btnConfirmarEliminacion');
     let urlParaEliminar = '';
 
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MODAL: EDITAR NOVEDAD (AJAX)
     // ============================================================
     const modalEditarEl = document.getElementById('modalEditarSolicitud');
-    const modalEditar = modalEditarEl ? new bootstrap.Modal(modalEditarEl) : null;
+    const modalEditar = modalEditarEl  new bootstrap.Modal(modalEditarEl) : null;
     const formEditar = document.getElementById('formEditarSolicitud');
     const btnGuardarEdicion = document.getElementById('btnGuardarEdicion');
     let urlParaEditar = '';
@@ -596,10 +596,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const formData = new FormData();
                 const inputInicioEdit = document.getElementById('editarFechaInicio');
-                const fechaInicio = inputInicioEdit?.value || '';
-                const fechaFin = document.getElementById('editarFechaFin')?.value || '';
+                const fechaInicio = inputInicioEdit.value || '';
+                const fechaFin = document.getElementById('editarFechaFin').value || '';
 
-                if (inputInicioEdit?.min && fechaInicio && fechaInicio < inputInicioEdit.min) {
+                if (inputInicioEdit.min && fechaInicio && fechaInicio < inputInicioEdit.min) {
                     if (btnGuardarEdicion) {
                         btnGuardarEdicion.disabled = false;
                         btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
@@ -677,11 +677,11 @@ document.addEventListener('DOMContentLoaded', () => {
     filtrarHistorial();
 
     // ============================================================
-    // VALIDACIÓN FINAL DEL SUBMIT
+    // VALIDACIÃ“N FINAL DEL SUBMIT
     // ============================================================
     if (solicitudForm) {
         solicitudForm.addEventListener('submit', function(e) {
-            const mainTipo = tipoSelect?.value;
+            const mainTipo = tipoSelect.value;
             let tipoEfectivo = mainTipo;
 
             if (mainTipo === 'solicitud' && innerTipoSelect) {
@@ -713,9 +713,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fechaFin = document.getElementById('incapacidadFechaFin');
                 const archivo = document.getElementById('incapacidadAdjunto');
 
-                if (!fechaInicio?.value) { e.preventDefault(); alert('La fecha de inicio es obligatoria.'); return false; }
-                if (!fechaFin?.value) { e.preventDefault(); alert('La fecha de fin es obligatoria.'); return false; }
-                if (!archivo?.files || archivo.files.length === 0) { e.preventDefault(); alert('Debes adjuntar el soporte médico.'); return false; }
+                if (!fechaInicio.value) { e.preventDefault(); alert('La fecha de inicio es obligatoria.'); return false; }
+                if (!fechaFin.value) { e.preventDefault(); alert('La fecha de fin es obligatoria.'); return false; }
+                if (!archivo.files || archivo.files.length === 0) { e.preventDefault(); alert('Debes adjuntar el soporte médico.'); return false; }
             }
             
             return true;
@@ -736,9 +736,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (errorMessages.length > 0) {
         const modalCrear = new bootstrap.Modal(document.getElementById('modalsolicitudes'));
         modalCrear.show();
-        const mainTipo = document.querySelector('#tipoSolicitud')?.value;
+        const mainTipo = document.querySelector('#tipoSolicitud').value;
         if (mainTipo) mostrarFormularioSegunTipo();
     }
 
-    console.log('✅ OperPan - novedades.js cargado correctamente');
+    console.log('âœ… OperPan - novedades.js cargado correctamente');
 });
+

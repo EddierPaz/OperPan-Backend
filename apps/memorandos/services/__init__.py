@@ -1,6 +1,6 @@
-# apps/memorandos/services/__init__.py
+﻿# apps/memorandos/services/__init__.py
 from .services import (
-    tareas_vencidas_sin_memorando,
+    funciones_vencidas_sin_memorando,
     emitir_memorando_automatico,
     verificar_y_generar_memorando,
 )
@@ -12,7 +12,7 @@ from .asistencia import (
 )
 
 __all__ = [
-    'tareas_vencidas_sin_memorando',
+    'funciones_vencidas_sin_memorando',
     'emitir_memorando_automatico',
     'verificar_y_generar_memorando',
     'verificar_tardanzas_empleado',

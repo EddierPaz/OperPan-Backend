@@ -94,13 +94,13 @@
 
 /* Cards con gradiente suave */
 .asistencia-card,
-.tareas-card,
+.funciones-card,
 .novedades-card {
   background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-subtle) 100%);
 }
 
 .asistencia-card:hover,
-.tareas-card:hover,
+.funciones-card:hover,
 .novedades-card:hover {
   background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-primary-soft-2) 100%);
 }
@@ -160,9 +160,9 @@
 }
 
 /* ============================================
-   TAREAS CARD - SCROLL FIJO
+   FUNCIONS CARD - SCROLL FIJO
    ============================================ */
-.tareas-card {
+.funciones-card {
   max-height: 480px;
   overflow: hidden;
   display: flex;
@@ -282,7 +282,7 @@
 }
 
 /* ============================================
-   LISTAS DE TAREAS Y NOVEDADES - CLICKEABLES
+   LISTAS DE FUNCIONS Y NOVEDADES - CLICKEABLES
    ============================================ */
 .list-group {
   margin-bottom: 0;
@@ -305,7 +305,7 @@
   border-bottom: none;
 }
 
-.tarea-link,
+.funcion-link,
 .novedad-link {
   color: var(--color-text);
   padding: 0.4rem 0.2rem;
@@ -313,13 +313,13 @@
   transition: all 0.2s ease;
 }
 
-.tarea-link:hover,
+.funcion-link:hover,
 .novedad-link:hover {
   background: var(--color-surface-subtle);
   color: var(--color-primary);
 }
 
-.tarea-link .badge,
+.funcion-link .badge,
 .novedad-link .badge {
   font-weight: 500;
   border-radius: 40px;
@@ -327,24 +327,24 @@
   font-size: 0.65rem;
 }
 
-.tarea-link .text-muted,
+.funcion-link .text-muted,
 .novedad-link .text-muted {
   font-size: 0.7rem;
   font-weight: 400;
 }
 
-.tarea-link .text-danger {
+.funcion-link .text-danger {
   font-weight: 500;
 }
 
-.tarea-link i.bi-chevron-right,
+.funcion-link i.bi-chevron-right,
 .novedad-link i.bi-chevron-right {
   opacity: 0.3;
   transition: all 0.2s;
   font-size: 0.8rem;
 }
 
-.tarea-link:hover i.bi-chevron-right,
+.funcion-link:hover i.bi-chevron-right,
 .novedad-link:hover i.bi-chevron-right {
   opacity: 0.7;
   transform: translateX(3px);
@@ -552,7 +552,7 @@ footer i {
     height: 400px;
   }
 
-  .tareas-card {
+  .funciones-card {
     max-height: 500px;
   }
 }
@@ -574,7 +574,7 @@ footer i {
     height: 350px;
   }
 
-  .tareas-card {
+  .funciones-card {
     max-height: 420px;
   }
 }
@@ -585,7 +585,7 @@ footer i {
     padding: 1.5rem;
   }
 
-  /* En tablet: 2 columnas para la primera fila (Asistencia + Tareas) y Novedades abajo */
+  /* En tablet: 2 columnas para la primera fila (Asistencia + Funcions) y Novedades abajo */
   .fila-principal .col-md-6 {
     flex: 0 0 50%;
     max-width: 50%;
@@ -617,7 +617,7 @@ footer i {
     height: 260px;
   }
 
-  .tareas-card {
+  .funciones-card {
     max-height: 380px;
   }
 
@@ -688,12 +688,12 @@ footer i {
     padding: 0;
   }
 
-  .tarea-link,
+  .funcion-link,
   .novedad-link {
     padding: 0.3rem 0.2rem;
   }
 
-  .tarea-link .text-muted,
+  .funcion-link .text-muted,
   .novedad-link .text-muted {
     font-size: 0.6rem;
   }
@@ -743,7 +743,7 @@ footer i {
     height: 200px;
   }
 
-  .tareas-card {
+  .funciones-card {
     max-height: 300px;
   }
 
@@ -781,12 +781,12 @@ footer i {
     padding: 0.2rem 0.05rem;
   }
 
-  .tarea-link,
+  .funcion-link,
   .novedad-link {
     padding: 0.2rem 0.1rem;
   }
 
-  .tarea-link .badge,
+  .funcion-link .badge,
   .novedad-link .badge {
     font-size: 0.5rem;
     padding: 0.1rem 0.3rem;
@@ -819,7 +819,7 @@ footer i {
     height: 160px;
   }
 
-  .tareas-card {
+  .funciones-card {
     max-height: 250px;
   }
 

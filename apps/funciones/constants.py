@@ -2,7 +2,7 @@ from datetime import time
 from .models import Turno
 
 
-# Cargo -> área operativa sugerida (Task.area). El admin la puede cambiar igual.
+# Cargo -> área operativa sugerida (Funcion.area). El admin la puede cambiar igual.
 CARGO_AREA_MAP = {
     'mesero': 'MOSTRADOR',
     'cajero': 'CAJA',
@@ -15,8 +15,8 @@ CARGO_AREA_MAP = {
 
 OTRA_VALUE = 'OTRA'
 
-# Catálogo de tareas predefinidas por cargo, con prioridad automática
-TAREAS_POR_CARGO = {
+# Catálogo de funciones predefinidas por cargo, con prioridad automática
+FUNCIONES_POR_CARGO = {
     'mesero': [
         {'value': 'atender_mesas', 'label': 'Atender mesas', 'prioridad': 'ALTA'},
         {'value': 'tomar_pedidos', 'label': 'Tomar pedidos', 'prioridad': 'ALTA'},
@@ -70,17 +70,17 @@ TAREAS_POR_CARGO = {
 
 
 # ============================================================
-# REGLAS DE NEGOCIO — MEMORANDOS AUTOMÁTICOS
+# REGLAS DE NEGOCIO â€” MEMORANDOS AUTOMÃTICOS
 # ============================================================
-# Cantidad de tareas vencidas SIN memorando previo que dispara
+# Cantidad de funciones vencidas SIN memorando previo que dispara
 # la emisión automática de un memorando de llamado de atención.
-# Cada bloque de N tareas vencidas genera 1 memorando.
-UMBRAL_TAREAS_VENCIDAS_MEMORANDO = 3
+# Cada bloque de N funciones vencidas genera 1 memorando.
+UMBRAL_FUNCIONES_VENCIDAS_MEMORANDO = 3
 
 # ============================================================
-# REAPERTURA DE TAREAS
+# REAPERTURA DE FUNCIONES
 # ============================================================
 # Días de margen después de `fecha_limite` durante los cuales una
-# tarea FINALIZADA todavía se puede reabrir. Pasado este margen,
-# la tarea queda como histórica y no admite cambios.
+# funcion FINALIZADA todavía se puede reabrir. Pasado este margen,
+# la funcion queda como histórica y no admite cambios.
 DIAS_MARGEN_REAPERTURA = 2

@@ -1,5 +1,5 @@
 // ============================================================
-// MEMORANDOS.JS - MÓDULO DE MEMORANDOS
+// MEMORANDOS.JS - MÃ“DULO DE MEMORANDOS
 // Panel de administración de novedades - OperPan
 // ============================================================
 
@@ -77,7 +77,7 @@
             if (typeof showMessage === 'function') {
 
                 showMessage(
-                    '❌ No se pudieron cargar los empleados.'
+                    'âŒ No se pudieron cargar los empleados.'
                 );
 
             }
@@ -98,7 +98,7 @@
             const timestamp = new Date().getTime();
 
             const resp =
-                await fetch(`/memorandos/?_=${timestamp}`);
+                await fetch(`/memorandos/_=${timestamp}`);
 
             if (!resp.ok) {
 
@@ -208,7 +208,7 @@
 
             const btnDescarga = m.archivo_pdf
 
-                ? `
+                 `
                     <a
                         href="/memorandos/${m.id}/descargar/"
                         class="btn-action btn-action-download"
@@ -230,7 +230,7 @@
             const empleadoConCargo =
                 m.empleado_cargo
 
-                    ? `${m.empleado}
+                     `${m.empleado}
                         <br>
                         <small
                             class="text-muted"
@@ -266,7 +266,7 @@
                     <td data-label="Fecha emisión">
                         ${
                             m.fecha_emision
-                                ? new Date(
+                                 new Date(
                                     m.fecha_emision
                                   ).toLocaleString('es-CO')
                                 : 'N/A'
@@ -275,10 +275,10 @@
 
                     <td data-label="Generado por">
                         ${m.es_automatico
-                            ? `<span class="text-muted fst-italic">
+                             `<span class="text-muted fst-italic">
                                    <i class="bi bi-robot me-1"></i>Sistema
                                </span>`
-                            : (m.generado_por || '—')}
+                            : (m.generado_por || 'â€”')}
                     </td>
 
                     <td data-label="Acciones">
@@ -308,13 +308,13 @@
 
 
         const total =
-            data ? data.length : 0;
+            data  data.length : 0;
 
 
         const esteMes =
             data
 
-                ? data.filter(m => {
+                 data.filter(m => {
 
                     try {
 
@@ -340,7 +340,7 @@
         const hoyCount =
             data
 
-                ? data.filter(m => {
+                 data.filter(m => {
 
                     try {
 
@@ -449,7 +449,7 @@
 
 
         // ========================================================
-        // BOTÓN LIMPIAR
+        // BOTÃ“N LIMPIAR
         // ========================================================
 
         const btnLimpiar =
@@ -597,13 +597,13 @@
 
 
                     // ====================================================
-                    // VALIDACIÓN
+                    // VALIDACIÃ“N
                     // ====================================================
 
                     if (!empleadoId) {
 
                         showMessage(
-                            '⚠️ Por favor seleccione un empleado.',
+                            'âš ï¸ Por favor seleccione un empleado.',
                             'warning'
                         );
 
@@ -655,7 +655,7 @@
 
 
                     // ====================================================
-                    // ÉXITO
+                    // Ã‰XITO
                     // ====================================================
 
                     if (
@@ -670,7 +670,7 @@
                                     'modalMemorando'
                                 )
                             )
-                            ?.hide();
+                            .hide();
 
 
                         // Agregar localmente
@@ -698,17 +698,17 @@
 
 
                         // ====================================================
-                        // NOTIFICACIÓN GLOBAL OPERPAN
+                        // NOTIFICACIÃ“N GLOBAL OPERPAN
                         // ====================================================
 
                         const consecutivo =
                             data.consecutivo
-                                ? ` (${data.consecutivo})`
+                                 ` (${data.consecutivo})`
                                 : '';
 
 
                         showMessage(
-                            `✅ Memorando generado correctamente${consecutivo}.`,
+                            `âœ… Memorando generado correctamente${consecutivo}.`,
                             'success'
                         );
 
@@ -739,7 +739,7 @@
                     else {
 
                         showMessage(
-                            `❌ ${
+                            `âŒ ${
                                 data.error ||
                                 data.detalles ||
                                 'No se pudo procesar la solicitud.'
@@ -759,7 +759,7 @@
 
 
                     showMessage(
-                        '❌ No se pudo conectar con el servidor. Verifique su conexión e intente nuevamente.',
+                        'âŒ No se pudo conectar con el servidor. Verifique su conexiÃ³n e intente nuevamente.',
                         'error'
                     );
 
@@ -794,7 +794,7 @@
                             'csrftoken='
                         )
                 )
-                ?.split('=')[1];
+                .split('=')[1];
 
 
         return cookieValue || '';
@@ -803,7 +803,7 @@
 
 
     // ============================================================
-    // FUNCIÓN PÚBLICA
+    // FUNCIÃ“N PÃšBLICA
     // ============================================================
 
     window.cargarMemorandos =
@@ -819,13 +819,13 @@
 
 
     // ============================================================
-    // INICIALIZACIÓN
+    // INICIALIZACIÃ“N
     // ============================================================
 
     if (
         document
             .getElementById('tabMemorandos')
-            ?.classList.contains('active')
+            .classList.contains('active')
     ) {
 
         window.cargarMemorandos();
@@ -834,3 +834,4 @@
 
 
 })();
+

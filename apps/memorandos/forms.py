@@ -45,3 +45,4 @@ class MemorandoFiltroForm(forms.Form):
         label='Fecha hasta',
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
+

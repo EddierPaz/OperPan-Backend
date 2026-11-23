@@ -1,15 +1,15 @@
-{% extends "empleado/base/base.html" %}
+﻿{% extends "empleado/base/base.html" %}
 {% load static %}
 
-{% block title %}OperPan | Mis Tareas{% endblock %}
+{% block title %}OperPan | Mis Funciones{% endblock %}
 
-{% block section_title %}Mis tareas{% endblock %}
+{% block section_title %}Mis funciones{% endblock %}
 {% block section_subtitle %}Panel del Empleado{% endblock %}
 
-{% block active_tareas %}active{% endblock %}
+{% block active_funciones %}active{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/empleado/tareas.css' %}">
+<link rel="stylesheet" href="{% static 'css/empleado/funciones.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -17,24 +17,24 @@
     
     <!-- Encabezado y Resumen -->
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen tareas</h3>
+        <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Resumen funciones</h3>
         <span class="text-muted small">{{ fecha_hoy|date:"l, d \d\e F \d\e Y" }}</span>
     </div>
 
     <!-- ==================== CONTENIDO COMPLETO ==================== -->
-    {% include "empleado/tareas/content.html" %}
+    {% include "empleado/funciones/content.html" %}
 
     <!-- ==================== MODAL DE DETALLE ==================== -->
-    {% include "empleado/tareas/modal.html" %}
+    {% include "empleado/funciones/modal.html" %}
 
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/empleado/tareas.js' %}"></script>
+<script src="{% static 'js/empleado/funciones.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var detailModalEl = document.getElementById('taskDetailModal');
+        var detailModalEl = document.getElementById('funcionDetailModal');
         if (detailModalEl) {
             var modal = new bootstrap.Modal(detailModalEl);
             modal.show();

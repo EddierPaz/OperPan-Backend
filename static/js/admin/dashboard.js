@@ -5,7 +5,7 @@
  * Dependencias: Chart.js (cargado desde CDN en el template)
  * Datos: se reciben desde el backend mediante variables globales:
  *   - window.asistenciaChartData
- *   - window.tareasChartData
+ *   - window.funcionesChartData
  *   - window.novedadesChartData
  */
 
@@ -73,11 +73,11 @@ function initCharts() {
         });
     }
 
-    // --- Gráfica 2: Estado de tareas (pie) con borde blanco ---
-    const ctxTareas = document.getElementById('chartTareas');
-    if (ctxTareas && window.tareasChartData) {
-        const data = window.tareasChartData;
-        new Chart(ctxTareas, {
+    // --- Gráfica 2: Estado de funciones (pie) con borde blanco ---
+    const ctxFunciones = document.getElementById('chartFunciones');
+    if (ctxFunciones && window.funcionesChartData) {
+        const data = window.funcionesChartData;
+        new Chart(ctxFunciones, {
             type: 'pie',
             data: {
                 labels: data.labels,
@@ -172,28 +172,28 @@ function initCambiarEstadoAsistencia() {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': csrfToken ? csrfToken.value : '',
+                    'X-CSRFToken': csrfToken  csrfToken.value : '',
                 }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'ok') {
                     // Actualizar badge
-                    const badgeClass = estado === 'PRESENTE' ? 'bg-success' : 
-                                      estado === 'TARDE' ? 'bg-warning text-dark' : 'bg-danger';
-                    const badgeText = estado === 'PRESENTE' ? 'Presente' : 
-                                      estado === 'TARDE' ? 'Tarde' : 'Ausente';
+                    const badgeClass = estado === 'PRESENTE'  'bg-success' : 
+                                      estado === 'TARDE'  'bg-warning text-dark' : 'bg-danger';
+                    const badgeText = estado === 'PRESENTE'  'Presente' : 
+                                      estado === 'TARDE'  'Tarde' : 'Ausente';
                     badge.className = 'badge ' + badgeClass;
                     badge.textContent = badgeText;
                     
                     // Mostrar toast de éxito
-                    mostrarMensaje('✅ Estado actualizado a ' + badgeText, 'success');
+                    mostrarMensaje('âœ… Estado actualizado a ' + badgeText, 'success');
                 } else {
-                    mostrarMensaje('❌ Error: ' + data.error, 'danger');
+                    mostrarMensaje('âŒ Error: ' + data.error, 'danger');
                 }
             })
             .catch(error => {
-                mostrarMensaje('❌ Error de conexión', 'danger');
+                mostrarMensaje('âŒ Error de conexiÃ³n', 'danger');
             });
         });
     });
@@ -223,7 +223,7 @@ function mostrarMensaje(mensaje, tipo = 'success') {
 }
 
 // ============================================================
-// 5. INICIALIZACIÓN AL CARGAR LA PÁGINA
+// 5. INICIALIZACIÃ“N AL CARGAR LA PÃGINA
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     mostrarFecha();

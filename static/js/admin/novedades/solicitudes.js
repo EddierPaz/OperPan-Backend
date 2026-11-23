@@ -42,7 +42,7 @@ crearModuloNovedad({
         descripcion: (i) => {
             const texto = (i.justificacion || '').trim();
             if (!texto) return 'Sin justificación especificada.';
-            return texto.length > 80 ? texto.substring(0, 80) + '…' : texto;
+            return texto.length > 80  texto.substring(0, 80) + '…' : texto;
         },
     },
 

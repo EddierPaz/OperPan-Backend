@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const toast = document.createElement('div');
         toast.className = `app-toast app-toast-${type}`;
         
-        const iconClass = type === 'danger' ? 'bi-exclamation-triangle' : 
+        const iconClass = type === 'danger' ? 'bi-exclamation-triangle' :
                           type === 'success' ? 'bi-check-circle' : 'bi-info-circle';
 
         toast.innerHTML = `
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let errors = [];
             
             // Función auxiliar para obtener el valor de un input y limpiar espacios en blanco
-            const getVal = id => document.getElementById(id)?.value.trim() || '';
+            const getVal = id => document.getElementById(id).value.trim() || '';
 
             // ------------------------------------------
             // VALIDACIÓN DE NOMBRES Y APELLIDOS
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 errors.push("La dirección debe tener entre 10 y 100 caracteres.");
             } else {
                 // [22/11/2026] Patrón para nomenclatura urbana
-                const patronDireccion = /^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]?\s*#\s*\d+[A-Za-z]?\s*-\s*\d+/i;
+                const patronDireccion = /^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]\s*#\s*\d+[A-Za-z]\s*-\s*\d+/i;
                 if (!patronDireccion.test(dir)) {
                     errors.push("Dirección inválida. Usa el formato: 'CL 12S # 74-71' o 'KR 30 # 25-90'.");
                 }
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             for (const [id, valor] of Object.entries(campos)) {
                 const el = document.getElementById(id);
-                if (el) el.textContent = valor.trim ? valor.trim() : valor;
+                if (el) el.textContent = typeof valor === 'string' ? valor.trim() : valor;
             }
 
             const modalEl = document.getElementById('modalVerUsuario');
@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function aplicarFiltros() {
         const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
         const cargo = filtroCargo ? filtroCargo.value.toLowerCase() : '';
-        const rol = filtroRol ? filtroRol.value.toLowerCase() : '';
+        const rol = filtroRol ? filtroRol.value.toLower() : '';
         const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value.trim() : '';
 
         const filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-id]');

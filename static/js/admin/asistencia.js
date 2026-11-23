@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             color: '#1E293B',
                             font: { weight: 'bold', size: 10 },
                             formatter: function (value) {
-                                return value > 0 ? value : '';
+                                return value > 0  value : '';
                             },
                             offset: 2
                         }
@@ -265,13 +265,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!contenedor) return;
         contenedor.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
-        const turno = document.getElementById('filtroTurnoInterno')?.value || '';
-        const estado = document.getElementById('filtroEstadoInterno')?.value || '';
-        const fechaUnica = document.getElementById('fechaUnicaSeleccionadaHistorial')?.value || '';
-        const fechaDesde = document.getElementById('fechaDesdeSeleccionadaHistorial')?.value || '';
-        const fechaHasta = document.getElementById('fechaHastaSeleccionadaHistorial')?.value || '';
+        const turno = document.getElementById('filtroTurnoInterno').value || '';
+        const estado = document.getElementById('filtroEstadoInterno').value || '';
+        const fechaUnica = document.getElementById('fechaUnicaSeleccionadaHistorial').value || '';
+        const fechaDesde = document.getElementById('fechaDesdeSeleccionadaHistorial').value || '';
+        const fechaHasta = document.getElementById('fechaHastaSeleccionadaHistorial').value || '';
 
-        let url = '/asistencia/empleado_historial/' + empleadoId + '/?';
+        let url = '/asistencia/empleado_historial/' + empleadoId + '/';
         const params = [];
 
         if (fechaUnica) {
@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('limpiarFiltrosInternos')?.addEventListener('click', function () {
+    document.getElementById('limpiarFiltrosInternos').addEventListener('click', function () {
         document.getElementById('filtroTurnoInterno').value = '';
         document.getElementById('filtroEstadoInterno').value = '';
         document.getElementById('fechaUnicaSeleccionadaHistorial').value = '';
@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         modalFechaUnicaElement.addEventListener('hidden.bs.modal', function () {
             modalFechaInstance = null;
-            const fechaSeleccionada = document.getElementById('fechaUnicaSeleccionadaHistorial')?.value;
+            const fechaSeleccionada = document.getElementById('fechaUnicaSeleccionadaHistorial').value;
             if (fechaSeleccionada && empleadoIdActual) {
                 setTimeout(function () {
                     if (modalHistorialInstance) {
@@ -424,8 +424,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         modalRangoElement.addEventListener('hidden.bs.modal', function () {
             modalFechaInstance = null;
-            const desde = document.getElementById('fechaDesdeSeleccionadaHistorial')?.value;
-            const hasta = document.getElementById('fechaHastaSeleccionadaHistorial')?.value;
+            const desde = document.getElementById('fechaDesdeSeleccionadaHistorial').value;
+            const hasta = document.getElementById('fechaHastaSeleccionadaHistorial').value;
             if (desde && hasta && empleadoIdActual) {
                 setTimeout(function () {
                     if (modalHistorialInstance) {
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.getElementById('aplicarFechaUnicaHistorial')?.addEventListener('click', function () {
+    document.getElementById('aplicarFechaUnicaHistorial').addEventListener('click', function () {
         const input = document.getElementById('fechaUnicaInputHistorial');
         if (input && input.value) {
             document.getElementById('fechaUnicaSeleccionadaHistorial').value = input.value;
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('aplicarRangoFechasHistorial')?.addEventListener('click', function () {
+    document.getElementById('aplicarRangoFechasHistorial').addEventListener('click', function () {
         const desde = document.getElementById('fechaDesdeInputHistorial');
         const hasta = document.getElementById('fechaHastaInputHistorial');
         if (desde && hasta && desde.value && hasta.value) {
@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const badge = estadoCell.querySelector('.badge');
                         if (badge) {
                             badge.textContent = data.estado_display;
-                            badge.className = 'badge ' + (data.estado === 'PRESENTE' ? 'badge-active' : 'badge-pendiente');
+                            badge.className = 'badge ' + (data.estado === 'PRESENTE'  'badge-active' : 'badge-pendiente');
                         }
                     }
 

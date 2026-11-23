@@ -101,11 +101,12 @@ class PerfilEmpleadoForm(forms.ModelForm):
             if len(direccion) < 10 or len(direccion) > 100:
                 raise forms.ValidationError("La dirección debe tener entre 10 y 100 caracteres.")
             
-            # [22/11/2026] Validación de nomenclatura urbana en Bogotá (CL, KR, AV, etc.)
+            # [FIX] Se agrega el signo '?' después de [A-Za-z] para que la letra sea opcional.
             patron = r'^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]?\s*#\s*\d+[A-Za-z]?\s*-\s*\d+'
+            
             if not re.match(patron, direccion, re.IGNORECASE):
                 raise forms.ValidationError(
-                    "La dirección no tiene un formato válido. Ejemplo: 'CL 12S # 74-71' o 'KR 30 # 25-90'."
+                    "La dirección no tiene un formato válido. Ejemplo: 'CL 125 # 74-71' o 'KR 30 # 25-90'."
                 )
         return direccion
 

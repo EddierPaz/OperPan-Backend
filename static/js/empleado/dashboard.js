@@ -19,11 +19,11 @@ function initCharts() {
     // Registrar el plugin para mostrar los números
     Chart.register(ChartDataLabels);
 
-    // --- Gráfica 1: Estado de tareas ---
-    const ctxTareas = document.getElementById('chartTareas');
-    if (ctxTareas && window.tareasChartData) {
-        const data = window.tareasChartData;
-        new Chart(ctxTareas, {
+    // --- Gráfica 1: Estado de funciones ---
+    const ctxFunciones = document.getElementById('chartFunciones');
+    if (ctxFunciones && window.funcionesChartData) {
+        const data = window.funcionesChartData;
+        new Chart(ctxFunciones, {
             type: 'doughnut',
             data: {
                 labels: data.labels,
@@ -43,7 +43,7 @@ function initCharts() {
                     datalabels: {
                         color: '#fff',
                         font: { weight: 'bold', size: 14 },
-                        formatter: (value) => value > 0 ? value : '' // Oculta los ceros
+                        formatter: (value) => value > 0  value : '' // Oculta los ceros
                     }
                 }
             }
@@ -74,7 +74,7 @@ function initCharts() {
                     datalabels: {
                         color: '#fff',
                         font: { weight: 'bold', size: 14 },
-                        formatter: (value) => value > 0 ? value : ''
+                        formatter: (value) => value > 0  value : ''
                     }
                 }
             }

@@ -46,7 +46,7 @@ from django.db import transaction
 # Fin de importaciones:
 
 # ============================================================
-# VERIFICACIÓN ON-DEMAND DE MEMORANDOS
+# VERIFICACIÃ“N ON-DEMAND DE MEMORANDOS
 # ============================================================
 
 def _verificar_memorandos_asistencia_throttled():
@@ -55,7 +55,7 @@ def _verificar_memorandos_asistencia_throttled():
     y ausencias) para todos los empleados activos, con throttle de
     30 min.
 
-    NO incluye tareas: cada app verifica lo suyo.
+    NO incluye funciones: cada app verifica lo suyo.
     """
     if cache.get('verif_memorandos_asistencia_throttle'):
         return
@@ -96,7 +96,7 @@ def _verificar_memorandos_asistencia_empleado(user):
 
 
 
-# ACTUALIZACIÓN (17/11/2026): Automatización de ausencias por límite de tiempo.
+# ACTUALIZACIÃ“N (17/11/2026): AutomatizaciÃ³n de ausencias por lÃ­mite de tiempo.
 #
 # Esta función ahora procesa los horarios y aplica la regla de los 60 minutos:
 # 1. Calcula la hora límite sumando 60 min a la hora de entrada del turno.
@@ -104,7 +104,7 @@ def _verificar_memorandos_asistencia_empleado(user):
 #    que no sea día de descanso ni tenga una novedad aprobada (Permiso/Incapacidad).
 # 3. Si pasa las validaciones, crea automáticamente el registro en la base de 
 #    datos con estado "AUSENTE". Esto asegura que los reportes se actualicen 
-#    sin depender de cronjobs o tareas programadas externas.
+#    sin depender de cronjobs o funciones programadas externas.
 
 
 
@@ -196,7 +196,7 @@ def _contexto_base():
             .first()
         )
 
-        # --- LÓGICA DE 60 MINUTOS Y CREACIÓN AUTOMÁTICA EN BD ---
+        # --- LÃ“GICA DE 60 MINUTOS Y CREACIÃ“N AUTOMÃTICA EN BD ---
         if horario.hora_entrada:
             dummy_date = date(2000, 1, 1)
             entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
@@ -206,7 +206,7 @@ def _contexto_base():
                 horario.puede_registrar = False
                 horario.estado_tiempo = "AUSENTE_AUTOMATICO"
                 
-                # SI NO HAY ASISTENCIA Y EL TIEMPO VENCIÓ, CREAMOS LA AUSENCIA EN LA BD
+                # SI NO HAY ASISTENCIA Y EL TIEMPO VENCIÃ“, CREAMOS LA AUSENCIA EN LA BD
                 if not asistencia:
                     novedades_hoy = obtener_novedades_por_fecha(horario.empleado, hoy, hoy)
                     
@@ -611,7 +611,7 @@ def horario_json(request, id):
         descanso_fecha = prox_fecha.strftime("%Y-%m-%d")
         descansos_fechas = [descanso_fecha]
     else:
-        # Si es MAÑANA/TARDE, buscamos los días exactos que se guardaron en la BD
+        # Si es MAÃ‘ANA/TARDE, buscamos los dÃ­as exactos que se guardaron en la BD
         prox = DescansoEmpleado.objects.filter(horario=horario, es_descanso=True, fecha__gte=hoy).order_by('fecha').first()
         descanso_str = prox.fecha.strftime("%d/%m/%Y") if prox else None
         descanso_fecha = prox.fecha.strftime("%Y-%m-%d") if prox else None
@@ -730,7 +730,7 @@ def registrar_asistencia(request):
         dummy_date = date(2000, 1, 1)
         entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
         
-        # --- VALIDACIÓN DE TIEMPO: MUY TEMPRANO ---
+        # --- VALIDACIÃ“N DE TIEMPO: MUY TEMPRANO ---
         # Permite marcar solo desde 15 minutos antes de la hora de entrada.
         tiempo_limite_temprano = (entrada_dt - timedelta(minutes=15)).time()
         if hora_actual < tiempo_limite_temprano:
@@ -740,7 +740,7 @@ def registrar_asistencia(request):
             messages.error(request, mensaje)
             return redirect("asistencia:asistencia_dashboard")
 
-        # --- VALIDACIÓN DE TIEMPO: LÍMITE DE 60 MINUTOS ---
+        # --- VALIDACIÃ“N DE TIEMPO: LÃMITE DE 60 MINUTOS ---
         limite_hora = (entrada_dt + timedelta(minutes=60)).time()
         if hora_actual > limite_hora:
             mensaje = "El plazo de 60 minutos ha vencido. El empleado se considera Ausente automático."
@@ -762,7 +762,7 @@ def registrar_asistencia(request):
             })
         return redirect("asistencia:asistencia_dashboard")
 
-    # --- LÓGICA DE TOLERANCIA ---
+    # --- LÃ“GICA DE TOLERANCIA ---
     if horario.hora_entrada:
         dummy_date = date(2000, 1, 1)
         entrada_dt = datetime.combine(dummy_date, horario.hora_entrada)
@@ -1182,7 +1182,7 @@ def asistencia_empleado_admin(request, empleado_id):
         messages.error(request, "Empleado no encontrado.")
         return redirect('asistencia:horarios')
 
-    return redirect(f"{reverse('asistencia:horarios')}?empleado={empleado_id}")
+    return redirect(f"{reverse('asistencia:horarios')}empleado={empleado_id}")
 
 
 # ============================================================
@@ -1219,7 +1219,7 @@ def cambiar_estado_asistencia(request):
             asistencia.save()
 
         # =====================================================
-        # NOTIFICACIÓN AL EMPLEADO (DESPUÉS DE REGISTRAR)
+        # NOTIFICACIÃ“N AL EMPLEADO (DESPUÃ‰S DE REGISTRAR)
         # =====================================================
         estado_display = dict(Asistencia.ESTADOS).get(estado, estado)
         contexto = {

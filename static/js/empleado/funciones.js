@@ -1,9 +1,9 @@
 // ============================================================
-// TAREAS - EMPLEADO 
+// FUNCIONES - EMPLEADO 
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Módulo de tareas (empleado) cargado');
+    console.log('Módulo de funciones (empleado) cargado');
 
     // Notificación simple (Toast)
     function mostrarNotificacion(mensaje, tipo = 'info') {

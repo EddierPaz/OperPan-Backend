@@ -7,7 +7,7 @@ from faker import Faker
 
 from apps.usuarios.models import User, PerfilEmpleado
 from apps.asistencia.models import Horario, DescansoEmpleado, Asistencia
-from apps.tareas.models import Task, Turno, Prioridad, EstadoTarea, Area
+from apps.funciones.models import Funcion, Turno, Prioridad, EstadoFuncion, Area
 from apps.novedades.models import Permiso, Incapacidad, Certificado
 from apps.memorandos.models import Memorando
 
@@ -47,8 +47,8 @@ class Command(BaseCommand):
             'Bogotá', 'Cali', 'Barranquilla', 'Cartagena', 'Santa Marta', 'Bucaramanga', 'Pereira', 'Manizales'
         ]
 
-        # Tareas de panadería
-        TAREAS_PANADERIA = [
+        # Funciones de panadería
+        FUNCIONES_PANADERIA = [
             ('Preparar masa madre', 'Elaborar la masa madre diaria para panadería.'),
             ('Preparar buñuelos', 'Amasar y freír buñuelos para el mostrador.'),
             ('Hornear pan francés', 'Hornear la tanda de pan francés de la mañana.'),
@@ -137,7 +137,7 @@ class Command(BaseCommand):
             ("Llegadas tardías reiteradas", "Llamado de atención por incumplimiento del horario de ingreso."),
             ("Incumplimiento del uniforme", "Recordatorio del uso obligatorio del uniforme completo."),
             ("Reconocimiento por excelente desempeño", "Felicitación por el compromiso y resultados obtenidos."),
-            ("Incumplimiento de funciones", "Advertencia por tareas no realizadas según lo asignado."),
+            ("Incumplimiento de funciones", "Advertencia por funciones no realizadas según lo asignado."),
             ("Uso inadecuado del celular", "Prohibición del uso de dispositivos móviles durante la jornada laboral."),
             ("Felicitación por atención al cliente", "Reconocimiento por la excelente atención brindada a los clientes."),
             ("Cambio temporal de funciones", "Notificación de cambio de actividades por necesidades del negocio."),
@@ -159,7 +159,7 @@ class Command(BaseCommand):
             "Cambio temporal de funciones": "Por necesidades del servicio, se le asigna temporalmente nuevas funciones en el área de mostrador durante las próximas dos semanas.",
             "Seguimiento disciplinario": "Se inicia proceso de seguimiento disciplinario por faltas recurrentes al reglamento. Se espera mejora inmediata.",
             "Llamado preventivo": "Se hace un llamado preventivo para reforzar el cumplimiento de las normas de convivencia y seguridad en el trabajo.",
-            "Reconocimiento por compromiso laboral": "Se agradece el compromiso y dedicación demostrados en la ejecución de las tareas diarias.",
+            "Reconocimiento por compromiso laboral": "Se agradece el compromiso y dedicación demostrados en la ejecución de las funciones diarias.",
             "Incumplimiento de protocolos de higiene": "Se ha verificado que no se siguen los protocolos de limpieza y desinfección establecidos. Se exige su cumplimiento.",
             "Felicitación por trabajo en equipo": "Se felicita al equipo por su colaboración y esfuerzo conjunto para alcanzar las metas propuestas."
         }
@@ -206,7 +206,7 @@ class Command(BaseCommand):
             if base3 not in existing_usernames:
                 existing_usernames.add(base3)
                 return base3
-            # Último recurso: añadir una letra aleatoria
+            # Ãšltimo recurso: aÃ±adir una letra aleatoria
             for _ in range(10):
                 candidato = base + random.choice('abcdefghijklmnopqrstuvwxyz')
                 if candidato not in existing_usernames:
@@ -218,7 +218,7 @@ class Command(BaseCommand):
             """Genera correo sin números."""
             return f"{nombre.lower()}.{apellido1.lower()}@operpan.com"
 
-        # -------------------- INICIO DE TRANSACCIÓN --------------------
+        # -------------------- INICIO DE TRANSACCIÃ“N --------------------
         with transaction.atomic():
             # 1. Crear usuario administrador
             admin_user, created = User.objects.get_or_create(
@@ -390,16 +390,16 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.SUCCESS('Horarios, descansos y asistencias creados.'))
 
-            # 4. Tareas
+            # 4. Funciones
             for empleado in empleados:
-                num_tareas = random.randint(2, 6)
-                tareas_asignadas = random.sample(TAREAS_PANADERIA, min(num_tareas, len(TAREAS_PANADERIA)))
-                for titulo, descripcion in tareas_asignadas:
+                num_funciones = random.randint(2, 6)
+                funciones_asignadas = random.sample(FUNCIONES_PANADERIA, min(num_funciones, len(FUNCIONES_PANADERIA)))
+                for titulo, descripcion in funciones_asignadas:
                     area = random.choice(Area.values)
                     turno_asociado = random.choice([None, 'MANANA', 'TARDE', 'FIJO'])
                     prioridad = random.choice(Prioridad.values)
                     estado = random.choices(
-                        [EstadoTarea.PENDIENTE, EstadoTarea.EN_PROGRESO, EstadoTarea.FINALIZADA],
+                        [EstadoFuncion.PENDIENTE, EstadoFuncion.EN_PROGRESO, EstadoFuncion.FINALIZADA],
                         weights=[0.4, 0.3, 0.3]
                     )[0]
                     fecha_limite = hoy + timedelta(days=random.randint(-5, 15))
@@ -407,7 +407,7 @@ class Command(BaseCommand):
                     if random.choice([True, False]):
                         hora_limite = datetime.strptime(f"{random.randint(8, 20)}:00", '%H:%M').time()
 
-                    Task.objects.create(
+                    Funcion.objects.create(
                         empleado=empleado,
                         creador=admin_user,
                         ultimo_cambio_por=admin_user,
@@ -421,10 +421,10 @@ class Command(BaseCommand):
                         hora_limite=hora_limite,
                         fecha_asignacion=timezone.now() - timedelta(days=random.randint(0, 10)),
                         fecha_actualizacion=timezone.now(),
-                        fecha_finalizacion=timezone.now() if estado == EstadoTarea.FINALIZADA else None,
+                        fecha_finalizacion=timezone.now() if estado == EstadoFuncion.FINALIZADA else None,
                     )
 
-            self.stdout.write(self.style.SUCCESS('Tareas creadas.'))
+            self.stdout.write(self.style.SUCCESS('Funciones creadas.'))
 
             # 5. Permisos (20)
             for _ in range(20):

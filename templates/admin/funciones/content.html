@@ -1,6 +1,6 @@
 {% comment %}
-Parcial: Contexto completo de la vista de tareas - KPIs, tareas de hoy y listado completo.
-Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
+Parcial: Contexto completo de la vista de funciones - KPIs, funciones de hoy y listado completo.
+Requiere del contexto: kpis, funciones_hoy_por_estado, funciones
 {% endcomment %}
 
 {# ==================== KPIs ==================== #}
@@ -45,19 +45,19 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                 <h3>{{ kpis.total|default:0 }}</h3>
             </div>
             <div class="icono-circular">
-                <i class="bi bi-list-task fs-2 text-primary"></i>
+                <i class="bi bi-list-check fs-2 text-primary"></i>
             </div>
         </div>
     </div>
 </div>
 
-{# ==================== TAREAS PARA HOY (ACORDEÓN) ==================== #}
+{# ==================== FUNCIONES PARA HOY (ACORDEÃ“N) ==================== #}
 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-    <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Tareas para hoy</h3>
+    <h3 class="m-0"><i class="bi bi-calendar-check me-2"></i>Funciones para hoy</h3>
 </div>
 
-<div class="accordion mb-5" id="accordionTareasHoy">
-    {% for estado_codigo, lista_tareas in tareas_hoy_por_estado.items %}
+<div class="accordion mb-5" id="accordionFuncionesHoy">
+    {% for estado_codigo, lista_funciones in funciones_hoy_por_estado.items %}
     <div class="accordion-item mb-3">
         <h2 class="accordion-header" id="headingHoy{{ estado_codigo }}">
             <button class="accordion-button collapsed" type="button"
@@ -75,87 +75,87 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                         {% else %}Finalizadas{% endif %}
                     </strong>
                 </div>
-                <span class="estado-badge">{{ lista_tareas|length }} hoy</span>
+                <span class="estado-badge">{{ lista_funciones|length }} hoy</span>
             </button>
         </h2>
         <div id="collapseHoy{{ estado_codigo }}" class="accordion-collapse collapse"
-            data-bs-parent="#accordionTareasHoy">
+            data-bs-parent="#accordionFuncionesHoy">
             <div class="accordion-body">
                 <div class="row g-4">
-                    {% for tarea in lista_tareas %}
+                    {% for funcion in lista_funciones %}
                     <div class="col-12 col-md-6 col-lg-4 d-flex">
-                        <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative"
-                             data-titulo="{{ tarea.titulo }}"
-                             data-empleado="{{ tarea.empleado.nombre_completo }}"
-                             data-estado="{{ tarea.estado }}"
-                             data-prioridad="{{ tarea.prioridad }}"
-                             data-vencida="{{ tarea.esta_vencida|yesno:'true,false' }}">
+                        <div class="funcion-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative"
+                             data-titulo="{{ funcion.titulo }}"
+                             data-empleado="{{ funcion.empleado.nombre_completo }}"
+                             data-estado="{{ funcion.estado }}"
+                             data-prioridad="{{ funcion.prioridad }}"
+                             data-vencida="{{ funcion.esta_vencida|yesno:'true,false' }}">
                             <div>
                                 <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                                     <div class="d-flex align-items-center gap-2 text-truncate">
-                                        {% if tarea.prioridad == 'ALTA' %}
+                                        {% if funcion.prioridad == 'ALTA' %}
                                             <i class="bi bi-flag-fill text-danger fs-6" title="Alta prioridad"></i>
-                                        {% elif tarea.prioridad == 'MEDIA' %}
+                                        {% elif funcion.prioridad == 'MEDIA' %}
                                             <i class="bi bi-flag-fill text-warning fs-6" title="Media prioridad"></i>
                                         {% else %}
                                             <i class="bi bi-flag-fill text-success fs-6" title="Baja prioridad"></i>
                                         {% endif %}
-                                        <h5 class="text-title fw-bold m-0 text-truncate" title="{{ tarea.titulo }}">
-                                            {{ tarea.titulo }}
+                                        <h5 class="text-title fw-bold m-0 text-truncate" title="{{ funcion.titulo }}">
+                                            {{ funcion.titulo }}
                                         </h5>
                                     </div>
-                                    {% if tarea.esta_vencida %}
+                                    {% if funcion.esta_vencida %}
                                         <span class="badge priority-high">Vencida</span>
-                                    {% elif tarea.estado == 'PENDIENTE' %}
+                                    {% elif funcion.estado == 'PENDIENTE' %}
                                         <span class="badge badge-status badge-pendiente">Pendiente</span>
-                                    {% elif tarea.estado == 'EN_PROGRESO' %}
+                                    {% elif funcion.estado == 'EN_PROGRESO' %}
                                         <span class="badge badge-status badge-progreso">En progreso</span>
-                                    {% elif tarea.estado == 'FINALIZADA' %}
+                                    {% elif funcion.estado == 'FINALIZADA' %}
                                         <span class="badge badge-status badge-finalizada">Finalizada</span>
                                     {% endif %}
                                 </div>
                                 <div class="d-flex flex-column gap-1 text-muted small mb-3">
-                                    <span><i class="bi bi-person me-1"></i> <strong>{{ tarea.empleado.nombre_completo }}</strong></span>
-                                    <span><i class="bi bi-calendar me-1"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
+                                    <span><i class="bi bi-person me-1"></i> <strong>{{ funcion.empleado.nombre_completo }}</strong></span>
+                                    <span><i class="bi bi-calendar me-1"></i> Límite: {{ funcion.fecha_limite|date:"Y-m-d" }} {% if funcion.hora_limite %}{{ funcion.hora_limite|time:"H:i" }}{% endif %}</span>
                                 </div>
                             </div>
 
                             {# ============================================================ #}
-                            {# ============ BOTONES DE ACCIÓN (ADMIN) ============ #}
+                            {# ============ BOTONES DE ACCIÃ“N (ADMIN) ============ #}
                             {# ============================================================ #}
                             <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                                {% if tarea.esta_vencida %}
-                                    <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                                {% if funcion.esta_vencida %}
+                                    <a href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}"
                                        class="btn-action btn-action-view">
                                         <i class="bi bi-eye"></i> Ver detalles
                                     </a>
-                                {% elif tarea.estado == 'PENDIENTE' %}
+                                {% elif funcion.estado == 'PENDIENTE' %}
                                     <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
-                                {% elif tarea.estado == 'EN_PROGRESO' %}
-                                    <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
+                                {% elif funcion.estado == 'EN_PROGRESO' %}
+                                    <a href="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk                                     %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
                                        class="btn-action btn-corporate-thi">
                                         <i class="bi bi-check-circle"></i> Finalizar
                                     </a>
-                                {% elif tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                                {% elif funcion.estado == 'FINALIZADA' and funcion.puede_reabrirse %}
                                     {# FINALIZADA Y REABRIBLE: ver + reabrir #}
                                     <div class="d-flex gap-2">
-                                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                                        <a href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}"
                                            class="btn-action btn-action-view">
                                             <i class="bi bi-eye"></i> Ver
                                         </a>
                                         <button type="button"
-                                                class="btn-action btn-corporate-sec btn-reabrir-tarea"
-                                                data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                                                data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                                                data-titulo="{{ tarea.titulo }}"
-                                                data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                                class="btn-action btn-corporate-sec btn-reabrir-funcion"
+                                                data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                                                data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                                                data-titulo="{{ funcion.titulo }}"
+                                                data-empleado="{{ funcion.empleado.nombre_completo }}"
                                                 data-estado-default="EN_PROGRESO">
                                             <i class="bi bi-arrow-counterclockwise"></i> Reabrir
                                         </button>
                                     </div>
                                 {% else %}
                                     {# FINALIZADA ANTIGUA: solo ver detalles #}
-                                    <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                                    <a href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}"
                                        class="btn-action btn-action-view">
                                         <i class="bi bi-eye"></i> Ver detalles
                                     </a>
@@ -168,37 +168,37 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                                         <li>
-                                            <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
+                                            <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}">
                                                 <i class="bi bi-eye text-secondary"></i> Ver detalles
                                             </a>
                                         </li>
-                                        {% if tarea.estado != 'FINALIZADA' and not tarea.esta_vencida %}
+                                        {% if funcion.estado != 'FINALIZADA' and not funcion.esta_vencida %}
                                         <li>
-                                            <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
+                                            <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'funciones:admin_funciones_list' %}?edit={{ funcion.pk }}">
                                                 <i class="bi bi-pencil text-primary"></i> Editar
                                             </a>
                                         </li>
                                         {% endif %}
                                         {# Solo si es finalizada Y reabrible #}
-                                        {% if tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                                        {% if funcion.estado == 'FINALIZADA' and funcion.puede_reabrirse %}
                                         <li>
                                             <button type="button"
-                                                    class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
-                                                    data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                                                    data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                                                    data-titulo="{{ tarea.titulo }}"
-                                                    data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                                    class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-funcion"
+                                                    data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                                                    data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                                                    data-titulo="{{ funcion.titulo }}"
+                                                    data-empleado="{{ funcion.empleado.nombre_completo }}"
                                                     data-estado-default="EN_PROGRESO">
                                                 <i class="bi bi-arrow-counterclockwise text-info"></i> Reabrir (a En progreso)
                                             </button>
                                         </li>
                                         <li>
                                             <button type="button"
-                                                    class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
-                                                    data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                                                    data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                                                    data-titulo="{{ tarea.titulo }}"
-                                                    data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                                    class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-funcion"
+                                                    data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                                                    data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                                                    data-titulo="{{ funcion.titulo }}"
+                                                    data-empleado="{{ funcion.empleado.nombre_completo }}"
                                                     data-estado-default="PENDIENTE">
                                                 <i class="bi bi-arrow-repeat text-warning"></i> Revertir a Pendiente
                                             </button>
@@ -207,21 +207,21 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                                         <li><hr class="dropdown-divider my-1"></li>
                                         <li>
                                             <button type="button"
-                                                    class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarTarea"
-                                                    data-id="{{ tarea.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                                    class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarFuncion"
+                                                    data-id="{{ funcion.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
                                                 <i class="bi bi-trash"></i> Eliminar
                                             </button>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
-                            {# ============ FIN BOTONES DE ACCIÓN ============ #}
+                            {# ============ FIN BOTONES DE ACCIÃ“N ============ #}
 
                         </div>
                     </div>
                     {% empty %}
                     <div class="col-12">
-                        <p class="text-center text-muted py-3 mb-0">Sin tareas {% if estado_codigo == 'PENDIENTE' %}pendientes{% elif estado_codigo == 'EN_PROGRESO' %}en progreso{% else %}finalizadas{% endif %} para hoy.</p>
+                        <p class="text-center text-muted py-3 mb-0">Sin funciones {% if estado_codigo == 'PENDIENTE' %}pendientes{% elif estado_codigo == 'EN_PROGRESO' %}en progreso{% else %}finalizadas{% endif %} para hoy.</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -231,16 +231,16 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
     {% empty %}
     <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
         <i class="bi bi-calendar-x fs-3 d-block text-muted mb-2"></i>
-        No hay tareas con vencimiento hoy.
+        No hay funciones con vencimiento hoy.
     </div>
     {% endfor %}
 </div>
 
-{# ==================== LISTADO COMPLETO DE TAREAS ==================== #}
+{# ==================== LISTADO COMPLETO DE FUNCIONES ==================== #}
 <div class="d-flex align-items-center mb-4">
-    <h3 class="m-0"><i class="bi bi-table me-2"></i> Listado de tareas</h3>
-    <button class="btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalTarea">
-        <i class="bi bi-plus-circle me-2"></i>Agregar tarea
+    <h3 class="m-0"><i class="bi bi-table me-2"></i> Listado de funciones</h3>
+    <button class="btn-primary-corporate ms-auto" data-bs-toggle="modal" data-bs-target="#modalFuncion">
+        <i class="bi bi-plus-circle me-2"></i>Agregar funcion
     </button>
 </div>
 
@@ -248,10 +248,10 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
 <div class="filtros-toolbar mb-4">
     <div class="filtro-buscar">
         <i class="bi bi-search"></i>
-        <input type="text" id="buscarTarea" placeholder="Buscar por título o empleado..." autocomplete="off">
+        <input type="text" id="buscarFuncion" placeholder="Buscar por título o empleado..." autocomplete="off">
     </div>
 
-    <select id="filtroEstadoTarea" class="filtro-select">
+    <select id="filtroEstadoFuncion" class="filtro-select">
         <option value="" selected >Todos los estados</option>
         <option value="PENDIENTE">Pendientes</option>
         <option value="EN_PROGRESO" >En progreso</option>
@@ -259,99 +259,99 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
         <option value="VENCIDA">Vencidas</option>
     </select>
 
-    <select id="filtroPrioridadTarea" class="filtro-select">
+    <select id="filtroPrioridadFuncion" class="filtro-select">
         <option value="">Todas las prioridades</option>
         <option value="ALTA">Alta</option>
         <option value="MEDIA">Media</option>
         <option value="BAJA">Baja</option>
     </select>
 
-    <button type="button" id="limpiarFiltrosTareas" class="filtro-btn-limpiar">
+    <button type="button" id="limpiarFiltrosFunciones" class="filtro-btn-limpiar">
         Limpiar campos
     </button>
 </div>
 
-<!-- Grid de todas las tareas -->
-<div id="tasksContainer" class="row g-4 mb-4">
-    {% if tareas %}
-        {% for tarea in tareas %}
+<!-- Grid de todas las funciones -->
+<div id="funcionesContainer" class="row g-4 mb-4">
+    {% if funciones %}
+        {% for funcion in funciones %}
         <div class="col-12 col-md-6 col-lg-4 d-flex">
-            <div class="task-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative"
-                 data-titulo="{{ tarea.titulo }}"
-                 data-empleado="{{ tarea.empleado.nombre_completo }}"
-                 data-estado="{{ tarea.estado }}"
-                 data-prioridad="{{ tarea.prioridad }}"
-                 data-vencida="{{ tarea.esta_vencida|yesno:'true,false' }}">
+            <div class="funcion-card card border-0 shadow-sm rounded-4 p-3 w-100 d-flex flex-column justify-content-between position-relative"
+                 data-titulo="{{ funcion.titulo }}"
+                 data-empleado="{{ funcion.empleado.nombre_completo }}"
+                 data-estado="{{ funcion.estado }}"
+                 data-prioridad="{{ funcion.prioridad }}"
+                 data-vencida="{{ funcion.esta_vencida|yesno:'true,false' }}">
 
                 <div>
                     <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                         <div class="d-flex align-items-center gap-2 text-truncate">
-                            {% if tarea.prioridad == 'ALTA' %}
+                            {% if funcion.prioridad == 'ALTA' %}
                                 <i class="bi bi-flag-fill text-danger fs-6" title="Alta prioridad"></i>
-                            {% elif tarea.prioridad == 'MEDIA' %}
+                            {% elif funcion.prioridad == 'MEDIA' %}
                                 <i class="bi bi-flag-fill text-warning fs-6" title="Media prioridad"></i>
                             {% else %}
                                 <i class="bi bi-flag-fill text-success fs-6" title="Baja prioridad"></i>
                             {% endif %}
 
-                            <h5 class="text-title fw-bold m-0 text-truncate" title="{{ tarea.titulo }}">
-                                {{ tarea.titulo }}
+                            <h5 class="text-title fw-bold m-0 text-truncate" title="{{ funcion.titulo }}">
+                                {{ funcion.titulo }}
                             </h5>
                         </div>
 
-                        {% if tarea.esta_vencida %}
+                        {% if funcion.esta_vencida %}
                             <span class="badge priority-high">Vencida</span>
-                        {% elif tarea.estado == 'PENDIENTE' %}
+                        {% elif funcion.estado == 'PENDIENTE' %}
                             <span class="badge badge-status badge-pendiente">Pendiente</span>
-                        {% elif tarea.estado == 'EN_PROGRESO' %}
+                        {% elif funcion.estado == 'EN_PROGRESO' %}
                             <span class="badge badge-status badge-progreso">En progreso</span>
-                        {% elif tarea.estado == 'FINALIZADA' %}
+                        {% elif funcion.estado == 'FINALIZADA' %}
                             <span class="badge badge-status badge-finalizada">Finalizada</span>
                         {% endif %}
                     </div>
 
                     <div class="d-flex flex-column gap-1 text-muted small mb-3">
-                        <span><i class="bi bi-person me-1"></i> <strong>{{ tarea.empleado.nombre_completo }}</strong></span>
-                        <span><i class="bi bi-calendar me-1"></i> Límite: {{ tarea.fecha_limite|date:"Y-m-d" }} {% if tarea.hora_limite %}{{ tarea.hora_limite|time:"H:i" }}{% endif %}</span>
+                        <span><i class="bi bi-person me-1"></i> <strong>{{ funcion.empleado.nombre_completo }}</strong></span>
+                        <span><i class="bi bi-calendar me-1"></i> Límite: {{ funcion.fecha_limite|date:"Y-m-d" }} {% if funcion.hora_limite %}{{ funcion.hora_limite|time:"H:i" }}{% endif %}</span>
                     </div>
                 </div>
 
                 {# ============================================================ #}
-                {# ============ BOTONES DE ACCIÓN (ADMIN) ============ #}
+                {# ============ BOTONES DE ACCIÃ“N (ADMIN) ============ #}
                 {# ============================================================ #}
                 <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
-                    {% if tarea.esta_vencida %}
-                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                    {% if funcion.esta_vencida %}
+                        <a href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}"
                            class="btn-action btn-action-view">
                             <i class="bi bi-eye"></i> Ver detalles
                         </a>
-                    {% elif tarea.estado == 'PENDIENTE' %}
+                    {% elif funcion.estado == 'PENDIENTE' %}
                         <span class="text-muted small"><i class="bi bi-clock me-1"></i>Esperando inicio</span>
-                    {% elif tarea.estado == 'EN_PROGRESO' %}
-                        <a href="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
+                    {% elif funcion.estado == 'EN_PROGRESO' %}
+                        <a href="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=FINALIZADA&next={{ request.get_full_path|urlencode }}"
                            class="btn-action btn-corporate-thi">
                             <i class="bi bi-check-circle"></i> Finalizar
                         </a>
-                    {% elif tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                    {% elif funcion.estado == 'FINALIZADA' and funcion.puede_reabrirse %}
                         {# FINALIZADA Y REABRIBLE: ver + reabrir #}
                         <div class="d-flex gap-2">
-                            <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                            <a href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}"
                                class="btn-action btn-action-view">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                             <button type="button"
-                                    class="btn-action btn-corporate-sec btn-reabrir-tarea"
-                                    data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                                    data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                                    data-titulo="{{ tarea.titulo }}"
-                                    data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                    class="btn-action btn-corporate-sec btn-reabrir-funcion"
+                                    data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                                    data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                                    data-titulo="{{ funcion.titulo }}"
+                                    data-empleado="{{ funcion.empleado.nombre_completo }}"
                                     data-estado-default="EN_PROGRESO">
                                 <i class="bi bi-arrow-counterclockwise"></i> Reabrir
                             </button>
                         </div>
                     {% else %}
                         {# FINALIZADA ANTIGUA: solo ver detalles #}
-                        <a href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}"
+                        <a href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}"
                            class="btn-action btn-action-view">
                             <i class="bi bi-eye"></i> Ver detalles
                         </a>
@@ -365,37 +365,37 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
 
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                             <li>
-                                <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?detalle={{ tarea.pk }}">
+                                <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'funciones:admin_funciones_list' %}?detalle={{ funcion.pk }}">
                                     <i class="bi bi-eye text-secondary"></i> Ver detalles
                                 </a>
                             </li>
-                            {% if tarea.estado != 'FINALIZADA' and not tarea.esta_vencida %}
+                            {% if funcion.estado != 'FINALIZADA' and not funcion.esta_vencida %}
                             <li>
-                                <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'tareas:admin_tareas_list' %}?edit={{ tarea.pk }}">
+                                <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'funciones:admin_funciones_list' %}?edit={{ funcion.pk }}">
                                     <i class="bi bi-pencil text-primary"></i> Editar
                                 </a>
                             </li>
                             {% endif %}
                             {# Solo si es finalizada Y reabrible #}
-                            {% if tarea.estado == 'FINALIZADA' and tarea.puede_reabrirse %}
+                            {% if funcion.estado == 'FINALIZADA' and funcion.puede_reabrirse %}
                             <li>
                                 <button type="button"
-                                        class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
-                                        data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                                        data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                                        data-titulo="{{ tarea.titulo }}"
-                                        data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                        class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-funcion"
+                                        data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                                        data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                                        data-titulo="{{ funcion.titulo }}"
+                                        data-empleado="{{ funcion.empleado.nombre_completo }}"
                                         data-estado-default="EN_PROGRESO">
                                     <i class="bi bi-arrow-counterclockwise text-info"></i> Reabrir (a En progreso)
                                 </button>
                             </li>
                             <li>
                                 <button type="button"
-                                        class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-tarea"
-                                        data-url-en-progreso="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=EN_PROGRESO&next={% url 'tareas:admin_tareas_list' %}"
-                                        data-url-pendiente="{% url 'tareas:admin_tarea_cambiar_estado' tarea.pk %}?estado=PENDIENTE&next={% url 'tareas:admin_tareas_list' %}"
-                                        data-titulo="{{ tarea.titulo }}"
-                                        data-empleado="{{ tarea.empleado.nombre_completo }}"
+                                        class="dropdown-item small d-flex align-items-center gap-2 btn-reabrir-funcion"
+                                        data-url-en-progreso="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=EN_PROGRESO&next={% url 'funciones:admin_funciones_list' %}"
+                                        data-url-pendiente="{% url 'funciones:admin_funcion_cambiar_estado' funcion.pk %}?estado=PENDIENTE&next={% url 'funciones:admin_funciones_list' %}"
+                                        data-titulo="{{ funcion.titulo }}"
+                                        data-empleado="{{ funcion.empleado.nombre_completo }}"
                                         data-estado-default="PENDIENTE">
                                     <i class="bi bi-arrow-repeat text-warning"></i> Revertir a Pendiente
                                 </button>
@@ -404,15 +404,15 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                             <li><hr class="dropdown-divider my-1"></li>
                             <li>
                                 <button type="button"
-                                        class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarTarea"
-                                        data-id="{{ tarea.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                        class="dropdown-item small text-danger d-flex align-items-center gap-2 eliminarFuncion"
+                                        data-id="{{ funcion.pk }}" data-bs-toggle="modal" data-bs-target="#confirmModal">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
                             </li>
                         </ul>
                     </div>
                 </div>
-                {# ============ FIN BOTONES DE ACCIÓN ============ #}
+                {# ============ FIN BOTONES DE ACCIÃ“N ============ #}
 
             </div>
         </div>
@@ -421,27 +421,27 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
         <div class="col-12">
             <div class="alert alert-light text-center rounded-4 shadow-sm py-4">
                 <i class="bi bi-inbox fs-3 d-block text-muted mb-2"></i>
-                No hay tareas con los filtros seleccionados.
+                No hay funciones con los filtros seleccionados.
             </div>
         </div>
     {% endif %}
-</div> <!-- AQUÍ TERMINA EL CONTENEDOR DE TAREAS (tasksContainer) -->
+</div> <!-- AQUÍ TERMINA EL CONTENEDOR DE FUNCIONES (funcionesContainer) -->
 
 
 
 
 
 <!-- ========================================== -->
-<!-- PAGINACIÓN (CON CONSERVACIÓN DE FILTROS/ sin filtros al cambiar de pagina se borra lo que ya busco el usuario)   -->
+<!-- PAGINACIÃ“N (CON CONSERVACIÃ“N DE FILTROS/ sin filtros al cambiar de pagina se borra lo que ya busco el usuario)   -->
 <!-- ========================================== -->
-{% if tareas.paginator.num_pages > 1 %}
+{% if funciones.paginator.num_pages > 1 %}
 <nav aria-label="Navegación de páginas" class="mt-5 mb-5">
     <ul class="pagination justify-content-center gap-1">
         
         <!-- Botón Anterior -->
-        <li class="page-item {% if not tareas.has_previous %}disabled{% endif %}">
+        <li class="page-item {% if not funciones.has_previous %}disabled{% endif %}">
             <a class="page-link rounded-3 shadow-sm border-0" 
-               href="?page={% if tareas.has_previous %}{{ tareas.previous_page_number }}{% else %}1{% endif %}
+               href="page={% if funciones.has_previous %}{{ funciones.previous_page_number }}{% else %}1{% endif %}
                {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
                {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
                {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
@@ -455,11 +455,11 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
         </li>
 
         <!-- Números de Página -->
-        {% for num in tareas.paginator.page_range %}
-            {% if num == tareas.number %}
+        {% for num in funciones.paginator.page_range %}
+            {% if num == funciones.number %}
                 <li class="page-item active">
                     <a class="page-link rounded-3 shadow-sm border-0" 
-                       href="?page={{ num }}
+                       href="page={{ num }}
                        {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
                        {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
                        {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
@@ -469,10 +469,10 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
                        {% if request.GET.vencidas %}&vencidas={{ request.GET.vencidas }}{% endif %}" 
                        style="background-color: #A40706; color: white;">{{ num }}</a>
                 </li>
-            {% elif num > tareas.number|add:"-3" and num < tareas.number|add:"3" %}
+            {% elif num > funciones.number|add:"-3" and num < funciones.number|add:"3" %}
                 <li class="page-item">
                     <a class="page-link rounded-3 shadow-sm border-0" 
-                       href="?page={{ num }}
+                       href="page={{ num }}
                        {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
                        {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
                        {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
@@ -486,9 +486,9 @@ Requiere del contexto: kpis, tareas_hoy_por_estado, tareas
         {% endfor %}
 
         <!-- Botón Siguiente -->
-        <li class="page-item {% if not tareas.has_next %}disabled{% endif %}">
+        <li class="page-item {% if not funciones.has_next %}disabled{% endif %}">
             <a class="page-link rounded-3 shadow-sm border-0" 
-               href="?page={% if tareas.has_next %}{{ tareas.next_page_number }}{% else %}{{ tareas.paginator.num_pages }}{% endif %}
+               href="page={% if funciones.has_next %}{{ funciones.next_page_number }}{% else %}{{ funciones.paginator.num_pages }}{% endif %}
                {% if request.GET.estado %}&estado={{ request.GET.estado }}{% endif %}
                {% if request.GET.empleado %}&empleado={{ request.GET.empleado }}{% endif %}
                {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}

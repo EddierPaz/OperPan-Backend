@@ -16,7 +16,7 @@ urlpatterns = [
     path('novedades/', include('apps.novedades.urls')),
     path('memorandos/', include('apps.memorandos.urls')),
     path('asistencia/', include('apps.asistencia.urls')),
-    path('tareas/', include('apps.tareas.urls')),
+    path('funciones/', include('apps.funciones.urls')),
 ]
 
 if settings.DEBUG:

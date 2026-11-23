@@ -16,3 +16,4 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, choices=[('MANANA', 'Mañana'), ('TARDE', 'Tarde'), ('FIJO', 'Fijo')], max_length=20, null=True),
         ),
     ]
+

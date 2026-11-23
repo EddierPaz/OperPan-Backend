@@ -22,7 +22,7 @@ class Prioridad(models.TextChoices):
     ALTA = 'ALTA', 'Alta'
 
 
-class EstadoTarea(models.TextChoices):
+class EstadoFuncion(models.TextChoices):
     PENDIENTE = 'PENDIENTE', 'Pendiente'
     EN_PROGRESO = 'EN_PROGRESO', 'En progreso'
     FINALIZADA = 'FINALIZADA', 'Finalizada'
@@ -42,28 +42,28 @@ class Area(models.TextChoices):
 # MODELO TASK
 # ============================================================
 
-class Task(models.Model):
+class Funcion(models.Model):
     """
-    Modelo para la gestión de tareas operativas en OperPan.
+    Modelo para la gestión de funciones operativas en OperPan.
     """
     empleado = models.ForeignKey(
         PerfilEmpleado,
         on_delete=models.CASCADE,
-        related_name='tareas_asignadas'
+        related_name='funciones_asignadas'
     )
     creador = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='tareas_creadas'
+        related_name='funciones_creadas'
     )
     ultimo_cambio_por = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='tareas_modificadas'
+        related_name='funciones_modificadas'
     )
 
     titulo = models.CharField(max_length=200)
@@ -88,18 +88,18 @@ class Task(models.Model):
     )
     estado = models.CharField(
         max_length=15,
-        choices=EstadoTarea.choices,
-        default=EstadoTarea.PENDIENTE
+        choices=EstadoFuncion.choices,
+        default=EstadoFuncion.PENDIENTE
     )
 
     fecha_limite = models.DateField()
-    hora_limite = models.TimeField(blank=True, null=True)  # ⚠️ Cambiar a null=False en la migración
+    hora_limite = models.TimeField(blank=True, null=True)  # âš ï¸ Cambiar a null=False en la migraciÃ³n
     fecha_asignacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     fecha_finalizacion = models.DateTimeField(null=True, blank=True)
 
     evidencia = models.FileField(
-        upload_to='tareas/evidencias/%Y/%m/',
+        upload_to='funciones/evidencias/%Y/%m/',
         blank=True,
         null=True,
         help_text='Foto o documento opcional como evidencia de finalización'
@@ -113,9 +113,12 @@ class Task(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='tareas_origen',
+        related_name='funciones_origen',
         help_text='Memorando generado automáticamente por acumulación de vencidas'
     )
+
+    class Meta:
+        db_table = 'tareas_task'
 
     def __str__(self):
         return f"{self.empleado.nombre_completo()} - {self.titulo} ({self.fecha_limite})"
@@ -153,8 +156,8 @@ class Task(models.Model):
 
     @property
     def esta_vencida(self):
-        """True si la fecha/hora límite ya pasó y la tarea no está finalizada."""
-        if self.estado == EstadoTarea.FINALIZADA:
+        """True si la fecha/hora límite ya pasó y la funcion no está finalizada."""
+        if self.estado == EstadoFuncion.FINALIZADA:
             return False
         ahora_local = timezone.localtime(timezone.now())
         hoy = ahora_local.date()
@@ -170,12 +173,12 @@ class Task(models.Model):
         qs = cls.objects.all()
         return {
             'total': qs.count(),
-            'pendientes': qs.filter(estado=EstadoTarea.PENDIENTE).count(),
-            'en_progreso': qs.filter(estado=EstadoTarea.EN_PROGRESO).count(),
-            'finalizadas': qs.filter(estado=EstadoTarea.FINALIZADA).count(),
+            'pendientes': qs.filter(estado=EstadoFuncion.PENDIENTE).count(),
+            'en_progreso': qs.filter(estado=EstadoFuncion.EN_PROGRESO).count(),
+            'finalizadas': qs.filter(estado=EstadoFuncion.FINALIZADA).count(),
             'vencidas': qs.filter(
                 fecha_limite__lt=hoy
-            ).exclude(estado=EstadoTarea.FINALIZADA).count(),
+            ).exclude(estado=EstadoFuncion.FINALIZADA).count(),
         }
 
     @classmethod
@@ -184,22 +187,22 @@ class Task(models.Model):
         qs = cls.objects.filter(empleado__user=user)
         return {
             'total': qs.count(),
-            'pendientes': qs.filter(estado=EstadoTarea.PENDIENTE).count(),
-            'en_progreso': qs.filter(estado=EstadoTarea.EN_PROGRESO).count(),
-            'finalizadas': qs.filter(estado=EstadoTarea.FINALIZADA).count(),
+            'pendientes': qs.filter(estado=EstadoFuncion.PENDIENTE).count(),
+            'en_progreso': qs.filter(estado=EstadoFuncion.EN_PROGRESO).count(),
+            'finalizadas': qs.filter(estado=EstadoFuncion.FINALIZADA).count(),
             'vencidas': qs.filter(
                 fecha_limite__lt=hoy
-            ).exclude(estado=EstadoTarea.FINALIZADA).count(),
+            ).exclude(estado=EstadoFuncion.FINALIZADA).count(),
         }
 
     def cambiar_estado(self, nuevo_estado, usuario):
-        if nuevo_estado not in dict(EstadoTarea.choices):
+        if nuevo_estado not in dict(EstadoFuncion.choices):
             return False
 
         self.estado = nuevo_estado
         self.ultimo_cambio_por = usuario
 
-        if nuevo_estado == EstadoTarea.FINALIZADA:
+        if nuevo_estado == EstadoFuncion.FINALIZADA:
             self.fecha_finalizacion = timezone.now()
         else:
             self.fecha_finalizacion = None
@@ -209,7 +212,7 @@ class Task(models.Model):
 
     def reabrir(self, usuario):
         """
-        Reabre una tarea previamente finalizada y la devuelve a EN_PROGRESO.
+        Reabre una funcion previamente finalizada y la devuelve a EN_PROGRESO.
 
         - Limpia `fecha_finalizacion`.
         - NO borra `evidencia` (se conserva por si el empleado ya había
@@ -219,11 +222,11 @@ class Task(models.Model):
 
         Retorna True si se reabrió, False si no estaba finalizada.
         """
-        if self.estado != EstadoTarea.FINALIZADA:
+        if self.estado != EstadoFuncion.FINALIZADA:
             return False
 
-        Task.objects.filter(pk=self.pk).update(
-            estado=EstadoTarea.EN_PROGRESO,
+        Funcion.objects.filter(pk=self.pk).update(
+            estado=EstadoFuncion.EN_PROGRESO,
             ultimo_cambio_por=usuario,
             fecha_finalizacion=None,
         )
@@ -232,8 +235,8 @@ class Task(models.Model):
 
     def revertir_a_pendiente(self, usuario):
         """
-        Revierte una tarea FINALIZADA a PENDIENTE. Útil cuando el empleado
-        marcó como terminada una tarea que en realidad no había empezado
+        Revierte una funcion FINALIZADA a PENDIENTE. Ãštil cuando el empleado
+        marcó como terminada una funcion que en realidad no había empezado
         (o que se necesita reiniciar desde cero).
 
         - Limpia `fecha_finalizacion`.
@@ -241,11 +244,11 @@ class Task(models.Model):
 
         Retorna True si se revirtió, False si no estaba finalizada.
         """
-        if self.estado != EstadoTarea.FINALIZADA:
+        if self.estado != EstadoFuncion.FINALIZADA:
             return False
 
-        Task.objects.filter(pk=self.pk).update(
-            estado=EstadoTarea.PENDIENTE,
+        Funcion.objects.filter(pk=self.pk).update(
+            estado=EstadoFuncion.PENDIENTE,
             ultimo_cambio_por=usuario,
             fecha_finalizacion=None,
         )
@@ -256,17 +259,17 @@ class Task(models.Model):
     def puede_reabrirse(self):
         """
         True si:
-            - La tarea está FINALIZADA
+            - La funcion está FINALIZADA
             - Y la fecha límite original + DIAS_MARGEN_REAPERTURA
               todavía no ha pasado.
 
-        Pasado el margen, la tarea queda como histórica y no se puede
-        reabrir ni revertir. Esto evita que un admin modifique tareas
+        Pasado el margen, la funcion queda como histórica y no se puede
+        reabrir ni revertir. Esto evita que un admin modifique funciones
         muy antiguas, alterando métricas y memorandos ya emitidos.
         """
         from .constants import DIAS_MARGEN_REAPERTURA
 
-        if self.estado != EstadoTarea.FINALIZADA:
+        if self.estado != EstadoFuncion.FINALIZADA:
             return False
 
         hoy = timezone.localdate()

@@ -122,7 +122,7 @@ function renderSolicitudDetalle(data) {
                     ${fechaSolicitud}
                 </span>
             </div>
-            ${data.archivo ? `
+            ${data.archivo  `
                 <div class="novedad-detalle-bloque-largo">
                     <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                     <p class="novedad-detalle-bloque-largo-texto">
@@ -132,7 +132,7 @@ function renderSolicitudDetalle(data) {
                     </p>
                 </div>
             ` : ''}
-            ${data.motivo_rechazo ? `
+            ${data.motivo_rechazo  `
                 <div class="novedad-detalle-bloque-largo" style="border-left: 3px solid #dc3545; background: #fff7f7;">
                     <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
                     <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;">${data.motivo_rechazo}</p>
@@ -190,7 +190,7 @@ function renderIncapacidadDetalle(data) {
                     ${fechaSolicitud}
                 </span>
             </div>
-            ${data.archivo ? `
+            ${data.archivo  `
                 <div class="novedad-detalle-bloque-largo">
                     <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                     <p class="novedad-detalle-bloque-largo-texto">
@@ -200,7 +200,7 @@ function renderIncapacidadDetalle(data) {
                     </p>
                 </div>
             ` : ''}
-            ${data.motivo_rechazo ? `
+            ${data.motivo_rechazo  `
                 <div class="novedad-detalle-bloque-largo" style="border-left: 3px solid #dc3545; background: #fff7f7;">
                     <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
                     <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;">${data.motivo_rechazo}</p>
@@ -246,7 +246,7 @@ function renderCertificadoDetalle(data) {
                     ${fechaSolicitud}
                 </span>
             </div>
-            ${data.fecha_emision ? `
+            ${data.fecha_emision  `
                 <div class="novedad-detalle-item">
                     <span class="novedad-detalle-label">Fecha de emisión</span>
                     <span class="novedad-detalle-value">
@@ -259,19 +259,19 @@ function renderCertificadoDetalle(data) {
                 <span class="novedad-detalle-bloque-largo-label">Propósito</span>
                 <p class="novedad-detalle-bloque-largo-texto">${data.proposito || 'Sin información adicional.'}</p>
             </div>
-            ${data.dirigido_a ? `
+            ${data.dirigido_a  `
                 <div class="novedad-detalle-item novedad-detalle-item-full">
                     <span class="novedad-detalle-label">Dirigido a</span>
                     <span class="novedad-detalle-value">${data.dirigido_a}</span>
                 </div>
             ` : ''}
-            ${data.periodo ? `
+            ${data.periodo  `
                 <div class="novedad-detalle-item novedad-detalle-item-full">
                     <span class="novedad-detalle-label">Período</span>
                     <span class="novedad-detalle-value">${data.periodo}</span>
                 </div>
             ` : ''}
-            ${data.archivo ? `
+            ${data.archivo  `
                 <div class="novedad-detalle-bloque-largo">
                     <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                     <p class="novedad-detalle-bloque-largo-texto">
@@ -281,7 +281,7 @@ function renderCertificadoDetalle(data) {
                     </p>
                 </div>
             ` : ''}
-            ${data.motivo_rechazo ? `
+            ${data.motivo_rechazo  `
                 <div class="novedad-detalle-bloque-largo" style="border-left: 3px solid #dc3545; background: #fff7f7;">
                     <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
                     <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;">${data.motivo_rechazo}</p>
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentSolicitudId = null;
 
     window.updateSolicitudesKPIs = function () {
-        fetch('/novedades/solicitudes/historial/?estado=pendiente')
+        fetch('/novedades/solicitudes/historial/estado=pendiente')
             .then(r => r.json())
             .then(data => {
                 const pendingEl = document.getElementById('solicitudesKpiPendientes');
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     ${p.fecha_inicio || '—'} → ${p.fecha_fin || '—'}
                                 </div>
                                 <div class="solicitud-descripcion">
-                                    ${p.justificacion ? p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
+                                    ${p.justificacion  p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
                                     <button class="solicitud-btn-detalle verSolicitudBtn" data-id="${p.id}">
@@ -561,21 +561,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.renderSolicitudesHistorial = function () {
-        const estado = document.getElementById('solicitudesFiltroEstado')?.value || '';
-        const busqueda = (document.getElementById('buscarSolicitudes')?.value || '').trim();
+        const estado = document.getElementById('solicitudesFiltroEstado').value || '';
+        const busqueda = (document.getElementById('buscarSolicitudes').value || '').trim();
 
         const params = new URLSearchParams();
         if (estado && estado !== 'todas') params.append('estado', estado);
         if (busqueda) params.append('buscar', busqueda);
 
-        fetch(`/novedades/solicitudes/historial/?${params.toString()}`)
+        fetch(`/novedades/solicitudes/historial/${params.toString()}`)
             .then(r => r.json())
             .then(data => {
                 const tbody = document.getElementById('solicitudesHistorialBody');
                 const sinResultados = document.getElementById('solicitudesSinResultados');
                 if (!tbody) return;
 
-                let historial = Array.isArray(data) ? data : [];
+                let historial = Array.isArray(data)  data : [];
 
                 if (busqueda) {
                     const term = busqueda.toLowerCase();
@@ -605,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     return `<tr>
-                        <td data-label="Fecha solicitud">${p.fecha_solicitud ? new Date(p.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
+                        <td data-label="Fecha solicitud">${p.fecha_solicitud  new Date(p.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
                         <td data-label="Empleado"><strong>${p.empleado || '—'}</strong></td>
                         <td data-label="Tipo">${p.tipo || '—'}</td>
                         <td data-label="Fechas">${p.fecha_inicio || '—'} → ${p.fecha_fin || '—'}</td>
@@ -627,36 +627,36 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Eventos de modales de solicitudes
-    document.getElementById('solicitudesAprobarBtn')?.addEventListener('click', () => {
+    document.getElementById('solicitudesAprobarBtn').addEventListener('click', () => {
         const modal = bootstrap.Modal.getInstance(document.getElementById('solicitudesDetalleModal'));
-        modal?.hide();
+        modal.hide();
         new bootstrap.Modal(document.getElementById('solicitudesConfirmApproveModal')).show();
     });
-    document.getElementById('solicitudesConfirmApprove')?.addEventListener('click', () => {
+    document.getElementById('solicitudesConfirmApprove').addEventListener('click', () => {
         aprobarSolicitud(currentSolicitudId);
-        bootstrap.Modal.getInstance(document.getElementById('solicitudesConfirmApproveModal'))?.hide();
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesConfirmApproveModal')).hide();
     });
     
     // Al hacer click en rechazar, abrimos directamente el modal de motivo (ajustado a tu HTML)
-    document.getElementById('solicitudesRechazarBtn')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('solicitudesDetalleModal'))?.hide();
+    document.getElementById('solicitudesRechazarBtn').addEventListener('click', () => {
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesDetalleModal')).hide();
         new bootstrap.Modal(document.getElementById('solicitudesRejectModal')).show();
     });
     
-    document.getElementById('solicitudesConfirmReject')?.addEventListener('click', () => {
+    document.getElementById('solicitudesConfirmReject').addEventListener('click', () => {
         const reason = document.getElementById('solicitudesRejectReason').value.trim();
         if (!reason) {
             showMessage('Debe ingresar un motivo de rechazo.');
             return;
         }
         rechazarSolicitud(currentSolicitudId, reason);
-        bootstrap.Modal.getInstance(document.getElementById('solicitudesRejectModal'))?.hide();
+        bootstrap.Modal.getInstance(document.getElementById('solicitudesRejectModal')).hide();
     });
 
     // Eventos de Filtro y Búsqueda
-    document.getElementById('solicitudesFiltroEstado')?.addEventListener('change', window.renderSolicitudesHistorial);
-    document.getElementById('buscarSolicitudes')?.addEventListener('input', debounce(window.renderSolicitudesHistorial, 300));
-    document.getElementById('solicitudesBtnLimpiar')?.addEventListener('click', () => {
+    document.getElementById('solicitudesFiltroEstado').addEventListener('change', window.renderSolicitudesHistorial);
+    document.getElementById('buscarSolicitudes').addEventListener('input', debounce(window.renderSolicitudesHistorial, 300));
+    document.getElementById('solicitudesBtnLimpiar').addEventListener('click', () => {
         const inputBuscar = document.getElementById('buscarSolicitudes');
         const selectEstado = document.getElementById('solicitudesFiltroEstado');
         if (inputBuscar) inputBuscar.value = '';
@@ -678,11 +678,11 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentIncapId = null;
 
     window.updateIncapKPIs = function () {
-        fetch('/novedades/incapacidades/historial/?estado=pendiente')
+        fetch('/novedades/incapacidades/historial/estado=pendiente')
             .then(r => r.json())
             .then(data => {
                 const pendingEl = document.getElementById('incapacidadesKpiPendientes');
-                if (pendingEl) pendingEl.innerText = Array.isArray(data) ? data.length : 0;
+                if (pendingEl) pendingEl.innerText = Array.isArray(data)  data.length : 0;
             })
             .catch(() => console.error('Error al obtener KPIs de incapacidades'));
 
@@ -692,14 +692,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const now = new Date();
                 const mes = now.getMonth();
                 const año = now.getFullYear();
-                const aprobadas = Array.isArray(data) ? data.filter(i => {
+                const aprobadas = Array.isArray(data)  data.filter(i => {
                     const estado = (i.estado || '').toLowerCase();
-                    const fecha = i.fecha_solicitud ? new Date(i.fecha_solicitud) : new Date();
+                    const fecha = i.fecha_solicitud  new Date(i.fecha_solicitud) : new Date();
                     return estado === 'aprobado' && fecha.getMonth() === mes && fecha.getFullYear() === año;
                 }).length : 0;
-                const rechazadas = Array.isArray(data) ? data.filter(i => {
+                const rechazadas = Array.isArray(data)  data.filter(i => {
                     const estado = (i.estado || '').toLowerCase();
-                    const fecha = i.fecha_solicitud ? new Date(i.fecha_solicitud) : new Date();
+                    const fecha = i.fecha_solicitud  new Date(i.fecha_solicitud) : new Date();
                     return estado === 'rechazado' && fecha.getMonth() === mes && fecha.getFullYear() === año;
                 }).length : 0;
 
@@ -825,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/novedades/incapacidades/pendientes/')
             .then(r => r.json())
             .then(data => {
-                const pendientes = Array.isArray(data) ? data : [];
+                const pendientes = Array.isArray(data)  data : [];
 
                 if (!pendientes.length) {
                     container.innerHTML = `
@@ -875,21 +875,21 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     window.renderHistorialIncapacidades = function () {
-        const estado = document.getElementById('incapacidadesFiltroEstado')?.value || '';
-        const busqueda = (document.getElementById('buscarIncapacidad')?.value || '').trim();
+        const estado = document.getElementById('incapacidadesFiltroEstado').value || '';
+        const busqueda = (document.getElementById('buscarIncapacidad').value || '').trim();
 
         const params = new URLSearchParams();
         if (estado && estado !== 'todas') params.append('estado', estado);
         if (busqueda) params.append('buscar', busqueda);
 
-        fetch(`/novedades/incapacidades/historial/?${params.toString()}`)
+        fetch(`/novedades/incapacidades/historial/${params.toString()}`)
             .then(r => r.json())
             .then(data => {
                 const tbody = document.getElementById('incapacidadesHistorialBody');
                 const sinResultados = document.getElementById('incapacidadesSinResultados');
                 if (!tbody) return;
 
-                let historial = Array.isArray(data) ? data : [];
+                let historial = Array.isArray(data)  data : [];
 
                 if (busqueda) {
                     const term = busqueda.toLowerCase();
@@ -919,7 +919,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     return `<tr>
-                        <td data-label="Fecha solicitud">${i.fecha_solicitud ? new Date(i.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
+                        <td data-label="Fecha solicitud">${i.fecha_solicitud  new Date(i.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
                         <td data-label="Empleado"><strong>${i.empleado || '—'}</strong></td>
                         <td data-label="Diagnóstico">${i.titulo || i.descripcion || '—'}</td>
                         <td data-label="Período">${i.fecha_inicio || '—'} → ${i.fecha_fin || '—'}</td>
@@ -937,32 +937,32 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Eventos de modales
-    document.getElementById('incapacidadesAprobarBtn')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal'))?.hide();
+    document.getElementById('incapacidadesAprobarBtn').addEventListener('click', () => {
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal')).hide();
         new bootstrap.Modal(document.getElementById('incapacidadesConfirmApproveModal')).show();
     });
-    document.getElementById('incapacidadesConfirmApprove')?.addEventListener('click', () => {
+    document.getElementById('incapacidadesConfirmApprove').addEventListener('click', () => {
         aprobarIncapacidad(currentIncapId);
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesConfirmApproveModal'))?.hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesConfirmApproveModal')).hide();
     });
-    document.getElementById('incapacidadesRechazarBtn')?.addEventListener('click', () => {
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal'))?.hide();
+    document.getElementById('incapacidadesRechazarBtn').addEventListener('click', () => {
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesDetalleModal')).hide();
         new bootstrap.Modal(document.getElementById('incapacidadesRejectModal')).show();
     });
-    document.getElementById('incapacidadesConfirmReject')?.addEventListener('click', () => {
+    document.getElementById('incapacidadesConfirmReject').addEventListener('click', () => {
         const reason = document.getElementById('incapacidadesRejectReason').value.trim();
         if (!reason) {
             showMessage('Debe ingresar un motivo de rechazo.');
             return;
         }
         rechazarIncapacidad(currentIncapId, reason);
-        bootstrap.Modal.getInstance(document.getElementById('incapacidadesRejectModal'))?.hide();
+        bootstrap.Modal.getInstance(document.getElementById('incapacidadesRejectModal')).hide();
     });
 
     // Filtros
-    document.getElementById('incapacidadesFiltroEstado')?.addEventListener('change', window.renderHistorialIncapacidades);
-    document.getElementById('buscarIncapacidad')?.addEventListener('input', debounce(window.renderHistorialIncapacidades, 300));
-    document.getElementById('incapacidadesBtnLimpiar')?.addEventListener('click', () => {
+    document.getElementById('incapacidadesFiltroEstado').addEventListener('change', window.renderHistorialIncapacidades);
+    document.getElementById('buscarIncapacidad').addEventListener('input', debounce(window.renderHistorialIncapacidades, 300));
+    document.getElementById('incapacidadesBtnLimpiar').addEventListener('click', () => {
         const inputBuscar = document.getElementById('buscarIncapacidad');
         const selectEstado = document.getElementById('incapacidadesFiltroEstado');
         if (inputBuscar) inputBuscar.value = '';
@@ -990,15 +990,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const ahora = new Date();
                 const mesActual = ahora.getMonth();
                 const añoActual = ahora.getFullYear();
-                const pendientes = Array.isArray(data) ? data.filter(c => (c.estado || '').toLowerCase() === 'pendiente').length : 0;
-                const aprobados = Array.isArray(data) ? data.filter(c => {
+                const pendientes = Array.isArray(data)  data.filter(c => (c.estado || '').toLowerCase() === 'pendiente').length : 0;
+                const aprobados = Array.isArray(data)  data.filter(c => {
                     const estado = (c.estado || '').toLowerCase();
-                    const fecha = c.fecha_emision ? new Date(c.fecha_emision) : (c.fecha_solicitud ? new Date(c.fecha_solicitud) : new Date());
+                    const fecha = c.fecha_emision  new Date(c.fecha_emision) : (c.fecha_solicitud  new Date(c.fecha_solicitud) : new Date());
                     return estado === 'aprobado' && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
                 }).length : 0;
-                const rechazados = Array.isArray(data) ? data.filter(c => {
+                const rechazados = Array.isArray(data)  data.filter(c => {
                     const estado = (c.estado || '').toLowerCase();
-                    const fecha = c.fecha_emision ? new Date(c.fecha_emision) : (c.fecha_solicitud ? new Date(c.fecha_solicitud) : new Date());
+                    const fecha = c.fecha_emision  new Date(c.fecha_emision) : (c.fecha_solicitud  new Date(c.fecha_solicitud) : new Date());
                     return estado === 'rechazado' && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
                 }).length : 0;
 
@@ -1019,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/novedades/certificados/pendientes/')
             .then(r => r.json())
             .then(data => {
-                const pendientes = Array.isArray(data) ? data : [];
+                const pendientes = Array.isArray(data)  data : [];
 
                 if (pendientes.length === 0) {
                     container.innerHTML = `<div class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay certificados pendientes.</div>`;
@@ -1042,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="solicitud-dato">
                                     <i class="bi bi-calendar3 me-1"></i>
-                                    Solicitado: ${c.fecha_solicitud ? new Date(c.fecha_solicitud).toLocaleString('es-CO') : '—'}
+                                    Solicitado: ${c.fecha_solicitud  new Date(c.fecha_solicitud).toLocaleString('es-CO') : '—'}
                                 </div>
                                 <div class="solicitud-descripcion">
                                     ${c.proposito || 'Sin propósito especificado.'}
@@ -1133,14 +1133,14 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     window.renderCertificados = function () {
-        const tipoFiltro = (document.getElementById('certificadosFiltroTipo')?.value || '').toLowerCase().trim();
-        const estadoFiltro = (document.getElementById('certificadosFiltroEstado')?.value || '').toLowerCase().trim();
-        const busqueda = (document.getElementById('buscarCertificado')?.value || '').toLowerCase().trim();
+        const tipoFiltro = (document.getElementById('certificadosFiltroTipo').value || '').toLowerCase().trim();
+        const estadoFiltro = (document.getElementById('certificadosFiltroEstado').value || '').toLowerCase().trim();
+        const busqueda = (document.getElementById('buscarCertificado').value || '').toLowerCase().trim();
 
         fetch('/novedades/certificados/')
             .then(response => response.json())
             .then(data => {
-                let certificados = Array.isArray(data) ? data : [];
+                let certificados = Array.isArray(data)  data : [];
 
                 if (busqueda) {
                     certificados = certificados.filter(c => 
@@ -1168,8 +1168,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (estadoVal === 'aprobado') badge = `<span class="badge badge-active">Aprobado</span>`;
                     else if (estadoVal === 'rechazado') badge = `<span class="badge badge-rechazado">Rechazado</span>`;
 
-                    const fechaMostrar = (estadoVal === 'aprobado') ? (c.fecha_emision || c.fecha_decision) : c.fecha_solicitud;
-                    const fechaFormateada = fechaMostrar ? new Date(fechaMostrar).toLocaleString('es-CO') : '—';
+                    const fechaMostrar = (estadoVal === 'aprobado')  (c.fecha_emision || c.fecha_decision) : c.fecha_solicitud;
+                    const fechaFormateada = fechaMostrar  new Date(fechaMostrar).toLocaleString('es-CO') : '—';
 
                     return `<tr>
                         <td data-label="Empleado"><strong>${c.empleado || '—'}</strong></td>
@@ -1189,11 +1189,11 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Eventos de certificados
-    document.getElementById('certificadosAprobarBtn')?.addEventListener('click', function () {
-        bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal'))?.hide();
+    document.getElementById('certificadosAprobarBtn').addEventListener('click', function () {
+        bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal')).hide();
         new bootstrap.Modal(document.getElementById('certificadosConfirmApproveModal')).show();
     });
-    document.getElementById('certificadosConfirmApprove')?.addEventListener('click', async function () {
+    document.getElementById('certificadosConfirmApprove').addEventListener('click', async function () {
         if (!certificadoSeleccionadoId) return;
         try {
             const resp = await fetch(`/novedades/certificados/${certificadoSeleccionadoId}/aprobar/`, {
@@ -1201,7 +1201,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'X-CSRFToken': getCSRFToken(), 'Content-Type': 'application/json' }
             });
             const data = await resp.json();
-            bootstrap.Modal.getInstance(document.getElementById('certificadosConfirmApproveModal'))?.hide();
+            bootstrap.Modal.getInstance(document.getElementById('certificadosConfirmApproveModal')).hide();
             if (resp.ok && data.status === 'ok') {
                 showMessage('Certificado aprobado correctamente.');
                 window.cargarCertificadosPendientes();
@@ -1213,11 +1213,11 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (err) { showMessage('Error de red'); }
     });
 
-    document.getElementById('certificadosRechazarBtn')?.addEventListener('click', function () {
-        bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal'))?.hide();
+    document.getElementById('certificadosRechazarBtn').addEventListener('click', function () {
+        bootstrap.Modal.getInstance(document.getElementById('certificadosDetalleModal')).hide();
         new bootstrap.Modal(document.getElementById('certificadosRejectModal')).show();
     });
-    document.getElementById('certificadosConfirmReject')?.addEventListener('click', async function () {
+    document.getElementById('certificadosConfirmReject').addEventListener('click', async function () {
         if (!certificadoSeleccionadoId) return;
         const motivo = document.getElementById('certificadosRejectReason').value.trim();
         if (!motivo) { showMessage('Debe indicar un motivo.'); return; }
@@ -1229,7 +1229,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({ motivo: motivo })
             });
             const data = await resp.json();
-            bootstrap.Modal.getInstance(document.getElementById('certificadosRejectModal'))?.hide();
+            bootstrap.Modal.getInstance(document.getElementById('certificadosRejectModal')).hide();
             document.getElementById('certificadosRejectReason').value = '';
             if (resp.ok && data.status === 'ok') {
                 showMessage('Certificado rechazado.');
@@ -1242,10 +1242,10 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (err) { showMessage('Error de red'); }
     });
 
-    document.getElementById('buscarCertificado')?.addEventListener('input', debounce(window.renderCertificados, 300));
-    document.getElementById('certificadosFiltroTipo')?.addEventListener('change', window.renderCertificados);
-    document.getElementById('certificadosFiltroEstado')?.addEventListener('change', window.renderCertificados);
-    document.getElementById('certificadosBtnLimpiar')?.addEventListener('click', () => {
+    document.getElementById('buscarCertificado').addEventListener('input', debounce(window.renderCertificados, 300));
+    document.getElementById('certificadosFiltroTipo').addEventListener('change', window.renderCertificados);
+    document.getElementById('certificadosFiltroEstado').addEventListener('change', window.renderCertificados);
+    document.getElementById('certificadosBtnLimpiar').addEventListener('click', () => {
         document.getElementById('buscarCertificado').value = '';
         document.getElementById('certificadosFiltroTipo').value = '';
         document.getElementById('certificadosFiltroEstado').value = '';
@@ -1305,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tbody.innerHTML = data.map(m => {
             const tipoBadge = `<span class="badge badge-neutral badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
             const btnDescarga = m.archivo_pdf
-                ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF"><i class="bi bi-download"></i></a>`
+                 `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF"><i class="bi bi-download"></i></a>`
                 : `<span class="text-muted"><i class="bi bi-file-earmark-pdf"></i></span>`;
 
             return `<tr>
@@ -1374,7 +1374,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await resp.json();
 
                 if (resp.ok && data.status === 'ok') {
-                    mensajeDiv.innerHTML = `<div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill fs-5"></i><div><strong>${data.mensaje}</strong><br><small>Consecutivo: ${data.consecutivo}</small>${data.archivo_pdf ? `<br><a href="${data.archivo_pdf}" target="_blank" class="text-success"><i class="bi bi-file-pdf"></i> Ver PDF</a>` : ''}</div></div>`;
+                    mensajeDiv.innerHTML = `<div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill fs-5"></i><div><strong>${data.mensaje}</strong><br><small>Consecutivo: ${data.consecutivo}</small>${data.archivo_pdf  `<br><a href="${data.archivo_pdf}" target="_blank" class="text-success"><i class="bi bi-file-pdf"></i> Ver PDF</a>` : ''}</div></div>`;
                     form.reset();
                     await cargarMemorandosHistorial();
                 } else {

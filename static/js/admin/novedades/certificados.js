@@ -58,7 +58,7 @@ crearModuloNovedad({
             // aprobado -> fecha de emisión; los demás -> fecha de solicitud
             valor: (c) => formatDateTime(
                 normalizarEstado(c.estado) === 'aprobado'
-                    ? (c.fecha_emision || c.fecha_decision)
+                     (c.fecha_emision || c.fecha_decision)
                     : c.fecha_solicitud
             ),
         },
@@ -72,7 +72,7 @@ crearModuloNovedad({
         { label: 'Empleado', valor: d.empleado },
         { label: 'Tipo', valor: d.tipo },
         { label: 'Solicitado', valor: formatDate(d.fecha_solicitud), icono: 'bi-calendar3' },
-        { label: 'Fecha de emisión', valor: d.fecha_emision ? formatDate(d.fecha_emision) : '', icono: 'bi-check-circle', opcional: true },
+        { label: 'Fecha de emisión', valor: d.fecha_emision  formatDate(d.fecha_emision) : '', icono: 'bi-check-circle', opcional: true },
         { bloque: 'Propósito', valor: d.proposito, vacio: 'Sin información adicional.' },
         { label: 'Dirigido a', valor: d.dirigido_a, opcional: true, full: true },
         { label: 'Período', valor: d.periodo, opcional: true, full: true },

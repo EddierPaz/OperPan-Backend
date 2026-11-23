@@ -2,14 +2,14 @@
 
 Este comando permite llenar automáticamente la base de datos con información de prueba para facilitar el desarrollo y las demostraciones del proyecto.
 
-## ¿Qué crea?
+## ¿Qué crea
 
 - 1 usuario administrador.
 - 30 empleados.
 - Horarios.
 - Asistencias.
 - Descansos.
-- Tareas.
+- Funciones.
 - Permisos.
 - Incapacidades.
 - Certificados.
@@ -17,7 +17,7 @@ Este comando permite llenar automáticamente la base de datos con información d
 
 Toda la información generada es coherente con el contexto de **OperPan**.
 
-## ¿Cómo usarlo?
+## ¿Cómo usarlo
 
 Después de ejecutar las migraciones:
 
