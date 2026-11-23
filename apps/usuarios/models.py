@@ -16,7 +16,6 @@ class User(AbstractUser):
     class EstadoCuenta(models.TextChoices):
         PENDIENTE = 'PENDIENTE', 'Pendiente'
         ACTIVA = 'ACTIVA', 'Activa'
-        SUSPENDIDA = 'SUSPENDIDA', 'Suspendida'
         INACTIVA = 'INACTIVA', 'Inactiva'
 
     rol = models.CharField(
@@ -288,7 +287,6 @@ class RegistroAuditoriaCuenta(models.Model):
     class Accion(models.TextChoices):
         CREACION = 'CREACION', 'Creación de cuenta'
         PRIMER_ACCESO = 'PRIMER_ACCESO', 'Primer acceso completado'
-        SUSPENSION = 'SUSPENSION', 'Suspensión'
         REACTIVACION = 'REACTIVACION', 'Reactivación'
         RETIRO = 'RETIRO', 'Retiro'
         REACTIVACION_RETIRO = 'REACTIVACION_RETIRO', 'Reactivación por reingreso'

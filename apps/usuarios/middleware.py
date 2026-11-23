@@ -6,8 +6,8 @@ from django.contrib import messages
 class VerificarEstadoCuentaMiddleware:
     """
     En cada request de un usuario ya autenticado, verifica que su
-    estado_cuenta siga permitiendo el acceso. Si fue suspendido o
-    inactivado mientras tenía sesión abierta, se le cierra la sesión
+    estado_cuenta siga permitiendo el acceso. Si fue inactivado
+    mientras tenía sesión abierta, se le cierra la sesión
     de inmediato (RF-CT-09).
     """
 
@@ -25,13 +25,9 @@ class VerificarEstadoCuentaMiddleware:
             if user is not None and user.is_authenticated:
                 estado = getattr(user, 'estado_cuenta', None)
 
-                if estado in (user.EstadoCuenta.SUSPENDIDA, user.EstadoCuenta.INACTIVA):
+                if estado == user.EstadoCuenta.INACTIVA:
                     logout(request)
-                    mensaje = (
-                        "Tu cuenta ha sido suspendida. Contacta al administrador."
-                        if estado == user.EstadoCuenta.SUSPENDIDA
-                        else "Esta cuenta ya no está disponible."
-                    )
+                    mensaje = "Esta cuenta ya no está disponible."
                     messages.error(request, mensaje)
                     return redirect('login')
 

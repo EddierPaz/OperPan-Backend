@@ -58,7 +58,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'apps.usuarios.context_processors.notificaciones_context', 
             ],
         },
     },
@@ -95,7 +94,7 @@ DATABASES = {
 #          'USER': 'root',
 
 #          # No tenemos contraseña para usar la por defecto
-#          'PASSWORD': 'Eddier2929*',
+#          'PASSWORD': '',
 #          'HOST': 'localhost',
 #          'PORT': '3306',
 #          'OPTIONS': {

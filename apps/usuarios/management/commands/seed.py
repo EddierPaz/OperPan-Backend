@@ -278,7 +278,7 @@ class Command(BaseCommand):
                 eps = random.choice(['Sura', 'Colsanitas', 'Salud Total', 'Nueva EPS', 'Sanitas', 'Compensar', 'Cafam'])
                 arl = random.choice(['Sura ARL', 'Colpatria ARL', 'Positiva ARL', 'Liberty ARL', 'Mapfre ARL'])
                 fondo_pension = random.choice(['Porvenir', 'Protección', 'Colfondos', 'Skandia', 'BBVA'])
-                estado = random.choices(['activo', 'suspendido', 'retirado'], weights=[0.85, 0.10, 0.05])[0]
+                estado = random.choices(['activo', 'retirado'], weights=[0.95, 0.05])[0]
 
                 # Crear perfil (usando get_or_create)
                 perfil, created = PerfilEmpleado.objects.get_or_create(

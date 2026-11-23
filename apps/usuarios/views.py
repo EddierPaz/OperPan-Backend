@@ -658,67 +658,6 @@ def user_delete(request, user_id):
 
 @login_required
 @admin_required
-def user_suspender(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-
-    if request.method == "POST":
-        motivo = request.POST.get("motivo", "").strip()
-
-        if user.estado_cuenta not in (User.EstadoCuenta.PENDIENTE, User.EstadoCuenta.ACTIVA):
-            messages.error(request, "Esta cuenta no se puede suspender desde su estado actual.")
-            return redirect("user_list")
-
-        if not motivo:
-            messages.error(request, "Debes indicar un motivo para suspender la cuenta.")
-            return redirect("user_list")
-
-        estado_anterior = user.estado_cuenta
-        user.estado_cuenta = User.EstadoCuenta.SUSPENDIDA
-        user.save()
-
-        _registrar_auditoria(
-            usuario_afectado=user,
-            ejecutado_por=request.user,
-            accion=RegistroAuditoriaCuenta.Accion.SUSPENSION,
-            estado_anterior=estado_anterior,
-            estado_nuevo=user.estado_cuenta,
-            motivo=motivo,
-        )
-
-        messages.success(request, f"Cuenta de {user.username} suspendida.")
-
-    return redirect("user_list")
-
-
-@login_required
-@admin_required
-def user_reactivar(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-
-    if request.method == "POST":
-        if user.estado_cuenta != User.EstadoCuenta.SUSPENDIDA:
-            messages.error(request, "Solo se pueden reactivar cuentas suspendidas.")
-            return redirect("user_list")
-
-        estado_anterior = user.estado_cuenta
-        user.estado_cuenta = User.EstadoCuenta.ACTIVA
-        user.save()
-
-        _registrar_auditoria(
-            usuario_afectado=user,
-            ejecutado_por=request.user,
-            accion=RegistroAuditoriaCuenta.Accion.REACTIVACION,
-            estado_anterior=estado_anterior,
-            estado_nuevo=user.estado_cuenta,
-        )
-
-        messages.success(request, f"Cuenta de {user.username} reactivada.")
-
-    return redirect("user_list")
-
-
-@login_required
-@admin_required
 def user_retirar(request, user_id):
     user = get_object_or_404(User, id=user_id)
     perfil = user.perfil

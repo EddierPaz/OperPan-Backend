@@ -38,15 +38,9 @@ def login_view(request):
 
         if user is not None:
             # is_active ya es el espejo de estado_cuenta (RN-CT-07), pero el
-            # MENSAJE debe distinguir por qué está bloqueada (sección P).
+            # MENSAJE debe indicar que la cuenta no está disponible.
             if not user.is_active:
-                if user.estado_cuenta == User.EstadoCuenta.SUSPENDIDA:
-                    messages.error(
-                        request,
-                        "Tu cuenta está suspendida. Contacta al administrador."
-                    )
-                else:
-                    messages.error(request, "Esta cuenta no está disponible.")
+                messages.error(request, "Esta cuenta no está disponible.")
                 return render(request, "login/login.html")
 
             login(request, user)
@@ -182,7 +176,7 @@ def password_reset_confirmar(request, token):
         if form.is_valid():
             user.set_password(form.cleaned_data["password1"])
 
-            # RN-CT-06: el reset NUNCA reactiva una cuenta suspendida/inactiva.
+            # RN-CT-06: el reset NUNCA reactiva una cuenta inactiva.
             # Única excepción (sección Q): PENDIENTE → ACTIVA, porque completar
             # el reset aquí equivale a completar el primer acceso.
             if user.estado_cuenta == User.EstadoCuenta.PENDIENTE:

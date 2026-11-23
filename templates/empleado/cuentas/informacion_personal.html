@@ -172,8 +172,6 @@
                             <span class="badge badge-active">Activa</span>
                         {% elif request.user.estado_cuenta == 'PENDIENTE' %}
                             <span class="badge badge-pendiente">Pendiente de activación</span>
-                        {% elif request.user.estado_cuenta == 'SUSPENDIDA' %}
-                            <span class="badge badge-rechazado">Suspendida</span>
                         {% else %}
                             <span class="badge badge-pendiente">{{ request.user.get_estado_cuenta_display }}</span>
                         {% endif %}

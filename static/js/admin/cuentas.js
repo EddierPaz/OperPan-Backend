@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const cargos = { 'mesero': 'Mesero', 'cajero': 'Cajero', 'pastelero': 'Pastelero', 'panadero': 'Panadero', 'cocina': 'Cocina', 'buñuelero': 'Buñuelero', 'greca': 'Greca' };
             const roles = { 'admin': 'Administrador', 'empleado': 'Empleado' };
             const estadosLaborales = { 'activo': 'Activo', 'retirado': 'Retirado' };
-            const estadosCuenta = { 'PENDIENTE': 'Pendiente', 'ACTIVA': 'Activa', 'SUSPENDIDA': 'Suspendida', 'INACTIVA': 'Inactiva' };
+            const estadosCuenta = { 'PENDIENTE': 'Pendiente', 'ACTIVA': 'Activa', 'INACTIVA': 'Inactiva' };
 
             const nombreCompleto = [d.primerNombre || '', d.segundoNombre || '', d.primerApellido || '', d.segundoApellido || ''].filter(Boolean).join(' ');
 
@@ -380,23 +380,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('e_fecha_ingreso').value = d.fechaIngreso || '';
 
             new bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
-        }
-
-        // ===== SUSPENDER =====
-        const btnSuspender = e.target.closest('.btn-suspender-usuario');
-        if (btnSuspender) {
-            document.getElementById('formSuspenderUsuario').action = '/admi/users/' + btnSuspender.dataset.id + '/suspender/';
-            document.getElementById('suspender_usuario_nombre').textContent = btnSuspender.dataset.nombre || 'usuario';
-            document.getElementById('suspender_motivo').value = '';
-            new bootstrap.Modal(document.getElementById('modalSuspenderUsuario')).show();
-        }
-
-        // ===== REACTIVAR =====
-        const btnReactivar = e.target.closest('.btn-reactivar-usuario');
-        if (btnReactivar) {
-            document.getElementById('formReactivarUsuario').action = '/admi/users/' + btnReactivar.dataset.id + '/reactivar/';
-            document.getElementById('reactivar_usuario_nombre').textContent = btnReactivar.dataset.nombre || 'usuario';
-            new bootstrap.Modal(document.getElementById('modalReactivarUsuario')).show();
         }
 
         // ===== RETIRAR =====
