@@ -207,8 +207,7 @@
 
 
             const btnDescarga = m.archivo_pdf
-
-                 `
+                ? `
                     <a
                         href="/memorandos/${m.id}/descargar/"
                         class="btn-action btn-action-download"
@@ -219,7 +218,7 @@
                     </a>
                 `
 
-                : `
+                    : `
                     <span class="text-muted">
                         <i class="bi bi-file-earmark-pdf"></i>
                         Sin PDF
@@ -230,7 +229,7 @@
             const empleadoConCargo =
                 m.empleado_cargo
 
-                     `${m.empleado}
+                    ? `${m.empleado}
                         <br>
                         <small
                             class="text-muted"
@@ -239,7 +238,7 @@
                             ${m.empleado_cargo}
                         </small>`
 
-                    : m.empleado;
+                        : m.empleado;
 
 
             return `
@@ -266,19 +265,17 @@
                     <td data-label="Fecha emisión">
                         ${
                             m.fecha_emision
-                                 new Date(
-                                    m.fecha_emision
-                                  ).toLocaleString('es-CO')
+                                ? new Date(m.fecha_emision).toLocaleString('es-CO')
                                 : 'N/A'
                         }
                     </td>
 
                     <td data-label="Generado por">
                         ${m.es_automatico
-                             `<span class="text-muted fst-italic">
+                            ? `<span class="text-muted fst-italic">
                                    <i class="bi bi-robot me-1"></i>Sistema
                                </span>`
-                            : (m.generado_por || 'â€”')}
+                            : (m.generado_por || '—')}
                     </td>
 
                     <td data-label="Acciones">
@@ -308,7 +305,7 @@
 
 
         const total =
-            data  data.length : 0;
+data? data.length : 0;
 
 
         const esteMes =
@@ -332,15 +329,11 @@
 
                     }
 
-                }).length
-
-                : 0;
+                }).length;
 
 
-        const hoyCount =
-            data
-
-                 data.filter(m => {
+        const hoyCount = Array.isArray(data)
+            ? data.filter(m => {
 
                     try {
 
@@ -358,8 +351,7 @@
                     }
 
                 }).length
-
-                : 0;
+            : 0;
 
 
         const elTotal =
@@ -702,9 +694,7 @@
                         // ====================================================
 
                         const consecutivo =
-                            data.consecutivo
-                                 ` (${data.consecutivo})`
-                                : '';
+                            data.consecutivo ? ` (${data.consecutivo})` : '';
 
 
                         showMessage(

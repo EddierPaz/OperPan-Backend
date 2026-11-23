@@ -8,43 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 0. SISTEMA DE TOASTS Y LECTURA DE MENSAJES
     // ==========================================
     function showToast(message, type = 'danger') {
-        let container = document.querySelector('.toast-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.className = 'toast-container';
-            document.body.appendChild(container);
+        if (typeof window.mostrarNotificacion === 'function') {
+            window.mostrarNotificacion(message, type);
         }
-
-        const toast = document.createElement('div');
-        toast.className = `app-toast app-toast-${type}`;
-        
-        const iconClass = type === 'danger' ? 'bi-exclamation-triangle' :
-                          type === 'success' ? 'bi-check-circle' : 'bi-info-circle';
-
-        toast.innerHTML = `
-            <div class="app-toast-icon"><i class="bi ${iconClass}"></i></div>
-            <div class="app-toast-msg">${message}</div>
-            <button class="app-toast-close"><i class="bi bi-x"></i></button>
-        `;
-
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.add('show'), 10);
-
-        // Cierre manual
-        toast.querySelector('.app-toast-close').addEventListener('click', () => {
-            toast.classList.remove('show');
-            toast.classList.add('hide');
-            setTimeout(() => toast.remove(), 300);
-        });
-
-        // Cierre automático
-        setTimeout(() => {
-            if (toast.parentElement) {
-                toast.classList.remove('show');
-                toast.classList.add('hide');
-                setTimeout(() => toast.remove(), 300);
-            }
-        }, 5000);
     }
 
     // Leer mensajes de Django inyectados en el HTML
@@ -335,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             for (const [id, valor] of Object.entries(campos)) {
                 const el = document.getElementById(id);
-                if (el) el.textContent = typeof valor === 'string' ? valor.trim() : valor;
+if (el) el.textContent = typeof valor === 'string' ? valor.trim() : valor;
             }
 
             const modalEl = document.getElementById('modalVerUsuario');
@@ -426,10 +392,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnLimpiar = document.getElementById('limpiarFiltrosCuentas');
 
     function aplicarFiltros() {
-        const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
-        const cargo = filtroCargo ? filtroCargo.value.toLowerCase() : '';
-        const rol = filtroRol ? filtroRol.value.toLower() : '';
-        const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value.trim() : '';
+const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
+const cargo = filtroCargo ? filtroCargo.value.toLowerCase() : '';
+const rol = filtroRol ? filtroRol.value.toLower() : '';
+const estadoCuenta = filtroEstadoCuenta ? filtroEstadoCuenta.value.trim() : '';
 
         const filas = document.querySelectorAll('#tablaUsuarios tbody tr[data-id]');
         filas.forEach(fila => {
@@ -446,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const coincideRol = !rol || rolFila === rol.trim();
             const coincideEstadoCuenta = !estadoCuenta || estadoCuentaFila === estadoCuenta;
 
-            fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) ? '' : 'none';
+fila.style.display = (coincideTexto && coincideCargo && coincideRol && coincideEstadoCuenta) ? '' : 'none';
         });
     }
 

@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Evento clic
         toggleBtn.addEventListener('click', function () {
             const current = html.getAttribute('data-theme') || 'light';
-            setTheme(current === 'light'  'dark' : 'light');
+setTheme(current === 'light'? 'dark' : 'light');
         });
 
         // Escuchar cambios de preferencia del sistema (solo si no hay preferencia guardada)
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
             mediaQuery.addEventListener('change', function (e) {
                 if (!localStorage.getItem('home-theme')) {
-                    setTheme(e.matches  'dark' : 'light');
+setTheme(e.matches? 'dark' : 'light');
                 }
             });
         }

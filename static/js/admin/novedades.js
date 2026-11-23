@@ -25,14 +25,20 @@ function getCSRFToken() {
     return getCookie('csrftoken');
 }
 
-function showMessage(msg) {
-    const toast = document.getElementById('liveToast');
-    if (toast) {
-        document.getElementById('toastMsg').innerText = msg;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
-    } else {
-        alert(msg);
+function showMessage(msg, tipo = 'success') {
+    const texto = String(msg || '');
+    const textoNormalizado = texto.toLowerCase();
+    if (textoNormalizado.includes('error') ||
+        textoNormalizado.includes('no se pudo') ||
+        textoNormalizado.includes('no puede') ||
+        textoNormalizado.includes('falta') ||
+        textoNormalizado.includes('debe ')) {
+        tipo = 'danger';
+    } else if (textoNormalizado.includes('rechaz')) {
+        tipo = 'warning';
+    }
+    if (typeof window.mostrarNotificacion === 'function') {
+        window.mostrarNotificacion(texto, tipo);
     }
 }
 
@@ -122,7 +128,7 @@ function renderSolicitudDetalle(data) {
                     ${fechaSolicitud}
                 </span>
             </div>
-            ${data.archivo  `
+            ${data.archivo ? `
                 <div class="novedad-detalle-bloque-largo">
                     <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                     <p class="novedad-detalle-bloque-largo-texto">
@@ -130,14 +136,13 @@ function renderSolicitudDetalle(data) {
                             <i class="bi bi-paperclip me-1"></i> Ver archivo
                         </a>
                     </p>
-                </div>
-            ` : ''}
-            ${data.motivo_rechazo  `
+                </div>` : ''}
+            ${data.motivo_rechazo ? `
                 <div class="novedad-detalle-bloque-largo" style="border-left: 3px solid #dc3545; background: #fff7f7;">
                     <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
                     <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;">${data.motivo_rechazo}</p>
                 </div>
-            ` : ''}
+                </div>` : ''}
         </div>
     `;
 }
@@ -190,7 +195,7 @@ function renderIncapacidadDetalle(data) {
                     ${fechaSolicitud}
                 </span>
             </div>
-            ${data.archivo  `
+            ${data.archivo ? `
                 <div class="novedad-detalle-bloque-largo">
                     <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                     <p class="novedad-detalle-bloque-largo-texto">
@@ -198,14 +203,12 @@ function renderIncapacidadDetalle(data) {
                             <i class="bi bi-paperclip me-1"></i> Ver archivo
                         </a>
                     </p>
-                </div>
-            ` : ''}
-            ${data.motivo_rechazo  `
+                </div>` : ''}
+            ${data.motivo_rechazo ? `
                 <div class="novedad-detalle-bloque-largo" style="border-left: 3px solid #dc3545; background: #fff7f7;">
                     <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
                     <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;">${data.motivo_rechazo}</p>
-                </div>
-            ` : ''}
+                </div>` : ''}
         </div>
     `;
 }
@@ -246,7 +249,7 @@ function renderCertificadoDetalle(data) {
                     ${fechaSolicitud}
                 </span>
             </div>
-            ${data.fecha_emision  `
+            ${data.fecha_emision ? `
                 <div class="novedad-detalle-item">
                     <span class="novedad-detalle-label">Fecha de emisión</span>
                     <span class="novedad-detalle-value">
@@ -254,24 +257,23 @@ function renderCertificadoDetalle(data) {
                         ${fechaEmision}
                     </span>
                 </div>
-            ` : ''}
+                </div>` : ''}
             <div class="novedad-detalle-bloque-largo">
                 <span class="novedad-detalle-bloque-largo-label">Propósito</span>
                 <p class="novedad-detalle-bloque-largo-texto">${data.proposito || 'Sin información adicional.'}</p>
             </div>
-            ${data.dirigido_a  `
+            ${data.dirigido_a ? `
                 <div class="novedad-detalle-item novedad-detalle-item-full">
                     <span class="novedad-detalle-label">Dirigido a</span>
                     <span class="novedad-detalle-value">${data.dirigido_a}</span>
-                </div>
-            ` : ''}
-            ${data.periodo  `
+                </div>` : ''}
+            ${data.periodo ? `
                 <div class="novedad-detalle-item novedad-detalle-item-full">
                     <span class="novedad-detalle-label">Período</span>
                     <span class="novedad-detalle-value">${data.periodo}</span>
                 </div>
-            ` : ''}
-            ${data.archivo  `
+                </div>` : ''}
+            ${data.archivo ? `
                 <div class="novedad-detalle-bloque-largo">
                     <span class="novedad-detalle-bloque-largo-label">Archivo adjunto</span>
                     <p class="novedad-detalle-bloque-largo-texto">
@@ -279,14 +281,14 @@ function renderCertificadoDetalle(data) {
                             <i class="bi bi-paperclip me-1"></i> Ver archivo
                         </a>
                     </p>
+                </div>` : ''}
                 </div>
-            ` : ''}
-            ${data.motivo_rechazo  `
+            ${data.motivo_rechazo ? `
                 <div class="novedad-detalle-bloque-largo" style="border-left: 3px solid #dc3545; background: #fff7f7;">
                     <span class="novedad-detalle-bloque-largo-label" style="color: #dc3545;">Motivo del rechazo</span>
                     <p class="novedad-detalle-bloque-largo-texto" style="color: #7f1d1d;">${data.motivo_rechazo}</p>
                 </div>
-            ` : ''}
+` : ''}
         </div>
     `;
 }
@@ -434,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     ${p.fecha_inicio || '—'} → ${p.fecha_fin || '—'}
                                 </div>
                                 <div class="solicitud-descripcion">
-                                    ${p.justificacion  p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
+${p.justificacion? p.justificacion.substring(0, 80) : 'Sin justificación especificada.'}
                                 </div>
                                 <div class="solicitud-footer mt-3">
                                     <button class="solicitud-btn-detalle verSolicitudBtn" data-id="${p.id}">
@@ -526,15 +528,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('Solicitud aprobada correctamente.');
+                    showMessage('Solicitud aprobada correctamente.', 'success');
                     window.updateSolicitudesKPIs();
                     window.renderSolicitudesPendientes();
                     window.renderSolicitudesHistorial();
                 } else {
-                    showMessage('Error: ' + (data.error || 'No se pudo aprobar'));
+                    showMessage('Error: ' + (data.error || 'No se pudo aprobar'), 'danger');
                 }
             })
-            .catch(() => showMessage('Error de red al aprobar solicitud'));
+            .catch(() => showMessage('Error de red al aprobar solicitud', 'danger'));
     }
 
     function rechazarSolicitud(id, motivo) {
@@ -549,15 +551,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('Solicitud rechazada.');
+                    showMessage('Solicitud rechazada.', 'warning');
                     window.updateSolicitudesKPIs();
                     window.renderSolicitudesPendientes();
                     window.renderSolicitudesHistorial();
                 } else {
-                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
+                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'), 'danger');
                 }
             })
-            .catch(() => showMessage('Error de red al rechazar solicitud'));
+            .catch(() => showMessage('Error de red al rechazar solicitud', 'danger'));
     }
 
     window.renderSolicitudesHistorial = function () {
@@ -575,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const sinResultados = document.getElementById('solicitudesSinResultados');
                 if (!tbody) return;
 
-                let historial = Array.isArray(data)  data : [];
+let historial = Array.isArray(data)? data : [];
 
                 if (busqueda) {
                     const term = busqueda.toLowerCase();
@@ -605,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     return `<tr>
-                        <td data-label="Fecha solicitud">${p.fecha_solicitud  new Date(p.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
+<td data-label="Fecha solicitud">${p.fecha_solicitud? new Date(p.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
                         <td data-label="Empleado"><strong>${p.empleado || '—'}</strong></td>
                         <td data-label="Tipo">${p.tipo || '—'}</td>
                         <td data-label="Fechas">${p.fecha_inicio || '—'} → ${p.fecha_fin || '—'}</td>
@@ -646,7 +648,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('solicitudesConfirmReject').addEventListener('click', () => {
         const reason = document.getElementById('solicitudesRejectReason').value.trim();
         if (!reason) {
-            showMessage('Debe ingresar un motivo de rechazo.');
+            showMessage('Debe ingresar un motivo de rechazo.', 'warning');
             return;
         }
         rechazarSolicitud(currentSolicitudId, reason);
@@ -682,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 const pendingEl = document.getElementById('incapacidadesKpiPendientes');
-                if (pendingEl) pendingEl.innerText = Array.isArray(data)  data.length : 0;
+if (pendingEl) pendingEl.innerText = Array.isArray(data)? data.length : 0;
             })
             .catch(() => console.error('Error al obtener KPIs de incapacidades'));
 
@@ -692,14 +694,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const now = new Date();
                 const mes = now.getMonth();
                 const año = now.getFullYear();
-                const aprobadas = Array.isArray(data)  data.filter(i => {
+                const aprobadas = Array.isArray(data) ? data.filter(i => {
                     const estado = (i.estado || '').toLowerCase();
-                    const fecha = i.fecha_solicitud  new Date(i.fecha_solicitud) : new Date();
+const fecha = i.fecha_solicitud? new Date(i.fecha_solicitud) : new Date();
                     return estado === 'aprobado' && fecha.getMonth() === mes && fecha.getFullYear() === año;
                 }).length : 0;
-                const rechazadas = Array.isArray(data)  data.filter(i => {
+                const rechazadas = Array.isArray(data) ? data.filter(i => {
                     const estado = (i.estado || '').toLowerCase();
-                    const fecha = i.fecha_solicitud  new Date(i.fecha_solicitud) : new Date();
+const fecha = i.fecha_solicitud? new Date(i.fecha_solicitud) : new Date();
                     return estado === 'rechazado' && fecha.getMonth() === mes && fecha.getFullYear() === año;
                 }).length : 0;
 
@@ -784,7 +786,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('Incapacidad aprobada.');
+                    showMessage('Incapacidad aprobada.', 'success');
                     window.updateIncapKPIs();
                     window.renderIncapacidadesLista();
                     window.renderHistorialIncapacidades();
@@ -807,15 +809,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(r => r.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    showMessage('Incapacidad rechazada.');
+                    showMessage('Incapacidad rechazada.', 'warning');
                     window.updateIncapKPIs();
                     window.renderIncapacidadesLista();
                     window.renderHistorialIncapacidades();
                 } else {
-                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
+                    showMessage('Error: ' + (data.error || 'No se pudo rechazar'), 'danger');
                 }
             })
-            .catch(() => showMessage('Error de red al rechazar incapacidad'));
+            .catch(() => showMessage('Error de red al rechazar incapacidad', 'danger'));
     }
 
     window.renderIncapacidadesLista = function () {
@@ -825,7 +827,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/novedades/incapacidades/pendientes/')
             .then(r => r.json())
             .then(data => {
-                const pendientes = Array.isArray(data)  data : [];
+const pendientes = Array.isArray(data)? data : [];
 
                 if (!pendientes.length) {
                     container.innerHTML = `
@@ -889,7 +891,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const sinResultados = document.getElementById('incapacidadesSinResultados');
                 if (!tbody) return;
 
-                let historial = Array.isArray(data)  data : [];
+let historial = Array.isArray(data)? data : [];
 
                 if (busqueda) {
                     const term = busqueda.toLowerCase();
@@ -919,7 +921,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     return `<tr>
-                        <td data-label="Fecha solicitud">${i.fecha_solicitud  new Date(i.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
+<td data-label="Fecha solicitud">${i.fecha_solicitud? new Date(i.fecha_solicitud).toLocaleString('es-CO') : '—'}</td>
                         <td data-label="Empleado"><strong>${i.empleado || '—'}</strong></td>
                         <td data-label="Diagnóstico">${i.titulo || i.descripcion || '—'}</td>
                         <td data-label="Período">${i.fecha_inicio || '—'} → ${i.fecha_fin || '—'}</td>
@@ -952,7 +954,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('incapacidadesConfirmReject').addEventListener('click', () => {
         const reason = document.getElementById('incapacidadesRejectReason').value.trim();
         if (!reason) {
-            showMessage('Debe ingresar un motivo de rechazo.');
+            showMessage('Debe ingresar un motivo de rechazo.', 'warning');
             return;
         }
         rechazarIncapacidad(currentIncapId, reason);
@@ -990,15 +992,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const ahora = new Date();
                 const mesActual = ahora.getMonth();
                 const añoActual = ahora.getFullYear();
-                const pendientes = Array.isArray(data)  data.filter(c => (c.estado || '').toLowerCase() === 'pendiente').length : 0;
-                const aprobados = Array.isArray(data)  data.filter(c => {
+const pendientes = Array.isArray(data)? data.filter(c => (c.estado || '').toLowerCase() === 'pendiente').length : 0;
+                const aprobados = Array.isArray(data) ? data.filter(c => {
                     const estado = (c.estado || '').toLowerCase();
-                    const fecha = c.fecha_emision  new Date(c.fecha_emision) : (c.fecha_solicitud  new Date(c.fecha_solicitud) : new Date());
+const fecha = c.fecha_emision? new Date(c.fecha_emision) : (c.fecha_solicitud? new Date(c.fecha_solicitud) : new Date());
                     return estado === 'aprobado' && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
                 }).length : 0;
-                const rechazados = Array.isArray(data)  data.filter(c => {
+                const rechazados = Array.isArray(data) ? data.filter(c => {
                     const estado = (c.estado || '').toLowerCase();
-                    const fecha = c.fecha_emision  new Date(c.fecha_emision) : (c.fecha_solicitud  new Date(c.fecha_solicitud) : new Date());
+const fecha = c.fecha_emision? new Date(c.fecha_emision) : (c.fecha_solicitud? new Date(c.fecha_solicitud) : new Date());
                     return estado === 'rechazado' && fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
                 }).length : 0;
 
@@ -1019,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/novedades/certificados/pendientes/')
             .then(r => r.json())
             .then(data => {
-                const pendientes = Array.isArray(data)  data : [];
+const pendientes = Array.isArray(data)? data : [];
 
                 if (pendientes.length === 0) {
                     container.innerHTML = `<div class="text-center text-muted py-4"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay certificados pendientes.</div>`;
@@ -1042,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="solicitud-dato">
                                     <i class="bi bi-calendar3 me-1"></i>
-                                    Solicitado: ${c.fecha_solicitud  new Date(c.fecha_solicitud).toLocaleString('es-CO') : '—'}
+Solicitado: ${c.fecha_solicitud? new Date(c.fecha_solicitud).toLocaleString('es-CO') : '—'}
                                 </div>
                                 <div class="solicitud-descripcion">
                                     ${c.proposito || 'Sin propósito especificado.'}
@@ -1140,7 +1142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/novedades/certificados/')
             .then(response => response.json())
             .then(data => {
-                let certificados = Array.isArray(data)  data : [];
+let certificados = Array.isArray(data)? data : [];
 
                 if (busqueda) {
                     certificados = certificados.filter(c => 
@@ -1168,8 +1170,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (estadoVal === 'aprobado') badge = `<span class="badge badge-active">Aprobado</span>`;
                     else if (estadoVal === 'rechazado') badge = `<span class="badge badge-rechazado">Rechazado</span>`;
 
-                    const fechaMostrar = (estadoVal === 'aprobado')  (c.fecha_emision || c.fecha_decision) : c.fecha_solicitud;
-                    const fechaFormateada = fechaMostrar  new Date(fechaMostrar).toLocaleString('es-CO') : '—';
+const fechaMostrar = (estadoVal === 'aprobado')? (c.fecha_emision || c.fecha_decision) : c.fecha_solicitud;
+const fechaFormateada = fechaMostrar? new Date(fechaMostrar).toLocaleString('es-CO') : '—';
 
                     return `<tr>
                         <td data-label="Empleado"><strong>${c.empleado || '—'}</strong></td>
@@ -1203,7 +1205,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await resp.json();
             bootstrap.Modal.getInstance(document.getElementById('certificadosConfirmApproveModal')).hide();
             if (resp.ok && data.status === 'ok') {
-                showMessage('Certificado aprobado correctamente.');
+                showMessage('Certificado aprobado correctamente.', 'success');
                 window.cargarCertificadosPendientes();
                 window.renderCertificados();
                 window.actualizarKPICertificados();
@@ -1232,12 +1234,12 @@ document.addEventListener('DOMContentLoaded', function () {
             bootstrap.Modal.getInstance(document.getElementById('certificadosRejectModal')).hide();
             document.getElementById('certificadosRejectReason').value = '';
             if (resp.ok && data.status === 'ok') {
-                showMessage('Certificado rechazado.');
+                showMessage('Certificado rechazado.', 'warning');
                 window.cargarCertificadosPendientes();
                 window.renderCertificados();
                 window.actualizarKPICertificados();
             } else {
-                showMessage('Error: ' + (data.error || 'No se pudo rechazar'));
+                showMessage('Error: ' + (data.error || 'No se pudo rechazar'), 'danger');
             }
         } catch (err) { showMessage('Error de red'); }
     });
@@ -1305,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tbody.innerHTML = data.map(m => {
             const tipoBadge = `<span class="badge badge-neutral badge-memorando-${m.tipo_raw}">${m.tipo}</span>`;
             const btnDescarga = m.archivo_pdf
-                 `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF"><i class="bi bi-download"></i></a>`
+                ? `<a href="/memorandos/${m.id}/descargar/" class="btn btn-sm btn-primary-corporate" target="_blank" title="Descargar PDF"><i class="bi bi-download"></i></a>`
                 : `<span class="text-muted"><i class="bi bi-file-earmark-pdf"></i></span>`;
 
             return `<tr>
@@ -1374,7 +1376,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await resp.json();
 
                 if (resp.ok && data.status === 'ok') {
-                    mensajeDiv.innerHTML = `<div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill fs-5"></i><div><strong>${data.mensaje}</strong><br><small>Consecutivo: ${data.consecutivo}</small>${data.archivo_pdf  `<br><a href="${data.archivo_pdf}" target="_blank" class="text-success"><i class="bi bi-file-pdf"></i> Ver PDF</a>` : ''}</div></div>`;
+mensajeDiv.innerHTML = `<div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill fs-5"></i><div><strong>${data.mensaje}</strong><br><small>Consecutivo: ${data.consecutivo}</small>${data.archivo_pdf? `<br><a href="${data.archivo_pdf}" target="_blank" class="text-success"><i class="bi bi-file-pdf"></i> Ver PDF</a>` : ''}</div></div>`;
                     form.reset();
                     await cargarMemorandosHistorial();
                 } else {

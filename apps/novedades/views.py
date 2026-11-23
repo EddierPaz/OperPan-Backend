@@ -465,7 +465,7 @@ def eliminar_solicitud(request, pk):
     solicitud.delete()
 
     # Guardar mensaje en sesión
-    messages.error(request, f'Solicitud "{tipo_solicitud}" eliminada correctamente.')
+    messages.success(request, f'Solicitud "{tipo_solicitud}" eliminada correctamente.')
 
     return JsonResponse({
         'status': 'ok',
@@ -527,7 +527,7 @@ def eliminar_certificado(request, pk):
     certificado.delete()
 
     # Guardar mensaje en sesión
-    messages.error(request, f'Certificado "{tipo_certificado}" eliminado correctamente.')
+    messages.success(request, f'Certificado "{tipo_certificado}" eliminado correctamente.')
 
     return JsonResponse({
         'status': 'ok',

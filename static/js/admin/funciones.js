@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function aplicarFiltrosFunciones() {
 
         const cards = document.querySelectorAll('#funcionesContainer .funcion-card');
-        const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
-        const estadoSel = selectEstado ? selectEstado.value.toUpperCase() : '';
-        const prioridadSel = selectPrioridad ? selectPrioridad.value.toUpperCase() : '';
+const texto = inputBuscar ? inputBuscar.value.trim().toLowerCase() : '';
+const estadoSel = selectEstado ? selectEstado.value.toUpperCase() : '';
+const prioridadSel = selectPrioridad ? selectPrioridad.value.toUpperCase() : '';
 
         cards.forEach(card => {
             const titulo = (card.dataset.titulo || '').toLowerCase();
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Subtítulo
         const subtitulo = document.getElementById('reabrirSubtitulo');
         if (subtitulo) {
-            subtitulo.textContent = empleado ? `${titulo} — ${empleado}` : titulo;
+subtitulo.textContent = empleado ? `${titulo} — ${empleado}` : titulo;
         }
 
         // Preseleccionar el radio correspondiente
@@ -337,17 +337,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // Eventos para validación en tiempo real
     if (horaInput) {
         horaInput.addEventListener('input', function() {
-            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
             validarHoraLimite(
-                emp ? emp.hora_entrada : null,
-                emp ? emp.hora_salida : null
+emp ? emp.hora_entrada : null,
+emp ? emp.hora_salida : null
             );
         });
         horaInput.addEventListener('change', function() {
-            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
             validarHoraLimite(
-                emp ? emp.hora_entrada : null,
-                emp ? emp.hora_salida : null
+emp ? emp.hora_entrada : null,
+emp ? emp.hora_salida : null
             );
         });
     }
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 aplicarOtra('');
                 return;
             }
-            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
             const opciones = (emp && funcionesPorCargo[emp.cargo]) || [];
             const op = opciones.find(function (o) { return o.value === tituloPreset.value; });
             if (op) aplicarPreset(op);
@@ -511,7 +511,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ==========================================
     if (funcionForm) {
         funcionForm.addEventListener('submit', function(e) {
-            const horaValor = horaInput ? horaInput.value : '';
+const horaValor = horaInput ? horaInput.value : '';
             if (!horaValor) {
                 e.preventDefault();
                 mostrarError('La hora límite es obligatoria. Por favor selecciona una hora.');
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Verificar que la hora sea válida según el rango
-            const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
+const emp = empleadosData[empleadoSelect ? empleadoSelect.value : ''];
             if (emp && emp.hora_entrada && emp.hora_salida) {
                 if (horaValor < emp.hora_entrada || horaValor > emp.hora_salida) {
                     e.preventDefault();
@@ -539,12 +539,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function mostrarError(mensaje) {
-        // Usar el toast si existe, o alert simple
         const toastContainer = document.getElementById('toastContainer');
-        if (toastContainer && typeof mostrarToast === 'function') {
-            mostrarToast(mensaje, 'warning');
-        } else {
-            alert(mensaje);
+        if (toastContainer && typeof window.mostrarNotificacion === 'function') {
+            window.mostrarNotificacion(mensaje, 'warning');
         }
     }
 

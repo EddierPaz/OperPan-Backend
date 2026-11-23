@@ -43,7 +43,7 @@ function initCharts() {
                     datalabels: {
                         color: '#fff',
                         font: { weight: 'bold', size: 14 },
-                        formatter: (value) => value > 0  value : '' // Oculta los ceros
+formatter: (value) => value > 0? value : '' // Oculta los ceros
                     }
                 }
             }
@@ -74,7 +74,7 @@ function initCharts() {
                     datalabels: {
                         color: '#fff',
                         font: { weight: 'bold', size: 14 },
-                        formatter: (value) => value > 0  value : ''
+formatter: (value) => value > 0? value : ''
                     }
                 }
             }

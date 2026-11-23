@@ -15,11 +15,11 @@
     function mostrarMensaje(mensaje, tipo = 'info') {
         const container = document.getElementById('misMemorandosContainer');
         if (!container) return;
-        const alertClass = tipo === 'error'  'alert-danger' : 'alert-info';
+        const alertClass = tipo === 'error' ? 'alert-danger' : 'alert-info';
         container.innerHTML = `
             <div class="alert ${alertClass} text-center py-4">
                 <i class="bi ${tipo === 'error'
-                     'bi-exclamation-triangle-fill'
+                    ? 'bi-exclamation-triangle-fill'
                     : 'bi-info-circle-fill'} fs-3 d-block mb-2"></i>
                 ${mensaje}
             </div>
@@ -85,10 +85,10 @@
             tbody.innerHTML = memorandosData.map(m => {
 
                 const origenBadge = m.es_automatico
-                     `<span class="badge bg-info-subtle text-info-emphasis">
+                    ? `<span class="badge bg-info-subtle text-info-emphasis">
                            <i class="bi bi-robot me-1"></i>Sistema
                        </span>`
-                    : `<span class="badge bg-secondary-subtle text-secondary-emphasis">
+                        : `<span class="badge bg-secondary-subtle text-secondary-emphasis">
                            <i class="bi bi-person me-1"></i>Manual
                        </span>`;
 
@@ -143,7 +143,7 @@
 
         const origenEl = document.getElementById('miMemoOrigen');
         origenEl.innerHTML = memo.es_automatico
-             `<span class="badge bg-info-subtle text-info-emphasis">
+            ? `<span class="badge bg-info-subtle text-info-emphasis">
                    <i class="bi bi-robot me-1"></i>Generado automáticamente por el sistema
                </span>`
             : `<span class="badge bg-secondary-subtle text-secondary-emphasis">

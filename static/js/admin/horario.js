@@ -4,49 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 1. SISTEMA DE NOTIFICACIONES (TOAST)
     // ==========================================
     function mostrarToast(mensaje, tipo = 'warning') {
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
-
-        const existing = container.querySelectorAll('.app-toast');
-        existing.forEach(el => el.remove());
-
-        const toast = document.createElement('div');
-        toast.className = `app-toast app-toast-${tipo}`;
-        toast.setAttribute('role', 'alert');
-
-        let icono = 'bi-exclamation-triangle-fill';
-        if (tipo === 'success') icono = 'bi-check-circle-fill';
-        else if (tipo === 'danger') icono = 'bi-x-circle-fill';
-        else if (tipo === 'info') icono = 'bi-info-circle-fill';
-
-        toast.innerHTML = `
-            <div class="app-toast-icon">
-                <i class="bi ${icono}"></i>
-            </div>
-            <div class="app-toast-msg">${mensaje}</div>
-            <button type="button" class="app-toast-close" aria-label="Cerrar">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        `;
-
-        container.appendChild(toast);
-
-        requestAnimationFrame(() => {
-            toast.classList.add('show');
-        });
-
-        const timeout = setTimeout(() => {
-            toast.classList.add('hide');
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
-
-        const closeBtn = toast.querySelector('.app-toast-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function () {
-                clearTimeout(timeout);
-                toast.classList.add('hide');
-                setTimeout(() => toast.remove(), 300);
-            });
+        if (typeof window.mostrarNotificacion === 'function') {
+            window.mostrarNotificacion(mensaje, tipo);
         }
     }
 
@@ -113,14 +72,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function toggleDiaFijo(turno) {
         if (contenedorDiaFijo) {
-            contenedorDiaFijo.style.display = (turno === "FIJO") ? "block" : "none";
+contenedorDiaFijo.style.display = (turno === "FIJO") ? "block" : "none";
         }
     }
 
     function resaltarDescansos() {
         if (!cicloEditar) return;
         const turno = editarTurnoSelect.value;
-        const diaFijo = selectDiaFijo ? parseInt(selectDiaFijo.value) : null;
+const diaFijo = selectDiaFijo ? parseInt(selectDiaFijo.value) : null;
 
         cicloEditar.querySelectorAll(".dia-btn").forEach(btn => {
             btn.classList.remove("seleccionado");
@@ -215,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById("ver-entrada").textContent = data.hora_entrada;
                     document.getElementById("ver-salida").textContent = data.hora_salida;
                     document.getElementById("ver-descanso").textContent = data.descanso || "Sin asignar";
-                    document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
+document.getElementById("ver-estado").textContent = data.estado ? "Activo" : "Inactivo";
                     document.getElementById("ver-ciclo-inicio").textContent = data.ciclo_inicio || "Sin definir";
                     document.getElementById("ver-ciclo-fin").textContent = data.ciclo_fin || "Sin definir";
                     bootstrap.Modal.getOrCreateInstance(document.getElementById("modalVerHorario")).show();
@@ -245,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     document.getElementById("formEditar").action = "/asistencia/horarios/" + id + "/editar/";
                     const labelActual = document.getElementById("descanso-actual-label");
-                    if (labelActual) labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
+if (labelActual) labelActual.textContent = data.descanso ? "— actual: " + data.descanso : "";
 
                     actualizarDiasCalendario(cicloEditar, inputEditar, labelEditar, textoEditar);
                     resaltarDescansos();
@@ -298,14 +257,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (inputBuscar) {
         function aplicarFiltros() {
             const texto = inputBuscar.value.trim().toLowerCase();
-            const turno = selectTurno ? selectTurno.value.toLowerCase() : "";
+const turno = selectTurno ? selectTurno.value.toLowerCase() : "";
 
             filas.forEach(fila => {
                 const empleado = (fila.dataset.empleado || "").toLowerCase();
                 const turnoFila = (fila.dataset.turno || "").toLowerCase();
                 const coincideTexto = !texto || empleado.includes(texto);
                 const coincideTurno = !turno || turnoFila === turno;
-                fila.style.display = (coincideTexto && coincideTurno) ? "" : "none";
+fila.style.display = (coincideTexto && coincideTurno) ? "" : "none";
             });
         }
 

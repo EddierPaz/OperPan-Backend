@@ -172,17 +172,17 @@ function initCambiarEstadoAsistencia() {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': csrfToken  csrfToken.value : '',
+'X-CSRFToken': csrfToken? csrfToken.value : '',
                 }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'ok') {
                     // Actualizar badge
-                    const badgeClass = estado === 'PRESENTE'  'bg-success' : 
-                                      estado === 'TARDE'  'bg-warning text-dark' : 'bg-danger';
-                    const badgeText = estado === 'PRESENTE'  'Presente' : 
-                                      estado === 'TARDE'  'Tarde' : 'Ausente';
+                    const badgeClass = estado === 'PRESENTE' ? 'bg-success' :
+                        estado === 'TARDE' ? 'bg-warning text-dark' : 'bg-danger';
+                    const badgeText = estado === 'PRESENTE' ? 'Presente' :
+                        estado === 'TARDE' ? 'Tarde' : 'Ausente';
                     badge.className = 'badge ' + badgeClass;
                     badge.textContent = badgeText;
                     
@@ -203,23 +203,9 @@ function initCambiarEstadoAsistencia() {
 // 4. MOSTRAR MENSAJE TOAST
 // ============================================================
 function mostrarMensaje(mensaje, tipo = 'success') {
-    const toast = document.getElementById('liveToast');
-    const msgSpan = document.getElementById('toastMsg');
-    if (!toast || !msgSpan) return;
-    
-    msgSpan.innerText = mensaje;
-    const border = toast.querySelector('.border-start');
-    if (border) {
-        if (tipo === 'success') {
-            border.className = 'border-start border-4 border-success';
-        } else if (tipo === 'danger') {
-            border.className = 'border-start border-4 border-danger';
-        } else {
-            border.className = 'border-start border-4 border-warning';
-        }
+    if (typeof window.mostrarNotificacion === 'function') {
+        window.mostrarNotificacion(mensaje, tipo);
     }
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 3000);
 }
 
 // ============================================================

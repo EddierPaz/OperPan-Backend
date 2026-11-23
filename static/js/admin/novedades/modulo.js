@@ -54,8 +54,8 @@
 
         // { label, valor, icono, full, opcional }
         if (c.opcional && !c.valor) return '';
-        const clase = c.full  'modal-detalle-item modal-detalle-item-full' : 'modal-detalle-item';
-        const icono = c.icono  `<i class="bi ${c.icono} me-1"></i>` : '';
+const clase = c.full? 'modal-detalle-item modal-detalle-item-full' : 'modal-detalle-item';
+const icono = c.icono? `<i class="bi ${c.icono} me-1"></i>` : '';
         return `
             <div class="${clase}">
                 <span class="modal-detalle-label">${esc(c.label)}</span>
@@ -66,7 +66,7 @@
     // ------------------------------------------------------------
     // Helpers de modales Bootstrap
     // ------------------------------------------------------------
-    const instancia = (elemento) => (elemento  bootstrap.Modal.getOrCreateInstance(elemento) : null);
+const instancia = (elemento) => (elemento? bootstrap.Modal.getOrCreateInstance(elemento) : null);
 
     function mostrarModal(elemento) {
         instancia(elemento).show();
@@ -83,7 +83,7 @@
     }
 
     function mostrar(nodo, visible, display = 'inline-flex') {
-        if (nodo) nodo.style.display = visible  display : 'none';
+if (nodo) nodo.style.display = visible? display : 'none';
     }
 
     // ------------------------------------------------------------
@@ -109,7 +109,7 @@
         function actualizarKPIs() {
             const ahora = new Date();
             const esDelMes = (item) => {
-                const f = new Date(cfg.fechaKpi  cfg.fechaKpi(item) : item.fecha_solicitud);
+const f = new Date(cfg.fechaKpi? cfg.fechaKpi(item) : item.fecha_solicitud);
                 return !isNaN(f) && f.getMonth() === ahora.getMonth() && f.getFullYear() === ahora.getFullYear();
             };
             const contar = (estado, soloMes) => datos.filter(
@@ -125,8 +125,8 @@
         function tarjetaHTML(i) {
             const t = cfg.tarjeta;
             const descripcion = t.descripcion
-                 `<div class="solicitud-descripcion">${esc(t.descripcion(i))}</div>`
-                : '';
+                ? `<div class="solicitud-descripcion">${esc(t.descripcion(i))}</div>`
+                    : '';
             return `
                 <div class="solicitud-card">
                     <div class="solicitud-header">
@@ -164,10 +164,10 @@
             if (!contenedor) return;
             try {
                 const data = await api(cfg.urls.pendientes);
-                const lista = Array.isArray(data)  data : [];
+const lista = Array.isArray(data) ? data : [];
                 contenedor.innerHTML = lista.length
-                     `<div class="solicitudes-grid">${lista.map(tarjetaHTML).join('')}</div>`
-                    : mensajeBandeja(cfg.textos.iconoVacio, cfg.textos.vacio);
+    ? `<div class="solicitudes-grid">${lista.map(tarjetaHTML).join('')}</div>`
+    : mensajeBandeja(cfg.textos.iconoVacio, cfg.textos.vacio);
             } catch (err) {
                 console.error(`[${cfg.nombre}] pendientes:`, err);
                 contenedor.innerHTML = mensajeBandeja('bi-exclamation-triangle', cfg.textos.errorCarga, 'text-danger');
@@ -198,7 +198,7 @@
             const estado = $(cfg.ids.filtroEstado).value || '';
             const texto = (campoBusqueda().value || '').trim().toLowerCase();
             const extra = cfg.ids.filtroExtra;
-            const valorExtra = extra  ($(extra.id).value || '').trim().toLowerCase() : '';
+const valorExtra = extra? ($(extra.id).value || '').trim().toLowerCase() : '';
 
             return datos.filter((i) => {
                 if (estado && estado !== 'todas' && normalizarEstado(i.estado) !== normalizarEstado(estado)) return false;
@@ -226,7 +226,7 @@
         async function cargarLista() {
             try {
                 const data = await api(cfg.urls.lista);
-                datos = Array.isArray(data)  data : [];
+datos = Array.isArray(data)? data : [];
             } catch (err) {
                 console.error(`[${cfg.nombre}] historial:`, err);
                 datos = [];
@@ -261,7 +261,7 @@
             if (cfg.urlDescarga) {
                 puedeDescargar = d.estado === 'aprobado';
                 const btn = el('DescargarBtn');
-                if (btn) btn.dataset.url = puedeDescargar  cfg.urlDescarga(d) : '';
+if (btn) btn.dataset.url = puedeDescargar? cfg.urlDescarga(d) : '';
                 mostrar(btn, puedeDescargar);
             }
 
@@ -295,7 +295,7 @@
             try {
                 await api(URL.accion(seleccionadoId, accion), { method: 'POST', body: cuerpo });
                 if (accion === 'aprobar') showMessage(cfg.textos.aprobado, 'success');
-                else showMessage(cfg.textos.rechazado, 'info');
+                else showMessage(cfg.textos.rechazado, 'warning');
                 await cargar();
             } catch (err) {
                 showMessage(`Error: ${err.message}`, 'error');

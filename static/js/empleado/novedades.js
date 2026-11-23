@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Esta función es clave: oculta el div, deshabilita los inputs y quita el required
         const toggleForm = (form, isVisible) => {
             if (!form) return;
-            form.style.display = isVisible  'block' : 'none';
+form.style.display = isVisible? 'block' : 'none';
             const inputs = form.querySelectorAll('input, select, texfuncion');
             inputs.forEach(input => {
                 input.disabled = !isVisible;
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (solicitudFin) solicitudFin.min = solicitudInicio.value || hoyStr;
 
             // Cambio de turno = un solo día: fecha_fin siempre igual a fecha_inicio
-            const tipoAct = tipoSelect.value === 'solicitud'  innerTipoSelect.value : tipoSelect.value;
+const tipoAct = tipoSelect.value === 'solicitud'? innerTipoSelect.value : tipoSelect.value;
             if (tipoAct === 'cambio_turno' && solicitudFin) solicitudFin.value = solicitudInicio.value;
         });
     }
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const actualizarCamposCertificado = () => {
         if (!certTipo) return;
         if (periodoGroup) {
-            periodoGroup.style.display = certTipo.value === 'ingresos'  'block' : 'none';
+periodoGroup.style.display = certTipo.value === 'ingresos'? 'block' : 'none';
         }
     };
 
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tarjetas.forEach(card => {
             const matchTipo = card.dataset.tipo === tipoActual;
             const matchEstado = estadoActual === 'todas' || card.dataset.estado === estadoActual;
-            card.style.display = (matchTipo && matchEstado)  '' : 'none';
+card.style.display = (matchTipo && matchEstado)? '' : 'none';
             if (matchTipo && matchEstado) visibles++;
         });
 
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 novedadesContainer.appendChild(msg);
             }
             const t = { 'solicitud': 'solicitudes', 'incapacidad': 'incapacidades', 'certificado': 'certificados' }[tipoActual] || 'novedades';
-            const e = estadoActual !== 'todas'  ` ${estadoActual}s` : '';
+const e = estadoActual !== 'todas'? ` ${estadoActual}s` : '';
             msg.innerHTML = `<div class="empty-history-icon"><i class="bi bi-search"></i></div><h5>Sin resultados</h5><p>No tienes ${t}${e} en el historial.</p>`;
         } else if (msg) {
             msg.remove();
@@ -312,8 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const errorElements = solicitudForm.querySelectorAll('.alert-danger, .text-danger, .errorlist');
                 errorElements.forEach(el => el.remove());
-                const toastContainer = document.getElementById('toastContainer');
-                if (toastContainer) toastContainer.innerHTML = '';
                 mostrarFormularioSegunTipo();
                 actualizarCamposCertificado();
                 if (incapDias) incapDias.value = '';
@@ -327,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MODAL: VER DETALLE
     // ============================================================
     const modalDetalleEl = document.getElementById('modalDetalleSolicitud');
-    const modalDetalle = modalDetalleEl  new bootstrap.Modal(modalDetalleEl) : null;
+const modalDetalle = modalDetalleEl? new bootstrap.Modal(modalDetalleEl) : null;
 
     function getTipoIcon(tipo) {
         const icons = {
@@ -453,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MODAL: CONFIRMAR ELIMINACIÃ“N
     // ============================================================
     const modalEliminarEl = document.getElementById('modalConfirmarEliminar');
-    const modalEliminar = modalEliminarEl  new bootstrap.Modal(modalEliminarEl) : null;
+const modalEliminar = modalEliminarEl? new bootstrap.Modal(modalEliminarEl) : null;
     const btnConfirmarEliminacion = document.getElementById('btnConfirmarEliminacion');
     let urlParaEliminar = '';
 
@@ -490,13 +488,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalEliminar) modalEliminar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al intentar eliminar.');
+                    if (window.mostrarNotificacion) window.mostrarNotificacion(data.error || 'Ocurrió un error al intentar eliminar.', 'danger');
                     if (modalEliminar) modalEliminar.hide();
                     btnConfirmarEliminacion.disabled = false;
                     btnConfirmarEliminacion.innerHTML = '<i class="bi bi-trash3"></i> Sí, eliminar';
                 }
             } catch (error) {
-                alert('Error de red al intentar conectar con el servidor.');
+                if (window.mostrarNotificacion) window.mostrarNotificacion('Error de red al intentar conectar con el servidor.', 'danger');
                 if (modalEliminar) modalEliminar.hide();
                 btnConfirmarEliminacion.disabled = false;
                 btnConfirmarEliminacion.innerHTML = '<i class="bi bi-trash3"></i> Sí, eliminar';
@@ -516,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // MODAL: EDITAR NOVEDAD (AJAX)
     // ============================================================
     const modalEditarEl = document.getElementById('modalEditarSolicitud');
-    const modalEditar = modalEditarEl  new bootstrap.Modal(modalEditarEl) : null;
+const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
     const formEditar = document.getElementById('formEditarSolicitud');
     const btnGuardarEdicion = document.getElementById('btnGuardarEdicion');
     let urlParaEditar = '';
@@ -604,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         btnGuardarEdicion.disabled = false;
                         btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                     }
-                    alert('La fecha de inicio no es válida.');
+                    if (window.mostrarNotificacion) window.mostrarNotificacion('La fecha de inicio no es válida.', 'warning');
                     return;
                 }
 
@@ -637,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modalEditar) modalEditar.hide();
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Ocurrió un error al actualizar.');
+                    if (window.mostrarNotificacion) window.mostrarNotificacion(data.error || 'Ocurrió un error al actualizar.', 'danger');
                 }
             } catch (error) {
                 console.error(error);
@@ -645,7 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnGuardarEdicion.disabled = false;
                     btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                 }
-                alert('Error de red al conectar con el servidor.');
+                if (window.mostrarNotificacion) window.mostrarNotificacion('Error de red al conectar con el servidor.', 'danger');
             }
         });
 
@@ -690,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!tipoEfectivo) {
                 e.preventDefault();
-                alert('Por favor, selecciona un tipo de novedad.');
+                if (window.mostrarNotificacion) window.mostrarNotificacion('Por favor, selecciona un tipo de novedad.', 'warning');
                 return false;
             }
 
@@ -703,7 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nuevoHorario = document.getElementById('nuevoHorario');
                 if (!nuevoHorario || !nuevoHorario.value) {
                     e.preventDefault();
-                    alert('Por favor, selecciona el nuevo turno.');
+                    if (window.mostrarNotificacion) window.mostrarNotificacion('Por favor, selecciona el nuevo turno.', 'warning');
                     return false;
                 }
             }
@@ -713,9 +711,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fechaFin = document.getElementById('incapacidadFechaFin');
                 const archivo = document.getElementById('incapacidadAdjunto');
 
-                if (!fechaInicio.value) { e.preventDefault(); alert('La fecha de inicio es obligatoria.'); return false; }
-                if (!fechaFin.value) { e.preventDefault(); alert('La fecha de fin es obligatoria.'); return false; }
-                if (!archivo.files || archivo.files.length === 0) { e.preventDefault(); alert('Debes adjuntar el soporte médico.'); return false; }
+                if (!fechaInicio.value) { e.preventDefault(); if (window.mostrarNotificacion) window.mostrarNotificacion('La fecha de inicio es obligatoria.', 'warning'); return false; }
+                if (!fechaFin.value) { e.preventDefault(); if (window.mostrarNotificacion) window.mostrarNotificacion('La fecha de fin es obligatoria.', 'warning'); return false; }
+                if (!archivo.files || archivo.files.length === 0) { e.preventDefault(); if (window.mostrarNotificacion) window.mostrarNotificacion('Debes adjuntar el soporte médico.', 'warning'); return false; }
             }
             
             return true;

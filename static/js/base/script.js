@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ICONOS = {
         success: 'bi-check-circle-fill',
         error: 'bi-x-circle-fill',
+        danger: 'bi-x-circle-fill',
         warning: 'bi-exclamation-triangle-fill',
         info: 'bi-info-circle-fill',
         debug: 'bi-info-circle-fill',
@@ -37,8 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Django usa "error" como tag pero por defecto Bootstrap usa "danger"
     function normalizarTipo(tipo) {
-        if (tipo === 'error') return 'danger';
-        return tipo || 'info';
+        const valor = String(tipo || '').toLowerCase();
+        if (valor.includes('error') || valor === 'danger') return 'danger';
+        if (valor.includes('success') || valor.includes('exitos')) return 'success';
+        if (valor.includes('warning') || valor.includes('advert')) return 'warning';
+        return 'info';
     }
 
     function crearToast(mensaje, tipo) {
@@ -63,12 +67,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarNotificacion(mensaje, tipo = 'info') {
         const container = document.getElementById('toastContainer');
         if (!container) {
-            // Fallback si el contenedor no existe en la plantilla
-            alert(mensaje);
             return;
         }
 
-        const toastEl = crearToast(mensaje, tipo);
+        const tipoNormalizado = normalizarTipo(tipo);
+        const texto = String(mensaje).trim();
+        if (!texto) return;
+
+        const duplicado = Array.from(container.querySelectorAll('.app-toast')).find(
+            (toast) => toast.dataset.mensaje === texto &&
+                       toast.dataset.tipo === tipoNormalizado
+        );
+        if (duplicado) return;
+
+        const toastEl = crearToast(texto, tipoNormalizado);
+        toastEl.dataset.mensaje = texto;
+        toastEl.dataset.tipo = tipoNormalizado;
         container.appendChild(toastEl);
 
         // Animación de entrada
@@ -93,13 +107,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Tomar los mensajes que Django renderizó (ocultos) y mostrarlos apilados
+    const mensajesVistos = new Set();
     const mensajes = document.querySelectorAll('.django-message');
-    mensajes.forEach((msg, index) => {
+    mensajes.forEach((msg) => {
         const tipo = msg.dataset.tipo || 'info';
         const texto = msg.innerText.trim();
-
-        // Pequeño delay escalonado si hay varios mensajes a la vez
-        setTimeout(() => mostrarNotificacion(texto, tipo), index * 200);
+        const tipoNormalizado = normalizarTipo(tipo);
+        const clave = `${tipoNormalizado}:${texto}`;
+        if (!mensajesVistos.has(clave)) {
+            mensajesVistos.add(clave);
+            mostrarNotificacion(texto, tipoNormalizado);
+        }
+        msg.remove();
     });
 
     const wrapperMensajes = document.getElementById('djangoMessages');
@@ -108,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Exponer función globalmente por si alguna vista necesita
     // lanzar una notificación desde JS (ej. tras una llamada fetch)
     window.mostrarNotificacion = mostrarNotificacion;
+    window.mostrarToast = mostrarNotificacion;
 
     // ── Toggle de tema (claro/oscuro) ──────────────────────────
     (function() {
@@ -145,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Evento clic
         toggleBtn.addEventListener('click', function() {
             const current = html.getAttribute('data-theme') || 'light';
-            const newTheme = current === 'light' ? 'dark' : 'light';
+const newTheme = current === 'light' ? 'dark' : 'light';
             setTheme(newTheme);
         });
 
@@ -155,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
             mediaQuery.addEventListener('change', function(e) {
                 if (!localStorage.getItem('theme')) {
-                    setTheme(e.matches ? 'dark' : 'light');
+setTheme(e.matches ? 'dark' : 'light');
                 }
             });
         }

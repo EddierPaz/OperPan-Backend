@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const input = btn.closest(".usuarios-modal-input-password").querySelector("input");
             const icon = btn.querySelector("i");
             const isHidden = input.type === "password";
-            input.type = isHidden  "text" : "password";
+input.type = isHidden? "text" : "password";
             icon.classList.toggle("bi-eye");
             icon.classList.toggle("bi-eye-slash");
         });

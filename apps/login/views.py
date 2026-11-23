@@ -49,6 +49,13 @@ def login_view(request):
             if user.debe_cambiar_password:
                 return redirect("primer_acceso")
 
+            nombre = getattr(getattr(user, 'perfil', None), 'nombre_completo', None)
+            nombre = nombre() if callable(nombre) else ''
+            if nombre:
+                messages.success(request, f"Bienvenido, {nombre}.")
+            else:
+                messages.success(request, "Inicio de sesión exitoso.")
+
             if user.rol == "admin":
                 return redirect("admin_dashboard")
             return redirect("employee_dashboard")
