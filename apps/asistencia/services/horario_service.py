@@ -198,8 +198,9 @@ def aplicar_override_cambio_turno(horario, fecha):
 # CALENDARIO VISUAL
 # ============================================================
 def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asistencias=None, mostrar_relleno=True):
+    horario_base = Horario.objects.get(pk=horario.pk)
     if fecha_inicio is None: 
-        fecha_inicio = horario.ciclo_inicio or timezone.localdate()
+        fecha_inicio = horario_base.ciclo_inicio or timezone.localdate()
     if hoy is None: 
         hoy = timezone.localdate()
     if dias is None: 
@@ -207,11 +208,32 @@ def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asiste
 
     # Obtenemos los descansos del horario
     descansos = set(
-        DescansoEmpleado.objects.filter(horario=horario, es_descanso=True).values_list('fecha', flat=True)
+        DescansoEmpleado.objects.filter(horario=horario_base, es_descanso=True).values_list('fecha', flat=True)
     )
     
     # Diccionario de asistencias
     asistencias_dict = {a.fecha: a.estado for a in asistencias} if asistencias else {}
+
+    fecha_fin = fecha_inicio + timedelta(days=dias - 1)
+    from apps.novedades.models import Solicitud
+
+    solicitudes_cambio_turno = Solicitud.objects.filter(
+        empleado=horario_base.empleado,
+        tipo='cambio_turno',
+        estado='aprobado',
+        fecha_inicio__lte=fecha_fin,
+        fecha_fin__gte=fecha_inicio,
+    ).order_by('-fecha_inicio', '-id')
+    cambios_turno = {}
+    for solicitud in solicitudes_cambio_turno:
+        turno, entrada, salida = _parsear_nuevo_horario(solicitud.nuevo_horario)
+        if not turno:
+            continue
+        cursor = max(solicitud.fecha_inicio, fecha_inicio)
+        fin_cambio = min(solicitud.fecha_fin, fecha_fin)
+        while cursor <= fin_cambio:
+            cambios_turno.setdefault(cursor, (turno, entrada, salida))
+            cursor += timedelta(days=1)
     
     calendario = []
 
@@ -221,11 +243,12 @@ def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asiste
             calendario.append(None)
 
     # LA FECHA EN QUE EL EMPLEADO REALMENTE EMPEZÓ
-    fecha_inicio_real = horario.fecha_inicio or horario.ciclo_inicio
+    fecha_inicio_real = horario_base.fecha_inicio or horario_base.ciclo_inicio
 
     for i in range(dias):
         fecha = fecha_inicio + timedelta(days=i)
         es_descanso = fecha in descansos
+        cambio_turno = cambios_turno.get(fecha)
         
         estado, estado_texto = None, 'Pendiente'
         
@@ -246,8 +269,15 @@ def construir_calendario(horario, fecha_inicio=None, dias=None, hoy=None, asiste
             'es_descanso': es_descanso,
             'estado': estado, 
             'estado_texto': estado_texto,
-            'hora_entrada': horario.hora_entrada, 
-            'hora_salida': horario.hora_salida,
+            'hora_entrada': cambio_turno[1] if cambio_turno else horario_base.hora_entrada,
+            'hora_salida': cambio_turno[2] if cambio_turno else horario_base.hora_salida,
+            'cambio_turno': bool(cambio_turno),
+            'cambio_turno_texto': (
+                f"Cambio de turno · "
+                f"{'Mañana' if cambio_turno[0] == 'MANANA' else 'Tarde'} · "
+                f"{cambio_turno[1].strftime('%H:%M')} - {cambio_turno[2].strftime('%H:%M')}"
+                if cambio_turno else ''
+            ),
         })
         
     return calendario

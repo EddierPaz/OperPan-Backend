@@ -29,10 +29,13 @@
                                             class="action-menu-item btn-editar-solicitud"
                                             data-url="{% url 'novedades:editar_solicitud' p.id %}"
                                             data-id="{{ p.id }}"
-                                            data-tipo="solicitud"
+                                            data-categoria="solicitud"
+                                            data-tipo="{{ p.tipo }}"
+                                            data-tipo-display="{{ p.get_tipo_display }}"
                                             data-inicio="{{ p.fecha_inicio|date:'Y-m-d' }}"
                                             data-fin="{{ p.fecha_fin|date:'Y-m-d' }}"
-                                            data-motivo="{{ p.justificacion }}"
+                                            data-motivo="{{ p.justificacion|default:'' }}"
+                                            data-nuevo-horario="{{ p.nuevo_horario|default:'' }}"
                                             {% if p.archivo %}data-archivo="{{ p.archivo.url }}"{% endif %}>
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>

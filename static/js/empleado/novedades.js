@@ -8,6 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const formIncapacidad = document.getElementById('formIncapacidad');
     const formCertificado = document.getElementById('formCertificado');
     const novedadesContainer = document.getElementById('novedadesContainer');
+    const modalCrearEl = document.getElementById('modalsolicitudes');
+    let configuracionInicialFormulario = true;
+
+    const notificarNovedad = (mensaje, tipo = 'danger') => {
+        if (typeof window.mostrarNotificacion === 'function') {
+            const htmlSeguro = String(mensaje).replace(/[&<>"']/g, caracter => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+            })[caracter]);
+            window.mostrarNotificacion(htmlSeguro, tipo);
+        } else {
+            console.error(mensaje);
+        }
+    };
 
     // ============================================================
     // CONFIGURACIÃ“N DE FECHAS BASE
@@ -33,17 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const mostrarFormularioSegunTipo = () => {
         if (!tipoSelect) return;
         const mainTipo = tipoSelect.value;
-
-        document.querySelectorAll('.text-danger.small').forEach(el => {
-            el.textContent = '';
-            el.style.display = 'none';
-        });
+        const conservarValores = configuracionInicialFormulario &&
+            modalCrearEl && modalCrearEl.dataset.reabrir === 'true';
+        configuracionInicialFormulario = false;
 
         // Esta función es clave: oculta el div, deshabilita los inputs y quita el required
         const toggleForm = (form, isVisible) => {
             if (!form) return;
 form.style.display = isVisible? 'block' : 'none';
-            const inputs = form.querySelectorAll('input, select, texfuncion');
+            const inputs = form.querySelectorAll('input, select, textarea');
             inputs.forEach(input => {
                 input.disabled = !isVisible;
                 if (!isVisible) input.required = false; // Evita el error "not focusable"
@@ -114,9 +129,16 @@ form.style.display = isVisible? 'block' : 'none';
         if (grupoAdjunto) grupoAdjunto.style.display = 'none';
         if (grupoNuevoHorario) grupoNuevoHorario.style.display = 'none';
         
-        if (inputJustificacion) { inputJustificacion.required = false; inputJustificacion.value = ''; }
+        if (inputJustificacion) {
+            inputJustificacion.required = false;
+            if (!conservarValores) inputJustificacion.value = '';
+        }
         if (inputAdjunto) { inputAdjunto.required = false; inputAdjunto.value = ''; }
-        if (inputNuevoHorario) { inputNuevoHorario.required = false; inputNuevoHorario.value = ''; inputNuevoHorario.disabled = true; }
+        if (inputNuevoHorario) {
+            inputNuevoHorario.required = false;
+            if (!conservarValores) inputNuevoHorario.value = '';
+            inputNuevoHorario.disabled = true;
+        }
         if (inputFechaFin) inputFechaFin.required = false;
 
         if (tipoEfectivo === 'luto' || tipoEfectivo === 'calamidad') {
@@ -310,7 +332,7 @@ const e = estadoActual !== 'todas'? ` ${estadoActual}s` : '';
     if (solicitudForm) {
         solicitudForm.addEventListener('reset', () => {
             setTimeout(() => {
-                const errorElements = solicitudForm.querySelectorAll('.alert-danger, .text-danger, .errorlist');
+                const errorElements = solicitudForm.querySelectorAll('.errorlist');
                 errorElements.forEach(el => el.remove());
                 mostrarFormularioSegunTipo();
                 actualizarCamposCertificado();
@@ -517,44 +539,100 @@ const modalEliminar = modalEliminarEl? new bootstrap.Modal(modalEliminarEl) : nu
 const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
     const formEditar = document.getElementById('formEditarSolicitud');
     const btnGuardarEdicion = document.getElementById('btnGuardarEdicion');
+const grupoFechasEdit = document.getElementById('editarGrupoFechas');
+const grupoFechaFinEdit = document.getElementById('editarGrupoFechaFin');
+const grupoCertificadoEdit = document.getElementById('editarGrupoCertificado');
+const grupoTurnoEdit = document.getElementById('editarGrupoTurno');
+const grupoMotivoEdit = document.getElementById('editarGrupoMotivo');
+const editarFechaInicio = document.getElementById('editarFechaInicio');
+const editarFechaFin = document.getElementById('editarFechaFin');
+const editarMotivo = document.getElementById('editarMotivo');
+const editarNuevoHorario = document.getElementById('editarNuevoHorario');
+const editarCertificadoTipo = document.getElementById('editarCertificadoTipo');
+const editarCertificadoProposito = document.getElementById('editarCertificadoProposito');
+const editarCertificadoDirigido = document.getElementById('editarCertificadoDirigido');
+const editarCertificadoPeriodo = document.getElementById('editarCertificadoPeriodo');
+const grupoArchivoEdit = document.getElementById('editarGrupoArchivo');
     let urlParaEditar = '';
+let categoriaEditando = '';
+let esCambioTurnoEditando = false;
 
     document.addEventListener('click', (e) => {
         const btnEditar = e.target.closest('.btn-editar-solicitud');
         if (btnEditar) {
             e.preventDefault();
             urlParaEditar = btnEditar.dataset.url;
-            const idVal = btnEditar.dataset.id || '';
-            const tipoVal = btnEditar.dataset.tipo || 'solicitud';
-            const inicioVal = btnEditar.dataset.inicio || '';
-            const finVal = btnEditar.dataset.fin || '';
+        const tipoVal = btnEditar.dataset.tipo || 'solicitud';
+        const categoria = btnEditar.dataset.categoria || tipoVal;
+        categoriaEditando = categoria;
+        const inicioVal = btnEditar.dataset.inicio || '';
+        const esCambioTurno = categoria === 'solicitud' && tipoVal === 'cambio_turno';
+        esCambioTurnoEditando = esCambioTurno;
+        const tieneFechas = categoria === 'solicitud' || categoria === 'incapacidad';
+        const requiereMotivo = categoria === 'solicitud' &&
+            !['cambio_turno', 'vacaciones', 'luto', 'citas_medicas', 'maternidad_paternidad'].includes(tipoVal);
             const archivoUrl = btnEditar.dataset.archivo || '';
 
             const idInput = document.getElementById('editarId');
-            if (idInput) idInput.value = idVal;
+            if (idInput) idInput.value = btnEditar.dataset.id || '';
 
             const tipoDisplay = document.getElementById('editarTipoDisplay');
             if (tipoDisplay) {
-                const tipos = { 'solicitud': 'Solicitud', 'cambio_turno': 'Cambio de Turno', 'vacaciones': 'Vacaciones', 'incapacidad': 'Incapacidad', 'certificado': 'Certificado' };
-                tipoDisplay.value = tipos[tipoVal] || tipoVal;
+            const tipos = {
+                'cambio_turno': 'Cambio de turno',
+                'incapacidad': 'Incapacidad médica',
+                'certificado': 'Certificado'
+            };
+            tipoDisplay.value = btnEditar.dataset.tipoDisplay || tipos[tipoVal] || tipoVal;
+            tipoDisplay.closest('.modal-detalle-item').style.display = categoria === 'certificado' ? 'none' : '';
             }
 
-            const inputInicio = document.getElementById('editarFechaInicio');
-            const inputFin = document.getElementById('editarFechaFin');
+        if (grupoFechasEdit) grupoFechasEdit.style.display = tieneFechas ? 'grid' : 'none';
+        if (grupoFechaFinEdit) grupoFechaFinEdit.style.display = esCambioTurno ? 'none' : '';
+        if (grupoCertificadoEdit) grupoCertificadoEdit.style.display = categoria === 'certificado' ? 'grid' : 'none';
+        if (grupoTurnoEdit) grupoTurnoEdit.style.display = esCambioTurno ? 'grid' : 'none';
+        if (grupoMotivoEdit) grupoMotivoEdit.style.display = requiereMotivo || esCambioTurno ? 'block' : 'none';
+        const etiquetaMotivo = grupoMotivoEdit ? grupoMotivoEdit.querySelector('label') : null;
+        if (etiquetaMotivo) {
+            etiquetaMotivo.innerHTML = esCambioTurno
+                ? 'Motivo del cambio <span class="text-danger">*</span>'
+                : 'Justificación <span class="text-danger">*</span>';
+        }
+        if (grupoArchivoEdit) grupoArchivoEdit.style.display = '';
 
-            if (['solicitud', 'cambio_turno', 'vacaciones'].includes(tipoVal)) {
-                if (inputInicio) inputInicio.min = minSolicitudStr;
-                if (inputFin) inputFin.min = minSolicitudStr;
-            } else if (tipoVal === 'incapacidad') {
-                if (inputInicio) inputInicio.min = hoyStr;
-                if (inputFin) inputFin.min = hoyStr;
-            } else {
-                if (inputInicio) inputInicio.removeAttribute('min');
-                if (inputFin) inputFin.removeAttribute('min');
-            }
+        if (editarFechaInicio) {
+            editarFechaInicio.value = inicioVal;
+            editarFechaInicio.required = tieneFechas;
+            if (categoria === 'incapacidad') editarFechaInicio.min = hoyStr;
+            else if (categoria === 'solicitud') editarFechaInicio.min = minSolicitudStr;
+            else editarFechaInicio.removeAttribute('min');
+        }
+        if (editarFechaFin) {
+            editarFechaFin.value = esCambioTurno ? inicioVal : (btnEditar.dataset.fin || '');
+            editarFechaFin.required = categoria === 'incapacidad' || (categoria === 'solicitud' && !esCambioTurno);
+            if (categoria === 'incapacidad') editarFechaFin.min = hoyStr;
+            else if (categoria === 'solicitud') editarFechaFin.min = inicioVal || minSolicitudStr;
+            else editarFechaFin.removeAttribute('min');
+        }
 
-            if (inputInicio) inputInicio.value = inicioVal;
-            if (inputFin) inputFin.value = finVal;
+        if (editarMotivo) {
+            editarMotivo.value = btnEditar.dataset.motivo || '';
+            editarMotivo.required = requiereMotivo || esCambioTurno;
+        }
+        if (editarNuevoHorario) {
+            const turno = (btnEditar.dataset.nuevoHorario || '').toUpperCase();
+            editarNuevoHorario.value = turno.includes('TARDE')
+                ? 'TARDE'
+                : (turno.includes('MANANA') ? 'MANANA' : '');
+            editarNuevoHorario.required = esCambioTurno;
+        }
+        if (editarCertificadoTipo) editarCertificadoTipo.value = btnEditar.dataset.certificadoTipo || 'laboral';
+        if (editarCertificadoProposito) {
+            editarCertificadoProposito.value = btnEditar.dataset.proposito || '';
+            editarCertificadoProposito.required = categoria === 'certificado';
+        }
+        if (editarCertificadoDirigido) editarCertificadoDirigido.value = btnEditar.dataset.dirigidoA || '';
+        if (editarCertificadoPeriodo) editarCertificadoPeriodo.value = btnEditar.dataset.periodo || '';
 
             const contenedorArchivo = document.getElementById('contenedorArchivoActual');
             const linkArchivo = document.getElementById('verArchivoActual');
@@ -573,6 +651,16 @@ const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
             if (modalEditar) modalEditar.show();
         }
     });
+
+    if (editarFechaInicio) {
+        editarFechaInicio.addEventListener('change', () => {
+            if (esCambioTurnoEditando && editarFechaFin) {
+                editarFechaFin.value = editarFechaInicio.value;
+            } else if (editarFechaFin) {
+                editarFechaFin.min = editarFechaInicio.value || minSolicitudStr;
+            }
+        });
+    }
 
     if (formEditar) {
         formEditar.addEventListener('submit', async (e) => {
@@ -593,11 +681,11 @@ const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
                 }
 
                 const formData = new FormData();
-                const inputInicioEdit = document.getElementById('editarFechaInicio');
-                const fechaInicio = inputInicioEdit.value || '';
-                const fechaFin = document.getElementById('editarFechaFin').value || '';
+                const tipoCategoria = categoriaEditando;
+                const fechaInicio = editarFechaInicio ? editarFechaInicio.value : '';
+                const fechaFin = editarFechaFin ? editarFechaFin.value : '';
 
-                if (inputInicioEdit.min && fechaInicio && fechaInicio < inputInicioEdit.min) {
+                if (editarFechaInicio && editarFechaInicio.min && fechaInicio && fechaInicio < editarFechaInicio.min) {
                     if (btnGuardarEdicion) {
                         btnGuardarEdicion.disabled = false;
                         btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
@@ -606,8 +694,22 @@ const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
                     return;
                 }
 
-                formData.append('fecha_inicio', fechaInicio);
-                formData.append('fecha_fin', fechaFin);
+                if (tipoCategoria !== 'certificado') {
+                    formData.append('fecha_inicio', fechaInicio);
+                    formData.append('fecha_fin', fechaFin);
+                }
+
+                if (tipoCategoria === 'solicitud') {
+                    if (editarMotivo) formData.append('justificacion', editarMotivo.value);
+                    if (editarNuevoHorario && editarNuevoHorario.required) {
+                        formData.append('nuevo_horario', editarNuevoHorario.value);
+                    }
+                } else if (tipoCategoria === 'certificado') {
+                    if (editarCertificadoTipo) formData.append('tipo', editarCertificadoTipo.value);
+                    if (editarCertificadoProposito) formData.append('proposito', editarCertificadoProposito.value);
+                    if (editarCertificadoDirigido) formData.append('dirigido_a', editarCertificadoDirigido.value);
+                    if (editarCertificadoPeriodo) formData.append('periodo', editarCertificadoPeriodo.value);
+                }
                 
                 const archivoInput = document.getElementById('editarArchivo');
                 if (archivoInput && archivoInput.files && archivoInput.files.length > 0) {
@@ -654,42 +756,32 @@ const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
                     btnGuardarEdicion.innerHTML = '<i class="bi bi-check-lg"></i> Guardar cambios';
                 }
                 urlParaEditar = '';
+                categoriaEditando = '';
+                esCambioTurnoEditando = false;
             });
-        }
-    }
-
-    // ============================================================
-    // MOSTRAR ERRORES AL CARGAR
-    // ============================================================
-    const formErrors = document.querySelector('.alert-danger');
-    if (formErrors) {
-        if (document.querySelector('#formSolicitud .is-invalid, #formSolicitud .errorlist')) {
-            if (tipoSelect) { tipoSelect.value = 'solicitud'; mostrarFormularioSegunTipo(); }
-        } else if (document.querySelector('#formIncapacidad .is-invalid, #formIncapacidad .errorlist')) {
-            if (tipoSelect) { tipoSelect.value = 'incapacidad'; mostrarFormularioSegunTipo(); }
-        } else if (document.querySelector('#formCertificado .is-invalid, #formCertificado .errorlist')) {
-            if (tipoSelect) { tipoSelect.value = 'certificado'; mostrarFormularioSegunTipo(); actualizarCamposCertificado(); }
         }
     }
 
     filtrarHistorial();
 
     // ============================================================
-    // VALIDACIÃ“N FINAL DEL SUBMIT
+    // VALIDACIÓN Y ENVÍO DEL FORMULARIO
     // ============================================================
     if (solicitudForm) {
-        solicitudForm.addEventListener('submit', function(e) {
+        solicitudForm.noValidate = true;
+        solicitudForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
             const mainTipo = tipoSelect.value;
             let tipoEfectivo = mainTipo;
+            const erroresLocales = [];
 
             if (mainTipo === 'solicitud' && innerTipoSelect) {
                 tipoEfectivo = innerTipoSelect.value;
             }
 
             if (!tipoEfectivo) {
-                e.preventDefault();
-                if (window.mostrarNotificacion) window.mostrarNotificacion('Por favor, selecciona un tipo de novedad.', 'warning');
-                return false;
+                erroresLocales.push('Selecciona el tipo de novedad.');
             }
 
             if (tipoEfectivo === 'cambio_turno') {
@@ -700,9 +792,7 @@ const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
 
                 const nuevoHorario = document.getElementById('nuevoHorario');
                 if (!nuevoHorario || !nuevoHorario.value) {
-                    e.preventDefault();
-                    if (window.mostrarNotificacion) window.mostrarNotificacion('Por favor, selecciona el nuevo turno.', 'warning');
-                    return false;
+                    erroresLocales.push('Selecciona el nuevo turno.');
                 }
             }
 
@@ -711,31 +801,66 @@ const modalEditar = modalEditarEl? new bootstrap.Modal(modalEditarEl) : null;
                 const fechaFin = document.getElementById('incapacidadFechaFin');
                 const archivo = document.getElementById('incapacidadAdjunto');
 
-                if (!fechaInicio.value) { e.preventDefault(); if (window.mostrarNotificacion) window.mostrarNotificacion('La fecha de inicio es obligatoria.', 'warning'); return false; }
-                if (!fechaFin.value) { e.preventDefault(); if (window.mostrarNotificacion) window.mostrarNotificacion('La fecha de fin es obligatoria.', 'warning'); return false; }
-                if (!archivo.files || archivo.files.length === 0) { e.preventDefault(); if (window.mostrarNotificacion) window.mostrarNotificacion('Debes adjuntar el soporte médico.', 'warning'); return false; }
+                if (!fechaInicio.value) erroresLocales.push('La fecha de inicio es obligatoria.');
+                if (!fechaFin.value) erroresLocales.push('La fecha de fin es obligatoria.');
+                if (!archivo.files || archivo.files.length === 0) {
+                    erroresLocales.push('Debes adjuntar el soporte médico.');
+                }
             }
-            
-            return true;
+
+            if (erroresLocales.length) {
+                notificarNovedad(erroresLocales[0], 'warning');
+                return;
+            }
+
+            const btnEnviar = solicitudForm.querySelector('button[type="submit"]');
+            const textoOriginal = btnEnviar ? btnEnviar.innerHTML : '';
+            if (btnEnviar) {
+                btnEnviar.disabled = true;
+                btnEnviar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Enviando...';
+            }
+
+            try {
+                const response = await fetch(solicitudForm.action, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new FormData(solicitudForm),
+                });
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    throw new Error('El servidor no devolvió una respuesta válida.');
+                }
+
+                const data = await response.json();
+                if (response.ok && data.status === 'ok') {
+                    window.location.reload();
+                    return;
+                }
+
+                const error = data.errores && data.errores.length
+                    ? data.errores[0]
+                    : (data.error || 'No se pudo enviar la novedad.');
+                notificarNovedad(`No se pudo enviar la novedad: ${error}`, 'danger');
+            } catch (error) {
+                console.error(error);
+                notificarNovedad('No se pudo conectar con el servidor. Tus datos siguen en el formulario; inténtalo de nuevo.', 'danger');
+            } finally {
+                if (btnEnviar) {
+                    btnEnviar.disabled = false;
+                    btnEnviar.innerHTML = textoOriginal;
+                }
+            }
         });
     }
 
-    const modalCrearEl = document.getElementById('modalsolicitudes');
     if (modalCrearEl) {
         modalCrearEl.addEventListener('hide.bs.modal', () => {
             if (document.activeElement) document.activeElement.blur();
         });
     }
 
-    // ============================================================
-    // REABRIR MODAL SI HAY ERRORES DE DJANGO
-    // ============================================================
-    const errorMessages = document.querySelectorAll('#toastContainer .app-toast-danger');
-    if (errorMessages.length > 0) {
-        const modalCrear = new bootstrap.Modal(document.getElementById('modalsolicitudes'));
-        modalCrear.show();
-        const mainTipo = document.querySelector('#tipoSolicitud').value;
-        if (mainTipo) mostrarFormularioSegunTipo();
+    if (modalCrearEl && modalCrearEl.dataset.reabrir === 'true') {
+        new bootstrap.Modal(modalCrearEl).show();
     }
 
     console.log('âœ… OperPan - novedades.js cargado correctamente');

@@ -32,10 +32,13 @@
                                             class="action-menu-item btn-editar-solicitud"
                                             data-url="{% url 'novedades:editar_certificado' c.id %}"
                                             data-id="{{ c.id }}"
+                                            data-categoria="certificado"
                                             data-tipo="certificado"
-                                            data-inicio="{{ c.fecha_solicitud|date:'Y-m-d' }}"
-                                            data-fin="{{ c.fecha_emision|date:'Y-m-d'|default:'' }}"
-                                            data-motivo="{{ c.proposito }}"
+                                            data-tipo-display="{{ c.get_tipo_display }}"
+                                            data-certificado-tipo="{{ c.tipo }}"
+                                            data-proposito="{{ c.proposito }}"
+                                            data-dirigido-a="{{ c.dirigido_a|default:'' }}"
+                                            data-periodo="{{ c.periodo|default:'' }}"
                                             {% if c.archivo %}data-archivo="{{ c.archivo.url }}"{% endif %}>
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>

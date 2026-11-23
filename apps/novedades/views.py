@@ -105,17 +105,23 @@ def novedades_empleado(request):
 
     if request.method == 'POST':
         tipo_solicitud = request.POST.get('tipo_solicitud')
+        es_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
         formulario_invalido = False
+        formulario_activo = None
 
         # --------------------------------------------------------
         # SOLICITUD (solicitud, cambio_turno, vacaciones)
         # --------------------------------------------------------
         if tipo_solicitud == 'solicitud':
             if solicitudes_pendientes.count() >= 2:
-                messages.error(request, 'Ya tienes 2 solicitudes pendientes. Espera a que sean respondidas antes de crear otra.')
+                mensaje = 'Ya tienes 2 solicitudes pendientes. Espera a que sean respondidas antes de crear otra.'
+                if es_ajax:
+                    return JsonResponse({'status': 'error', 'error': mensaje, 'errores': [mensaje]}, status=400)
+                messages.error(request, mensaje)
                 return redirect('novedades:novedades_empleado')
 
             solicitud_form = SolicitudCrearForm(request.POST, request.FILES, prefix='solicitud', empleado=perfil)
+            formulario_activo = solicitud_form
             if solicitud_form.is_valid():
                 solicitud = solicitud_form.save(commit=False)
                 solicitud.empleado = perfil
@@ -130,7 +136,10 @@ def novedades_empleado(request):
                 }
                 
 
-                messages.success(request, 'Solicitud creada correctamente.')
+                mensaje = 'Solicitud creada correctamente.'
+                messages.success(request, mensaje)
+                if es_ajax:
+                    return JsonResponse({'status': 'ok', 'mensaje': mensaje})
                 return redirect('novedades:novedades_empleado')
             else:
                 formulario_invalido = True
@@ -140,12 +149,16 @@ def novedades_empleado(request):
         # --------------------------------------------------------
         elif tipo_solicitud == 'incapacidad':
             if incapacidades_pendientes.count() >= 2:
-                messages.error(request, 'Ya tienes 2 incapacidades pendientes. Espera a que sean respondidas antes de crear otra.')
+                mensaje = 'Ya tienes 2 incapacidades pendientes. Espera a que sean respondidas antes de crear otra.'
+                if es_ajax:
+                    return JsonResponse({'status': 'error', 'error': mensaje, 'errores': [mensaje]}, status=400)
+                messages.error(request, mensaje)
                 return redirect('novedades:novedades_empleado')
 
 
             instancia_incap = Incapacidad(empleado=perfil)
             incapacidad_form = IncapacidadCrearForm(request.POST, request.FILES, prefix='incapacidad', instance=instancia_incap)
+            formulario_activo = incapacidad_form
             if incapacidad_form.is_valid():
                 incapacidad = incapacidad_form.save(commit=False)
                 incapacidad.empleado = perfil
@@ -159,7 +172,10 @@ def novedades_empleado(request):
                 }
                 
 
-                messages.success(request, 'Incapacidad creada correctamente.')
+                mensaje = 'Incapacidad creada correctamente.'
+                messages.success(request, mensaje)
+                if es_ajax:
+                    return JsonResponse({'status': 'ok', 'mensaje': mensaje})
                 return redirect('novedades:novedades_empleado')
             else:
                 formulario_invalido = True
@@ -169,10 +185,14 @@ def novedades_empleado(request):
         # --------------------------------------------------------
         elif tipo_solicitud == 'certificado':
             if certificados_pendientes.count() >= 2:
-                messages.error(request, 'Ya tienes 2 certificados pendientes. Espera a que sean respondidos antes de crear otro.')
+                mensaje = 'Ya tienes 2 certificados pendientes. Espera a que sean respondidos antes de crear otro.'
+                if es_ajax:
+                    return JsonResponse({'status': 'error', 'error': mensaje, 'errores': [mensaje]}, status=400)
+                messages.error(request, mensaje)
                 return redirect('novedades:novedades_empleado')
 
             certificado_form = CertificadoCrearForm(request.POST, request.FILES, prefix='certificado')
+            formulario_activo = certificado_form
             if certificado_form.is_valid():
                 certificado = certificado_form.save(commit=False)
                 certificado.empleado = perfil
@@ -186,7 +206,10 @@ def novedades_empleado(request):
                     'motivo': certificado.proposito,
                 }
 
-                messages.success(request, 'Certificado creado correctamente.')
+                mensaje = 'Certificado creado correctamente.'
+                messages.success(request, mensaje)
+                if es_ajax:
+                    return JsonResponse({'status': 'ok', 'mensaje': mensaje})
                 return redirect('novedades:novedades_empleado')
             else:
                 formulario_invalido = True
@@ -195,22 +218,25 @@ def novedades_empleado(request):
         # TIPO NO VÁLIDO
         # --------------------------------------------------------
         else:
-            messages.error(request, 'Tipo de solicitud no válido.')
+            mensaje = 'Tipo de novedad no válido.'
+            if es_ajax:
+                return JsonResponse({'status': 'error', 'error': mensaje, 'errores': [mensaje]}, status=400)
+            messages.error(request, mensaje)
             return redirect('novedades:novedades_empleado')
 
         # ========================================================
         # SOLO SI EL FORMULARIO ES INVÁLIDO
         # ========================================================
         if formulario_invalido:
-            for form in [solicitud_form, incapacidad_form, certificado_form]:
-                if form.errors:
-                    for field, errors in form.errors.items():
-                        for error in errors:
-                            if field == '__all__':
-                                messages.error(request, error)
-                            else:
-                                label = form.fields[field].label or field.capitalize()
-                                messages.error(request, f"{label}: {error}")
+            errores_formulario = _errores_formulario(formulario_activo)
+            if es_ajax:
+                return JsonResponse({
+                    'status': 'error',
+                    'error': 'No se pudo enviar la novedad. Revisa los campos indicados.',
+                    'errores': errores_formulario,
+                }, status=400)
+            mensaje_error = errores_formulario[0] if errores_formulario else 'Revisa los datos ingresados.'
+            messages.error(request, f'No se pudo enviar la novedad: {mensaje_error}')
 
             context = {
                 "fecha_hoy": timezone.localdate(),
@@ -229,6 +255,8 @@ def novedades_empleado(request):
                 "solicitud_form": solicitud_form,
                 "incapacidad_form": incapacidad_form,
                 "certificado_form": certificado_form,
+                "tipo_solicitud_actual": tipo_solicitud,
+                "reabrir_modal_novedad": True,
             }
 
             return render(
@@ -271,6 +299,23 @@ def novedades_empleado(request):
 # EDITAR SOLICITUDES - EMPLEADO
 # ============================================================
 
+def _errores_formulario(form):
+    errores_formulario = []
+    for campo, errores in form.errors.items():
+        if campo == '__all__':
+            etiqueta = ''
+        else:
+            etiqueta = form.fields[campo].label or campo.replace('_', ' ').capitalize()
+        for error in errores:
+            errores_formulario.append(f'{etiqueta}: {error}' if etiqueta else str(error))
+    return errores_formulario
+
+
+def _primer_error_formulario(form):
+    errores = _errores_formulario(form)
+    return errores[0] if errores else 'Revisa los datos ingresados.'
+
+
 @login_required
 @empleado_required
 def editar_solicitud(request, pk):
@@ -282,63 +327,20 @@ def editar_solicitud(request, pk):
     except Solicitud.DoesNotExist:
         return JsonResponse({'error': 'La solicitud no existe, no te pertenece o ya fue procesada.'}, status=404)
 
-    fecha_inicio = request.POST.get('fecha_inicio')
-    fecha_fin = request.POST.get('fecha_fin')
-    justificacion = request.POST.get('motivo')
-
-    if not fecha_inicio or not fecha_fin or not justificacion:
-        return JsonResponse({'error': 'Todos los campos son obligatorios.'}, status=400)
-
-    try:
-        fecha_inicio_dt = date.fromisoformat(fecha_inicio)
-    except ValueError:
-        return JsonResponse({'error': 'Fecha de inicio inválida.'}, status=400)
-
-    minimo = date.today() + timedelta(days=SolicitudCrearForm.DIAS_ANTICIPACION + 1)
-    if fecha_inicio_dt < minimo:
+    datos = request.POST.copy()
+    datos['tipo'] = solicitud.tipo
+    form = SolicitudCrearForm(
+        datos,
+        request.FILES,
+        instance=solicitud,
+        empleado=request.user.perfil,
+    )
+    if not form.is_valid():
         return JsonResponse({
-            'error': f'Las solicitudes deben solicitarse con al menos {SolicitudCrearForm.DIAS_ANTICIPACION} '
-                     f'días de anticipación. La fecha más próxima disponible es {minimo.strftime("%d/%m/%Y")}.'
+            'error': f'No se pudo actualizar la solicitud. {_primer_error_formulario(form)}'
         }, status=400)
-    # ============================================================
-    # Revalidación para cambio de turno (P2 + P4)
-    # ============================================================
-    if solicitud.tipo == 'cambio_turno':
-        from apps.asistencia.services.horario_service import (
-            obtener_o_generar_horario_vigente,
-            ultimo_dia_del_mes,
-        )
 
-        horario = obtener_o_generar_horario_vigente(request.user.perfil)
-        if not horario:
-            return JsonResponse(
-                {'error': 'No tienes un horario vigente; no puedes editar un cambio de turno.'},
-                status=400,
-            )
-        if horario.turno not in ('MANANA', 'TARDE'):
-            return JsonResponse(
-                {'error': 'Tu turno es Fijo y no admite cambio de turno.'},
-                status=400,
-            )
-
-        inicio_mes = horario.ciclo_inicio
-        fin_mes = ultimo_dia_del_mes(inicio_mes)
-        if not (inicio_mes <= fecha_inicio_dt <= fin_mes):
-            return JsonResponse(
-                {'error': f'La fecha debe estar dentro del mes actual '
-                          f'({inicio_mes.strftime("%d/%m/%Y")} - '
-                          f'{fin_mes.strftime("%d/%m/%Y")}).'},
-                status=400,
-            )
-
-        solicitud.fecha_fin = fecha_inicio_dt
-    # ============================================================
-    solicitud.fecha_inicio = fecha_inicio
-    solicitud.fecha_fin = fecha_fin
-    solicitud.justificacion = justificacion
-    if request.FILES.get('archivo'):
-        solicitud.archivo = request.FILES['archivo']
-    solicitud.save()
+    form.save()
 
     messages.success(request, 'Solicitud actualizada correctamente.')
     return JsonResponse({'status': 'ok', 'mensaje': 'Solicitud actualizada correctamente.'})
@@ -411,22 +413,17 @@ def editar_certificado(request, pk):
             'error': 'El certificado no existe, no te pertenece o ya fue procesado.'
         }, status=404)
 
-    # Obtener los datos del POST
-    proposito = request.POST.get('motivo')
-    
-    # Validar campos obligatorios
-    if not proposito:
+    form = CertificadoCrearForm(
+        request.POST,
+        request.FILES,
+        instance=certificado,
+    )
+    if not form.is_valid():
         return JsonResponse({
-            'error': 'El propósito es obligatorio.'
+            'error': f'No se pudo actualizar el certificado. {_primer_error_formulario(form)}'
         }, status=400)
-    
-    # Actualizar SOLO los campos permitidos
-    certificado.proposito = proposito
-    
-    if request.FILES.get('archivo'):
-        certificado.archivo = request.FILES['archivo']
-    
-    certificado.save()
+
+    form.save()
 
     # Guardar mensaje en sesión
     messages.success(request, 'Certificado actualizado correctamente.')

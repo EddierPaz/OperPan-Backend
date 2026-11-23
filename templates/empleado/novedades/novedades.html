@@ -145,7 +145,7 @@
 <!-- ============================================================ -->
 <!-- ================= MODAL: CREAR NOVEDAD ===================== -->
 <!-- ============================================================ -->
-<div class="modal fade" id="modalsolicitudes" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalsolicitudes" data-reabrir="{% if reabrir_modal_novedad %}true{% else %}false{% endif %}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content modal-detalle">
 
@@ -172,10 +172,10 @@
                         <span class="modal-detalle-value">
                             <!-- SELECTOR MAESTRO QUE CONTROLA QUÉ FORMULARIO SE MUESTRA -->
                             <select class="form-select" id="tipoSolicitud" name="tipo_solicitud" required>
-                                <option value="" selected disabled>Seleccione una opción...</option>
-                                <option value="solicitud">Solicitud (Permisos, Cambios, Vacaciones, etc.)</option>
-                                <option value="incapacidad">Incapacidad</option>
-                                <option value="certificado">Certificado</option>
+                                <option value="" {% if not tipo_solicitud_actual %}selected{% endif %} disabled>Seleccione una opción...</option>
+                                <option value="solicitud" {% if tipo_solicitud_actual == 'solicitud' %}selected{% endif %}>Solicitud (Permisos, Cambios, Vacaciones, etc.)</option>
+                                <option value="incapacidad" {% if tipo_solicitud_actual == 'incapacidad' %}selected{% endif %}>Incapacidad</option>
+                                <option value="certificado" {% if tipo_solicitud_actual == 'certificado' %}selected{% endif %}>Certificado</option>
                             </select>
                         </span>
                     </div>
@@ -334,14 +334,14 @@
                         <small class="text-muted">El tipo de novedad no se puede modificar.</small>
                     </div>
 
-                    <div class="modal-detalle-grid">
-                        <div class="modal-detalle-item">
+                    <div class="modal-detalle-grid" id="editarGrupoFechas">
+                        <div class="modal-detalle-item" id="editarGrupoFechaInicio">
                             <span class="modal-detalle-label">Fecha de Inicio <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
                                 <input type="date" class="form-control" id="editarFechaInicio" name="fecha_inicio" required>
                             </span>
                         </div>
-                        <div class="modal-detalle-item">
+                        <div class="modal-detalle-item" id="editarGrupoFechaFin">
                             <span class="modal-detalle-label">Fecha de Fin <span class="text-danger">*</span></span>
                             <span class="modal-detalle-value">
                                 <input type="date" class="form-control" id="editarFechaFin" name="fecha_fin" required>
@@ -349,7 +349,56 @@
                         </div>
                     </div>
 
-                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3">
+                    <div class="modal-detalle-grid mt-3" id="editarGrupoCertificado" style="display: none;">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Tipo de certificado <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <select class="form-select" id="editarCertificadoTipo" name="tipo">
+                                    <option value="laboral">Certificado laboral</option>
+                                    <option value="ingresos">Certificado de ingresos</option>
+                                    <option value="antiguedad">Certificado de antigüedad</option>
+                                </select>
+                            </span>
+                        </div>
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Propósito <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <input type="text" class="form-control" id="editarCertificadoProposito" name="proposito" maxlength="200" required>
+                            </span>
+                        </div>
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Dirigido a <span class="text-muted">(opcional)</span></span>
+                            <span class="modal-detalle-value">
+                                <input type="text" class="form-control" id="editarCertificadoDirigido" name="dirigido_a" maxlength="200">
+                            </span>
+                        </div>
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Período <span class="text-muted">(opcional)</span></span>
+                            <span class="modal-detalle-value">
+                                <input type="text" class="form-control" id="editarCertificadoPeriodo" name="periodo" maxlength="100">
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="modal-detalle-grid mt-3" id="editarGrupoTurno" style="display: none;">
+                        <div class="modal-detalle-item">
+                            <span class="modal-detalle-label">Nuevo turno solicitado <span class="text-danger">*</span></span>
+                            <span class="modal-detalle-value">
+                                <select class="form-select" id="editarNuevoHorario" name="nuevo_horario">
+                                    <option value="" selected disabled>Selecciona el nuevo turno...</option>
+                                    <option value="MANANA">Turno Mañana (05:00 - 13:00)</option>
+                                    <option value="TARDE">Turno Tarde (13:00 - 22:00)</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3" id="editarGrupoMotivo" style="display: none;">
+                        <label class="modal-detalle-bloque-largo-label" for="editarMotivo">Justificación <span class="text-danger">*</span></label>
+                        <textarea class="form-control" rows="3" id="editarMotivo" name="justificacion" maxlength="2000"></textarea>
+                    </div>
+
+                    <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja mt-3" id="editarGrupoArchivo">
                         <span class="modal-detalle-bloque-largo-label">Archivo Adjunto</span>
 
                         <div id="contenedorArchivoActual" class="mb-2" style="display: none;">
@@ -360,7 +409,7 @@
                         </div>
 
                         <label for="editarArchivo" class="form-label small text-muted">Subir nuevo archivo (Opcional, reemplazará al anterior):</label>
-                        <input type="file" class="form-control" id="editarArchivo" name="archivo">
+                        <input type="file" class="form-control" id="editarArchivo" name="archivo" accept=".pdf,.jpg,.png,.jpeg">
                     </div>
 
                 </div>

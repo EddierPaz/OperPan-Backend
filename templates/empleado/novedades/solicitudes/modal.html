@@ -28,9 +28,6 @@
                     </optgroup>
                     <option value="otro" {% if solicitud_form.tipo.value == 'otro' %}selected{% endif %}>Otro</option>
                 </select>
-                {% if solicitud_form.tipo.errors %}
-                    <div class="text-danger small">{{ solicitud_form.tipo.errors }}</div>
-                {% endif %}
             </span>
         </div>
 
@@ -39,9 +36,6 @@
             <span class="modal-detalle-label" id="labelFechaInicio">Fecha inicio <span class="text-danger">*</span></span>
             <span class="modal-detalle-value">
                 <input type="date" class="form-control" id="solicitudFechaInicio" name="solicitud-fecha_inicio" value="{{ solicitud_form.fecha_inicio.value|default:'' }}">
-                {% if solicitud_form.fecha_inicio.errors %}
-                    <div class="text-danger small">{{ solicitud_form.fecha_inicio.errors }}</div>
-                {% endif %}
             </span>
         </div>
 
@@ -49,9 +43,6 @@
             <span class="modal-detalle-label">Fecha fin <span class="text-danger">*</span></span>
             <span class="modal-detalle-value">
                 <input type="date" class="form-control" id="solicitudFechaFin" name="solicitud-fecha_fin" value="{{ solicitud_form.fecha_fin.value|default:'' }}">
-                {% if solicitud_form.fecha_fin.errors %}
-                    <div class="text-danger small">{{ solicitud_form.fecha_fin.errors }}</div>
-                {% endif %}
             </span>
         </div>
 
@@ -61,12 +52,9 @@
             <span class="modal-detalle-value">
                 <select class="form-select" id="nuevoHorario" name="solicitud-nuevo_horario" required>
                     <option value="" selected disabled>Seleccione el nuevo turno...</option>
-                    <option value="MANANA">Turno Mañana (05:00 - 13:00)</option>
-                    <option value="TARDE">Turno Tarde (13:00 - 22:00)</option>
+                    <option value="MANANA" {% if solicitud_form.nuevo_horario.value == 'MANANA' %}selected{% endif %}>Turno Mañana (05:00 - 13:00)</option>
+                    <option value="TARDE" {% if solicitud_form.nuevo_horario.value == 'TARDE' %}selected{% endif %}>Turno Tarde (13:00 - 22:00)</option>
                 </select>
-                {% if solicitud_form.nuevo_horario.errors %}
-                    <div class="text-danger small">{{ solicitud_form.nuevo_horario.errors }}</div>
-                {% endif %}
             </span>
         </div>
 
@@ -74,9 +62,6 @@
         <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja" id="grupoJustificacion" style="display: none;">
             <span class="modal-detalle-label" id="labelJustificacion">Justificación <span class="text-danger">*</span></span>
             <textarea class="form-control" rows="2" id="solicitudMotivo" name="solicitud-justificacion" placeholder="Explique el motivo de su solicitud">{{ solicitud_form.justificacion.value|default:'' }}</textarea>
-            {% if solicitud_form.justificacion.errors %}
-                <div class="text-danger small">{{ solicitud_form.justificacion.errors }}</div>
-            {% endif %}
         </div>
 
         <!-- 5. BLOQUE ADJUNTO -->
@@ -84,9 +69,6 @@
             <span class="modal-detalle-label">Adjuntar soporte <span class="text-muted" id="labelAdjunto">(opcional)</span></span>
             <input type="file" class="form-control" id="solicitudAdjunto" name="solicitud-archivo" accept=".pdf,.jpg,.png,.jpeg">
             <small class="file-info text-muted" id="hintAdjunto">Formato PDF, JPG, PNG (máx 5MB).</small>
-            {% if solicitud_form.archivo.errors %}
-                <div class="text-danger small">{{ solicitud_form.archivo.errors }}</div>
-            {% endif %}
         </div>
 
     </div>

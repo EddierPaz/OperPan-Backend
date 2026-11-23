@@ -5,10 +5,12 @@
 /* ── Cabecera de días de la semana ── */
 .dias-semana {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 10px;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
+    width: 100%;
+    min-width: 0;
     text-align: center;
     font-weight: 600;
     color: var(--color-text-muted);
@@ -18,12 +20,17 @@
 /* ── Rejilla del calendario ── */
 .calendario-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 10px;
+    width: 100%;
+    min-width: 0;
 }
 
 /* ── Celda de día ── */
 .dia-card {
+    position: relative;
+    min-width: 0;
+    box-sizing: border-box;
     border: 2px solid var(--color-border);
     background: var(--color-surface-subtle);
     border-radius: 12px;
@@ -88,6 +95,7 @@
     background: transparent;
     border: none;
     min-height: 70px;
+    min-width: 0;
 }
 
 .dia-card-sin-datos {
@@ -107,6 +115,14 @@
     font-size: 0.8rem;
     font-weight: 500;
     color: var(--color-text-muted);
+}
+
+.horario-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.65rem 1rem;
 }
 
 .leyenda-color {
@@ -140,10 +156,20 @@
     color: var(--color-incapacidad-text);
 }
 
-.dia-card-cambio-turno {
-    background: var(--color-cambio-turno-bg);
-    border-color: var(--color-cambio-turno);
-    color: var(--color-cambio-turno-text);
+.dia-cambio-turno-indicador,
+.leyenda-cambio-turno-indicador {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-cambio-turno);
+    box-shadow: 0 0 0 2px var(--color-surface);
+    flex-shrink: 0;
+}
+
+.dia-cambio-turno-indicador {
+    position: absolute;
+    top: 8px;
+    right: 8px;
 }
 
 /* ── Leyenda ── */
@@ -155,7 +181,56 @@
     background: var(--color-incapacidad-bg);
     border-color: var(--color-incapacidad);
 }
-.leyenda-cambio-turno {
-    background: var(--color-cambio-turno-bg);
-    border-color: var(--color-cambio-turno);
+.leyenda-cambio-turno-indicador {
+    width: 8px;
+    height: 8px;
+    box-shadow: none;
+}
+
+@media (max-width: 576px) {
+    .dias-semana,
+    .calendario-grid {
+        gap: 4px;
+    }
+
+    .dias-semana {
+        margin-top: 1rem;
+        font-size: 0.72rem;
+    }
+
+    .dia-card,
+    .dia-card-vacio {
+        min-height: 48px;
+    }
+
+    .dia-card {
+        padding: 0.25rem;
+        border-width: 1px;
+        border-radius: 8px;
+    }
+
+    .dia-cambio-turno-indicador {
+        top: 5px;
+        right: 5px;
+        width: 7px;
+        height: 7px;
+    }
+
+    .horario-leyenda {
+        display: grid;
+        grid-template-columns: repeat(2, max-content);
+        justify-content: center;
+        gap: 0.6rem 1rem;
+    }
+
+    .leyenda-item {
+        font-size: 0.76rem;
+        white-space: nowrap;
+    }
+
+    .leyenda-color {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+    }
 }

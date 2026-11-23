@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from django import forms
 from .models import Solicitud, Incapacidad, Certificado
+from apps.asistencia.models import DescansoEmpleado
 from apps.asistencia.services.horario_service import obtener_o_generar_horario_vigente, ultimo_dia_del_mes
 
 class RechazoForm(forms.Form):
@@ -63,11 +64,16 @@ class SolicitudCrearForm(forms.ModelForm):
 
         if tipo == 'cambio_turno':
             cleaned_data['fecha_fin'] = fecha_inicio
+            nuevo_turno = None
             if not nuevo_horario:
                 self.add_error('nuevo_horario', "El nuevo horario es obligatorio.")
             else:
                 s = nuevo_horario.strip().lower()
-                if not ('mañana' in s or 'manana' in s or 'tarde' in s):
+                if 'mañana' in s or 'manana' in s:
+                    nuevo_turno = 'MANANA'
+                elif 'tarde' in s:
+                    nuevo_turno = 'TARDE'
+                else:
                     self.add_error('nuevo_horario', "Solo se permite cambio a turno Mañana o Tarde. El turno Fijo no admite cambio.")
             
             if not justificacion:
@@ -79,11 +85,53 @@ class SolicitudCrearForm(forms.ModelForm):
                     self.add_error('tipo', "No tienes un horario vigente asignado.")
                 elif horario.turno not in ('MANANA', 'TARDE'):
                     self.add_error('tipo', "Tu turno es Fijo y no admite cambio de turno.")
-                elif fecha_inicio:
-                    inicio_mes = horario.ciclo_inicio
-                    fin_mes = ultimo_dia_del_mes(inicio_mes)
-                    if not (inicio_mes <= fecha_inicio <= fin_mes):
-                        self.add_error('fecha_inicio', f"El cambio de turno debe ser dentro del mes actual ({inicio_mes.strftime('%d/%m/%Y')} - {fin_mes.strftime('%d/%m/%Y')}).")
+                else:
+                    if nuevo_turno and nuevo_turno == horario.turno:
+                        self.add_error(
+                            'nuevo_horario',
+                            "El turno solicitado ya es el que tienes asignado. Selecciona el turno contrario.",
+                        )
+                    if fecha_inicio:
+                        inicio_mes = horario.ciclo_inicio
+                        if not inicio_mes:
+                            self.add_error('fecha_inicio', "Tu horario no tiene un ciclo vigente para validar el cambio.")
+                        else:
+                            fin_mes = ultimo_dia_del_mes(inicio_mes)
+                            if not (inicio_mes <= fecha_inicio <= fin_mes):
+                                self.add_error('fecha_inicio', f"El cambio de turno debe ser dentro del mes actual ({inicio_mes.strftime('%d/%m/%Y')} - {fin_mes.strftime('%d/%m/%Y')}).")
+
+                        if DescansoEmpleado.objects.filter(
+                            horario_id=horario.pk,
+                            fecha=fecha_inicio,
+                            es_descanso=True,
+                        ).exists():
+                            self.add_error(
+                                'fecha_inicio',
+                                "No puedes solicitar un cambio de turno en un día de descanso.",
+                            )
+
+                        if Incapacidad.objects.filter(
+                            empleado=self.empleado,
+                            estado__in=['pendiente', 'aprobado'],
+                            fecha_inicio__lte=fecha_inicio,
+                            fecha_fin__gte=fecha_inicio,
+                        ).exists():
+                            self.add_error(
+                                'fecha_inicio',
+                                "Ya tienes una incapacidad pendiente o aprobada para ese día.",
+                            )
+
+                        solicitud_en_fecha = Solicitud.objects.filter(
+                            empleado=self.empleado,
+                            estado__in=['pendiente', 'aprobado'],
+                            fecha_inicio__lte=fecha_inicio,
+                            fecha_fin__gte=fecha_inicio,
+                        ).exclude(pk=self.instance.pk).exists()
+                        if solicitud_en_fecha:
+                            self.add_error(
+                                'fecha_inicio',
+                                "Ya tienes otra solicitud pendiente o aprobada para ese día.",
+                            )
 
         elif tipo in ['luto', 'citas_medicas', 'maternidad_paternidad']:
             if not archivo: self.add_error('archivo', "Este tipo de solicitud exige adjuntar un soporte obligatorio.")

@@ -6,49 +6,34 @@
             <span class="modal-detalle-value">
                 <select class="form-select" id="certificadoTipo" name="certificado-tipo">
                     <option value="">Seleccionar...</option>
-                    <option value="laboral">Certificado laboral</option>
-                    <option value="ingresos">Certificado de ingresos</option>
-                    <option value="antiguedad">Certificado de antigüedad</option>
+                    <option value="laboral" {% if certificado_form.tipo.value == 'laboral' %}selected{% endif %}>Certificado laboral</option>
+                    <option value="ingresos" {% if certificado_form.tipo.value == 'ingresos' %}selected{% endif %}>Certificado de ingresos</option>
+                    <option value="antiguedad" {% if certificado_form.tipo.value == 'antiguedad' %}selected{% endif %}>Certificado de antigüedad</option>
                 </select>
-                {% if certificado_form.tipo.errors %}
-                    <div class="text-danger small">{{ certificado_form.tipo.errors }}</div>
-                {% endif %}
             </span>
         </div>
         <div class="modal-detalle-item">
             <span class="modal-detalle-label">Propósito <span class="text-danger">*</span></span>
             <span class="modal-detalle-value">
-                <input type="text" class="form-control" id="certificadoProposito" name="certificado-proposito" placeholder="Ej: trámite bancario, estudios">
-                {% if certificado_form.proposito.errors %}
-                    <div class="text-danger small">{{ certificado_form.proposito.errors }}</div>
-                {% endif %}
+                <input type="text" class="form-control" id="certificadoProposito" name="certificado-proposito" value="{{ certificado_form.proposito.value|default:'' }}" placeholder="Ej: trámite bancario, estudios">
             </span>
         </div>
         <div class="modal-detalle-item">
             <span class="modal-detalle-label">Dirigido a <span class="text-muted">(opcional)</span></span>
             <span class="modal-detalle-value">
-                <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" placeholder="Nombre de la entidad o persona">
-                {% if certificado_form.dirigido_a.errors %}
-                    <div class="text-danger small">{{ certificado_form.dirigido_a.errors }}</div>
-                {% endif %}
+                <input type="text" class="form-control" id="certificadoDirigido" name="certificado-dirigido_a" value="{{ certificado_form.dirigido_a.value|default:'' }}" placeholder="Nombre de la entidad o persona">
             </span>
         </div>
         <div class="modal-detalle-item" id="certificadoPeriodoGroup" style="display: none;">
             <span class="modal-detalle-label">Período <span class="text-muted">(opcional)</span></span>
             <span class="modal-detalle-value">
-                <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" placeholder="Ej: Enero 2025 - Marzo 2025">
-                {% if certificado_form.periodo.errors %}
-                    <div class="text-danger small">{{ certificado_form.periodo.errors }}</div>
-                {% endif %}
+                <input type="text" class="form-control" id="certificadoPeriodo" name="certificado-periodo" value="{{ certificado_form.periodo.value|default:'' }}" placeholder="Ej: Enero 2025 - Marzo 2025">
             </span>
         </div>
         <div class="modal-detalle-bloque-largo modal-detalle-bloque-largo--caja">
             <span class="modal-detalle-bloque-largo-label">Adjuntar soporte <span class="text-muted">(opcional)</span></span>
             <input type="file" class="form-control" id="certificadoAdjunto" name="certificado-archivo" accept=".pdf,.jpg,.png,.jpeg">
             <small class="file-info text-muted">PDF, JPG o PNG (máx 5MB). Opcional.</small>
-            {% if certificado_form.archivo.errors %}
-                <div class="text-danger small">{{ certificado_form.archivo.errors }}</div>
-            {% endif %}
         </div>
     </div>
 </div>

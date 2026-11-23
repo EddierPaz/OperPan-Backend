@@ -5,20 +5,14 @@
         <div class="modal-detalle-item">
             <span class="modal-detalle-label">Fecha de inicio <span class="text-danger">*</span></span>
             <span class="modal-detalle-value">
-                <input type="date" class="form-control" id="incapacidadFechaInicio" name="incapacidad-fecha_inicio" required>
-                {% if incapacidad_form.fecha_inicio.errors %}
-                    <div class="text-danger small">{{ incapacidad_form.fecha_inicio.errors }}</div>
-                {% endif %}
+                <input type="date" class="form-control" id="incapacidadFechaInicio" name="incapacidad-fecha_inicio" value="{{ incapacidad_form.fecha_inicio.value|default:'' }}" required>
             </span>
         </div>
 
         <div class="modal-detalle-item">
             <span class="modal-detalle-label">Fecha de fin <span class="text-danger">*</span></span>
             <span class="modal-detalle-value">
-                <input type="date" class="form-control" id="incapacidadFechaFin" name="incapacidad-fecha_fin" required>
-                {% if incapacidad_form.fecha_fin.errors %}
-                    <div class="text-danger small">{{ incapacidad_form.fecha_fin.errors }}</div>
-                {% endif %}
+                <input type="date" class="form-control" id="incapacidadFechaFin" name="incapacidad-fecha_fin" value="{{ incapacidad_form.fecha_fin.value|default:'' }}" required>
             </span>
         </div>
 
@@ -34,9 +28,6 @@
             <span class="modal-detalle-label">Adjuntar soporte médico <span class="text-danger">*</span></span>
             <input type="file" class="form-control" id="incapacidadAdjunto" name="incapacidad-archivo" accept=".pdf,.jpg,.png,.jpeg" required>
             <small class="file-info text-muted">Sube la foto o PDF de la incapacidad expedida por la EPS. (máx 5MB).</small>
-            {% if incapacidad_form.archivo.errors %}
-                <div class="text-danger small">{{ incapacidad_form.archivo.errors }}</div>
-            {% endif %}
         </div>
 
     </div>

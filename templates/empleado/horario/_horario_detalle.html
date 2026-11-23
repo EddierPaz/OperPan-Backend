@@ -79,8 +79,11 @@
                         {% elif estado == 'INCAPACIDAD' %}dia-card-incapacidad
                         {% elif estado == 'SIN_DATOS' %}dia-card-sin-datos
                         {% else %}dia-card-futuro{% endif %}" 
-                        title="{{ dia.fecha|date:'d/m/Y' }} — {{ dia.estado_texto }}">
+                        title="{{ dia.fecha|date:'d/m/Y' }} — {{ dia.estado_texto }}{% if dia.cambio_turno %} · {{ dia.cambio_turno_texto }}{% endif %}">
                         <div class="fw-bold">{{ dia.numero }}</div>
+                        {% if dia.cambio_turno %}
+                            <span class="dia-cambio-turno-indicador" aria-label="{{ dia.cambio_turno_texto }}" title="{{ dia.cambio_turno_texto }}"></span>
+                        {% endif %}
                     </div>
                 {% endwith %}
             {% else %}
@@ -90,12 +93,13 @@
     </div>
 </div>
 
-<div class="row g-2 mt-3">
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-presente"></span> Presente</span></div>
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-tarde"></span> Tarde</span></div>
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-ausente"></span> Ausente</span></div>
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-descanso"></span> Descanso</span></div>
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-permiso"></span> Solicitud</span></div>
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-incapacidad"></span> Incapacidad</span></div>
-    <div class="col-auto"><span class="leyenda-item"><span class="leyenda-color leyenda-futuro"></span> Pendiente</span></div>
+<div class="horario-leyenda mt-3">
+    <span class="leyenda-item"><span class="leyenda-color leyenda-presente"></span> Presente</span>
+    <span class="leyenda-item"><span class="leyenda-color leyenda-tarde"></span> Tarde</span>
+    <span class="leyenda-item"><span class="leyenda-color leyenda-ausente"></span> Ausente</span>
+    <span class="leyenda-item"><span class="leyenda-color leyenda-descanso"></span> Descanso</span>
+    <span class="leyenda-item"><span class="leyenda-color leyenda-permiso"></span> Solicitud</span>
+    <span class="leyenda-item"><span class="leyenda-color leyenda-incapacidad"></span> Incapacidad</span>
+    <span class="leyenda-item"><span class="leyenda-cambio-turno-indicador"></span> Cambio de turno</span>
+    <span class="leyenda-item"><span class="leyenda-color leyenda-futuro"></span> Pendiente</span>
 </div>
