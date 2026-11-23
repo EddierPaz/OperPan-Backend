@@ -277,6 +277,16 @@ def admin_dashboard(request):
     return render(request, "admin/landingAdmin.html", contexto)
 
 
+
+
+
+
+
+
+# Cambio del 22/11/2026:
+
+# A continuación esta función corresponde a todo el dashboard de empleado, es la unica función en este archivo que afecta a este componente del software: DASHBOARD de Empleado.
+
 @login_required
 @empleado_required
 def employee_dashboard(request):
@@ -330,60 +340,11 @@ def employee_dashboard(request):
             estado_asistencia = "No ha sido marcado"
             badge_color = "bg-secondary"
 
-    historial_asistencia = []
-    if horario:
-        asistencias_historial = (
-            Asistencia.objects
-            .filter(horario=horario)
-            .order_by("-fecha")[:30]
-        )
-        for a in asistencias_historial:
-            historial_asistencia.append({
-                'fecha': a.fecha,
-                'estado': a.get_estado_display() if a.estado else "Sin marcar",
-                'hora': a.hora_marcada.strftime("%H:%M") if a.hora_marcada else None,
-                'badge': (
-                    'bg-success' if a.estado == 'PRESENTE' else
-                    'bg-warning text-dark' if a.estado == 'TARDE' else
-                    'bg-danger' if a.estado == 'AUSENTE' else
-                    'bg-secondary'
-                )
-            })
+    # ELIMINADO: historial_asistencia (lista ya no se muestra)
+    # ELIMINADO: estadisticas_asistencia (la tarjeta de Resumen del mes ya no existe)
 
-    estadisticas_asistencia = {
-        'dias_trabajados': 0,
-        'puntualidad': 0,
-        'tardanzas': 0,
-        'ausencias': 0,
-    }
-
-    if horario:
-        asistencias_mes = Asistencia.objects.filter(
-            horario=horario,
-            fecha__gte=hoy - timedelta(days=30)
-        )
-        total = asistencias_mes.count()
-        if total > 0:
-            presentes = asistencias_mes.filter(estado='PRESENTE').count()
-            tardanzas = asistencias_mes.filter(estado='TARDE').count()
-            ausencias = asistencias_mes.filter(estado='AUSENTE').count()
-
-            estadisticas_asistencia['dias_trabajados'] = presentes + tardanzas
-            estadisticas_asistencia['puntualidad'] = round((presentes / total) * 100) if total > 0 else 0
-            estadisticas_asistencia['tardanzas'] = tardanzas
-            estadisticas_asistencia['ausencias'] = ausencias
-
-    tareas_pendientes = (
-        Task.objects
-        .filter(empleado=perfil)
-        .exclude(estado=EstadoTarea.FINALIZADA)
-        .order_by('fecha_limite', 'prioridad')
-    )[:20]
-
-    tareas_completadas = Task.objects.filter(
-        empleado=perfil,
-        estado=EstadoTarea.FINALIZADA
-    ).count()
+    # ELIMINADO: tareas_pendientes (lista ya no se muestra)
+    # ELIMINADO: tareas_completadas (ya no se muestra en el resumen)
 
     kpis_tareas = Task.get_kpis_empleado(request.user)
 
@@ -394,86 +355,60 @@ def employee_dashboard(request):
 
     total_memorandos = Memorando.objects.filter(empleado=perfil, estado='emitido').count()
 
+    # Mantenemos la actividad reciente intacta
     actividad = []
-
     tareas_recientes = Task.objects.filter(empleado=perfil).order_by('-fecha_actualizacion')[:5]
     for t in tareas_recientes:
         actividad.append({
-            'tipo': 'tarea',
-            'fecha': t.fecha_actualizacion,
-            'detalle': f"Tarea: {t.titulo}",
-            'estado': t.get_estado_display(),
-            'url': reverse('tareas:empleado_tarea_detail', args=[t.id]),
-            'icono': 'list-task',
-            'color': 'text-info'
+            'tipo': 'tarea', 'fecha': t.fecha_actualizacion, 'detalle': f"Tarea: {t.titulo}",
+            'estado': t.get_estado_display(), 'url': reverse('tareas:empleado_tarea_detail', args=[t.id]),
+            'icono': 'list-task', 'color': 'text-info'
         })
 
     solicitudes_recientes = Solicitud.objects.filter(empleado=perfil).order_by('-fecha_solicitud')[:5]
     for p in solicitudes_recientes:
         actividad.append({
-            'tipo': 'solicitud',
-            'fecha': p.fecha_solicitud,
-            'detalle': f"Solicitud de {p.get_tipo_display()}",
-            'estado': p.get_estado_display(),
-            'url': reverse('novedades:novedades_empleado'),
-            'icono': 'file-earmark-text',
-            'color': 'text-primary'
+            'tipo': 'solicitud', 'fecha': p.fecha_solicitud, 'detalle': f"Solicitud de {p.get_tipo_display()}",
+            'estado': p.get_estado_display(), 'url': reverse('novedades:novedades_empleado'),
+            'icono': 'file-earmark-text', 'color': 'text-primary'
         })
 
     incapacidades_recientes = Incapacidad.objects.filter(empleado=perfil).order_by('-fecha_solicitud')[:5]
     for i in incapacidades_recientes:
         actividad.append({
-            'tipo': 'incapacidad',
-            'fecha': i.fecha_solicitud,
-            'detalle': f"Incapacidad",
-            'estado': i.get_estado_display(),
-            'url': reverse('novedades:novedades_empleado'),
-            'icono': 'heart-pulse',
-            'color': 'text-danger'
+            'tipo': 'incapacidad', 'fecha': i.fecha_solicitud, 'detalle': f"Incapacidad",
+            'estado': i.get_estado_display(), 'url': reverse('novedades:novedades_empleado'),
+            'icono': 'heart-pulse', 'color': 'text-danger'
         })
 
     certificados_recientes = Certificado.objects.filter(empleado=perfil).order_by('-fecha_solicitud')[:5]
     for c in certificados_recientes:
         actividad.append({
-            'tipo': 'certificado',
-            'fecha': c.fecha_solicitud,
-            'detalle': f"Certificado de {c.get_tipo_display()}",
-            'estado': c.get_estado_display(),
-            'url': reverse('novedades:novedades_empleado'),
-            'icono': 'award',
-            'color': 'text-success'
+            'tipo': 'certificado', 'fecha': c.fecha_solicitud, 'detalle': f"Certificado de {c.get_tipo_display()}",
+            'estado': c.get_estado_display(), 'url': reverse('novedades:novedades_empleado'),
+            'icono': 'award', 'color': 'text-success'
         })
 
     memorandos_recientes = Memorando.objects.filter(empleado=perfil, estado='emitido').order_by('-fecha_emision')[:5]
     for m in memorandos_recientes:
         actividad.append({
-            'tipo': 'memorando',
-            'fecha': m.fecha_emision,
-            'detalle': f"Memorando: {m.asunto}",
-            'estado': "Emitido",
-            'url': reverse('memorandos:memorandos_empleado'),
-            'icono': 'file-pdf',
-            'color': 'text-danger'
+            'tipo': 'memorando', 'fecha': m.fecha_emision, 'detalle': f"Memorando: {m.asunto}",
+            'estado': "Emitido", 'url': reverse('memorandos:memorandos_empleado'),
+            'icono': 'file-pdf', 'color': 'text-danger'
         })
 
     actividad.sort(key=lambda x: x['fecha'], reverse=True)
     actividad = actividad[:8]
 
+    # Datos para Chart.js
     tareas_chart_data = {
         'labels': ['Pendientes', 'En progreso', 'Finalizadas'],
-        'values': [
-            kpis_tareas['pendientes'],
-            kpis_tareas['en_progreso'],
-            kpis_tareas['finalizadas']
-        ],
+        'values': [kpis_tareas['pendientes'], kpis_tareas['en_progreso'], kpis_tareas['finalizadas']],
         'colors': ['#ffc107', '#17a2b8', '#28a745']
     }
 
     if horario:
-        asistencias_mes = Asistencia.objects.filter(
-            horario=horario,
-            fecha__gte=hoy - timedelta(days=30)
-        )
+        asistencias_mes = Asistencia.objects.filter(horario=horario, fecha__gte=hoy - timedelta(days=30))
         presentes = asistencias_mes.filter(estado='PRESENTE').count()
         tardanzas = asistencias_mes.filter(estado='TARDE').count()
         ausencias = asistencias_mes.filter(estado='AUSENTE').count()
@@ -486,12 +421,6 @@ def employee_dashboard(request):
         'colors': ['#28a745', '#ffc107', '#dc3545']
     }
 
-    solicitudes_chart_data = {
-        'labels': ['Solicitudes', 'Incapacidades', 'Certificados'],
-        'values': [solicitudes_pendientes, incapacidades_pendientes, certificados_pendientes],
-        'colors': ['#007bff', '#dc3545', '#6c757d']
-    }
-
     context = {
         'perfil': perfil,
         'horario': horario,
@@ -502,11 +431,6 @@ def employee_dashboard(request):
         'hora_entrada': hora_entrada,
         'hora_salida': hora_salida,
         'turno_display': turno_display,
-        'historial_asistencia': historial_asistencia[:8],
-        'historial_asistencia_total': len(historial_asistencia),
-        'estadisticas_asistencia': estadisticas_asistencia,
-        'tareas_pendientes': tareas_pendientes,
-        'tareas_completadas': tareas_completadas,
         'kpis_tareas': kpis_tareas,
         'solicitudes_pendientes': solicitudes_pendientes,
         'incapacidades_pendientes': incapacidades_pendientes,
@@ -516,15 +440,31 @@ def employee_dashboard(request):
         'actividad_reciente': actividad,
         'tareas_chart_data': json.dumps(tareas_chart_data),
         'asistencia_chart_data': json.dumps(asistencia_chart_data),
-        'solicitudes_chart_data': json.dumps(solicitudes_chart_data),
+        # ELIMINADO: solicitudes_chart_data
         'today': hoy,
     }
 
-    return render(
-        request,
-        "empleado/landingEmpleado.html",
-        context
-    )
+    return render(request, "empleado/landingEmpleado.html", context)
+
+
+
+
+
+
+
+
+
+# ========================
+
+
+
+
+
+
+
+
+
+
 
 
 # ========================

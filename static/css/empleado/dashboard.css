@@ -1,74 +1,52 @@
 /* ============================================
    DASHBOARD EMPLEADO - OPERPAN
-   ESTILOS COMPLETOS - VERSIÓN FINAL
+   Refactorizado según Jira OP-139: 22/11/2026
    ============================================ */
 
-/* -------- GENERAL -------- */
 .dashboard-container {
     padding: 2rem;
-    font-family: var(--font-main);
 }
 
 /* ============================================================
-   1. WELCOME CARD - SIEMPRE EN COLOR DE MARCA (--color-primary
-   ya se aclara automáticamente en tema oscuro para contraste,
-   ver variables.css)
+   1. WELCOME CARD
    ============================================================ */
 .welcome-card {
-    background: var(--color-primary) !important;
+    background: var(--color-primary);
     color: #F0F2F5;
-    border-radius: 24px;
-    padding: 1.8rem 2rem;
-    margin-bottom: 2rem;
+    border-radius: var(--radius-xl);
+    padding: 2rem;
     box-shadow: var(--shadow-md);
-    border: none;
-    transition: all 0.3s ease;
-}
-
-.welcome-card .welcome-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
 }
 
 .welcome-card h2 {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.5rem;
-    letter-spacing: -0.3px;
     margin-bottom: 0.2rem;
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
-.welcome-card .text-white-50 {
-    color: rgba(255, 255, 255, 0.7) !important;
-    font-size: 0.9rem;
-}
-
-.badge-role {
+.welcome-pill {
     background: rgba(255, 255, 255, 0.15);
     color: white;
-    padding: 0.3rem 1.2rem;
-    border-radius: 40px;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-pill);
     font-size: 0.75rem;
     font-weight: 500;
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
 }
 
 .btn-refresh {
     background: rgba(255, 255, 255, 0.15);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 40px;
-    padding: 0.3rem 1.2rem;
+    border-radius: var(--radius-pill);
+    padding: 0.4rem 1.2rem;
     font-size: 0.8rem;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     cursor: pointer;
     backdrop-filter: blur(10px);
 }
@@ -76,569 +54,102 @@
 .btn-refresh:hover {
     background: rgba(255, 255, 255, 0.25);
     transform: scale(1.03);
-    border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* ============================================================
-   2. CARDS BASE
+   2. TARJETAS Y HOVER UNIFICADO
    ============================================================ */
 .card-block {
     background: var(--color-surface);
-    border-radius: 20px;
-    padding: 1.2rem 1.2rem 0.8rem;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
     border: 1px solid var(--color-border-soft);
     box-shadow: var(--shadow-sm);
-    transition: all 0.25s ease;
     display: flex;
     flex-direction: column;
-    height: 100%;
-}
-
-.card-block:hover {
-    box-shadow: var(--shadow-md);
-    border-color: var(--color-border);
-}
-
-.card-link {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
     transition: all 0.25s ease;
 }
 
-.card-link:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-focus-soft);
-    transform: translateY(-2px);
-}
-
-.card-link .card-title .bi-arrow-right-circle {
-    opacity: 0.3;
-    transition: all 0.3s ease;
-}
-
-.card-link:hover .card-title .bi-arrow-right-circle {
-    opacity: 0.8;
-    transform: translateX(4px);
+.card-hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-soft);
 }
 
 .card-title {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.95rem;
     color: var(--color-text);
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--color-border-soft);
-    padding-bottom: 0.5rem;
-    margin-bottom: 0.8rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
 }
 
-.card-title i {
-    font-size: 1.1rem;
+/* Flecha unificada */
+.card-arrow {
+    font-size: 1.2rem;
+    opacity: 0.4;
+    transition: all 0.25s ease;
 }
 
-.btn-link-modulo {
-    font-size: 0.7rem;
-    font-weight: 400;
-    color: var(--color-text-muted);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    padding: 0.15rem 0.5rem;
-    border-radius: 20px;
-    background: transparent;
-}
-
-.btn-link-modulo:hover {
-    color: var(--color-primary);
-    background: var(--color-primary-soft);
-}
-
-.btn-link-modulo i {
-    font-size: 0.6rem;
-    margin-left: 0.2rem;
+a:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+    color: var(--color-primary) !important;
 }
 
 /* ============================================================
-   3. JORNADA - CON MARGEN SUPERIOR PARA ESTADO DE HOY
+   3. GRÁFICAS
    ============================================================ */
-.jornada-info {
-    padding: 0.2rem 0;
-}
-
-.jornada-info .fw-bold {
-    font-size: 0.95rem;
-}
-
-.jornada-info .text-muted {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    font-weight: 500;
-}
-
-.jornada-info .estado-hoy {
-    margin-top: 0.75rem !important;
-}
-
-.jornada-info .estado-hoy .badge {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 40px;
+.chart-container {
+    position: relative;
+    height: 200px; /* Altura fija para evitar saltos con los números */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* ============================================================
-   4. ESTADÍSTICAS RESUMIDAS
+   4. SOBRESCRITURAS DE STAT-CARD PARA SOLICITUDES
    ============================================================ */
-.stat-summary {
+.stat-card {
     background: var(--color-surface-subtle);
-    border-radius: 16px;
-    padding: 0.6rem 0.4rem;
-    text-align: center;
-    transition: all 0.2s ease;
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-md);
+    padding: 0.5rem;
 }
-
-.stat-summary:hover {
-    background: var(--color-border-soft);
-}
-
-.stat-summary.stat-sm {
-    padding: 0.4rem 0.2rem;
-}
-
-.stat-summary.stat-sm .stat-number {
-    font-size: 1.4rem;
-}
-
 .stat-number {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: var(--color-text);
     line-height: 1.2;
 }
 
-.stat-summary small {
-    font-size: 0.6rem;
-    color: var(--color-text-muted);
-    display: block;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.2px;
-}
-
 /* ============================================================
-   5. HISTORIAL DE ASISTENCIA
+   5. ACTIVIDAD RECIENTE
    ============================================================ */
-.historial-item {
-    display: inline-block;
-    margin: 0.15rem 0.2rem;
-    font-size: 0.75rem;
-}
-
-.historial-item .badge {
-    font-size: 0.6rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 30px;
-}
-
-.btn-ver-mas-small {
-    background: none;
-    border: none;
-    color: var(--color-primary);
-    font-size: 0.7rem;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0.1rem 0.6rem;
-    border-radius: 20px;
-    transition: all 0.2s ease;
-}
-
-.btn-ver-mas-small:hover {
-    background: var(--color-primary);
-    color: white;
-}
-
-/* ============================================================
-   6. TAREAS Y ASISTENCIA DEL MES - CON SCROLL
-   ============================================================ */
-.tareas-scroll,
-.asistencia-mes-scroll {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 400px;
-    padding-right: 6px;
-}
-
-.tareas-scroll::-webkit-scrollbar,
-.asistencia-mes-scroll::-webkit-scrollbar {
-    width: 4px;
-}
-
-.tareas-scroll::-webkit-scrollbar-track,
-.asistencia-mes-scroll::-webkit-scrollbar-track {
-    background: var(--color-border-soft);
-    border-radius: 10px;
-}
-
-.tareas-scroll::-webkit-scrollbar-thumb,
-.asistencia-mes-scroll::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: 10px;
-}
-
-.tareas-scroll::-webkit-scrollbar-thumb:hover,
-.asistencia-mes-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary);
-}
-
-/* Lista de tareas */
-.list-group {
-    margin-bottom: 0;
-}
-
-.list-group-item {
-    border-left: none;
-    border-right: none;
-    padding: 0.6rem 0;
-    background: transparent;
-    border-color: var(--color-border-soft);
-    transition: all 0.2s ease;
-}
-
-.list-group-item:first-child {
-    border-top: none;
-}
-
-.list-group-item:last-child {
-    border-bottom: none;
-}
-
-.list-group-item:hover {
-    background: var(--color-surface-subtle);
-    border-radius: 8px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
-}
-
-.tarea-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.tarea-info {
-    flex: 1;
-    min-width: 150px;
-}
-
-.tarea-titulo {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-}
-
-.tarea-titulo a {
-    color: var(--color-text);
-    font-weight: 500;
-    font-size: 0.85rem;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.tarea-titulo a:hover {
-    color: var(--color-primary);
-    text-decoration: underline;
-}
-
-.tarea-titulo .badge {
-    font-weight: 500;
-    border-radius: 40px;
-    padding: 0.2rem 0.5rem;
-    font-size: 0.6rem;
-}
-
-.tarea-info .text-muted {
-    font-size: 0.7rem;
-    font-weight: 400;
-    display: block;
-    margin-top: 0.1rem;
-}
-
-.tarea-info .text-danger {
-    font-weight: 600;
-}
-
-.tarea-acciones {
-    display: flex;
-    gap: 0.4rem;
-    flex-shrink: 0;
-}
-
-/* Botones de acción de tareas */
-.btn-accion {
-    border: none;
-    border-radius: 40px;
-    padding: 0.2rem 0.8rem;
-    font-size: 0.7rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-}
-
-.btn-iniciar {
-    background: var(--color-info-bg);
-    color: var(--color-info);
-}
-
-.btn-iniciar:hover {
-    background: var(--color-info);
-    color: white;
-    transform: scale(1.03);
-}
-
-.btn-finalizar {
-    background: var(--color-success-bg);
-    color: var(--color-success);
-}
-
-.btn-finalizar:hover {
-    background: var(--color-success);
-    color: white;
-    transform: scale(1.03);
-}
-
-/* ============================================================
-   7. TABLA DE ASISTENCIA DEL MES
-   ============================================================ */
-.tabla-asistencia-mes {
-    font-size: 0.8rem;
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tabla-asistencia-mes th {
-    text-align: left;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    padding: 0.3rem 0.2rem;
-    border-bottom: 1px solid var(--color-border-soft);
-}
-
-.tabla-asistencia-mes td {
-    padding: 0.25rem 0.2rem;
-    border-bottom: 1px solid var(--color-border-soft);
-    vertical-align: middle;
-}
-
-.tabla-asistencia-mes .badge {
-    font-size: 0.6rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 30px;
-}
-
-/* ============================================================
-   8. GRÁFICAS
-   ============================================================ */
-.chart-card {
-    padding-bottom: 0.6rem;
-}
-
-.chart-container {
-    background: var(--color-surface-subtle);
-    border-radius: 16px;
-    padding: 0.6rem;
-    height: 100%;
-    min-height: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.chart-container canvas {
-    max-width: 100%;
-    height: auto !important;
-}
-
-/* Reducción de gráficas en desktop */
-@media (min-width: 992px) {
-    .chart-card .chart-container {
-        min-height: 140px;
-        padding: 0.4rem;
-    }
-    .chart-card .chart-container canvas {
-        max-height: 140px;
-    }
-    .chart-card .card-title {
-        font-size: 0.85rem;
-        margin-bottom: 0.4rem;
-    }
-}
-
-/* ============================================================
-   9. SOLICITUDES - MEJOR UBICACIÓN Y ALTURA
-   ============================================================ */
-.solicitudes-container .stat-summary {
-    padding: 0.8rem 0.4rem;
-    min-height: 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.solicitudes-container .stat-summary .stat-number {
-    font-size: 1.8rem;
-}
-
-.solicitudes-container .stat-summary small {
-    font-size: 0.65rem;
-}
-
-.solicitudes-empty {
-    margin-top: 1rem;
-    text-align: center;
-    padding: 0.5rem 0;
-}
-
-.solicitudes-empty i {
-    font-size: 1.5rem;
-}
-
-.solicitudes-container .row.g-2 {
-    align-items: stretch;
-}
-
-/* ============================================================
-   10. MEMORANDOS (CARD CLICKEABLE)
-   ============================================================ */
-.memorandos-card {
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-surface-subtle) 100%);
-    border-color: var(--color-border-soft);
-}
-
-.memorandos-card:hover {
-    border-color: var(--color-primary);
-    background: linear-gradient(145deg, var(--color-surface) 0%, var(--color-primary-soft) 100%);
-}
-
-.memorandos-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100px;
-}
-
-.memorandos-number .badge {
-    font-size: 2.8rem;
-    font-weight: 700;
-    padding: 0.6rem 1.5rem;
-    border-radius: 20px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
-    color: white;
-    box-shadow: var(--shadow-focus);
-}
-
-.memorandos-number p {
-    margin-top: 0.6rem;
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-}
-
-.memorandos-hint {
-    margin-top: 0.3rem;
-}
-
-.memorandos-hint small {
-    color: var(--color-primary);
-    font-size: 0.65rem;
-    opacity: 0.6;
-}
-
-.memorandos-empty i {
-    font-size: 2.5rem;
-    color: var(--color-success);
-}
-
-.memorandos-empty p {
-    font-size: 0.9rem;
-}
-
-/* ============================================================
-   11. ACTIVIDAD RECIENTE
-   ============================================================ */
-.actividad-card {
-    background: var(--color-surface-subtle);
-    border-color: var(--color-border-soft);
-    padding-bottom: 0.6rem;
-}
-
-.actividad-card .card-title {
-    border-bottom-color: var(--color-border);
-}
-
 .actividad-feed {
-    max-height: 240px;
-    overflow-y: auto;
-    padding-right: 6px;
-}
-
-.actividad-feed::-webkit-scrollbar {
-    width: 4px;
-}
-
-.actividad-feed::-webkit-scrollbar-track {
-    background: var(--color-border-soft);
-    border-radius: 10px;
-}
-
-.actividad-feed::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: 10px;
-}
-
-.actividad-feed::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .actividad-item {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.5rem 0.8rem;
-    background: var(--color-surface);
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface-subtle);
     border: 1px solid var(--color-border-soft);
-    border-radius: 12px;
-    margin-bottom: 0.4rem;
+    border-radius: var(--radius-sm);
     transition: all 0.2s ease;
-}
-
-.actividad-item:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-focus-soft);
-    transform: translateX(3px);
-}
-
-.actividad-item:last-child {
-    margin-bottom: 0;
 }
 
 .actividad-icon {
     font-size: 1.2rem;
-    min-width: 2rem;
-    text-align: center;
     flex-shrink: 0;
 }
 
@@ -648,333 +159,23 @@
 }
 
 .actividad-contenido a {
-    color: var(--color-text);
-    font-weight: 500;
-    font-size: 0.85rem;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    display: block;
-}
-
-.actividad-contenido a:hover {
-    color: var(--color-primary);
-    text-decoration: underline;
-}
-
-.actividad-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-top: 0.1rem;
-}
-
-.actividad-meta .text-muted {
-    font-size: 0.65rem;
-    font-weight: 400;
-}
-
-.actividad-meta .badge {
-    font-weight: 400;
-    font-size: 0.55rem;
-    border-radius: 40px;
-    padding: 0.1rem 0.5rem;
-}
-
-.actividad-item .bi-chevron-right {
-    opacity: 0.25;
-    transition: all 0.2s ease;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-}
-
-.actividad-item:hover .bi-chevron-right {
-    opacity: 0.7;
-    transform: translateX(4px);
+    font-size: 0.9rem;
 }
 
 /* ============================================================
-   12. TOAST
+   6. RESPONSIVE
    ============================================================ */
-.toast-message {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1100;
-}
-
-/* ============================================================
-   13. FOOTER
-   ============================================================ */
-footer {
-    font-size: 0.75rem;
-    opacity: 0.6;
-    font-weight: 300;
-    padding-top: 1.5rem;
-    margin-top: 1rem;
-}
-
-footer i {
-    margin-right: 0.4rem;
-}
-
-/* ============================================================
-   14. RESPONSIVE
-   ============================================================ */
-
-/* Tablet */
-@media (max-width: 992px) {
-    .dashboard-container {
-        padding: 1.5rem;
-    }
-
-    .welcome-card {
-        padding: 1.5rem;
-    }
-
-    .welcome-card h2 {
-        font-size: 1.3rem;
-    }
-
-    .card-block {
-        padding: 1rem 1rem 0.6rem;
-    }
-
-    .stat-number {
-        font-size: 1.5rem;
-    }
-
-    .chart-container {
-        min-height: 150px;
-    }
-
-    .memorandos-number .badge {
-        font-size: 2rem;
-        padding: 0.4rem 1rem;
-    }
-
-    .tareas-scroll,
-    .asistencia-mes-scroll {
-        max-height: 350px;
-    }
-}
-
-/* Móvil grande */
 @media (max-width: 768px) {
     .dashboard-container {
         padding: 1rem;
     }
-
     .welcome-card {
-        padding: 1.2rem 1.2rem;
-        border-radius: 20px;
+        padding: 1.5rem;
     }
-
-    .welcome-card .welcome-content {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 0.6rem;
-    }
-
     .welcome-card h2 {
-        font-size: 1.1rem;
-    }
-
-    .btn-refresh {
-        align-self: flex-start;
-        font-size: 0.7rem;
-        padding: 0.2rem 0.8rem;
-    }
-
-    .badge-role {
-        font-size: 0.65rem;
-        padding: 0.2rem 0.7rem;
-    }
-
-    .card-block {
-        padding: 0.8rem 0.8rem 0.4rem;
-        border-radius: 16px;
-    }
-
-    .card-title {
-        font-size: 0.85rem;
-        padding-bottom: 0.4rem;
-    }
-
-    .btn-link-modulo {
-        font-size: 0.6rem;
-        padding: 0.1rem 0.4rem;
-    }
-
-    .stat-number {
         font-size: 1.2rem;
     }
-
-    .stat-summary {
-        padding: 0.4rem 0.2rem;
-    }
-
-    .stat-summary small {
-        font-size: 0.55rem;
-    }
-
-    .stat-summary.stat-sm .stat-number {
-        font-size: 1.1rem;
-    }
-
-    .jornada-info .fw-bold {
-        font-size: 0.85rem;
-    }
-
-    .jornada-info .badge {
-        font-size: 0.75rem;
-        padding: 0.3rem 0.6rem;
-    }
-
-    .tarea-row {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.4rem;
-    }
-
-    .tarea-acciones {
-        justify-content: flex-start;
-    }
-
-    .btn-accion {
-        font-size: 0.65rem;
-        padding: 0.15rem 0.6rem;
-    }
-
     .chart-container {
-        min-height: 120px;
-        padding: 0.4rem;
-    }
-
-    .chart-container canvas {
-        max-height: 120px;
-    }
-
-    .actividad-item {
-        padding: 0.4rem 0.6rem;
-        gap: 0.5rem;
-    }
-
-    .actividad-icon {
-        font-size: 1rem;
-        min-width: 1.6rem;
-    }
-
-    .actividad-contenido a {
-        font-size: 0.75rem;
-    }
-
-    .actividad-meta .text-muted {
-        font-size: 0.6rem;
-    }
-
-    .actividad-meta .badge {
-        font-size: 0.5rem;
-    }
-
-    .memorandos-number .badge {
-        font-size: 1.6rem;
-        padding: 0.3rem 0.8rem;
-    }
-
-    .memorandos-content {
-        min-height: 70px;
-    }
-
-    .historial-item {
-        font-size: 0.65rem;
-    }
-
-    .historial-item .badge {
-        font-size: 0.55rem;
-        padding: 0.15rem 0.4rem;
-    }
-
-    .btn-ver-mas-small {
-        font-size: 0.6rem;
-    }
-
-    footer {
-        font-size: 0.6rem;
-    }
-
-    .tareas-scroll,
-    .asistencia-mes-scroll {
-        max-height: 260px;
-    }
-}
-
-/* Móvil pequeño */
-@media (max-width: 480px) {
-    .dashboard-container {
-        padding: 0.6rem;
-    }
-
-    .welcome-card {
-        padding: 0.8rem 1rem;
-    }
-
-    .welcome-card h2 {
-        font-size: 0.95rem;
-    }
-
-    .card-block {
-        padding: 0.6rem 0.6rem 0.3rem;
-    }
-
-    .card-title {
-        font-size: 0.75rem;
-    }
-
-    .stat-number {
-        font-size: 1rem;
-    }
-
-    .chart-container {
-        min-height: 100px;
-    }
-
-    .chart-container canvas {
-        max-height: 100px;
-    }
-
-    .actividad-item {
-        padding: 0.3rem 0.4rem;
-    }
-
-    .actividad-contenido a {
-        font-size: 0.65rem;
-    }
-
-    .memorandos-number .badge {
-        font-size: 1.2rem;
-        padding: 0.2rem 0.6rem;
-    }
-
-    .tarea-titulo a {
-        font-size: 0.7rem;
-    }
-
-    .tarea-info .text-muted {
-        font-size: 0.6rem;
-    }
-
-    .btn-accion {
-        font-size: 0.55rem;
-        padding: 0.1rem 0.4rem;
-    }
-
-    .solicitudes-container .stat-summary {
-        padding: 0.4rem 0.2rem;
-        min-height: 50px;
-    }
-
-    .solicitudes-container .stat-summary .stat-number {
-        font-size: 1.2rem;
+        height: 160px; /* Más pequeño en móvil */
     }
 }
