@@ -135,7 +135,7 @@ def _build_funciones_context(request, form=None, editando=False, funcion_actual=
             estado=EstadoFuncion.FINALIZADA
         )
 
-    funciones = funciones.order_by('-prioridad', 'fecha_limite')
+    funciones = funciones.order_by('-fecha_asignacion')
 
 
         # --- INICIO DE LA PAGINACIÃ“N (FASE 2) ---
@@ -436,7 +436,7 @@ def empleado_funciones_list(request):
     if request.GET.get('vencidas') == 'true':
         funciones = funciones.filter(fecha_limite__lt=date.today()).exclude(estado=EstadoFuncion.FINALIZADA)
 
-    funciones = funciones.order_by('-prioridad', 'fecha_limite')
+    funciones = funciones.order_by('-fecha_asignacion')
 
     detalle_id = request.GET.get('detalle')
     funcion_detalle = None
