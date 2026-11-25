@@ -147,16 +147,24 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // ------------------------------------------
-            // VALIDACIÓN DE DIRECCIÓN (Bogotá)
+            // VALIDACIÓN DE DIRECCIÓN (Universal y Flexible)
             // ------------------------------------------
             const dir = getVal('c_direccion');
+
             if (dir.length < 10 || dir.length > 100) {
                 errors.push("La dirección debe tener entre 10 y 100 caracteres.");
             } else {
-                // [22/11/2026] Patrón para nomenclatura urbana
-                const patronDireccion = /^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]\s*#\s*\d+[A-Za-z]\s*-\s*\d+/i;
+                // REGLA UNIVERSAL:
+                // 1. Acepta vías: CL, CALLE, KR, CR, CARRERA, AV, etc.
+                // 2. Exige al menos un número al principio.
+                // 3. Permite letras, espacios, guiones o la letra 'A' entre los números.
+                // 4. Exige el '#'.
+                // 5. Al final permite letras (como SUR) o guiones.
+                const patronDireccion = /^(CL|CALLE|KR|CR|CARRERA|AV|AC|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s*[\d\w\s\-]+#\s*[\d\w\s\-]+$/i;
+                
                 if (!patronDireccion.test(dir)) {
-                    errors.push("Dirección inválida. Usa el formato: 'CL 12S # 74-71' o 'KR 30 # 25-90'.");
+                    console.log("Falló la dirección:", `"${dir}"`); // Para depurar en consola F12
+                    errors.push("Dirección inválida. Asegúrate de incluir el numeral (#). Ejemplo: 'CR 9 A 13C #15 SUR' o 'Calle 6 # 6-64'.");
                 }
             }
 

@@ -497,6 +497,23 @@ def asistencia_empleado_historial(request, empleado_id):
         empleado, fecha_inicio, fecha_fin
     )
 
+    from apps.novedades.models import Solicitud
+
+    cambios_turno_fechas = set()
+    cambios_turno = Solicitud.objects.filter(
+        empleado=empleado,
+        tipo='cambio_turno',
+        estado='aprobado',
+        fecha_inicio__lte=fecha_fin,
+        fecha_fin__gte=fecha_inicio,
+    )
+    for solicitud in cambios_turno:
+        cursor_cambio = max(solicitud.fecha_inicio, fecha_inicio)
+        fin_cambio = min(solicitud.fecha_fin, fecha_fin)
+        while cursor_cambio <= fin_cambio:
+            cambios_turno_fechas.add(cursor_cambio)
+            cursor_cambio += timedelta(days=1)
+
     # ============================================================
     # Recorrer día a día
     # ============================================================
@@ -516,8 +533,22 @@ def asistencia_empleado_historial(request, empleado_id):
         es_novedad = False
         novedad_tipo = None
 
-        if novedad_dia and novedad_dia['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
-            estado_final = novedad_dia['tipo']
+        if fecha_cursor in cambios_turno_fechas:
+            estado_final = 'CAMBIO_TURNO'
+            hora_programada = (
+                horario_dia.hora_entrada.strftime('%H:%M')
+                if horario_dia.hora_entrada else 'N/A'
+            )
+            hora_marcada = 'N/A'
+            es_novedad = True
+            novedad_tipo = 'CAMBIO_TURNO'
+
+        elif novedad_dia and novedad_dia['tipo'] in ('SOLICITUD', 'INCAPACIDAD'):
+            estado_final = (
+                'PERMISO'
+                if novedad_dia['tipo'] == 'SOLICITUD'
+                else 'INCAPACIDAD'
+            )
             hora_programada = 'N/A'
             hora_marcada = 'N/A'
             es_novedad = True
@@ -1116,6 +1147,23 @@ def empleado_horario_detalle(request, id):
     novedades_por_fecha = obtener_novedades_por_fecha(
         horario.empleado, fecha_inicio, fecha_fin
     )
+
+    from apps.novedades.models import Solicitud
+
+    cambios_turno_fechas = set()
+    cambios_turno = Solicitud.objects.filter(
+        empleado=horario.empleado,
+        tipo='cambio_turno',
+        estado='aprobado',
+        fecha_inicio__lte=fecha_fin,
+        fecha_fin__gte=fecha_inicio,
+    )
+    for solicitud in cambios_turno:
+        cursor_cambio = max(solicitud.fecha_inicio, fecha_inicio)
+        fin_cambio = min(solicitud.fecha_fin, fecha_fin)
+        while cursor_cambio <= fin_cambio:
+            cambios_turno_fechas.add(cursor_cambio)
+            cursor_cambio += timedelta(days=1)
 
     for dia in calendario:
         if not dia:

@@ -231,24 +231,30 @@ return value > 0? value : '';
         const fechaHasta = document.getElementById('fechaHastaSeleccionadaHistorial').value || '';
 
         let url = '/asistencia/empleado_historial/' + empleadoId + '/';
-        const params = [];
+        const params = new URLSearchParams();
 
         if (fechaUnica) {
-            params.push('fecha_unica=' + fechaUnica);
+            params.set('fecha_unica', fechaUnica);
         } else if (fechaDesde && fechaHasta) {
-            params.push('fecha_desde=' + fechaDesde);
-            params.push('fecha_hasta=' + fechaHasta);
+            params.set('fecha_desde', fechaDesde);
+            params.set('fecha_hasta', fechaHasta);
         }
 
-        if (turno) params.push('turno=' + turno);
-        if (estado) params.push('estado=' + estado);
+        if (turno) params.set('turno', turno);
+        if (estado) params.set('estado', estado);
 
-        url += params.join('&');
+        const queryString = params.toString();
+        if (queryString) url += '?' + queryString;
 
         fetch(url, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Respuesta HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 document.getElementById('modalHistorialTitulo').textContent = 'Historial de Asistencia de ' + data.empleado_nombre;
                 document.getElementById('modalHistorialSubTitulo').textContent = data.empleado_cargo || '';

@@ -98,15 +98,17 @@ class PerfilEmpleadoForm(forms.ModelForm):
     def clean_direccion(self):
         direccion = self.cleaned_data.get('direccion')
         if direccion:
+            direccion = " ".join(direccion.split()).upper() # Limpia espacios y pone mayúsculas
+            
             if len(direccion) < 10 or len(direccion) > 100:
                 raise forms.ValidationError("La dirección debe tener entre 10 y 100 caracteres.")
             
-            # [FIX] Se agrega el signo '?' después de [A-Za-z] para que la letra sea opcional.
-            patron = r'^(CL|KR|AV|AC|CALLE|CARRERA|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s+\d+[A-Za-z]?\s*#\s*\d+[A-Za-z]?\s*-\s*\d+'
+            # La misma regla universal para Python
+            patron = r'^(CL|CALLE|KR|CR|CARRERA|AV|AC|AVENIDA|AUTOPISTA|TRANSVERSAL|TV|DIAGONAL|DG)\s*[\d\w\s\-]+#\s*[\d\w\s\-]+$'
             
             if not re.match(patron, direccion, re.IGNORECASE):
                 raise forms.ValidationError(
-                    "La dirección no tiene un formato válido. Ejemplo: 'CL 125 # 74-71' o 'KR 30 # 25-90'."
+                    "La dirección no tiene un formato válido. Debe incluir el numeral (#). Ejemplo: 'CR 9 A 13C #15 SUR' o 'CL 125 # 74-71'."
                 )
         return direccion
 
